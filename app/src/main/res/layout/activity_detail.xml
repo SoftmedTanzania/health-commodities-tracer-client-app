@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    tools:context=".activity.DetailActivity">
+
+    <FrameLayout
+        android:id="@+id/product_photo_container"
+        style="@style/ProductPhotoContainer"
+        android:onClick="viewProductPhoto">
+
+        <ImageView
+            android:id="@+id/product_photo_image_view"
+            style="@style/ProductPhotoImageView"
+            android:contentDescription="@string/image_view_cd_product_photo"/>
+
+    </FrameLayout>
+
+    <android.support.v4.widget.NestedScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:padding="@dimen/activity_vertical_margin">
+
+            <TextView
+                android:id="@+id/product_name_text_view"
+                style="@style/ProductDetailsTextView.ProductName"
+                tools:text="MacBook Pro"/>
+
+            <TextView
+                android:id="@+id/product_code_text_view"
+                style="@style/ProductDetailsTextView"
+                tools:text="Product code: 12441235"/>
+
+            <TextView
+                android:id="@+id/product_supplier_text_view"
+                style="@style/ProductDetailsTextView"
+                tools:text="Product supplier: Apple Inc."/>
+
+            <TextView
+                android:id="@+id/product_price_text_view"
+                style="@style/ProductDetailsTextView"
+                tools:text="Product price: $1,699.99"/>
+
+            <TextView
+                android:id="@+id/product_quantity_text_view"
+                style="@style/ProductDetailsTextView"
+                tools:text="Product quantity: 10"/>
+
+            <LinearLayout style="@style/HorizontalLinearLayout">
+
+                <Button
+                    android:id="@+id/increase_qty_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:onClick="modifyProductQuantity"
+                    android:text="@string/button_increase_qty"/>
+
+                <Button
+                    android:id="@+id/decrease_qty_button"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginStart="8dp"
+                    android:onClick="modifyProductQuantity"
+                    android:text="@string/button_decrease_qty"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+    </android.support.v4.widget.NestedScrollView>
+
+    <Button
+        android:id="@+id/contact_supplier_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="@dimen/activity_vertical_margin"
+        android:onClick="contactSupplier"
+        android:text="@string/button_contact_supplier"/>
+
+</LinearLayout>

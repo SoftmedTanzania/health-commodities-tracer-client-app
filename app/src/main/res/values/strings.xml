@@ -1,0 +1,53 @@
+<resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
+
+    <string name="app_name" translatable="false">Inventory App</string>
+    <string name="authority" translatable="false">com.timotiusoktorio.inventoryapp</string>
+    <string name="title_activity_detail">Product Details</string>
+    <string name="title_action_bar_add_product">Add Product</string>
+    <string name="title_action_bar_edit_product">Edit Product</string>
+    <string name="title_action_empty_products">Empty Products</string>
+    <string name="title_action_sale">Sale</string>
+    <string name="title_action_delete">Delete</string>
+    <string name="title_action_done">Done</string>
+    <string name="title_action_edit">Edit</string>
+    <string name="title_dialog_product_photo">Select product photo</string>
+    <string name="title_dialog_confirm_empty_products">Empty products?</string>
+    <string name="title_dialog_confirm_sale">Track a sale?</string>
+    <string name="title_dialog_confirm_delete">Delete this product?</string>
+    <string name="message_dialog_confirm_empty_products">This will permanently delete all products in the database.</string>
+    <string name="message_dialog_confirm_sale">This will decrease the available quantity of this product by 1.</string>
+    <string name="message_dialog_confirm_delete">This will permanently delete this product from the database.</string>
+    <string name="email_subject_order_request">Order Request for Product: <xliff xliff:id="product_name">%s</xliff></string>
+
+    <string name="error_msg_product_name_empty">Please enter the product name.</string>
+    <string name="error_msg_product_supplier_empty">Please enter the product supplier.</string>
+    <string name="error_msg_product_supplier_email_empty">Please enter the product supplier email address.</string>
+    <string name="error_msg_product_price_empty">Please enter the product price.</string>
+    <string name="error_msg_product_quantity_empty">Please enter the product quantity.</string>
+
+    <string name="string_format_product_price">$<xliff xliff:id="price">%s</xliff></string>
+    <string name="string_format_product_quantity">Qty: <xliff xliff:id="quantity">%s</xliff></string>
+    <string name="string_format_product_code">Product code: <xliff xliff:id="code">%s</xliff></string>
+    <string name="string_format_product_supplier">Product supplier: <xliff xliff:id="supplier">%s</xliff></string>
+    <string name="string_format_product_price_details">Product price: <xliff xliff:id="price">%s</xliff></string>
+    <string name="string_format_product_quantity_details">Product quantity: <xliff xliff:id="quantity">%s</xliff></string>
+
+    <string name="image_button_cd_overflow">Overflow button</string>
+    <string name="image_view_cd_product_photo">Product Photo</string>
+    <string name="edit_text_hint_product_name">Product Name</string>
+    <string name="edit_text_hint_product_code">Product Code</string>
+    <string name="edit_text_hint_product_supplier">Product Supplier</string>
+    <string name="edit_text_hint_product_supplier_email">Product Supplier Email</string>
+    <string name="edit_text_hint_product_price">Product Price</string>
+    <string name="edit_text_hint_product_quantity">Product Quantity</string>
+    <string name="text_view_empty">No products found</string>
+    <string name="button_increase_qty"><xliff xliff:id="plus">+</xliff> qty</string>
+    <string name="button_decrease_qty"><xliff xliff:id="minus">-</xliff> qty</string>
+    <string name="button_contact_supplier">Contact Supplier</string>
+
+    <string-array name="product_photo_dialog_options">
+        <item>Take photo</item>
+        <item>Choose photo</item>
+    </string-array>
+
+</resources>
