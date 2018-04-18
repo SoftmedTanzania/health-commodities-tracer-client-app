@@ -16,7 +16,7 @@ import com.timotiusoktorio.inventoryapp.model.Product;
 import java.util.List;
 
 /**
- * Created by Timotius on 2016-08-07.
+ * Created by Coze on 2016-08-07.
  */
 
 public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHolder> {
@@ -63,9 +63,9 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
      */
     public Product decreaseProductQuantity(int position) {
         Product product = mProducts.get(position);
-        int quantity = product.getQuantity();
+        int quantity = product.getmQuantity();
         if (quantity > 0) {
-            product.setQuantity(quantity - 1);
+            product.setmQuantity(quantity - 1);
             notifyItemChanged(position);
             return product;
         }
@@ -91,11 +91,11 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         final Product product = mProducts.get(position);
-        holder.mProductNameTextView.setText(product.getName());
+        holder.mProductNameTextView.setText(product.getmName());
         // Product price needs to be rounded to nearest 2 decimal places to avoid super long price.
-        double roundedPrice = Math.round(product.getPrice() * 100.0) / 100.0;
+        double roundedPrice = Math.round(product.getmPrice() * 100.0) / 100.0;
         holder.mProductPriceTextView.setText(String.format(mContext.getString(R.string.string_format_product_price), roundedPrice));
-        holder.mProductQuantityTextView.setText(String.format(mContext.getString(R.string.string_format_product_quantity), product.getQuantity()));
+        holder.mProductQuantityTextView.setText(String.format(mContext.getString(R.string.string_format_product_quantity), product.getmQuantity()));
         // Set an OnClickListener to the overflow button which will inflate a popup menu that allows
         // user to track a sale or delete the selected product.
         holder.mOverflowButton.setOnClickListener(new View.OnClickListener() {

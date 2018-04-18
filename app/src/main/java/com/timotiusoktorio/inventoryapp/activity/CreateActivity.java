@@ -1,15 +1,20 @@
 package com.timotiusoktorio.inventoryapp.activity;
 
+import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.NavUtils;
 import android.support.v4.content.FileProvider;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
@@ -30,16 +35,28 @@ import java.io.File;
 import java.io.IOException;
 
 /**
- * Created by Timotius on 2016-08-03.
+ * Created by Coze on 2016-08-03.
  */
 
-public class CreateActivity extends AppCompatActivity implements DialogInterface.OnClickListener {
+public class CreateActivity extends AppCompatActivity implements DialogInterface.OnClickListener, ActivityCompat.OnRequestPermissionsResultCallback {
 
-    private static final String LOG_TAG = CreateActivity.class.getSimpleName();
+    private static final String TAG = CreateActivity.class.getSimpleName();
     private static final String PRODUCT_PHOTO_DIALOG_TAG = "PRODUCT_PHOTO_DIALOG_TAG";
     private static final String INTENT_EXTRA_PRODUCT = "INTENT_EXTRA_PRODUCT";
     private static final int REQUEST_CODE_TAKE_PHOTO = 0;
     private static final int REQUEST_CODE_CHOOSE_PHOTO = 1;
+
+    /**
+     * Id to identify a contacts permission request.
+     */
+    private static final int REQUEST_EXTERNAL_STORAGE = 1;
+
+    /**
+     * Permissions required to read and write contacts. Used by the {@link CreateActivity}.
+     */
+    private static String[] PERMISSIONS_EXTERNAL_STORAGE= {Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.READ_EXTERNAL_STORAGE};
+
 
     private ImageView mProductPhotoImageView;
     private TextInputLayout mProductNameTIL;
@@ -71,6 +88,9 @@ public class CreateActivity extends AppCompatActivity implements DialogInterface
 
         mDbHelper = ProductDbHelper.getInstance(getApplicationContext());
         mPassedProduct = getIntent().getParcelableExtra(INTENT_EXTRA_PRODUCT);
+
+        Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
@@ -177,7 +197,7 @@ public class CreateActivity extends AppCompatActivity implements DialogInterface
                 PhotoHelper.deleteCapturedPhotoFile(mProductPhotoImageView.getTag());
                 // Save the file uri as a tag and display the captured photo on the ImageView.
                 mProductPhotoImageView.setTag(mTempPhotoFilePath);
-                new LoadProductPhotoAsync(this, mProductPhotoImageView).execute(mTempPhotoFilePath);
+                showImage(mProductPhotoImageView,mTempPhotoFilePath);
             } else if (resultCode == RESULT_CANCELED) {
                 // The user cancelled taking a photo. The photo file created from the camera intent
                 // is just an empty file so delete it since we don't need it anymore.
@@ -191,7 +211,7 @@ public class CreateActivity extends AppCompatActivity implements DialogInterface
                 // Save the file uri as a tag and display the selected photo on the ImageView.
                 String photoPath = data.getData().toString();
                 mProductPhotoImageView.setTag(photoPath);
-                new LoadProductPhotoAsync(this, mProductPhotoImageView).execute(photoPath);
+                showImage(mProductPhotoImageView,photoPath);
             }
         }
     }
@@ -252,7 +272,7 @@ public class CreateActivity extends AppCompatActivity implements DialogInterface
                 try {
                     photoFile = PhotoHelper.createPhotoFile(this);
                 } catch (IOException e) {
-                    Log.e(LOG_TAG, e.getMessage(), e);
+                    Log.e(TAG, e.getMessage(), e);
                 }
                 if (photoFile != null) {
                     // Save the photo file path globally.
@@ -297,17 +317,17 @@ public class CreateActivity extends AppCompatActivity implements DialogInterface
      * populated by the product object.
      */
     private void populateViewsWithPassedProductData() {
-        String photoPath = mPassedProduct.getPhotoPath();
+        String photoPath = mPassedProduct.getmPhotoPath();
         mProductPhotoImageView.setTag(photoPath);
         if (!TextUtils.isEmpty(photoPath))
-            new LoadProductPhotoAsync(this, mProductPhotoImageView).execute(photoPath);
+            showImage(mProductPhotoImageView,photoPath);
 
-        mProductNameTIL.getEditText().setText(mPassedProduct.getName());
-        mProductCodeTIL.getEditText().setText(mPassedProduct.getCode());
-        mProductSupplierTIL.getEditText().setText(mPassedProduct.getSupplier());
-        mProductSupplierEmailTIL.getEditText().setText(mPassedProduct.getSupplierEmail());
-        mProductPriceTIL.getEditText().setText(String.valueOf(mPassedProduct.getPrice()));
-        mProductQuantityTIL.getEditText().setText(String.valueOf(mPassedProduct.getQuantity()));
+        mProductNameTIL.getEditText().setText(mPassedProduct.getmName());
+//        mProductCodeTIL.getEditText().setText(mPassedProduct.getCode());
+        mProductSupplierTIL.getEditText().setText(mPassedProduct.getmSupplier());
+//        mProductSupplierEmailTIL.getEditText().setText(mPassedProduct.getSupplierEmail());
+        mProductPriceTIL.getEditText().setText(String.valueOf(mPassedProduct.getmPrice()));
+        mProductQuantityTIL.getEditText().setText(String.valueOf(mPassedProduct.getmQuantity()));
     }
 
     /**
@@ -349,16 +369,71 @@ public class CreateActivity extends AppCompatActivity implements DialogInterface
      * @param product - The product object.
      */
     private void buildProductWithUserInputData(Product product) {
-        product.setName(mProductNameTIL.getEditText().getText().toString());
-        product.setCode(mProductCodeTIL.getEditText().getText().toString());
-        product.setSupplier(mProductSupplierTIL.getEditText().getText().toString());
-        product.setSupplierEmail(mProductSupplierEmailTIL.getEditText().getText().toString());
+        product.setmName(mProductNameTIL.getEditText().getText().toString());
+//        product.setCode(mProductCodeTIL.getEditText().getText().toString());
+        product.setmSupplier(mProductSupplierTIL.getEditText().getText().toString());
+//        product.setSupplierEmail(mProductSupplierEmailTIL.getEditText().getText().toString());
         // Get the product photo path from the ImageView tag. The tag might contains null data, so
         // it needs to be checked. If it's null, set the photo path to an empty string.
         Object imageViewTag = mProductPhotoImageView.getTag();
-        product.setPhotoPath( (imageViewTag != null) ? imageViewTag.toString() : "" );
-        product.setPrice(Double.valueOf(mProductPriceTIL.getEditText().getText().toString()));
-        product.setQuantity(Integer.valueOf(mProductQuantityTIL.getEditText().getText().toString()));
+        product.setmPhotoPath( (imageViewTag != null) ? imageViewTag.toString() : "" );
+        product.setmPrice(Double.valueOf(mProductPriceTIL.getEditText().getText().toString()));
+        product.setmQuantity(Integer.valueOf(mProductQuantityTIL.getEditText().getText().toString()));
+    }
+
+    public void showImage(ImageView v, String photoPath) {
+        Log.i(TAG, "Show contacts button pressed. Checking permissions.");
+        // Verify that all required contact permissions have been granted.
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED
+                || ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            // Contacts permissions have not been granted.
+            Log.i(TAG, "Contact permissions has NOT been granted. Requesting permissions.");
+            setRequestExternalStoragePermissions();
+
+        } else {
+            // Contact permissions have been granted. Show the contacts fragment.
+            Log.i(TAG, "Contact permissions have already been granted. Displaying contact details.");
+            new LoadProductPhotoAsync(this, v).execute(photoPath);
+
+            Log.d(TAG,"show status");
+
+        }
+    }
+
+
+    /**
+     * Requests the EXTERNAL STORAGE permissions.
+     * If the permission has been denied previously, a SnackBar will prompt the user to grant the
+     * permission, otherwise it is requested directly.
+     */
+    private void setRequestExternalStoragePermissions() {
+        // BEGIN_INCLUDE(contacts_permission_request)
+        if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_EXTERNAL_STORAGE) || ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+
+            // Provide an additional rationale to the user if the permission was not granted
+            // and the user would benefit from additional context for the use of the permission.
+            // For example, if the request has been denied previously.
+            Log.i(TAG, "Displaying contacts permission rationale to provide additional context.");
+
+            // Display a SnackBar with an explanation and a button to trigger the request.
+            Snackbar.make(findViewById(R.id.content), R.string.permission_external_storage,
+                    Snackbar.LENGTH_INDEFINITE)
+                    .setAction(R.string.ok, new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            ActivityCompat
+                                    .requestPermissions(CreateActivity.this, PERMISSIONS_EXTERNAL_STORAGE,
+                                            REQUEST_EXTERNAL_STORAGE);
+                        }
+                    })
+                    .show();
+        } else {
+            // Contact permissions have not been granted yet. Request them directly.
+            ActivityCompat.requestPermissions(this, PERMISSIONS_EXTERNAL_STORAGE, REQUEST_EXTERNAL_STORAGE);
+        }
+        // END_INCLUDE(contacts_permission_request)
     }
 
 }

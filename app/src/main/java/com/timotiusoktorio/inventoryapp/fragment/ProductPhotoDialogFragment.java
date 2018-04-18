@@ -10,7 +10,7 @@ import android.support.v7.app.AlertDialog;
 import com.timotiusoktorio.inventoryapp.R;
 
 /**
- * Created by Timotius on 2016-08-03.
+ * Created by Coze on 2016-08-03.
  */
 
 public class ProductPhotoDialogFragment extends DialogFragment {

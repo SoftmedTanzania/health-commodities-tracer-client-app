@@ -50,4 +50,10 @@
         <item>Choose photo</item>
     </string-array>
 
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="ok">OK</string>
+
+    <string name="permission_external_storage">External Storage permissions are needed.</string>
+
 </resources>

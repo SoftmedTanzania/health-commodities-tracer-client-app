@@ -1,11 +1,16 @@
 package com.timotiusoktorio.inventoryapp.activity;
 
+import android.Manifest;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -19,13 +24,15 @@ import com.timotiusoktorio.inventoryapp.fragment.ConfirmationDialogFragment;
 import com.timotiusoktorio.inventoryapp.helper.PhotoHelper;
 import com.timotiusoktorio.inventoryapp.model.Product;
 
+import java.io.File;
+
 /**
- * Created by Timotius on 2016-08-08.
+ * Created by Coze on 2016-08-08.
  */
 
 public class DetailActivity extends AppCompatActivity {
 
-    private static final String LOG_TAG = DetailActivity.class.getSimpleName();
+    private static final String TAG = DetailActivity.class.getSimpleName();
     private static final String CONFIRMATION_DIALOG_TAG = "CONFIRMATION_DIALOG_TAG";
     private static final String INTENT_EXTRA_PRODUCT = "INTENT_EXTRA_PRODUCT";
 
@@ -33,6 +40,18 @@ public class DetailActivity extends AppCompatActivity {
     private TextView mProductQuantityTextView;
     private ProductDbHelper mDbHelper;
     private Product mProduct;
+    private static final int REQUEST_CODE_CHOOSE_PHOTO = 1;
+
+    /**
+     * Id to identify a contacts permission request.
+     */
+    private static final int REQUEST_EXTERNAL_STORAGE = 1;
+
+    /**
+     * Permissions required to read and write contacts. Used by the {@link CreateActivity}.
+     */
+    private static String[] PERMISSIONS_EXTERNAL_STORAGE= {Manifest.permission.WRITE_EXTERNAL_STORAGE,
+            Manifest.permission.READ_EXTERNAL_STORAGE};
 
     // This is a DialogInterface listener that is used to communicate between the DialogFragment and
     // this activity. The method gets invoked when the user presses the 'OK' button on the dialog.
@@ -40,7 +59,7 @@ public class DetailActivity extends AppCompatActivity {
         @Override
         public void onClick(DialogInterface dialogInterface, int i) {
             // Delete the current product from the database and return to MainActivity.
-            mDbHelper.deleteProduct(mProduct.getId());
+            mDbHelper.deleteProduct(mProduct.getmId());
             PhotoHelper.deleteCapturedPhotoFile(mProductPhotoImageView.getTag());
             finish();
         }
@@ -109,7 +128,7 @@ public class DetailActivity extends AppCompatActivity {
      * @param view - Button ('+ QTY' or '- QTY' button).
      */
     public void modifyProductQuantity(View view) {
-        int productQty = mProduct.getQuantity();
+        int productQty = mProduct.getmQuantity();
         if (view.getId() == R.id.increase_qty_button) {
             // Increase the quantity of the product by 1.
             productQty = productQty + 1;
@@ -132,8 +151,10 @@ public class DetailActivity extends AppCompatActivity {
     public void contactSupplier(View view) {
         Intent intent = new Intent(Intent.ACTION_SENDTO);
         intent.setData(Uri.parse("mailto:"));
-        intent.putExtra(Intent.EXTRA_EMAIL, new String[] { mProduct.getSupplierEmail() });
-        intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.email_subject_order_request, mProduct.getName()));
+
+//        intent.putExtra(Intent.EXTRA_EMAIL, new String[] { mProduct.getSupplierEmail() });
+
+        intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.email_subject_order_request, mProduct.getmName()));
         if (intent.resolveActivity(getPackageManager()) != null) startActivity(intent);
     }
 
@@ -142,26 +163,27 @@ public class DetailActivity extends AppCompatActivity {
      * be quite long, a separate method is preferable for better readability.
      */
     private void populateViewsWithProductData() {
-        String photoPath = mProduct.getPhotoPath();
+        String photoPath = mProduct.getmPhotoPath();
         mProductPhotoImageView.setTag(photoPath);
-        if (!TextUtils.isEmpty(photoPath))
-            new LoadProductPhotoAsync(this, mProductPhotoImageView).execute(photoPath);
+        if (!TextUtils.isEmpty(photoPath)) {
+//            new LoadProductPhotoAsync(this, mProductPhotoImageView).execute(photoPath);
+        }
 
         TextView productNameTextView = (TextView) findViewById(R.id.product_name_text_view);
-        productNameTextView.setText(mProduct.getName());
+        productNameTextView.setText(mProduct.getmName());
 
         TextView productCodeTextView = (TextView) findViewById(R.id.product_code_text_view);
-        productCodeTextView.setText(getString(R.string.string_format_product_code, mProduct.getCode()));
+//        productCodeTextView.setText(getString(R.string.string_format_product_code, mProduct.getCode()));
 
         TextView productSupplierTextView = (TextView) findViewById(R.id.product_supplier_text_view);
-        productSupplierTextView.setText(getString(R.string.string_format_product_supplier, mProduct.getSupplier()));
+        productSupplierTextView.setText(getString(R.string.string_format_product_supplier, mProduct.getmSupplier()));
 
         TextView productPriceTextView = (TextView) findViewById(R.id.product_price_text_view);
-        double roundedPrice = Math.round(mProduct.getPrice() * 10000.0) / 10000.0;
+        double roundedPrice = Math.round(mProduct.getmPrice() * 10000.0) / 10000.0;
         productPriceTextView.setText(getString(R.string.string_format_product_price_details, roundedPrice));
 
         mProductQuantityTextView = (TextView) findViewById(R.id.product_quantity_text_view);
-        mProductQuantityTextView.setText(getString(R.string.string_format_product_quantity_details, mProduct.getQuantity()));
+        mProductQuantityTextView.setText(getString(R.string.string_format_product_quantity_details, mProduct.getmQuantity()));
     }
 
     /**
@@ -172,8 +194,81 @@ public class DetailActivity extends AppCompatActivity {
      */
     private void updateProductQuantity(int newQuantity) {
         mProductQuantityTextView.setText(getString(R.string.string_format_product_quantity_details, newQuantity));
-        mProduct.setQuantity(newQuantity);
-        mDbHelper.updateProductQuantity(mProduct.getId(), mProduct.getQuantity());
+        mProduct.setmQuantity(newQuantity);
+        mDbHelper.updateProductQuantity(mProduct.getmId(), mProduct.getmQuantity());
     }
 
+
+    public void showImage(ImageView v, String photoPath) {
+
+        Log.i(TAG, "Show contacts button pressed. Checking permissions.");
+
+        // Verify that all required contact permissions have been granted.
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED
+                || ActivityCompat.checkSelfPermission(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                != PackageManager.PERMISSION_GRANTED) {
+            // Contacts permissions have not been granted.
+            Log.i(TAG, "Contact permissions has NOT been granted. Requesting permissions.");
+            setRequestExternalStoragePermissions();
+
+        } else {
+
+            // Contact permissions have been granted. Show the contacts fragment.
+            Log.i(TAG, "Contact permissions have already been granted. Displaying contact details.");
+            new LoadProductPhotoAsync(this, v).execute(photoPath);
+
+            Log.d(TAG,"show status");
+
+        }
+    }
+
+
+    /**
+     * Requests the EXTERNAL STORAGE permissions.
+     * If the permission has been denied previously, a SnackBar will prompt the user to grant the
+     * permission, otherwise it is requested directly.
+     */
+    private void setRequestExternalStoragePermissions() {
+        // BEGIN_INCLUDE(contacts_permission_request)
+        if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_EXTERNAL_STORAGE) || ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+
+            // Provide an additional rationale to the user if the permission was not granted
+            // and the user would benefit from additional context for the use of the permission.
+            // For example, if the request has been denied previously.
+            Log.i(TAG, "Displaying contacts permission rationale to provide additional context.");
+
+            // Display a SnackBar with an explanation and a button to trigger the request.
+            Snackbar.make(findViewById(R.id.content), R.string.permission_external_storage,
+                    Snackbar.LENGTH_INDEFINITE)
+                    .setAction(R.string.ok, new View.OnClickListener() {
+                        @Override
+                        public void onClick(View view) {
+                            ActivityCompat
+                                    .requestPermissions(DetailActivity.this, PERMISSIONS_EXTERNAL_STORAGE,
+                                            REQUEST_EXTERNAL_STORAGE);
+                        }
+                    })
+                    .show();
+        } else {
+            // Contact permissions have not been granted yet. Request them directly.
+            ActivityCompat.requestPermissions(this, PERMISSIONS_EXTERNAL_STORAGE, REQUEST_EXTERNAL_STORAGE);
+        }
+        // END_INCLUDE(contacts_permission_request)
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // Check the request code to determine which intent was dispatched.
+        if (requestCode == REQUEST_CODE_CHOOSE_PHOTO) {
+            if (resultCode == RESULT_OK && data != null) {
+                // Choose photo successful. Delete previously captured photo file if there's any.
+                PhotoHelper.deleteCapturedPhotoFile(mProductPhotoImageView.getTag());
+                // Save the file uri as a tag and display the selected photo on the ImageView.
+                String photoPath = data.getData().toString();
+                mProductPhotoImageView.setTag(photoPath);
+                showImage(mProductPhotoImageView,photoPath);
+            }
+        }
+    }
 }

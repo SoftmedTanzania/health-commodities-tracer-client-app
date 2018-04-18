@@ -11,7 +11,7 @@ import com.timotiusoktorio.inventoryapp.helper.PhotoHelper;
 import java.io.IOException;
 
 /**
- * Created by Timotius on 2016-08-09.
+ * Created by Coze on 2016-08-09.
  */
 
 public class LoadProductPhotoAsync extends AsyncTask<String, Void, Bitmap> {

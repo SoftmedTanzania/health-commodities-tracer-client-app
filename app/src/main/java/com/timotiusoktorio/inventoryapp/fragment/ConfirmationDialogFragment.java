@@ -8,7 +8,7 @@ import android.support.v4.app.DialogFragment;
 import android.support.v7.app.AlertDialog;
 
 /**
- * Created by Timotius on 2016-08-08.
+ * Created by Coze on 2016-08-08.
  */
 
 public class ConfirmationDialogFragment extends DialogFragment {

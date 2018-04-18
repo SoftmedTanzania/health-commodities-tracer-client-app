@@ -2,7 +2,7 @@
 
 **Platform: Android (Min SDK: 15, Target SDK: 24)**
 
-**Author: [Timotius Oktorio](https://ca.linkedin.com/in/timotiusoktorio "LinkedIn Profile") (timotiusoktorio@gmail.com)**
+**Author: [Coze Oktorio](https://ca.linkedin.com/in/timotiusoktorio "LinkedIn Profile") (timotiusoktorio@gmail.com)**
 
 Simple Android inventory app that allows a store to keep track of its inventory of products and track sales or shipments from suppliers. This app uses SQLite as the data storage option to store data persistently.
 

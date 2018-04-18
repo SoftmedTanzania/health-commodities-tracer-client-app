@@ -4,92 +4,115 @@ import android.os.Parcel;
 import android.os.Parcelable;
 
 /**
- * Created by Timotius on 2016-08-03.
+ * Created by Coze on 2016-08-03.
  */
 
 public class Product implements Parcelable {
 
     private long mId;
     private String mName;
-    private String mCode;
-    private String mSupplier;
-    private String mSupplierEmail;
+    private long categorySubCategoryId;
+    private long categoryTypeId;
+    private long subCategoryTypeId;
+    private long unitOfMeasureId;
     private String mPhotoPath;
+    private String mSupplier;
     private double mPrice;
     private int mQuantity;
 
     public Product() {}
 
-    public Product(long id, String name, String photoPath, double price, int quantity) {
-        mId = id;
-        mName = name;
-        mPhotoPath = photoPath;
-        mPrice = price;
-        mQuantity = quantity;
+    public Product(long mId, String mName, long categorySubCategoryId, long categoryTypeId, long subCategoryTypeId, long unitOfMeasureId, String mPhotoPath, String mSupplier, double mPrice, int mQuantity) {
+        this.mId = mId;
+        this.mName = mName;
+        this.categorySubCategoryId = categorySubCategoryId;
+        this.categoryTypeId = categoryTypeId;
+        this.subCategoryTypeId = subCategoryTypeId;
+        this.unitOfMeasureId = unitOfMeasureId;
+        this.mPhotoPath = mPhotoPath;
+        this.mSupplier = mSupplier;
+        this.mPrice = mPrice;
+        this.mQuantity = mQuantity;
     }
 
-    public long getId() {
+    public long getmId() {
         return mId;
     }
 
-    public void setId(long id) {
-        mId = id;
+    public void setmId(long mId) {
+        this.mId = mId;
     }
 
-    public String getName() {
+    public String getmName() {
         return mName;
     }
 
-    public void setName(String name) {
-        mName = name;
+    public void setmName(String mName) {
+        this.mName = mName;
     }
 
-    public String getCode() {
-        return mCode;
+    public long getCategorySubCategoryId() {
+        return categorySubCategoryId;
     }
 
-    public void setCode(String code) {
-        mCode = code;
+    public void setCategorySubCategoryId(long categorySubCategoryId) {
+        this.categorySubCategoryId = categorySubCategoryId;
     }
 
-    public String getSupplier() {
-        return mSupplier;
+    public long getCategoryTypeId() {
+        return categoryTypeId;
     }
 
-    public void setSupplier(String supplier) {
-        mSupplier = supplier;
+    public void setCategoryTypeId(long categoryTypeId) {
+        this.categoryTypeId = categoryTypeId;
     }
 
-    public String getSupplierEmail() {
-        return mSupplierEmail;
+    public long getSubCategoryTypeId() {
+        return subCategoryTypeId;
     }
 
-    public void setSupplierEmail(String supplierEmail) {
-        mSupplierEmail = supplierEmail;
+    public void setSubCategoryTypeId(long subCategoryTypeId) {
+        this.subCategoryTypeId = subCategoryTypeId;
     }
 
-    public String getPhotoPath() {
+    public long getUnitOfMeasureId() {
+        return unitOfMeasureId;
+    }
+
+    public void setUnitOfMeasureId(long unitOfMeasureId) {
+        this.unitOfMeasureId = unitOfMeasureId;
+    }
+
+    public String getmPhotoPath() {
         return mPhotoPath;
     }
 
-    public void setPhotoPath(String photoPath) {
-        mPhotoPath = photoPath;
+    public void setmPhotoPath(String mPhotoPath) {
+        this.mPhotoPath = mPhotoPath;
     }
 
-    public double getPrice() {
+    public double getmPrice() {
         return mPrice;
     }
 
-    public void setPrice(double price) {
-        mPrice = price;
+    public void setmPrice(double mPrice) {
+        this.mPrice = mPrice;
     }
 
-    public int getQuantity() {
+    public int getmQuantity() {
         return mQuantity;
     }
 
-    public void setQuantity(int quantity) {
-        mQuantity = quantity;
+    public void setmQuantity(int mQuantity) {
+        this.mQuantity = mQuantity;
+    }
+
+    public String getmSupplier() {
+        return mSupplier;
+    }
+
+    public void setmSupplier(String mSupplier) {
+        this.mSupplier = mSupplier;
     }
 
     @Override
@@ -97,9 +120,8 @@ public class Product implements Parcelable {
         return "Product{" +
                 "mId=" + mId +
                 ", mName='" + mName + '\'' +
-                ", mCode='" + mCode + '\'' +
+                ", categorySubCategoryId='" + categorySubCategoryId + '\'' +
                 ", mSupplier='" + mSupplier + '\'' +
-                ", mSupplierEmail='" + mSupplierEmail + '\'' +
                 ", mPhotoPath='" + mPhotoPath + '\'' +
                 ", mPrice=" + mPrice +
                 ", mQuantity=" + mQuantity +
@@ -115,9 +137,11 @@ public class Product implements Parcelable {
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeLong(this.mId);
         dest.writeString(this.mName);
-        dest.writeString(this.mCode);
+        dest.writeLong(this.categorySubCategoryId);
+        dest.writeLong(this.categoryTypeId);
+        dest.writeLong(this.subCategoryTypeId);
+        dest.writeLong(this.unitOfMeasureId);
         dest.writeString(this.mSupplier);
-        dest.writeString(this.mSupplierEmail);
         dest.writeString(this.mPhotoPath);
         dest.writeDouble(this.mPrice);
         dest.writeInt(this.mQuantity);
@@ -126,9 +150,11 @@ public class Product implements Parcelable {
     protected Product(Parcel in) {
         this.mId = in.readLong();
         this.mName = in.readString();
-        this.mCode = in.readString();
+        this.categorySubCategoryId = in.readLong();
+        this.categoryTypeId = in.readLong();
+        this.subCategoryTypeId = in.readLong();
+        this.unitOfMeasureId = in.readLong();
         this.mSupplier = in.readString();
-        this.mSupplierEmail = in.readString();
         this.mPhotoPath = in.readString();
         this.mPrice = in.readDouble();
         this.mQuantity = in.readInt();
