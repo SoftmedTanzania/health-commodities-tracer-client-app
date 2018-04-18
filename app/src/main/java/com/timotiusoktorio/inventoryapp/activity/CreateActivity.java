@@ -22,17 +22,27 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 
+import com.bumptech.glide.Glide;
 import com.timotiusoktorio.inventoryapp.LoadProductPhotoAsync;
 import com.timotiusoktorio.inventoryapp.R;
 import com.timotiusoktorio.inventoryapp.database.ProductDbHelper;
 import com.timotiusoktorio.inventoryapp.fragment.ProductPhotoDialogFragment;
 import com.timotiusoktorio.inventoryapp.helper.PhotoHelper;
+import com.timotiusoktorio.inventoryapp.model.Model;
 import com.timotiusoktorio.inventoryapp.model.Product;
+import com.timotiusoktorio.inventoryapp.model.SubCategoryModel;
+import com.timotiusoktorio.inventoryapp.model.Type;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.ArrayList;
+import java.util.List;
+
+import fr.ganfra.materialspinner.MaterialSpinner;
 
 /**
  * Created by Coze on 2016-08-03.
@@ -72,6 +82,11 @@ public class CreateActivity extends AppCompatActivity implements DialogInterface
     // later on. If the user cancel taking a picture via the camera intent or decided to choose
     // a photo from the gallery instead, the file needs to be deleted as it's no longer needed.
     private String mTempPhotoFilePath;
+    private MaterialSpinner categorySpinner,subCategorySpinner,typeSpinner;
+    private List<SubCategoryModel> subCategories;
+    private List<Type> types;
+    private long typeId;
+    private String subCategoryName,typeName;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -86,6 +101,14 @@ public class CreateActivity extends AppCompatActivity implements DialogInterface
         mProductPriceTIL = (TextInputLayout) findViewById(R.id.product_price_text_input_layout);
         mProductQuantityTIL = (TextInputLayout) findViewById(R.id.product_quantity_text_input_layout);
 
+
+        categorySpinner = (MaterialSpinner) findViewById(R.id.spin_category);
+        subCategorySpinner = (MaterialSpinner) findViewById(R.id.sub_category);
+        typeSpinner = (MaterialSpinner) findViewById(R.id.type);
+
+
+
+
         mDbHelper = ProductDbHelper.getInstance(getApplicationContext());
         mPassedProduct = getIntent().getParcelableExtra(INTENT_EXTRA_PRODUCT);
 
@@ -97,26 +120,10 @@ public class CreateActivity extends AppCompatActivity implements DialogInterface
         actionBar.setTitle((mPassedProduct == null) ? R.string.title_action_bar_add_product : R.string.title_action_bar_edit_product);
 
         // If there is a product object passed from the intent, populate the views with the product data.
-        if (mPassedProduct != null) populateViewsWithPassedProductData();
+        //TODO handle this
+//        if (mPassedProduct != null) populateViewsWithPassedProductData();
 
         // Add text changed listener to all text fields that needs to be validated.
-        mProductNameTIL.getEditText().addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                if (i >= 0 && mProductNameTIL.isErrorEnabled())
-                    mProductNameTIL.setErrorEnabled(false);
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-
-            }
-        });
         mProductSupplierTIL.getEditText().addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -127,23 +134,6 @@ public class CreateActivity extends AppCompatActivity implements DialogInterface
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                 if (i >= 0 && mProductSupplierTIL.isErrorEnabled())
                     mProductSupplierTIL.setErrorEnabled(false);
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-
-            }
-        });
-        mProductSupplierEmailTIL.getEditText().addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                if (i >= 0 && mProductSupplierEmailTIL.isErrorEnabled())
-                    mProductSupplierEmailTIL.setErrorEnabled(false);
             }
 
             @Override
@@ -185,6 +175,91 @@ public class CreateActivity extends AppCompatActivity implements DialogInterface
 
             }
         });
+
+        List<Model> categories = mDbHelper.getCategories();
+
+        final List<String> categoryStrings= new ArrayList<>();
+        for(Model model:categories){
+            categoryStrings.add(model.getmName());
+        }
+
+        ArrayAdapter<String> spinAdapter = new ArrayAdapter<String>(this, R.layout.simple_spinner_item_black, categoryStrings);
+        spinAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item_black);
+        categorySpinner.setAdapter(spinAdapter);
+
+        categorySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                subCategories = mDbHelper.getSubCategories(i+1);
+
+                final List<String> subCategoryStrings= new ArrayList<>();
+                for(SubCategoryModel subCategoryModel:subCategories){
+                    subCategoryStrings.add(subCategoryModel.getmName());
+                }
+
+                ArrayAdapter<String> spinAdapter = new ArrayAdapter<String>(CreateActivity.this, R.layout.simple_spinner_item_black, subCategoryStrings);
+                spinAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item_black);
+                subCategorySpinner.setAdapter(spinAdapter);
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+
+        subCategorySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                types = new ArrayList<>();
+                try {
+                    subCategoryName = subCategories.get(i).getmName();
+                    types = mDbHelper.getTypes(subCategories.get(i).getmCategorySubCatogoryId());
+                }catch (Exception e){
+                    e.printStackTrace();
+                    subCategoryName="";
+                }
+
+                final List<String> typesStrings= new ArrayList<>();
+                for(Type type:types){
+                    typesStrings.add(type.getmName());
+                }
+
+                ArrayAdapter<String> spinAdapter = new ArrayAdapter<String>(CreateActivity.this, R.layout.simple_spinner_item_black, typesStrings);
+                spinAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item_black);
+                typeSpinner.setAdapter(spinAdapter);
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+
+        typeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                try {
+                    typeName = types.get(i).getmName();
+                    mProductCodeTIL.getEditText().setText(types.get(i).getmDescritption());
+                    typeId = types.get(i).getmId();
+                }catch (Exception e){
+                    typeId = -1;
+                    typeName = "";
+                    mProductCodeTIL.getEditText().setText("");
+                }
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+
+
     }
 
     @Override
@@ -318,11 +393,11 @@ public class CreateActivity extends AppCompatActivity implements DialogInterface
      */
     private void populateViewsWithPassedProductData() {
         String photoPath = mPassedProduct.getmPhotoPath();
-        mProductPhotoImageView.setTag(photoPath);
+//        mProductPhotoImageView.setTag(photoPath);
         if (!TextUtils.isEmpty(photoPath))
             showImage(mProductPhotoImageView,photoPath);
 
-        mProductNameTIL.getEditText().setText(mPassedProduct.getmName());
+//        mProductNameTIL.getEditText().setText(mPassedProduct.getmName());
 //        mProductCodeTIL.getEditText().setText(mPassedProduct.getCode());
         mProductSupplierTIL.getEditText().setText(mPassedProduct.getmSupplier());
 //        mProductSupplierEmailTIL.getEditText().setText(mPassedProduct.getSupplierEmail());
@@ -336,23 +411,20 @@ public class CreateActivity extends AppCompatActivity implements DialogInterface
      * @return true if all required inputs are present, false if not present.
      */
     private boolean validateUserInput() {
-        boolean isProductNameSet = !TextUtils.isEmpty(mProductNameTIL.getEditText().getText());
-        boolean isProductSupplierSet = !TextUtils.isEmpty(mProductSupplierTIL.getEditText().getText());
-        boolean isProductSupplierEmailSet = !TextUtils.isEmpty(mProductSupplierEmailTIL.getEditText().getText());
+       boolean isTypeIdSet = typeId != -1;
+       boolean isProductSupplierSet = !TextUtils.isEmpty(mProductSupplierTIL.getEditText().getText());
         boolean isProductPriceSet = !TextUtils.isEmpty(mProductPriceTIL.getEditText().getText());
         boolean isProductQtySet = !TextUtils.isEmpty(mProductQuantityTIL.getEditText().getText());
-        if (!isProductNameSet) {
-            mProductNameTIL.setError(getString(R.string.error_msg_product_name_empty));
-            mProductNameTIL.setErrorEnabled(true);
+
+        if (!isTypeIdSet) {
+            typeSpinner.setError(getString(R.string.error_msg_product_type_empty));
         }
+
         if (!isProductSupplierSet) {
             mProductSupplierTIL.setError(getString(R.string.error_msg_product_supplier_empty));
             mProductSupplierTIL.setErrorEnabled(true);
         }
-        if (!isProductSupplierEmailSet) {
-            mProductSupplierEmailTIL.setError(getString(R.string.error_msg_product_supplier_email_empty));
-            mProductSupplierEmailTIL.setErrorEnabled(true);
-        }
+
         if (!isProductPriceSet) {
             mProductPriceTIL.setError(getString(R.string.error_msg_product_price_empty));
             mProductPriceTIL.setErrorEnabled(true);
@@ -361,7 +433,7 @@ public class CreateActivity extends AppCompatActivity implements DialogInterface
             mProductQuantityTIL.setError(getString(R.string.error_msg_product_quantity_empty));
             mProductQuantityTIL.setErrorEnabled(true);
         }
-        return isProductNameSet && isProductSupplierSet && isProductSupplierEmailSet && isProductPriceSet && isProductQtySet;
+        return  isTypeIdSet && isProductSupplierSet && isProductPriceSet && isProductQtySet;
     }
 
     /**
@@ -369,7 +441,11 @@ public class CreateActivity extends AppCompatActivity implements DialogInterface
      * @param product - The product object.
      */
     private void buildProductWithUserInputData(Product product) {
-        product.setmName(mProductNameTIL.getEditText().getText().toString());
+        product.setTypeId(typeId);
+        product.setUnitOfMeasureId(1);
+
+        Log.d(TAG,"Product name = "+subCategoryName+" - "+typeName);
+        product.setmName(subCategoryName+" - "+typeName);
 //        product.setCode(mProductCodeTIL.getEditText().getText().toString());
         product.setmSupplier(mProductSupplierTIL.getEditText().getText().toString());
 //        product.setSupplierEmail(mProductSupplierEmailTIL.getEditText().getText().toString());
@@ -395,8 +471,8 @@ public class CreateActivity extends AppCompatActivity implements DialogInterface
         } else {
             // Contact permissions have been granted. Show the contacts fragment.
             Log.i(TAG, "Contact permissions have already been granted. Displaying contact details.");
-            new LoadProductPhotoAsync(this, v).execute(photoPath);
-
+            Glide.with(getApplicationContext()).load(photoPath).into(mProductPhotoImageView);
+//            new LoadProductPhotoAsync(this, v).execute(photoPath);
             Log.d(TAG,"show status");
 
         }
@@ -415,7 +491,7 @@ public class CreateActivity extends AppCompatActivity implements DialogInterface
             // Provide an additional rationale to the user if the permission was not granted
             // and the user would benefit from additional context for the use of the permission.
             // For example, if the request has been denied previously.
-            Log.i(TAG, "Displaying contacts permission rationale to provide additional context.");
+            Log.i(TAG, "Displaying external storage  permission rationale to provide additional context.");
 
             // Display a SnackBar with an explanation and a button to trigger the request.
             Snackbar.make(findViewById(R.id.content), R.string.permission_external_storage,
@@ -430,6 +506,7 @@ public class CreateActivity extends AppCompatActivity implements DialogInterface
                     })
                     .show();
         } else {
+            Log.i(TAG, "requesting external storage permission.");
             // Contact permissions have not been granted yet. Request them directly.
             ActivityCompat.requestPermissions(this, PERMISSIONS_EXTERNAL_STORAGE, REQUEST_EXTERNAL_STORAGE);
         }

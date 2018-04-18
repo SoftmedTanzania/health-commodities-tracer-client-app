@@ -1,0 +1,173 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:orientation="vertical"
+    android:layout_height="match_parent">
+    <ScrollView
+        android:layout_height="match_parent"
+        android:layout_width="match_parent"
+        xmlns:android="http://schemas.android.com/apk/res/android" >
+        <LinearLayout
+            android:orientation="vertical"
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <RelativeLayout
+                android:id="@+id/chart_card"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="14sp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="8dp"
+                    android:textStyle="bold"
+                    android:gravity="center_horizontal"
+                    android:id="@+id/title"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginRight="16dp"
+                    android:textColor="@color/card_title_text"
+                    android:text="Inventory Summary"/>
+                <com.github.mikephil.charting.charts.PieChart
+                    android:id="@+id/chart1"
+                    android:layout_below="@id/title"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginRight="16dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="350dp" />
+            </RelativeLayout>
+            <RelativeLayout
+                android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_height="wrap_content"
+                android:layout_width="match_parent"
+                android:id="@+id/chart_card2">
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="14sp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="8dp"
+                    android:textStyle="bold"
+                    android:gravity="center_horizontal"
+                    android:id="@+id/title2"
+                    android:layout_marginLeft="16dp"
+                    android:textColor="@color/card_title_text"
+                    android:text="Inventory Balances"/>
+                <com.github.mikephil.charting.charts.BarChart
+                    android:id="@+id/chart2"
+                    android:layout_below="@id/title2"
+                    android:layout_width="match_parent"
+                    android:layout_height="350dp" />
+            </RelativeLayout>
+            <View
+                android:id="@+id/separator2"
+                android:layout_below="@id/chart_card"
+                android:layout_width="match_parent"
+                android:layout_margin="16dp"
+                android:layout_height="1dp"
+                android:background="@color/card_separator"/>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_margin="8dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="#f5f5f5">
+
+                <LinearLayout
+                    android:layout_marginTop="8dp"
+                    android:id="@+id/data_view"
+                    android:visibility="visible"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+                    <TextView
+                        android:layout_marginTop="8dp"
+                        android:layout_marginLeft="16dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        android:text="Transactions Summary"/>
+
+                    <LinearLayout
+                        android:layout_marginTop="8dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:orientation="horizontal"
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginRight="16dp"
+                        android:gravity="center_vertical"
+                        android:id="@+id/linear_title">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_weight="0.05"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/sn_title"
+                            android:text="Sn"
+                            android:textStyle="bold"/>
+
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_weight="0.2"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/child_names_title"
+                            android:text="Item"
+                            android:textStyle="bold"/>
+
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.1"
+                            android:gravity="center_horizontal"
+                            android:textStyle="bold"
+                            android:text="Quantity"/>
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.1"
+                            android:gravity="center_horizontal"
+                            android:textStyle="bold"
+                            android:text="Amount" />
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_weight="0.1"
+                            android:gravity="center_horizontal"
+                            android:id="@+id/mothers_contacts_title"
+                            android:layout_height="wrap_content"
+                            android:textStyle="bold"
+                            android:text="Total"/>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <View
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginRight="16dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/card_grid_tex"/>
+
+                <TableLayout
+                    android:background="#f5f5f5"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:id="@+id/services_table"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+
+    </ScrollView>
+</RelativeLayout>

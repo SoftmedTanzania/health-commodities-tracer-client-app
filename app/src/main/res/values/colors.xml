@@ -5,5 +5,41 @@
     <color name="colorPrimaryDark">#303F9F</color>
     <color name="colorAccent">#FF4081</color>
     <color name="white">#FFF</color>
+    <color name="black">#000</color>
+
+
+    <color name="theme">#ff407539</color>
+    <color name="dark_theme">#585858</color>
+    <color name="stroke">#dddddd</color>
+    <color name="text_light">#66000000</color>
+    <color name="card_text">#ff8d8d8d</color>
+    <color name="card_title_text">#ff707070</color>
+    <color name="card_light_text">#ffcccccc</color>
+    <color name="card_grid_text">#ff707070</color>
+    <color name="card_grid_tex">#ff8f8f8f</color>
+    <color name="card_separator">#ffe5e5e5</color>
+    <color name="card_separator_sec">#f5f5f5</color>
+    <color name="card_separator_third">#fafafa</color>
+    <color name="card">#ffefefef</color>
+    <color name="card_border">#ffdedede</color>
+    <color name="second_grey">#ff999999</color>
+    <color name="card_white">#ffffff</color>
+    <color name="card_shadow">#8c666666</color>
+
+
+    <color name="red_050">#fde0dc</color> <!-- Use with black text -->
+    <color name="red_100">#f9bdbb</color> <!-- Use with black text -->
+    <color name="red_200">#f69988</color> <!-- Use with black text -->
+    <color name="red_300">#f36fc6</color> <!-- Use with black text -->
+    <color name="red_400">#e84e40</color> <!-- Use with black text -->
+    <color name="red_500">#e51c23</color> <!-- Use with white text -->
+    <color name="red_600">#dd191d</color> <!-- Use with white text -->
+    <color name="red_700">#d01716</color> <!-- Use with white text -->
+    <color name="red_800">#c41411</color> <!-- Use with white text -->
+    <color name="red_900">#b0120a</color> <!-- Use with white text -->
+    <color name="red_a100">#ff7997</color> <!-- Use with black text -->
+    <color name="red_a200">#ff5177</color> <!-- Use with white text -->
+    <color name="red_a400">#ff2d6f</color> <!-- Use with white text -->
+    <color name="red_a700">#e00032</color> <!-- Use with white text -->
 
 </resources>

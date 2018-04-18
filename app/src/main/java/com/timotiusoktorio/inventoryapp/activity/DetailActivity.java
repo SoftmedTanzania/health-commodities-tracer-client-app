@@ -17,6 +17,7 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.bumptech.glide.Glide;
 import com.timotiusoktorio.inventoryapp.LoadProductPhotoAsync;
 import com.timotiusoktorio.inventoryapp.R;
 import com.timotiusoktorio.inventoryapp.database.ProductDbHelper;
@@ -164,9 +165,9 @@ public class DetailActivity extends AppCompatActivity {
      */
     private void populateViewsWithProductData() {
         String photoPath = mProduct.getmPhotoPath();
-        mProductPhotoImageView.setTag(photoPath);
+//        mProductPhotoImageView.setTag(photoPath);
         if (!TextUtils.isEmpty(photoPath)) {
-//            new LoadProductPhotoAsync(this, mProductPhotoImageView).execute(photoPath);
+            Glide.with(getApplicationContext()).load(photoPath).into(mProductPhotoImageView);
         }
 
         TextView productNameTextView = (TextView) findViewById(R.id.product_name_text_view);

@@ -35,8 +35,6 @@ public class ProductContract {
         public static final String COLUMN_CATEGORY_ID = "category_id";
         public static final String COLUMN_SUB_CATEGORY_ID = "sub_category_id";
         public static final String COLUMN_TYPE_ID = "type_id";
-        public static final String COLUMN_CATEGORY_TYPE_ID = "category_type_id";
-        public static final String COLUMN_SUB_CATEGORY_TYPE_ID = "sub_category_type_id";
         public static final String COLUMN_CATEGORY_SUB_CATEGORY_ID = "category_sub_category_id";
         public static final String COLUMN_UNITS_OF_MEASURE_ID = "unit_of_measure_id";
 
@@ -101,10 +99,8 @@ public class ProductContract {
         public static final String SQL_CREATE_ENTRY =
                 "CREATE TABLE " + TABLE_PRODUCT + " (" +
                         _ID + INTEGER_TYPE + " PRIMARY KEY autoincrement" + COMMA_SEP +
-                        COLUMN_NAME + TEXT_TYPE + NOT_NULL + COMMA_SEP +
-                        COLUMN_CATEGORY_SUB_CATEGORY_ID + INTEGER_TYPE + NOT_NULL + COMMA_SEP +
-                        COLUMN_CATEGORY_TYPE_ID + INTEGER_TYPE  + COMMA_SEP +
-                        COLUMN_SUB_CATEGORY_TYPE_ID + INTEGER_TYPE  + COMMA_SEP +
+                        COLUMN_NAME + TEXT_TYPE  + COMMA_SEP +
+                        COLUMN_TYPE_ID + INTEGER_TYPE  + COMMA_SEP +
                         COLUMN_UNITS_OF_MEASURE_ID + INTEGER_TYPE + NOT_NULL + COMMA_SEP +
                         COLUMN_SUPPLIER + TEXT_TYPE + NOT_NULL + COMMA_SEP +
                         COLUMN_PHOTO_PATH + TEXT_TYPE + NOT_NULL + COMMA_SEP +

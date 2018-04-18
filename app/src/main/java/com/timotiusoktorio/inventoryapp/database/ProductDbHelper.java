@@ -11,6 +11,7 @@ import android.util.Log;
 import com.timotiusoktorio.inventoryapp.model.CategorySubCategory;
 import com.timotiusoktorio.inventoryapp.model.Model;
 import com.timotiusoktorio.inventoryapp.model.Product;
+import com.timotiusoktorio.inventoryapp.model.SubCategoryModel;
 import com.timotiusoktorio.inventoryapp.model.Type;
 
 import java.util.ArrayList;
@@ -28,6 +29,8 @@ import static com.timotiusoktorio.inventoryapp.database.ProductContract.ProductE
 import static com.timotiusoktorio.inventoryapp.database.ProductContract.ProductEntry.COLUMN_SUB_CATEGORY_ID;
 import static com.timotiusoktorio.inventoryapp.database.ProductContract.ProductEntry.COLUMN_SUPPLIER;
 import static com.timotiusoktorio.inventoryapp.database.ProductContract.ProductEntry.COLUMN_SUPPLIER_EMAIL;
+import static com.timotiusoktorio.inventoryapp.database.ProductContract.ProductEntry.COLUMN_TYPE_ID;
+import static com.timotiusoktorio.inventoryapp.database.ProductContract.ProductEntry.COLUMN_UNITS_OF_MEASURE_ID;
 import static com.timotiusoktorio.inventoryapp.database.ProductContract.ProductEntry.SQL_CREATE_CATEGORY;
 import static com.timotiusoktorio.inventoryapp.database.ProductContract.ProductEntry.SQL_CREATE_CATEGORY_SUB_CATEGORY;
 import static com.timotiusoktorio.inventoryapp.database.ProductContract.ProductEntry.SQL_CREATE_ENTRY;
@@ -51,7 +54,7 @@ import static com.timotiusoktorio.inventoryapp.database.ProductContract.ProductE
  */
 
 public class ProductDbHelper extends SQLiteOpenHelper {
-
+    private static final String TAG = ProductDbHelper.class.getSimpleName();
     public static final String DATABASE_NAME = "InventoryApp.db";
     public static final int DATABASE_VERSION = 1;
     private static final String LOG_TAG = ProductDbHelper.class.getSimpleName();
@@ -104,7 +107,7 @@ public class ProductDbHelper extends SQLiteOpenHelper {
     public List<Product> queryProducts() {
         List<Product> products = new ArrayList<>();
         SQLiteDatabase db = getReadableDatabase();
-        String[] columns = { _ID, COLUMN_NAME, COLUMN_PHOTO_PATH, COLUMN_PRICE, COLUMN_QUANTITY };
+        String[] columns = { _ID, COLUMN_NAME,COLUMN_TYPE_ID,COLUMN_UNITS_OF_MEASURE_ID,COLUMN_SUPPLIER, COLUMN_PHOTO_PATH, COLUMN_PRICE, COLUMN_QUANTITY };
         String orderBy = COLUMN_NAME + " ASC";
         Cursor cursor = db.query(TABLE_PRODUCT, columns, null, null, null, null, orderBy);
         try {
@@ -125,7 +128,7 @@ public class ProductDbHelper extends SQLiteOpenHelper {
 
     public Product queryProductDetails(Product product) {
         SQLiteDatabase db = getReadableDatabase();
-        String[] columns = { COLUMN_SUPPLIER, COLUMN_SUPPLIER_EMAIL };
+        String[] columns = { COLUMN_SUPPLIER, COLUMN_NAME };
         String selection = _ID + " = ?";
         String[] selectionArgs = { String.valueOf(product.getmId()) };
         Cursor cursor = db.query(TABLE_PRODUCT, columns, selection, selectionArgs, null, null, null);
@@ -205,10 +208,9 @@ public class ProductDbHelper extends SQLiteOpenHelper {
     private ContentValues generateContentValues(Product product) {
         ContentValues cv = new ContentValues();
         cv.put(COLUMN_NAME, product.getmName());
+        cv.put(COLUMN_TYPE_ID, product.getTypeId());
+        cv.put(COLUMN_UNITS_OF_MEASURE_ID, product.getUnitOfMeasureId());
         cv.put(COLUMN_SUPPLIER, product.getmSupplier());
-
-        //TODO fix this
-//        cv.put(COLUMN_SUPPLIER_EMAIL, product.getSupplierEmail());
         cv.put(COLUMN_PHOTO_PATH, product.getmPhotoPath());
         cv.put(COLUMN_PRICE, product.getmPrice());
         cv.put(COLUMN_QUANTITY, product.getmQuantity());
@@ -217,11 +219,14 @@ public class ProductDbHelper extends SQLiteOpenHelper {
 
     private Product createProductFromCursor(Cursor cursor) throws IllegalArgumentException {
         long id = cursor.getLong(cursor.getColumnIndexOrThrow(_ID));
+        long typeId = cursor.getLong(cursor.getColumnIndexOrThrow(COLUMN_TYPE_ID));
+        long unitOfMeasureId = cursor.getLong(cursor.getColumnIndexOrThrow(COLUMN_UNITS_OF_MEASURE_ID));
+        String supplier = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_SUPPLIER));
         String name = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_NAME));
         String photoPath = cursor.getString(cursor.getColumnIndexOrThrow(COLUMN_PHOTO_PATH));
         double price = cursor.getDouble(cursor.getColumnIndexOrThrow(COLUMN_PRICE));
         int quantity = cursor.getInt(cursor.getColumnIndexOrThrow(COLUMN_QUANTITY));
-        return new Product(id, name, 0, 0, 0, 0, photoPath, "", quantity, quantity);
+        return new Product(id,typeId,unitOfMeasureId,name,photoPath,supplier,price,quantity);
     }
 
     public List<Model> getCategories(){
@@ -241,7 +246,49 @@ public class ProductDbHelper extends SQLiteOpenHelper {
         return categories;
     }
 
+    public List<SubCategoryModel> getSubCategories(int categoryId){
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor c = db.rawQuery("SELECT "+TABLE_SUB_CATEGORY+"."+_ID+" as ID, "+TABLE_CATEGORY_SUB_CATEGORY+"."+_ID+" as ID2,"+COLUMN_NAME+"   FROM "+TABLE_SUB_CATEGORY+
+                " INNER JOIN "+TABLE_CATEGORY_SUB_CATEGORY+" ON "+TABLE_SUB_CATEGORY+"."+_ID+" = "+TABLE_CATEGORY_SUB_CATEGORY+"."+COLUMN_SUB_CATEGORY_ID+
+                " WHERE "+COLUMN_CATEGORY_ID+" = "+categoryId,null);
+        List<SubCategoryModel> subCategories = new ArrayList<>();
+        for (int i=0;i<c.getCount();i++){
+            c.moveToPosition(i);
+            SubCategoryModel subCategoryModel = new SubCategoryModel();
+            subCategoryModel.setmId(c.getLong(c.getColumnIndex("ID")));
+            subCategoryModel.setmCategorySubCatogoryId(c.getLong(c.getColumnIndex("ID2")));
+            subCategoryModel.setmName(c.getString(c.getColumnIndex(COLUMN_NAME)));
+
+            subCategories.add(subCategoryModel);
+        }
+
+        return subCategories;
+    }
+
+    public List<Type> getTypes(long categorySubcategoryId){
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor c = db.rawQuery("SELECT * FROM "+TABLE_TYPE+
+                " WHERE "+COLUMN_CATEGORY_SUB_CATEGORY_ID+" = "+categorySubcategoryId,null);
+        List<Type> types = new ArrayList<>();
+        for (int i=0;i<c.getCount();i++){
+            c.moveToPosition(i);
+            Type type = new Type();
+            type.setmId(c.getLong(c.getColumnIndex(_ID)));
+            type.setmName(c.getString(c.getColumnIndex(COLUMN_NAME)));
+            type.setmDescritption(c.getString(c.getColumnIndex(COLUMN_DESCRIPTION)));
+            type.setCategorySubCategoryId(c.getLong(c.getColumnIndex(COLUMN_CATEGORY_SUB_CATEGORY_ID)));
+            type.setIsValid(c.getInt(c.getColumnIndex(COLUMN_IS_VALID))==1?true:false);
+
+            types.add(type);
+        }
+
+        return types;
+    }
+
+
+
     public void insertCategories(List<Model> models){
+        Log.d(TAG,"Inserting categories");
         SQLiteDatabase db = getWritableDatabase();
         List<Model> categories = new ArrayList<>();
         for (Model model:models){

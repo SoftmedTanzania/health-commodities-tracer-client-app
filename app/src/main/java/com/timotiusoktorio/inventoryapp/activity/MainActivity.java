@@ -39,11 +39,39 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        ProductDbHelper productDbHelper = new ProductDbHelper(this);
-        if(productDbHelper.getCategories().size()>0){
+        ProductDbHelper productDbHelper = ProductDbHelper.getInstance(getApplicationContext());
+
+
+        Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        viewPager = (ViewPager)findViewById(R.id.viewPager);
+        ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
+
+        DashboardFragment dashboardFragment = new DashboardFragment();
+        ProductsListFragment productsListFragment = new ProductsListFragment();
+        OrdersFragment ordersFragment = new OrdersFragment();
+
+        viewPagerAdapter.addFragment(dashboardFragment,"Dashboard");
+        viewPagerAdapter.addFragment(productsListFragment,"Products List");
+        viewPagerAdapter.addFragment(ordersFragment,"Order Fragment");
+
+        viewPager.setAdapter(viewPagerAdapter);
+
+
+        tabLayout = (TabLayout) findViewById(R.id.tabs);
+        tabLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                tabLayout.setupWithViewPager(viewPager);
+                setupTabIcons();
+            }
+        });
+
+        if(productDbHelper.getCategories().isEmpty()){
             List<Model> categories = new ArrayList<>();
             Model seeds = new Model(1,"Mbegu Bora",true);
-            Model viuatilifu = new Model(1,"Viuatilifu",true);
+            Model viuatilifu = new Model(2,"Viuatilifu",true);
 
             categories.add(seeds);
             categories.add(viuatilifu);
@@ -162,35 +190,6 @@ public class MainActivity extends AppCompatActivity {
             productDbHelper.insertTypes(typeList);
 
         }
-
-
-
-
-        Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
-
-        viewPager = (ViewPager)findViewById(R.id.viewPager);
-        ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
-
-        DashboardFragment dashboardFragment = new DashboardFragment();
-        ProductsListFragment productsListFragment = new ProductsListFragment();
-        OrdersFragment ordersFragment = new OrdersFragment();
-
-        viewPagerAdapter.addFragment(dashboardFragment,"Dashboard");
-        viewPagerAdapter.addFragment(productsListFragment,"Products List");
-        viewPagerAdapter.addFragment(ordersFragment,"Order Fragment");
-
-        viewPager.setAdapter(viewPagerAdapter);
-
-
-        tabLayout = (TabLayout) findViewById(R.id.tabs);
-        tabLayout.post(new Runnable() {
-            @Override
-            public void run() {
-                tabLayout.setupWithViewPager(viewPager);
-                setupTabIcons();
-            }
-        });
 
 
     }

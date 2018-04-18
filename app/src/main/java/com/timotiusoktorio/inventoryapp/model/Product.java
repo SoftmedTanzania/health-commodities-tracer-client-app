@@ -10,11 +10,9 @@ import android.os.Parcelable;
 public class Product implements Parcelable {
 
     private long mId;
-    private String mName;
-    private long categorySubCategoryId;
-    private long categoryTypeId;
-    private long subCategoryTypeId;
+    private long typeId;
     private long unitOfMeasureId;
+    private String mName;
     private String mPhotoPath;
     private String mSupplier;
     private double mPrice;
@@ -22,13 +20,11 @@ public class Product implements Parcelable {
 
     public Product() {}
 
-    public Product(long mId, String mName, long categorySubCategoryId, long categoryTypeId, long subCategoryTypeId, long unitOfMeasureId, String mPhotoPath, String mSupplier, double mPrice, int mQuantity) {
+    public Product(long mId, long typeId, long unitOfMeasureId, String mName,String mPhotoPath, String mSupplier, double mPrice, int mQuantity) {
         this.mId = mId;
-        this.mName = mName;
-        this.categorySubCategoryId = categorySubCategoryId;
-        this.categoryTypeId = categoryTypeId;
-        this.subCategoryTypeId = subCategoryTypeId;
+        this.typeId = typeId;
         this.unitOfMeasureId = unitOfMeasureId;
+        this.mName = mName;
         this.mPhotoPath = mPhotoPath;
         this.mSupplier = mSupplier;
         this.mPrice = mPrice;
@@ -43,36 +39,12 @@ public class Product implements Parcelable {
         this.mId = mId;
     }
 
-    public String getmName() {
-        return mName;
+    public long getTypeId() {
+        return typeId;
     }
 
-    public void setmName(String mName) {
-        this.mName = mName;
-    }
-
-    public long getCategorySubCategoryId() {
-        return categorySubCategoryId;
-    }
-
-    public void setCategorySubCategoryId(long categorySubCategoryId) {
-        this.categorySubCategoryId = categorySubCategoryId;
-    }
-
-    public long getCategoryTypeId() {
-        return categoryTypeId;
-    }
-
-    public void setCategoryTypeId(long categoryTypeId) {
-        this.categoryTypeId = categoryTypeId;
-    }
-
-    public long getSubCategoryTypeId() {
-        return subCategoryTypeId;
-    }
-
-    public void setSubCategoryTypeId(long subCategoryTypeId) {
-        this.subCategoryTypeId = subCategoryTypeId;
+    public void setTypeId(long typeId) {
+        this.typeId = typeId;
     }
 
     public long getUnitOfMeasureId() {
@@ -115,17 +87,12 @@ public class Product implements Parcelable {
         this.mSupplier = mSupplier;
     }
 
-    @Override
-    public String toString() {
-        return "Product{" +
-                "mId=" + mId +
-                ", mName='" + mName + '\'' +
-                ", categorySubCategoryId='" + categorySubCategoryId + '\'' +
-                ", mSupplier='" + mSupplier + '\'' +
-                ", mPhotoPath='" + mPhotoPath + '\'' +
-                ", mPrice=" + mPrice +
-                ", mQuantity=" + mQuantity +
-                '}';
+    public String getmName() {
+        return mName;
+    }
+
+    public void setmName(String mName) {
+        this.mName = mName;
     }
 
     @Override
@@ -136,11 +103,9 @@ public class Product implements Parcelable {
     @Override
     public void writeToParcel(Parcel dest, int flags) {
         dest.writeLong(this.mId);
-        dest.writeString(this.mName);
-        dest.writeLong(this.categorySubCategoryId);
-        dest.writeLong(this.categoryTypeId);
-        dest.writeLong(this.subCategoryTypeId);
+        dest.writeLong(this.typeId);
         dest.writeLong(this.unitOfMeasureId);
+        dest.writeString(this.mName);
         dest.writeString(this.mSupplier);
         dest.writeString(this.mPhotoPath);
         dest.writeDouble(this.mPrice);
@@ -149,11 +114,9 @@ public class Product implements Parcelable {
 
     protected Product(Parcel in) {
         this.mId = in.readLong();
-        this.mName = in.readString();
-        this.categorySubCategoryId = in.readLong();
-        this.categoryTypeId = in.readLong();
-        this.subCategoryTypeId = in.readLong();
+        this.typeId = in.readLong();
         this.unitOfMeasureId = in.readLong();
+        this.mName = in.readString();
         this.mSupplier = in.readString();
         this.mPhotoPath = in.readString();
         this.mPrice = in.readDouble();

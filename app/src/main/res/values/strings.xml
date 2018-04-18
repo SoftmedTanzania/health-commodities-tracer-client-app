@@ -21,6 +21,7 @@
 
     <string name="error_msg_product_name_empty">Please enter the product name.</string>
     <string name="error_msg_product_supplier_empty">Please enter the product supplier.</string>
+    <string name="error_msg_product_type_empty">Please select the product type.</string>
     <string name="error_msg_product_supplier_email_empty">Please enter the product supplier email address.</string>
     <string name="error_msg_product_price_empty">Please enter the product price.</string>
     <string name="error_msg_product_quantity_empty">Please enter the product quantity.</string>
