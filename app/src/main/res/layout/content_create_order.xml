@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.v4.widget.NestedScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    xmlns:app_ms="http://schemas.android.com/apk/res-auto"
+    tools:context=".activity.CreateOrderActivity"
+    tools:showIn="@layout/activity_create_order">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+        <RelativeLayout
+            android:layout_marginTop="32dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <fr.ganfra.materialspinner.MaterialSpinner
+                android:id="@+id/spin_suppliers"
+                android:layout_width="164dp"
+                android:layout_marginLeft="16dp"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:divider="@null"
+                android:textSize="14sp"
+                app_ms:ms_hintTextSize="14sp"
+                app_ms:ms_alwaysShowFloatingLabel="true"
+                app_ms:ms_multiline="false"
+                app_ms:ms_hint="Order Supplier"
+                app_ms:ms_enableFloatingLabel="true"
+                app_ms:ms_enableErrorLabel="false"
+                app_ms:ms_floatingLabelText="Category"
+                app_ms:ms_baseColor="@color/card_grid_tex"
+                app_ms:ms_highlightColor="@color/card_grid_text"
+                app_ms:ms_errorColor="@color/red_500"
+                app_ms:ms_hintColor="#b3b3b3"
+                app_ms:ms_arrowColor="@color/black"
+                app_ms:ms_arrowSize="12dp"
+                app_ms:ms_alignLabels="false"
+                app_ms:ms_floatingLabelColor="@color/white"/>
+            <LinearLayout
+                android:layout_centerVertical="true"
+                android:orientation="vertical"
+                android:layout_width="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="16dp"
+                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/todays_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="16dp"
+                    android:textStyle="bold"
+                    android:textSize="18sp"
+                    android:text="21.04.2017" />
+                <TextView
+                    android:layout_alignParentRight="true"
+                    android:layout_marginRight="16dp"
+                    android:layout_below="@id/todays_date"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="16dp"
+                    android:textStyle="bold"
+                    android:textSize="16sp"
+                    android:textColor="@color/colorPrimary"
+                    android:text="Order Date" />
+            </LinearLayout>
+
+
+
+        </RelativeLayout>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:background="#ccc"
+            android:layout_marginTop="16dp"
+            android:padding="4dp"
+            android:layout_height="36dp">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="16dp"
+                android:textStyle="bold"
+                android:layout_centerVertical="true"
+                android:textColor="@color/colorPrimary"
+                android:text="Items" />
+            <TextView
+                android:layout_marginRight="16dp"
+                android:layout_alignParentRight="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="16dp"
+                android:textStyle="bold"
+                android:textColor="@color/colorPrimary"
+                android:text="Amount" />
+        </RelativeLayout>
+        <LinearLayout
+            android:orientation="vertical"
+            android:id="@+id/items_list"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"/>
+        <View
+            android:layout_marginRight="16dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="64dp"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#ddd"/>
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <android.support.design.widget.FloatingActionButton
+                android:id="@+id/fab"
+                android:layout_width="36dp"
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="4dp"
+                android:layout_marginBottom="4dp"
+                android:layout_height="36dp"
+                app:srcCompat="@android:drawable/ic_input_add"
+                />
+            <TextView
+                android:layout_marginLeft="8dp"
+                android:layout_toRightOf="@id/fab"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="16sp"
+                android:layout_centerVertical="true"
+                android:text="Add Item"/>
+        </RelativeLayout>
+    </LinearLayout>
+
+
+</android.support.v4.widget.NestedScrollView>

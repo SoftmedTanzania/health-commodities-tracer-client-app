@@ -1,6 +1,7 @@
 package com.timotiusoktorio.inventoryapp.activity;
 
 
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
@@ -54,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
 
         viewPagerAdapter.addFragment(dashboardFragment,"Dashboard");
         viewPagerAdapter.addFragment(productsListFragment,"Products List");
-        viewPagerAdapter.addFragment(ordersFragment,"Order Fragment");
+//        viewPagerAdapter.addFragment(ordersFragment,"Order Fragment");
 
         viewPager.setAdapter(viewPagerAdapter);
 
@@ -207,7 +208,11 @@ public class MainActivity extends AppCompatActivity {
 //                    R.string.title_dialog_confirm_empty_products, R.string.message_dialog_confirm_empty_products);
 //            dialogFragment.setOnPositiveClickListener(mOnPositiveClickListener);
 //            dialogFragment.show(getSupportFragmentManager(), CONFIRMATION_DIALOG_TAG);
-        }
+        }else  if (item.getItemId() == R.id.action_create_order) {
+                Intent intent = new Intent(MainActivity.this,CreateOrderActivity.class);
+                startActivity(intent);
+            }
+
         return super.onOptionsItemSelected(item);
     }
 
@@ -263,14 +268,18 @@ public class MainActivity extends AppCompatActivity {
         tabLayout.getTabAt(1).setCustomView(myInventory);
 
 
+        try {
 
-        View orderView = getLayoutInflater().inflate(R.layout.custom_tab, null);
-        TextView orderTitle = orderView.findViewById(R.id.title_text);
-        orderTitle.setText("Orders");
-        ImageView orderIcon    = orderView.findViewById(R.id.icon);
-        orderIcon.setColorFilter(this.getResources().getColor(R.color.white));
-        Glide.with(this).load(R.drawable.ic_local_shipping_white_24dp).into(orderIcon);
-        tabLayout.getTabAt(2).setCustomView(orderView);
+            View orderView = getLayoutInflater().inflate(R.layout.custom_tab, null);
+            TextView orderTitle = orderView.findViewById(R.id.title_text);
+            orderTitle.setText("Orders");
+            ImageView orderIcon = orderView.findViewById(R.id.icon);
+            orderIcon.setColorFilter(this.getResources().getColor(R.color.white));
+            Glide.with(this).load(R.drawable.ic_local_shipping_white_24dp).into(orderIcon);
+            tabLayout.getTabAt(2).setCustomView(orderView);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
 
 
     }
