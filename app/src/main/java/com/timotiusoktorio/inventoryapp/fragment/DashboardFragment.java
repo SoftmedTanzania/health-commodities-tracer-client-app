@@ -1,5 +1,6 @@
 package com.timotiusoktorio.inventoryapp.fragment;
 
+import android.annotation.SuppressLint;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.os.AsyncTask;
@@ -39,6 +40,14 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static android.provider.BaseColumns._ID;
+import static com.timotiusoktorio.inventoryapp.database.ProductContract.ProductEntry.COLUMN_CATEGORY_ID;
+import static com.timotiusoktorio.inventoryapp.database.ProductContract.ProductEntry.COLUMN_CATEGORY_SUB_CATEGORY_ID;
+import static com.timotiusoktorio.inventoryapp.database.ProductContract.ProductEntry.COLUMN_TYPE_ID;
+import static com.timotiusoktorio.inventoryapp.database.ProductContract.ProductEntry.TABLE_CATEGORY_SUB_CATEGORY;
+import static com.timotiusoktorio.inventoryapp.database.ProductContract.ProductEntry.TABLE_PRODUCT;
+import static com.timotiusoktorio.inventoryapp.database.ProductContract.ProductEntry.TABLE_TYPE;
 
 public class DashboardFragment extends Fragment {
 
@@ -92,7 +101,7 @@ public class DashboardFragment extends Fragment {
 
         Legend l = mChart1.getLegend();
         l.setVerticalAlignment(Legend.LegendVerticalAlignment.BOTTOM);
-        l.setHorizontalAlignment(Legend.LegendHorizontalAlignment.RIGHT);
+        l.setHorizontalAlignment(Legend.LegendHorizontalAlignment.CENTER);
         l.setOrientation(Legend.LegendOrientation.HORIZONTAL);
         l.setDrawInside(false);
         l.setXEntrySpace(7f);
@@ -129,8 +138,9 @@ public class DashboardFragment extends Fragment {
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setDrawGridLines(false);
         xAxis.setGranularity(1f); // only intervals of 1 day
-        xAxis.setLabelCount(7);
+//        xAxis.setLabelCount(7);
         xAxis.setValueFormatter(xAxisFormatter);
+//        xAxis.setLabelRotationAngle(15f);
 
         IAxisValueFormatter custom = new MyAxisValueFormatter();
 
@@ -187,7 +197,7 @@ public class DashboardFragment extends Fragment {
 
         @Override
         public String getFormattedValue(float value, AxisBase axis) {
-            return products.get((int)value).getmName();
+            return products.get((int)value).getmName().split("-")[1];
         }
     }
 
@@ -239,6 +249,7 @@ public class DashboardFragment extends Fragment {
         mChart1.invalidate();
     }
 
+    @SuppressLint("StaticFieldLeak")
     private void loadReportData(final long fromDateTimestamp, final long toDateTimestamp){
 
         new AsyncTask<Void, String, String>(){
@@ -252,13 +263,18 @@ public class DashboardFragment extends Fragment {
                 List<Model> categories = mDbHelper.getCategories();
 
                 for(Model model:categories){
-                    categoryNames.add(model.getmName());
+                    Cursor c = mDbHelper.query("SELECT * FROM "+TABLE_PRODUCT+
+                            " INNER JOIN "+TABLE_TYPE+" ON "+TABLE_PRODUCT+"."+COLUMN_TYPE_ID+" = "+TABLE_TYPE+"."+_ID+
+                            " INNER JOIN "+TABLE_CATEGORY_SUB_CATEGORY+" ON "+TABLE_TYPE+"."+COLUMN_CATEGORY_SUB_CATEGORY_ID+" = "+TABLE_CATEGORY_SUB_CATEGORY+"."+_ID +
+                            " WHERE "+COLUMN_CATEGORY_ID+" = "+model.getmId()
+                    );
+
+                    if(c.getCount()>0){
+                        categoryNames.add(model.getmName());
+                        sizes.add(c.getCount());
+                    }
                 }
-
-
-                List<Product> products = mDbHelper.queryProducts();
-
-
+                products = mDbHelper.queryProducts();
                 return "";
             }
 
@@ -266,22 +282,16 @@ public class DashboardFragment extends Fragment {
             protected void onPostExecute(String aVoid) {
                 super.onPostExecute(aVoid);
 
+                setData();
+                mChart1.highlightValues(null);
+                mChart1.invalidate();
+
                 try {
-                    setData();
-                    mChart1.highlightValues(null);
-                    mChart1.invalidate();
-
-                    JSONObject chartsData = null;
-                    try {
-                        chartsData = new JSONObject(aVoid);
-                    } catch (JSONException e) {
-                        e.printStackTrace();
-                    }
-
-
                     ArrayList<BarEntry> yVals1 = new ArrayList<BarEntry>();
+                    int i=0;
                     for (Product product : products) {
-                        yVals1.add(new BarEntry(1, product.getmQuantity()));
+                        yVals1.add(new BarEntry(i, product.getmQuantity()));
+                        i++;
                     }
 
                     BarDataSet set1 = new BarDataSet(yVals1, "Inventory Balances");

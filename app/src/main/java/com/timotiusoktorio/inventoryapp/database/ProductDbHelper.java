@@ -246,6 +246,13 @@ public class ProductDbHelper extends SQLiteOpenHelper {
         return categories;
     }
 
+    public Cursor query(String sql){
+        SQLiteDatabase db = getReadableDatabase();
+        Cursor c = db.rawQuery(sql,null);
+
+        return c;
+    }
+
     public List<SubCategoryModel> getSubCategories(int categoryId){
         SQLiteDatabase db = getReadableDatabase();
         Cursor c = db.rawQuery("SELECT "+TABLE_SUB_CATEGORY+"."+_ID+" as ID, "+TABLE_CATEGORY_SUB_CATEGORY+"."+_ID+" as ID2,"+COLUMN_NAME+"   FROM "+TABLE_SUB_CATEGORY+
