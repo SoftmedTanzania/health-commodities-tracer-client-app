@@ -23,7 +23,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activity.CreateActivity"
+            android:name=".activity.AddProductActivity"
             android:screenOrientation="portrait" />
         <activity
             android:name=".activity.DetailActivity"

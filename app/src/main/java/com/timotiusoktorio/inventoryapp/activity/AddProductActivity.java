@@ -25,6 +25,7 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.timotiusoktorio.inventoryapp.LoadProductPhotoAsync;
@@ -48,9 +49,9 @@ import fr.ganfra.materialspinner.MaterialSpinner;
  * Created by Coze on 2016-08-03.
  */
 
-public class CreateActivity extends AppCompatActivity implements DialogInterface.OnClickListener, ActivityCompat.OnRequestPermissionsResultCallback {
+public class AddProductActivity extends AppCompatActivity implements DialogInterface.OnClickListener, ActivityCompat.OnRequestPermissionsResultCallback {
 
-    private static final String TAG = CreateActivity.class.getSimpleName();
+    private static final String TAG = AddProductActivity.class.getSimpleName();
     private static final String PRODUCT_PHOTO_DIALOG_TAG = "PRODUCT_PHOTO_DIALOG_TAG";
     private static final String INTENT_EXTRA_PRODUCT = "INTENT_EXTRA_PRODUCT";
     private static final int REQUEST_CODE_TAKE_PHOTO = 0;
@@ -62,7 +63,7 @@ public class CreateActivity extends AppCompatActivity implements DialogInterface
     private static final int REQUEST_EXTERNAL_STORAGE = 1;
 
     /**
-     * Permissions required to read and write contacts. Used by the {@link CreateActivity}.
+     * Permissions required to read and write contacts. Used by the {@link AddProductActivity}.
      */
     private static String[] PERMISSIONS_EXTERNAL_STORAGE= {Manifest.permission.WRITE_EXTERNAL_STORAGE,
             Manifest.permission.READ_EXTERNAL_STORAGE};
@@ -75,6 +76,7 @@ public class CreateActivity extends AppCompatActivity implements DialogInterface
     private TextInputLayout mProductSupplierEmailTIL;
     private TextInputLayout mProductPriceTIL;
     private TextInputLayout mProductQuantityTIL;
+    private TextView description;
     private ProductDbHelper mDbHelper;
     private Product mPassedProduct;
     // Global variable to hold the path of the photo file which gets created each time the user
@@ -91,15 +93,16 @@ public class CreateActivity extends AppCompatActivity implements DialogInterface
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_create);
+        setContentView(R.layout.activity_add_product);
 
         mProductPhotoImageView = (ImageView) findViewById(R.id.product_photo_image_view);
         mProductNameTIL = (TextInputLayout) findViewById(R.id.product_name_text_input_layout);
-        mProductCodeTIL = (TextInputLayout) findViewById(R.id.product_code_text_input_layout);
+//        mProductCodeTIL = (TextInputLayout) findViewById(R.id.product_code_text_input_layout);
         mProductSupplierTIL = (TextInputLayout) findViewById(R.id.product_supplier_text_input_layout);
         mProductSupplierEmailTIL = (TextInputLayout) findViewById(R.id.product_supplier_email_text_input_layout);
         mProductPriceTIL = (TextInputLayout) findViewById(R.id.product_price_text_input_layout);
         mProductQuantityTIL = (TextInputLayout) findViewById(R.id.product_quantity_text_input_layout);
+        description = (TextView) findViewById(R.id.product_description);
 
 
         categorySpinner = (MaterialSpinner) findViewById(R.id.spin_category);
@@ -197,7 +200,7 @@ public class CreateActivity extends AppCompatActivity implements DialogInterface
                     subCategoryStrings.add(subCategoryModel.getmName());
                 }
 
-                ArrayAdapter<String> spinAdapter = new ArrayAdapter<String>(CreateActivity.this, R.layout.simple_spinner_item_black, subCategoryStrings);
+                ArrayAdapter<String> spinAdapter = new ArrayAdapter<String>(AddProductActivity.this, R.layout.simple_spinner_item_black, subCategoryStrings);
                 spinAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item_black);
                 subCategorySpinner.setAdapter(spinAdapter);
 
@@ -226,7 +229,7 @@ public class CreateActivity extends AppCompatActivity implements DialogInterface
                     typesStrings.add(type.getmName());
                 }
 
-                ArrayAdapter<String> spinAdapter = new ArrayAdapter<String>(CreateActivity.this, R.layout.simple_spinner_item_black, typesStrings);
+                ArrayAdapter<String> spinAdapter = new ArrayAdapter<String>(AddProductActivity.this, R.layout.simple_spinner_item_black, typesStrings);
                 spinAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item_black);
                 typeSpinner.setAdapter(spinAdapter);
 
@@ -243,12 +246,12 @@ public class CreateActivity extends AppCompatActivity implements DialogInterface
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 try {
                     typeName = types.get(i).getmName();
-                    mProductCodeTIL.getEditText().setText(types.get(i).getmDescritption());
+                    description.setText(types.get(i).getmDescritption());
                     typeId = types.get(i).getmId();
                 }catch (Exception e){
                     typeId = -1;
                     typeName = "";
-                    mProductCodeTIL.getEditText().setText("");
+                    description.setText("");
                 }
 
             }
@@ -471,8 +474,8 @@ public class CreateActivity extends AppCompatActivity implements DialogInterface
         } else {
             // Contact permissions have been granted. Show the contacts fragment.
             Log.i(TAG, "Contact permissions have already been granted. Displaying contact details.");
-            Glide.with(getApplicationContext()).load(photoPath).into(mProductPhotoImageView);
-//            new LoadProductPhotoAsync(this, v).execute(photoPath);
+//            Glide.with(getApplicationContext()).load(photoPath).into(mProductPhotoImageView);
+            new LoadProductPhotoAsync(this, v).execute(photoPath);
             Log.d(TAG,"show status");
 
         }
@@ -500,7 +503,7 @@ public class CreateActivity extends AppCompatActivity implements DialogInterface
                         @Override
                         public void onClick(View view) {
                             ActivityCompat
-                                    .requestPermissions(CreateActivity.this, PERMISSIONS_EXTERNAL_STORAGE,
+                                    .requestPermissions(AddProductActivity.this, PERMISSIONS_EXTERNAL_STORAGE,
                                             REQUEST_EXTERNAL_STORAGE);
                         }
                     })

@@ -12,7 +12,7 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import com.timotiusoktorio.inventoryapp.R;
-import com.timotiusoktorio.inventoryapp.activity.CreateActivity;
+import com.timotiusoktorio.inventoryapp.activity.AddProductActivity;
 import com.timotiusoktorio.inventoryapp.activity.DetailActivity;
 import com.timotiusoktorio.inventoryapp.adapter.ProductAdapter;
 import com.timotiusoktorio.inventoryapp.database.ProductDbHelper;
@@ -136,11 +136,11 @@ public class ProductsListFragment extends Fragment implements
 
     /**
      * Method that gets invoked when the user presses the 'Add Product' button or the FAB.
-     * This will navigate to CreateActivity to let user add a new product to the database.
+     * This will navigate to AddProductActivity to let user add a new product to the database.
      * @param - 'Add Product' button or the floating action button.
      */
     public void navigateToCreateActivity() {
-        Intent intent = new Intent(getActivity(), CreateActivity.class);
+        Intent intent = new Intent(getActivity(), AddProductActivity.class);
         startActivity(intent);
     }
 

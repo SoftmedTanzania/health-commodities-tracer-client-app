@@ -45,6 +45,7 @@
                 android:layout_margin="16dp"
                 android:background="#ddd"/>
             <RelativeLayout
+                android:visibility="gone"
                 android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"
                 android:layout_height="wrap_content"
@@ -68,6 +69,85 @@
                     android:layout_width="match_parent"
                     android:layout_height="350dp" />
             </RelativeLayout>
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_margin="8dp"
+                android:layout_height="wrap_content"
+                android:orientation="vertical"
+                android:background="#f5f5f5">
+
+                <LinearLayout
+                    android:layout_marginTop="8dp"
+                    android:id="@+id/data_view"
+                    android:visibility="visible"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+                    <TextView
+                        android:layout_marginTop="8dp"
+                        android:layout_marginLeft="16dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="20sp"
+                        android:textStyle="bold"
+                        android:text="Inventory Balances"/>
+                    <LinearLayout
+                        android:layout_marginTop="8dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:orientation="horizontal"
+                        android:layout_marginLeft="16dp"
+                        android:layout_marginRight="16dp"
+                        android:gravity="center_vertical"
+                        android:id="@+id/product_balances">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_weight="0.05"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/sn"
+                            android:text="Sn"
+                            android:textStyle="bold"/>
+
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_weight="0.2"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/product_names_title"
+                            android:text="Product"
+                            android:textStyle="bold"/>
+
+
+                        <TextView
+                            android:id="@+id/balance"
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.1"
+                            android:gravity="center_horizontal"
+                            android:textStyle="bold"
+                            android:text="Balance"/>
+                    </LinearLayout>
+                </LinearLayout>
+
+                <View
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginRight="16dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="1dp"
+                    android:background="@color/card_grid_tex"/>
+                <LinearLayout
+                    android:layout_marginTop="16dp"
+                    android:background="#f5f5f5"
+                    android:layout_marginBottom="16dp"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginRight="16dp"
+                    android:orientation="vertical"
+                    android:id="@+id/product_balances_list"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"/>
+
+            </LinearLayout>
             <View
                 android:id="@+id/separator2"
                 android:layout_below="@id/chart_card"

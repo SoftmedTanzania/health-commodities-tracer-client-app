@@ -5,6 +5,8 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:app_ms="http://schemas.android.com/apk/res-auto"
     tools:context=".activity.DetailActivity">
 
     <FrameLayout
@@ -29,6 +31,21 @@
             android:layout_height="wrap_content"
             android:orientation="vertical"
             android:padding="@dimen/activity_vertical_margin">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Product Details"
+                android:textStyle="bold"
+                android:textColor="@color/colorPrimary"
+                android:textSize="16sp" />
+
+            <View
+                android:layout_width="60dp"
+                android:layout_height="3dp"
+                android:layout_below="@id/clinical_information_title"
+                android:layout_marginTop="8dp"
+                android:background="@color/card_separator" />
 
             <TextView
                 android:id="@+id/product_name_text_view"
@@ -36,6 +53,7 @@
                 tools:text="MacBook Pro"/>
 
             <TextView
+                android:visibility="gone"
                 android:id="@+id/product_code_text_view"
                 style="@style/ProductDetailsTextView"
                 tools:text="Product code: 12441235"/>
@@ -54,28 +72,85 @@
                 android:id="@+id/product_quantity_text_view"
                 style="@style/ProductDetailsTextView"
                 tools:text="Product quantity: 10"/>
+            <TextView
+                android:id="@+id/clinical_information_title"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="32dp"
+                android:textStyle="bold"
+                android:text="Stock Adjustments"
+                android:textColor="@color/colorPrimary"
+                android:textSize="16sp" />
 
-            <LinearLayout style="@style/HorizontalLinearLayout">
+            <View
+                android:layout_width="60dp"
+                android:layout_height="3dp"
+                android:layout_below="@id/clinical_information_title"
+                android:layout_marginTop="8dp"
+                android:background="@color/card_separator" />
 
-                <Button
-                    android:id="@+id/increase_qty_button"
-                    android:layout_width="wrap_content"
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+                <fr.ganfra.materialspinner.MaterialSpinner
+                    android:id="@+id/stock_adjustment_reason"
+                    android:layout_width="0dp"
+                    android:layout_weight="4"
                     android:layout_height="wrap_content"
-                    android:onClick="modifyProductQuantity"
-                    android:text="@string/button_increase_qty"/>
+                    android:layout_centerVertical="true"
+                    android:divider="@null"
+                    android:textSize="14sp"
+                    tools:listitem="@array/stock_adjustment_reasons"
+                    app_ms:ms_hintTextSize="14sp"
+                    app_ms:ms_alwaysShowFloatingLabel="true"
+                    app_ms:ms_multiline="false"
+                    app_ms:ms_hint="Stock Adjustment Reason"
+                    app_ms:ms_enableFloatingLabel="true"
+                    app_ms:ms_enableErrorLabel="false"
+                    app_ms:ms_floatingLabelText="Category"
+                    app_ms:ms_baseColor="@color/card_grid_tex"
+                    app_ms:ms_highlightColor="@color/card_grid_text"
+                    app_ms:ms_errorColor="@color/red_500"
+                    app_ms:ms_hintColor="#b3b3b3"
+                    app_ms:ms_arrowColor="@color/black"
+                    app_ms:ms_arrowSize="12dp"
+                    app_ms:ms_alignLabels="false"
+                    app_ms:ms_floatingLabelColor="@color/white"/>
 
-                <Button
-                    android:id="@+id/decrease_qty_button"
-                    android:layout_width="wrap_content"
+                <android.support.design.widget.TextInputLayout
+                    android:id="@+id/stock_adjustment_quantity"
+                    android:layout_width="0dp"
+                    android:layout_marginLeft="32dp"
+                    android:layout_gravity="bottom"
+                    android:layout_weight="2"
+                    android:layout_height="wrap_content">
+
+                    <android.support.design.widget.TextInputEditText
+                        style="@style/ProductDetailsTextInputEditText"
+                        android:hint="Adjustment Quantity"
+                        android:inputType="numberDecimal"/>
+
+                </android.support.design.widget.TextInputLayout>
+
+                <android.support.design.widget.FloatingActionButton
+                    android:id="@+id/fab"
+                    android:layout_width="0dp"
+                    android:layout_weight="1"
+                    android:layout_gravity="bottom"
+                    android:layout_marginLeft="32dp"
+                    app:fabSize="mini"
+                    android:layout_marginTop="4dp"
+                    android:layout_marginBottom="4dp"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="8dp"
-                    android:layout_marginStart="8dp"
-                    android:onClick="modifyProductQuantity"
-                    android:text="@string/button_decrease_qty"/>
+                    app:srcCompat="@drawable/ic_add_white_24dp"
+                    />
+
 
             </LinearLayout>
 
             <RelativeLayout
+                android:layout_marginTop="32dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:background="@color/card_separator_third">
@@ -88,7 +163,7 @@
                     android:layout_marginTop="16dp"
                     android:textStyle="bold"
                     android:textColor="@color/colorPrimary"
-                    android:text="Transactions List"/>
+                    android:text="Transactions History"/>
                 <View
                     android:layout_below="@id/initial_information_title"
                     android:layout_width="60dp"

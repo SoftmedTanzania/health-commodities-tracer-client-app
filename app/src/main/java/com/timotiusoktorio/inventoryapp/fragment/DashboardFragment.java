@@ -9,6 +9,7 @@ import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.animation.Easing;
@@ -57,6 +58,7 @@ public class DashboardFragment extends Fragment {
     private List<Integer> sizes = new ArrayList<>();
     private ProductDbHelper mDbHelper;
     private List<Product> products;
+    private LinearLayout productBalancesList;
 
     public DashboardFragment() {
         // Required empty public constructor
@@ -70,6 +72,9 @@ public class DashboardFragment extends Fragment {
         View rowview = inflater.inflate(R.layout.fragment_dashboard, container, false);
 
         mDbHelper = ProductDbHelper.getInstance(getActivity().getApplicationContext());
+
+
+        productBalancesList = (LinearLayout) rowview.findViewById(R.id.product_balances_list);
 
         //Pie chart configurations
         mChart1 = (PieChart) rowview.findViewById(R.id.chart1);
@@ -286,6 +291,28 @@ public class DashboardFragment extends Fragment {
                 mChart1.highlightValues(null);
                 mChart1.invalidate();
 
+                try{
+                    productBalancesList.removeAllViews();
+                    int i=1;
+                    for (Product product : products) {
+                        View v = getLayoutInflater().inflate(R.layout.view_inventory_balance_item,null);
+                        ((TextView)v.findViewById(R.id.sn)).setText(String.valueOf(i));
+                        ((TextView) v.findViewById(R.id.product_name)).setText(product.getmName());
+
+                        String balance = String.valueOf(product.getmQuantity());
+
+                        if(i>1) {
+                            balance+=" Kgs";
+                        }
+                        ((TextView)v.findViewById(R.id.balance)).setText(balance);
+
+
+                        i++;
+                        productBalancesList.addView(v);
+                    }
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
                 try {
                     ArrayList<BarEntry> yVals1 = new ArrayList<BarEntry>();
                     int i=0;

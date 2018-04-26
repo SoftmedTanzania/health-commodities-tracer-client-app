@@ -14,6 +14,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -25,7 +26,7 @@ import com.timotiusoktorio.inventoryapp.fragment.ConfirmationDialogFragment;
 import com.timotiusoktorio.inventoryapp.helper.PhotoHelper;
 import com.timotiusoktorio.inventoryapp.model.Product;
 
-import java.io.File;
+import fr.ganfra.materialspinner.MaterialSpinner;
 
 /**
  * Created by Coze on 2016-08-08.
@@ -42,6 +43,7 @@ public class DetailActivity extends AppCompatActivity {
     private ProductDbHelper mDbHelper;
     private Product mProduct;
     private static final int REQUEST_CODE_CHOOSE_PHOTO = 1;
+    private MaterialSpinner stockAdjustmentReasonSpinner;
 
     /**
      * Id to identify a contacts permission request.
@@ -49,7 +51,7 @@ public class DetailActivity extends AppCompatActivity {
     private static final int REQUEST_EXTERNAL_STORAGE = 1;
 
     /**
-     * Permissions required to read and write contacts. Used by the {@link CreateActivity}.
+     * Permissions required to read and write contacts. Used by the {@link AddProductActivity}.
      */
     private static String[] PERMISSIONS_EXTERNAL_STORAGE= {Manifest.permission.WRITE_EXTERNAL_STORAGE,
             Manifest.permission.READ_EXTERNAL_STORAGE};
@@ -82,6 +84,13 @@ public class DetailActivity extends AppCompatActivity {
         // The product object currently doesn't have the complete product information.
         // Get the rest of the product information from the database.
         mProduct = mDbHelper.queryProductDetails(product);
+        stockAdjustmentReasonSpinner = (MaterialSpinner)findViewById(R.id.stock_adjustment_reason);
+
+
+        ArrayAdapter<String> spinAdapter = new ArrayAdapter<String>(this, R.layout.simple_spinner_item_black, getResources().getStringArray(R.array.stock_adjustment_reasons));
+        spinAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item_black);
+        stockAdjustmentReasonSpinner.setAdapter(spinAdapter);
+
 
         // Populate views with the product details data.
         populateViewsWithProductData();
@@ -97,8 +106,8 @@ public class DetailActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_edit:
-                // Navigate to CreateActivity and pass the current product object as an argument.
-                Intent intent = new Intent(this, CreateActivity.class);
+                // Navigate to AddProductActivity and pass the current product object as an argument.
+                Intent intent = new Intent(this, AddProductActivity.class);
                 intent.putExtra(INTENT_EXTRA_PRODUCT, mProduct);
                 startActivity(intent);
                 break;
@@ -130,17 +139,17 @@ public class DetailActivity extends AppCompatActivity {
      */
     public void modifyProductQuantity(View view) {
         int productQty = mProduct.getmQuantity();
-        if (view.getId() == R.id.increase_qty_button) {
-            // Increase the quantity of the product by 1.
-            productQty = productQty + 1;
-            updateProductQuantity(productQty);
-        } else {
-            // Decrease the quantity of the product by 1 only if it wouldn't result a negative qty.
-            if (productQty > 0) {
-                productQty = productQty - 1;
-                updateProductQuantity(productQty);
-            }
-        }
+//        if (view.getId() == R.id.increase_qty_button) {
+//            // Increase the quantity of the product by 1.
+//            productQty = productQty + 1;
+//            updateProductQuantity(productQty);
+//        } else {
+//            // Decrease the quantity of the product by 1 only if it wouldn't result a negative qty.
+//            if (productQty > 0) {
+//                productQty = productQty - 1;
+//                updateProductQuantity(productQty);
+//            }
+//        }
     }
 
     /**
@@ -165,9 +174,10 @@ public class DetailActivity extends AppCompatActivity {
      */
     private void populateViewsWithProductData() {
         String photoPath = mProduct.getmPhotoPath();
-//        mProductPhotoImageView.setTag(photoPath);
+        mProductPhotoImageView.setTag(photoPath);
         if (!TextUtils.isEmpty(photoPath)) {
-            Glide.with(getApplicationContext()).load(photoPath).into(mProductPhotoImageView);
+//            Glide.with(getApplicationContext()).load(photoPath).into(mProductPhotoImageView);
+            new LoadProductPhotoAsync(this, mProductPhotoImageView).execute(photoPath);
         }
 
         TextView productNameTextView = (TextView) findViewById(R.id.product_name_text_view);

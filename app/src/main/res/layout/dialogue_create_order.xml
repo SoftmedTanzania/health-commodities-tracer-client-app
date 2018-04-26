@@ -1,0 +1,309 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:app_ms="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/viewContainer"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <android.support.v4.view.ViewPager
+        android:id="@+id/viewPagerVertical"
+        android:layout_width="fill_parent"
+        android:layout_height="540dp">
+
+        <LinearLayout
+            android:id="@+id/add_product_layout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingRight="@dimen/activity_horizontal_margin"
+            android:paddingTop="16dp">
+
+            <fr.ganfra.materialspinner.MaterialSpinner
+                android:id="@+id/spin_category"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:divider="@null"
+                android:textSize="14sp"
+                app_ms:ms_alignLabels="false"
+                app_ms:ms_alwaysShowFloatingLabel="true"
+                app_ms:ms_arrowColor="@color/black"
+                app_ms:ms_arrowSize="12dp"
+                app_ms:ms_baseColor="@color/card_grid_tex"
+                app_ms:ms_enableErrorLabel="false"
+                app_ms:ms_enableFloatingLabel="true"
+                app_ms:ms_errorColor="@color/red_500"
+                app_ms:ms_floatingLabelColor="@color/white"
+                app_ms:ms_floatingLabelText="Category"
+                app_ms:ms_highlightColor="@color/card_grid_text"
+                app_ms:ms_hint="Item Category"
+                app_ms:ms_hintColor="#b3b3b3"
+                app_ms:ms_hintTextSize="14sp"
+                app_ms:ms_multiline="false" />
+
+            <fr.ganfra.materialspinner.MaterialSpinner
+                android:id="@+id/sub_category"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:divider="@null"
+                android:textSize="14sp"
+                app_ms:ms_alignLabels="false"
+                app_ms:ms_alwaysShowFloatingLabel="true"
+                app_ms:ms_arrowColor="@color/black"
+                app_ms:ms_arrowSize="12dp"
+                app_ms:ms_enableErrorLabel="false"
+                app_ms:ms_enableFloatingLabel="true"
+                app_ms:ms_errorColor="@color/red_500"
+                app_ms:ms_floatingLabelColor="@color/white"
+                app_ms:ms_floatingLabelText="Category"
+                app_ms:ms_highlightColor="@color/card_grid_text"
+                app_ms:ms_hint="Item Sub Category"
+                app_ms:ms_hintColor="#b3b3b3"
+                app_ms:ms_hintTextSize="14sp"
+                app_ms:ms_multiline="false" />
+
+            <fr.ganfra.materialspinner.MaterialSpinner
+                android:id="@+id/type"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:divider="@null"
+                android:textSize="14sp"
+                app_ms:ms_alignLabels="false"
+                app_ms:ms_alwaysShowFloatingLabel="true"
+                app_ms:ms_arrowColor="@color/black"
+                app_ms:ms_arrowSize="12dp"
+                app_ms:ms_enableErrorLabel="false"
+                app_ms:ms_enableFloatingLabel="true"
+                app_ms:ms_errorColor="@color/red_500"
+                app_ms:ms_floatingLabelColor="@color/white"
+                app_ms:ms_floatingLabelText="Category"
+                app_ms:ms_highlightColor="@color/card_grid_text"
+                app_ms:ms_hint="Sub Category Types"
+                app_ms:ms_hintColor="#b3b3b3"
+                app_ms:ms_hintTextSize="14sp"
+                app_ms:ms_multiline="false" />
+
+            <fr.ganfra.materialspinner.MaterialSpinner
+                android:id="@+id/unit_of_measure"
+                android:visibility="gone"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:divider="@null"
+                android:textSize="14sp"
+                app_ms:ms_alignLabels="false"
+                app_ms:ms_alwaysShowFloatingLabel="true"
+                app_ms:ms_arrowColor="@color/black"
+                app_ms:ms_arrowSize="12dp"
+                app_ms:ms_enableErrorLabel="false"
+                app_ms:ms_enableFloatingLabel="true"
+                app_ms:ms_errorColor="@color/red_500"
+                app_ms:ms_floatingLabelColor="@color/white"
+                app_ms:ms_floatingLabelText="Category"
+                app_ms:ms_highlightColor="@color/card_grid_text"
+                app_ms:ms_hint="Sub Category Types"
+                app_ms:ms_hintColor="#b3b3b3"
+                app_ms:ms_hintTextSize="14sp"
+                app_ms:ms_multiline="false" />
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Product Description"
+                android:textColor="@color/colorPrimary"
+                android:textSize="14sp" />
+
+            <View
+                android:layout_width="60dp"
+                android:layout_height="3dp"
+                android:layout_below="@id/clinical_information_title"
+                android:layout_marginTop="8dp"
+                android:background="@color/card_separator" />
+
+            <TextView
+                android:id="@+id/product_description"
+                style="@style/ProductDetailsTextInputEditText"
+                android:editable="false"
+                android:hint="Other Description"
+                android:inputType="text|textCapCharacters" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Product Price"
+                android:textColor="@color/colorPrimary"
+                android:textSize="14sp" />
+
+            <View
+                android:layout_width="60dp"
+                android:layout_height="3dp"
+                android:layout_below="@id/clinical_information_title"
+                android:layout_marginTop="8dp"
+                android:background="@color/card_separator" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Tsh 6,000/Kg" />
+
+
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/product_name_text_input_layout"
+                style="@style/ProductDetailsTextInputLayout"
+                android:visibility="gone">
+
+                <android.support.design.widget.TextInputEditText
+                    style="@style/ProductDetailsTextInputEditText"
+                    android:hint="@string/edit_text_hint_product_name"
+                    android:inputType="text|textCapSentences" />
+
+            </android.support.design.widget.TextInputLayout>
+
+
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/product_supplier_email_text_input_layout"
+                style="@style/ProductDetailsTextInputLayout">
+
+                <android.support.design.widget.TextInputEditText
+                    style="@style/ProductDetailsTextInputEditText"
+                    android:hint="@string/edit_text_hint_product_supplier_email"
+                    android:inputType="textEmailAddress"
+                    android:visibility="gone" />
+
+            </android.support.design.widget.TextInputLayout>
+
+
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/product_quantity_text_input_layout"
+                style="@style/ProductDetailsTextInputLayout">
+
+                <android.support.design.widget.TextInputEditText
+                    style="@style/ProductDetailsTextInputEditText.ProductQuantity"
+                    android:hint="@string/edit_text_hint_product_quantity"
+                    android:inputType="number" />
+
+            </android.support.design.widget.TextInputLayout>
+
+            <RelativeLayout
+                android:id="@+id/confirmation_layout"
+                android:layout_width="match_parent"
+                android:layout_height="56dp"
+                android:layout_marginBottom="8dp"
+                android:layout_marginTop="16dp"
+                android:visibility="visible">
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerHorizontal="true"
+                    android:orientation="horizontal">
+
+                    <android.support.v7.widget.AppCompatButton
+                        android:id="@+id/current_location"
+                        android:layout_width="wrap_content"
+                        android:layout_height="48dp"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginBottom="8dp"
+                        android:layout_marginRight="8dp"
+                        android:elevation="4dp"
+                        android:scaleType="centerInside"
+                        android:text="Add Product" />
+
+                    <android.support.v7.widget.AppCompatButton
+                        android:id="@+id/another_location"
+                        android:layout_width="wrap_content"
+                        android:layout_height="48dp"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginBottom="8dp"
+                        android:elevation="4dp"
+                        android:paddingLeft="16dp"
+                        android:paddingRight="16dp"
+                        android:scaleType="centerInside"
+                        android:text="Add Product via image" />
+                </LinearLayout>
+            </RelativeLayout>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/add_product_with_image"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:orientation="vertical">
+
+            <FrameLayout
+                android:id="@+id/product_photo_container"
+                style="@style/ProductPhotoContainer">
+
+                <ImageView
+                    android:id="@+id/product_photo_image_view"
+                    style="@style/ProductPhotoImageView"/>
+
+            </FrameLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:layout_marginLeft="16dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginRight="16dp"
+                android:layout_width="248dp"
+                android:id="@+id/product_description_text_input_layout"
+                style="@style/ProductDetailsTextInputLayout">
+                <android.support.design.widget.TextInputEditText
+                    style="@style/ProductDetailsTextInputEditText"
+                    android:hint="Product Description"
+                    android:inputType="text"/>
+
+            </android.support.design.widget.TextInputLayout>
+
+            <android.support.design.widget.TextInputLayout
+                android:id="@+id/product_quantity_text_input_layout"
+                android:layout_width="248dp"
+                style="@style/ProductDetailsTextInputLayout">
+                <android.support.design.widget.TextInputEditText
+                    style="@style/ProductDetailsTextInputEditText.ProductQuantity"
+                    android:hint="@string/edit_text_hint_product_quantity"
+                    android:inputType="number"/>
+
+            </android.support.design.widget.TextInputLayout>
+
+            <Button
+                android:id="@+id/btn_done"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="16dp"
+                android:layout_marginTop="25dp"
+                android:paddingLeft="20dp"
+                android:paddingRight="20dp"
+                android:text="Add Product"
+                android:textSize="14dp" />
+
+        </LinearLayout>
+
+
+    </android.support.v4.view.ViewPager>
+
+    <ProgressBar
+        android:id="@+id/progressBar"
+        android:layout_width="30dp"
+        android:layout_height="wrap_content"
+        android:layout_alignBottom="@id/viewPagerVertical"
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="center"
+        android:indeterminateTintMode="src_atop"
+        android:paddingBottom="48dp"
+        android:tint="@color/white"
+        android:visibility="gone" />
+
+
+
+
+</RelativeLayout>
