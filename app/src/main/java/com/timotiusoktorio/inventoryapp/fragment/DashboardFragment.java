@@ -214,7 +214,7 @@ public class DashboardFragment extends Fragment {
                     getResources().getDrawable(R.drawable.ic_content_paste_white_24dp)));
         }
 
-        PieDataSet dataSet = new PieDataSet(entries, "Categories");
+        PieDataSet dataSet = new PieDataSet(entries, "Category");
 
         dataSet.setDrawIcons(false);
 

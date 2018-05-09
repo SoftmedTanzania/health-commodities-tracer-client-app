@@ -19,6 +19,20 @@
             android:paddingLeft="@dimen/activity_horizontal_margin"
             android:paddingRight="@dimen/activity_horizontal_margin"
             android:paddingTop="16dp">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Product Details"
+                android:textColor="@color/colorPrimary"
+                android:textSize="24sp" />
+
+            <View
+                android:layout_width="60dp"
+                android:layout_height="3dp"
+                android:layout_below="@id/clinical_information_title"
+                android:layout_marginTop="8dp"
+                android:background="@color/card_separator" />
 
             <fr.ganfra.materialspinner.MaterialSpinner
                 android:id="@+id/spin_category"
@@ -127,6 +141,7 @@
                 android:background="@color/card_separator" />
 
             <TextView
+                android:layout_marginTop="8dp"
                 android:id="@+id/product_description"
                 style="@style/ProductDetailsTextInputEditText"
                 android:editable="false"
@@ -149,6 +164,7 @@
                 android:background="@color/card_separator" />
 
             <TextView
+                android:layout_marginTop="8dp"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Tsh 6,000/Kg" />

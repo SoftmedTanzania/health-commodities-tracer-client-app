@@ -1,9 +1,7 @@
-package com.timotiusoktorio.inventoryapp.activity;
+package com.timotiusoktorio.inventoryapp.fragment;
 
 import android.Manifest;
 import android.app.Activity;
-import android.app.DialogFragment;
-import android.app.Fragment;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
@@ -24,13 +22,11 @@ import android.widget.TextView;
 
 import com.timotiusoktorio.inventoryapp.LoadProductPhotoAsync;
 import com.timotiusoktorio.inventoryapp.R;
+import com.timotiusoktorio.inventoryapp.activity.AddProductActivity;
 import com.timotiusoktorio.inventoryapp.database.ProductDbHelper;
-import com.timotiusoktorio.inventoryapp.fragment.ProductPhotoDialogFragment;
 import com.timotiusoktorio.inventoryapp.model.Model;
 import com.timotiusoktorio.inventoryapp.model.SubCategoryModel;
 import com.timotiusoktorio.inventoryapp.model.Type;
-
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;

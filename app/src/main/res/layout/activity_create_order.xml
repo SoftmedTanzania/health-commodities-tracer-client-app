@@ -21,43 +21,57 @@
             android:fitsSystemWindows="true"
             app:contentScrim="?attr/colorPrimary"
             app:toolbarId="@+id/toolbar">
-            <LinearLayout
-                android:orientation="vertical"
+            <RelativeLayout
                 android:layout_marginTop="48dp"
                 android:layout_marginLeft="32dp"
                 android:layout_marginRight="32dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content">
                 <TextView
-                    android:textStyle="bold"
+                    android:id="@+id/title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Create new Order"
                     android:textSize="24sp"
+                    android:textStyle="bold"/>
+                <TextView
+                    android:layout_marginTop="32dp"
+                    android:layout_below="@id/title"
+                    android:id="@+id/agro_dealer_name"
+                    android:textStyle="bold"
+                    android:textSize="18sp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Kilimo Shop"/>
 
                 <TextView
+                    android:layout_below="@id/agro_dealer_name"
                     android:textStyle="bold"
-                    android:textSize="16sp"
+                    android:textSize="15sp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:text="Kasulu"/>
 
 
                 <TextView
-                    android:layout_marginTop="16dp"
+                    android:layout_alignTop="@id/agro_dealer_name"
+                    android:id="@+id/estimated_cost"
+                    android:layout_alignParentRight="true"
                     android:textStyle="bold"
-                    android:textSize="24sp"
-                    android:layout_width="match_parent"
+                    android:textSize="18sp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Tsh 0"/>
                 <TextView
+                    android:layout_below="@id/estimated_cost"
+                    android:layout_alignParentRight="true"
                     android:textStyle="bold"
-                    android:textSize="16sp"
-                    android:layout_width="match_parent"
+                    android:textSize="15sp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Estimated cost"/>
 
-            </LinearLayout>
+            </RelativeLayout>
 
         </android.support.design.widget.CollapsingToolbarLayout>
     </android.support.design.widget.AppBarLayout>
