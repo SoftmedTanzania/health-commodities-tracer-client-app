@@ -9,11 +9,6 @@ import com.google.gson.annotations.SerializedName;
 import java.io.Serializable;
 import java.util.Map;
 
-/**
- * Created by issy on 11/23/17.
- */
-
-
 @Entity
 public class UsersInfo implements Serializable {
 

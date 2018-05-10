@@ -8,10 +8,6 @@ import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 
-/**
- * Created by issy on 11/23/17.
- */
-
 
 @Entity
 public class Transactions implements Serializable {

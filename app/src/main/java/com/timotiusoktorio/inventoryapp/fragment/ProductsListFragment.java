@@ -15,9 +15,9 @@ import com.timotiusoktorio.inventoryapp.R;
 import com.timotiusoktorio.inventoryapp.activity.AddProductActivity;
 import com.timotiusoktorio.inventoryapp.activity.DetailActivity;
 import com.timotiusoktorio.inventoryapp.adapter.ProductAdapter;
-import com.timotiusoktorio.inventoryapp.database.ProductDbHelper;
+import com.timotiusoktorio.inventoryapp.database.AppDatabase;
+import com.timotiusoktorio.inventoryapp.dom.objects.Product;
 import com.timotiusoktorio.inventoryapp.helper.PhotoHelper;
-import com.timotiusoktorio.inventoryapp.model.Product;
 import com.timotiusoktorio.inventoryapp.utility.DividerItemDecoration;
 
 import java.util.ArrayList;
@@ -29,7 +29,7 @@ public class ProductsListFragment extends Fragment implements
     private static final String CONFIRMATION_DIALOG_TAG = "CONFIRMATION_DIALOG_TAG";
     private RecyclerView mRecyclerView;
     private LinearLayout mEmptyView;
-    private ProductDbHelper mDbHelper;
+    private AppDatabase database;
     private ProductAdapter mAdapter;
 
     public ProductsListFragment() {
@@ -64,7 +64,7 @@ public class ProductsListFragment extends Fragment implements
         mRecyclerView = (RecyclerView) v.findViewById(R.id.recycler_view);
         mEmptyView = (LinearLayout) v.findViewById(R.id.empty_view);
 
-        mDbHelper = ProductDbHelper.getInstance(getActivity().getApplicationContext());
+        database = AppDatabase.getDatabase(getActivity().getApplicationContext());
         mAdapter = new ProductAdapter(getActivity(), new ArrayList<Product>());
         mAdapter.setOnItemClickListener(this);
         mAdapter.setOnItemSaleListener(this);
@@ -101,7 +101,8 @@ public class ProductsListFragment extends Fragment implements
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 Product product = mAdapter.decreaseProductQuantity(position);
-                if (product != null) mDbHelper.updateProductQuantity(product.getmId(), product.getmQuantity());
+                //TODO handle updating of agro delers quantity
+//                if (product != null) mDbHelper.updateProductQuantity(product.getmId(), product.getmQuantity());
             }
         };
         ConfirmationDialogFragment dialogFragment = ConfirmationDialogFragment.newInstance(
@@ -123,8 +124,8 @@ public class ProductsListFragment extends Fragment implements
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 mAdapter.deleteProduct(position);
-                mDbHelper.deleteProduct(product.getmId());
-                PhotoHelper.deleteCapturedPhotoFile(product.getmPhotoPath());
+                database.productsModelDao().deleteProduct(product);
+                PhotoHelper.deleteCapturedPhotoFile(product.getPhotoPath());
                 checkEmptyData();
             }
         };
@@ -158,7 +159,7 @@ public class ProductsListFragment extends Fragment implements
     @Override
     public void onResume() {
         super.onResume();
-        List<Product> products = mDbHelper.queryProducts();
+        List<Product> products = database.productsModelDao().getAllProducts();
         mAdapter.refreshData(products);
         checkEmptyData();
     }

@@ -7,11 +7,13 @@ import android.arch.persistence.room.Transaction;
 import android.content.Context;
 
 import com.timotiusoktorio.inventoryapp.dom.dao.CategorieModelDao;
+import com.timotiusoktorio.inventoryapp.dom.dao.ProductsModelDao;
 import com.timotiusoktorio.inventoryapp.dom.dao.SubCategorieModelDao;
 import com.timotiusoktorio.inventoryapp.dom.dao.TransactionModelDao;
 import com.timotiusoktorio.inventoryapp.dom.dao.UnitsModelDao;
 import com.timotiusoktorio.inventoryapp.dom.dao.UserInfoModelDao;
 import com.timotiusoktorio.inventoryapp.dom.objects.Category;
+import com.timotiusoktorio.inventoryapp.dom.objects.Product;
 import com.timotiusoktorio.inventoryapp.dom.objects.SubCategory;
 import com.timotiusoktorio.inventoryapp.dom.objects.Transactions;
 import com.timotiusoktorio.inventoryapp.dom.objects.Unit;
@@ -22,6 +24,7 @@ import com.timotiusoktorio.inventoryapp.dom.objects.UsersInfo;
         entities = {
                 Category.class,
                 SubCategory.class,
+                Product.class,
                 UsersInfo.class,
                 Unit.class,
                 Transactions.class
@@ -43,6 +46,8 @@ public abstract class AppDatabase extends RoomDatabase {
     public abstract CategorieModelDao categoriesModel();
 
     public abstract SubCategorieModelDao subCategoriesModel();
+
+    public abstract ProductsModelDao productsModelDao();
 
     public abstract UnitsModelDao unitsDao();
 

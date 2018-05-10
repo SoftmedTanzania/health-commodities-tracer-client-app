@@ -9,10 +9,6 @@ import com.google.gson.annotations.SerializedName;
 import java.io.Serializable;
 import java.util.ArrayList;
 
-/**
- * Created by issy on 11/23/17.
- */
-
 @Entity
 public class Category implements Serializable {
 

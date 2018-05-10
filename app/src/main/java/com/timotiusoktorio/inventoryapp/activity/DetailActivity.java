@@ -21,10 +21,10 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.timotiusoktorio.inventoryapp.LoadProductPhotoAsync;
 import com.timotiusoktorio.inventoryapp.R;
-import com.timotiusoktorio.inventoryapp.database.ProductDbHelper;
+import com.timotiusoktorio.inventoryapp.database.AppDatabase;
+import com.timotiusoktorio.inventoryapp.dom.objects.Product;
 import com.timotiusoktorio.inventoryapp.fragment.ConfirmationDialogFragment;
 import com.timotiusoktorio.inventoryapp.helper.PhotoHelper;
-import com.timotiusoktorio.inventoryapp.model.Product;
 
 import fr.ganfra.materialspinner.MaterialSpinner;
 
@@ -40,7 +40,7 @@ public class DetailActivity extends AppCompatActivity {
 
     private ImageView mProductPhotoImageView;
     private TextView mProductQuantityTextView;
-    private ProductDbHelper mDbHelper;
+    private AppDatabase database;
     private Product mProduct;
     private static final int REQUEST_CODE_CHOOSE_PHOTO = 1;
     private MaterialSpinner stockAdjustmentReasonSpinner;
@@ -61,8 +61,10 @@ public class DetailActivity extends AppCompatActivity {
     private DialogInterface.OnClickListener mOnPositiveClickListener = new DialogInterface.OnClickListener() {
         @Override
         public void onClick(DialogInterface dialogInterface, int i) {
+
+            //TODO IMPLEMENT DELETION OF PRODUCT
             // Delete the current product from the database and return to MainActivity.
-            mDbHelper.deleteProduct(mProduct.getmId());
+//            mDbHelper.deleteProduct(mProduct.getmId());
             PhotoHelper.deleteCapturedPhotoFile(mProductPhotoImageView.getTag());
             finish();
         }
@@ -77,13 +79,13 @@ public class DetailActivity extends AppCompatActivity {
         mProductQuantityTextView = (TextView) findViewById(R.id.product_quantity_text_view);
 
         // Get an instance of the database helper.
-        mDbHelper = ProductDbHelper.getInstance(getApplicationContext());
+        database =  AppDatabase.getDatabase(this);
 
         // Get the product object which was sent from MainActivity.
         Product product = getIntent().getParcelableExtra(INTENT_EXTRA_PRODUCT);
         // The product object currently doesn't have the complete product information.
         // Get the rest of the product information from the database.
-        mProduct = mDbHelper.queryProductDetails(product);
+        mProduct = database.productsModelDao().getProductById(product.getId());
         stockAdjustmentReasonSpinner = (MaterialSpinner)findViewById(R.id.stock_adjustment_reason);
 
 
@@ -138,7 +140,7 @@ public class DetailActivity extends AppCompatActivity {
      * @param view - Button ('+ QTY' or '- QTY' button).
      */
     public void modifyProductQuantity(View view) {
-        int productQty = mProduct.getmQuantity();
+//        int productQty = mProduct.getmQuantity();
 //        if (view.getId() == R.id.increase_qty_button) {
 //            // Increase the quantity of the product by 1.
 //            productQty = productQty + 1;
@@ -164,7 +166,7 @@ public class DetailActivity extends AppCompatActivity {
 
 //        intent.putExtra(Intent.EXTRA_EMAIL, new String[] { mProduct.getSupplierEmail() });
 
-        intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.email_subject_order_request, mProduct.getmName()));
+        intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.email_subject_order_request, mProduct.getName()));
         if (intent.resolveActivity(getPackageManager()) != null) startActivity(intent);
     }
 
@@ -173,7 +175,7 @@ public class DetailActivity extends AppCompatActivity {
      * be quite long, a separate method is preferable for better readability.
      */
     private void populateViewsWithProductData() {
-        String photoPath = mProduct.getmPhotoPath();
+        String photoPath = mProduct.getPhotoPath();
         mProductPhotoImageView.setTag(photoPath);
         if (!TextUtils.isEmpty(photoPath)) {
 //            Glide.with(getApplicationContext()).load(photoPath).into(mProductPhotoImageView);
@@ -181,20 +183,23 @@ public class DetailActivity extends AppCompatActivity {
         }
 
         TextView productNameTextView = (TextView) findViewById(R.id.product_name_text_view);
-        productNameTextView.setText(mProduct.getmName());
+        productNameTextView.setText(mProduct.getName());
 
         TextView productCodeTextView = (TextView) findViewById(R.id.product_code_text_view);
 //        productCodeTextView.setText(getString(R.string.string_format_product_code, mProduct.getCode()));
 
-        TextView productSupplierTextView = (TextView) findViewById(R.id.product_supplier_text_view);
-        productSupplierTextView.setText(getString(R.string.string_format_product_supplier, mProduct.getmSupplier()));
+        //TODO handle suppliers informations
+//        TextView productSupplierTextView = (TextView) findViewById(R.id.product_supplier_text_view);
+//        productSupplierTextView.setText(getString(R.string.string_format_product_supplier, mProduct.getmSupplier()));
 
         TextView productPriceTextView = (TextView) findViewById(R.id.product_price_text_view);
-        double roundedPrice = Math.round(mProduct.getmPrice() * 10000.0) / 10000.0;
-        productPriceTextView.setText(getString(R.string.string_format_product_price_details, roundedPrice));
+        //todo handle prices
+//        double roundedPrice = Math.round(mProduct.getmPrice() * 10000.0) / 10000.0;
+//        productPriceTextView.setText(getString(R.string.string_format_product_price_details, roundedPrice));
 
+        //todo handle quantity
         mProductQuantityTextView = (TextView) findViewById(R.id.product_quantity_text_view);
-        mProductQuantityTextView.setText(getString(R.string.string_format_product_quantity_details, mProduct.getmQuantity()));
+//        mProductQuantityTextView.setText(getString(R.string.string_format_product_quantity_details, mProduct.getmQuantity()));
     }
 
     /**
@@ -204,9 +209,10 @@ public class DetailActivity extends AppCompatActivity {
      * @param newQuantity - The new product quantity.
      */
     private void updateProductQuantity(int newQuantity) {
-        mProductQuantityTextView.setText(getString(R.string.string_format_product_quantity_details, newQuantity));
-        mProduct.setmQuantity(newQuantity);
-        mDbHelper.updateProductQuantity(mProduct.getmId(), mProduct.getmQuantity());
+        //TODO handle product quantity
+//        mProductQuantityTextView.setText(getString(R.string.string_format_product_quantity_details, newQuantity));
+        //handle quantity
+//        mProduct.setmQuantity(newQuantity);;
     }
 
 

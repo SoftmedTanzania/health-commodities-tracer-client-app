@@ -8,14 +8,18 @@ import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 
+
 @Entity
-public class SubCategory implements Serializable {
+public class Product implements Serializable {
 
     @SerializedName("id")
     private int id;
 
-    @SerializedName("category_id")
-    private int categoryId;
+    @SerializedName("subcategory_id")
+    private int subcategoryId;
+
+    @SerializedName("unit_id")
+    private int unitId;
 
     @PrimaryKey(autoGenerate = false)
     @NonNull
@@ -28,6 +32,8 @@ public class SubCategory implements Serializable {
     @SerializedName("description")
     private String description;
 
+    private String photoPath;
+
     public int getId() {
         return id;
     }
@@ -36,19 +42,28 @@ public class SubCategory implements Serializable {
         this.id = id;
     }
 
-    public int getCategoryId() {
-        return categoryId;
+    public int getSubcategoryId() {
+        return subcategoryId;
     }
 
-    public void setCategoryId(int categoryId) {
-        this.categoryId = categoryId;
+    public void setSubcategoryId(int subcategoryId) {
+        this.subcategoryId = subcategoryId;
     }
 
+    public int getUnitId() {
+        return unitId;
+    }
+
+    public void setUnitId(int unitId) {
+        this.unitId = unitId;
+    }
+
+    @NonNull
     public String getUid() {
         return uid;
     }
 
-    public void setUid(String uid) {
+    public void setUid(@NonNull String uid) {
         this.uid = uid;
     }
 
@@ -66,5 +81,13 @@ public class SubCategory implements Serializable {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public String getPhotoPath() {
+        return photoPath;
+    }
+
+    public void setPhotoPath(String photoPath) {
+        this.photoPath = photoPath;
     }
 }

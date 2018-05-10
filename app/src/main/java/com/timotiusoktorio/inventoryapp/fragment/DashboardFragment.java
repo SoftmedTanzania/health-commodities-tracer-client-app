@@ -31,9 +31,9 @@ import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.github.mikephil.charting.utils.ColorTemplate;
 import com.github.mikephil.charting.utils.MPPointF;
 import com.timotiusoktorio.inventoryapp.R;
-import com.timotiusoktorio.inventoryapp.database.ProductDbHelper;
-import com.timotiusoktorio.inventoryapp.model.Model;
-import com.timotiusoktorio.inventoryapp.model.Product;
+import com.timotiusoktorio.inventoryapp.database.AppDatabase;
+import com.timotiusoktorio.inventoryapp.dom.objects.Category;
+import com.timotiusoktorio.inventoryapp.dom.objects.Product;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -43,12 +43,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import static android.provider.BaseColumns._ID;
-import static com.timotiusoktorio.inventoryapp.database.ProductContract.ProductEntry.COLUMN_CATEGORY_ID;
-import static com.timotiusoktorio.inventoryapp.database.ProductContract.ProductEntry.COLUMN_CATEGORY_SUB_CATEGORY_ID;
-import static com.timotiusoktorio.inventoryapp.database.ProductContract.ProductEntry.COLUMN_TYPE_ID;
-import static com.timotiusoktorio.inventoryapp.database.ProductContract.ProductEntry.TABLE_CATEGORY_SUB_CATEGORY;
-import static com.timotiusoktorio.inventoryapp.database.ProductContract.ProductEntry.TABLE_PRODUCT;
-import static com.timotiusoktorio.inventoryapp.database.ProductContract.ProductEntry.TABLE_TYPE;
 
 public class DashboardFragment extends Fragment {
 
@@ -56,7 +50,7 @@ public class DashboardFragment extends Fragment {
     private BarChart mChart2;
     private List<String> categoryNames = new ArrayList<>();
     private List<Integer> sizes = new ArrayList<>();
-    private ProductDbHelper mDbHelper;
+    private AppDatabase appDatabase;
     private List<Product> products;
     private LinearLayout productBalancesList;
 
@@ -71,7 +65,7 @@ public class DashboardFragment extends Fragment {
 
         View rowview = inflater.inflate(R.layout.fragment_dashboard, container, false);
 
-        mDbHelper = ProductDbHelper.getInstance(getActivity().getApplicationContext());
+        appDatabase = AppDatabase.getDatabase(getActivity().getApplicationContext());
 
 
         productBalancesList = (LinearLayout) rowview.findViewById(R.id.product_balances_list);
@@ -202,7 +196,7 @@ public class DashboardFragment extends Fragment {
 
         @Override
         public String getFormattedValue(float value, AxisBase axis) {
-            return products.get((int)value).getmName().split("-")[1];
+            return products.get((int)value).getName();
         }
     }
 
@@ -265,9 +259,9 @@ public class DashboardFragment extends Fragment {
                 sizes.clear();
 
 
-                List<Model> categories = mDbHelper.getCategories();
+                List<Category> categories = appDatabase.categoriesModel().getAllCategories();
 
-                for(Model model:categories){
+                for(Category category:categories){
                     Cursor c = mDbHelper.query("SELECT * FROM "+TABLE_PRODUCT+
                             " INNER JOIN "+TABLE_TYPE+" ON "+TABLE_PRODUCT+"."+COLUMN_TYPE_ID+" = "+TABLE_TYPE+"."+_ID+
                             " INNER JOIN "+TABLE_CATEGORY_SUB_CATEGORY+" ON "+TABLE_TYPE+"."+COLUMN_CATEGORY_SUB_CATEGORY_ID+" = "+TABLE_CATEGORY_SUB_CATEGORY+"."+_ID +

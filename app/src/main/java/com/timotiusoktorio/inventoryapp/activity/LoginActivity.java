@@ -27,12 +27,14 @@ import com.timotiusoktorio.inventoryapp.R;
 import com.timotiusoktorio.inventoryapp.api.Endpoints;
 import com.timotiusoktorio.inventoryapp.database.AppDatabase;
 import com.timotiusoktorio.inventoryapp.dom.objects.Category;
+import com.timotiusoktorio.inventoryapp.dom.objects.Product;
 import com.timotiusoktorio.inventoryapp.dom.objects.SubCategory;
 import com.timotiusoktorio.inventoryapp.dom.objects.Transactions;
 import com.timotiusoktorio.inventoryapp.dom.objects.Unit;
 import com.timotiusoktorio.inventoryapp.dom.objects.UsersInfo;
 import com.timotiusoktorio.inventoryapp.dom.responces.CategoriesResponse;
 import com.timotiusoktorio.inventoryapp.dom.responces.LoginResponse;
+import com.timotiusoktorio.inventoryapp.dom.responces.ProductsResponse;
 import com.timotiusoktorio.inventoryapp.dom.responces.SubCategoriesResponse;
 import com.timotiusoktorio.inventoryapp.dom.responces.TransactionsResponse;
 import com.timotiusoktorio.inventoryapp.dom.responces.UnitsResponse;
@@ -75,6 +77,7 @@ public class LoginActivity extends BaseActivity {
     private String deviceRegistrationId = "";
     private Endpoints.CategoriesService categoriesService;
     private Endpoints.TransactionServices transactionServices;
+    private Endpoints.ProductsService productsServices;
     private UsersInfo userInfo;
 
     // Session Manager Class
@@ -309,6 +312,7 @@ public class LoginActivity extends BaseActivity {
 
                         categoriesService = ServiceGenerator.createService(Endpoints.CategoriesService.class, session.getUserName(), session.getUserPass());
                         transactionServices = ServiceGenerator.createService(Endpoints.TransactionServices.class, session.getUserName(), session.getUserPass());
+                        productsServices = ServiceGenerator.createService(Endpoints.ProductsService.class, session.getUserName(), session.getUserPass());
 
 
                         new AsyncTask<Void, Void, Void>(){
@@ -446,6 +450,32 @@ public class LoginActivity extends BaseActivity {
             }
         }
 
+    private void callProducts(){
+        loginMessages.setText(getResources().getString(R.string.loading_products));
+        loginMessages.setTextColor(getResources().getColor(R.color.amber_a700));
+        if (session.isLoggedIn()){
+            Call<ProductsResponse> call = productsServices.getProducts();
+            call.enqueue(new Callback<ProductsResponse>() {
+
+                @Override
+                public void onResponse(Call<ProductsResponse> call, Response<ProductsResponse> response) {
+                    //Here will handle the responce from the server
+                    Log.d("ProductsCheck", response.body()+"");
+
+                    addProductsAsyncTask task = new addProductsAsyncTask(response.body().getProducts());
+                    task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                }
+
+                @Override
+                public void onFailure(Call<ProductsResponse> call, Throwable t) {
+                    //Error!
+                    Log.e("", "An error encountered!");
+                    Log.d("SubCategoriesCheck", "failed with "+t.getMessage()+" "+t.toString());
+                }
+            });
+        }
+    }
+
     private void callUnits(){
         loginMessages.setText(getResources().getString(R.string.loading_units));
         loginMessages.setTextColor(getResources().getColor(R.color.amber_a700));
@@ -554,6 +584,40 @@ public class LoginActivity extends BaseActivity {
 
             for (SubCategory mList : results){
                 baseDatabase.subCategoriesModel().addSubCategory(mList);
+                Log.d("InitialSync", "SubCategory  : "+mList.getName());
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            callProducts();
+        }
+    }
+
+    class addProductsAsyncTask extends AsyncTask<Void, Void, Void> {
+
+        List<Product> results;
+
+        addProductsAsyncTask(List<Product> responces){
+            this.results = responces;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            loginMessages.setText("Finalizing Categories..");
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+
+            Log.d("InitialSync", "Products Response size : "+results.size());
+
+            for (Product mList : results){
+                baseDatabase.productsModelDao().addProduct(mList);
                 Log.d("InitialSync", "SubCategory  : "+mList.getName());
             }
 

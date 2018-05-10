@@ -16,7 +16,7 @@ import static android.arch.persistence.room.OnConflictStrategy.REPLACE;
 public interface SubCategorieModelDao {
 
     @Query("select * from SubCategory where categoryId = :categoryId")
-    List<SubCategory> getSubCategoryByCategoryId(Long categoryId);
+    List<SubCategory> getSubCategoryByCategoryId(int categoryId);
 
     @Query("select * from SubCategory ")
     List<SubCategory> getSubCategories();

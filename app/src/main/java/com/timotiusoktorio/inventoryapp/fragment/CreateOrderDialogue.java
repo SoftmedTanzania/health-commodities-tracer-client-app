@@ -23,10 +23,10 @@ import android.widget.TextView;
 import com.timotiusoktorio.inventoryapp.LoadProductPhotoAsync;
 import com.timotiusoktorio.inventoryapp.R;
 import com.timotiusoktorio.inventoryapp.activity.AddProductActivity;
-import com.timotiusoktorio.inventoryapp.database.ProductDbHelper;
-import com.timotiusoktorio.inventoryapp.model.Model;
-import com.timotiusoktorio.inventoryapp.model.SubCategoryModel;
-import com.timotiusoktorio.inventoryapp.model.Type;
+import com.timotiusoktorio.inventoryapp.database.AppDatabase;
+import com.timotiusoktorio.inventoryapp.dom.objects.Category;
+import com.timotiusoktorio.inventoryapp.dom.objects.Product;
+import com.timotiusoktorio.inventoryapp.dom.objects.SubCategory;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -43,13 +43,12 @@ public class CreateOrderDialogue extends android.support.v4.app.DialogFragment {
     double longitude;
     double latitude;
     private RelativeLayout dialogueLayout;
-    private ProductDbHelper mDbHelper;
-    private MaterialSpinner categorySpinner,subCategorySpinner,typeSpinner;
-    private String subCategoryName,typeName;
-    private List<SubCategoryModel> subCategories;
-    private List<Type> types;
+    private MaterialSpinner categorySpinner,subCategorySpinner, productsSpinner;
+    private List<SubCategory> subCategories;
+    private List<Product> products;
     private TextView description;
     private long typeId;
+    public static AppDatabase baseDatabase;
     private static final String PRODUCT_PHOTO_DIALOG_TAG = "PRODUCT_PHOTO_DIALOG_TAG";
     /**
      * Permissions required to read and write contacts. Used by the {@link AddProductActivity}.
@@ -73,6 +72,7 @@ public class CreateOrderDialogue extends android.support.v4.app.DialogFragment {
         super.onCreate(savedInstanceState);
         setRetainInstance(true);
         final Activity activity = getActivity();
+        baseDatabase = AppDatabase.getDatabase(getActivity());
         activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
     }
 
@@ -97,18 +97,17 @@ public class CreateOrderDialogue extends android.support.v4.app.DialogFragment {
         description = (TextView) dialogueLayout.findViewById(R.id.product_description);
         categorySpinner = (MaterialSpinner) dialogueLayout.findViewById(R.id.spin_category);
         subCategorySpinner = (MaterialSpinner) dialogueLayout.findViewById(R.id.sub_category);
-        typeSpinner = (MaterialSpinner) dialogueLayout.findViewById(R.id.type);
+        productsSpinner = (MaterialSpinner) dialogueLayout.findViewById(R.id.type);
 
 
 
 
-        mDbHelper = ProductDbHelper.getInstance(getActivity().getApplicationContext());
 
-        List<Model> categories = mDbHelper.getCategories();
+        List<Category> categories = baseDatabase.categoriesModel().getAllCategories();
 
         final List<String> categoryStrings= new ArrayList<>();
-        for(Model model:categories){
-            categoryStrings.add(model.getmName());
+        for(Category category:categories){
+            categoryStrings.add(category.getName());
         }
 
         ArrayAdapter<String> spinAdapter = new ArrayAdapter<String>(getActivity(), R.layout.simple_spinner_item_black, categoryStrings);
@@ -118,11 +117,11 @@ public class CreateOrderDialogue extends android.support.v4.app.DialogFragment {
         categorySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                subCategories = mDbHelper.getSubCategories(i+1);
+                subCategories = baseDatabase.subCategoriesModel().getSubCategoryByCategoryId(i+1);
 
                 final List<String> subCategoryStrings= new ArrayList<>();
-                for(SubCategoryModel subCategoryModel:subCategories){
-                    subCategoryStrings.add(subCategoryModel.getmName());
+                for(SubCategory subCategory:subCategories){
+                    subCategoryStrings.add(subCategory.getName());
                 }
 
                 ArrayAdapter<String> spinAdapter = new ArrayAdapter<String>(getActivity(), R.layout.simple_spinner_item_black, subCategoryStrings);
@@ -140,23 +139,21 @@ public class CreateOrderDialogue extends android.support.v4.app.DialogFragment {
         subCategorySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                types = new ArrayList<>();
+                products = new ArrayList<>();
                 try {
-                    subCategoryName = subCategories.get(i).getmName();
-                    types = mDbHelper.getTypes(subCategories.get(i).getmCategorySubCatogoryId());
+                    products = baseDatabase.productsModelDao().getProductsBySubCategoryId(subCategories.get(i).getId());
                 }catch (Exception e){
                     e.printStackTrace();
-                    subCategoryName="";
                 }
 
-                final List<String> typesStrings= new ArrayList<>();
-                for(Type type:types){
-                    typesStrings.add(type.getmName());
+                final List<String> productsNames= new ArrayList<>();
+                for(Product product:products){
+                    productsNames.add(product.getName());
                 }
 
-                ArrayAdapter<String> spinAdapter = new ArrayAdapter<String>(getActivity(), R.layout.simple_spinner_item_black, typesStrings);
+                ArrayAdapter<String> spinAdapter = new ArrayAdapter<String>(getActivity(), R.layout.simple_spinner_item_black, productsNames);
                 spinAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item_black);
-                typeSpinner.setAdapter(spinAdapter);
+                productsSpinner.setAdapter(spinAdapter);
 
             }
 
@@ -166,16 +163,14 @@ public class CreateOrderDialogue extends android.support.v4.app.DialogFragment {
             }
         });
 
-        typeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        productsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 try {
-                    typeName = types.get(i).getmName();
-                    description.setText(types.get(i).getmDescritption());
-                    typeId = types.get(i).getmId();
+                    description.setText(products.get(i).getDescription());
+                    typeId = products.get(i).getId();
                 }catch (Exception e){
                     typeId = -1;
-                    typeName = "";
                     description.setText("");
                 }
 
