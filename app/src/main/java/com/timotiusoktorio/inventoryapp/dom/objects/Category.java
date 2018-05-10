@@ -1,6 +1,8 @@
 package com.timotiusoktorio.inventoryapp.dom.objects;
 
 import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.PrimaryKey;
+import android.support.annotation.NonNull;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -17,6 +19,8 @@ public class Category implements Serializable {
     @SerializedName("id")
     private int id;
 
+    @PrimaryKey(autoGenerate = false)
+    @NonNull
     @SerializedName("uid")
     private String uid;
 

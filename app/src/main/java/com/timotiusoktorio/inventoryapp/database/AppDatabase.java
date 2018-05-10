@@ -3,14 +3,17 @@ package com.timotiusoktorio.inventoryapp.database;
 import android.arch.persistence.room.Database;
 import android.arch.persistence.room.Room;
 import android.arch.persistence.room.RoomDatabase;
+import android.arch.persistence.room.Transaction;
 import android.content.Context;
 
 import com.timotiusoktorio.inventoryapp.dom.dao.CategorieModelDao;
 import com.timotiusoktorio.inventoryapp.dom.dao.SubCategorieModelDao;
+import com.timotiusoktorio.inventoryapp.dom.dao.TransactionModelDao;
 import com.timotiusoktorio.inventoryapp.dom.dao.UnitsModelDao;
 import com.timotiusoktorio.inventoryapp.dom.dao.UserInfoModelDao;
 import com.timotiusoktorio.inventoryapp.dom.objects.Category;
 import com.timotiusoktorio.inventoryapp.dom.objects.SubCategory;
+import com.timotiusoktorio.inventoryapp.dom.objects.Transactions;
 import com.timotiusoktorio.inventoryapp.dom.objects.Unit;
 import com.timotiusoktorio.inventoryapp.dom.objects.UsersInfo;
 
@@ -20,7 +23,8 @@ import com.timotiusoktorio.inventoryapp.dom.objects.UsersInfo;
                 Category.class,
                 SubCategory.class,
                 UsersInfo.class,
-                Unit.class
+                Unit.class,
+                Transactions.class
         },
         version = 1)
 
@@ -38,9 +42,11 @@ public abstract class AppDatabase extends RoomDatabase {
 
     public abstract CategorieModelDao categoriesModel();
 
-    public abstract SubCategorieModelDao subCategoryModel();
+    public abstract SubCategorieModelDao subCategoriesModel();
 
-    public abstract UnitsModelDao UnitDao();
+    public abstract UnitsModelDao unitsDao();
+
+    public abstract TransactionModelDao transactionsDao();
 
     public abstract UserInfoModelDao userInfoDao();
 

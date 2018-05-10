@@ -14,7 +14,7 @@ import java.io.Serializable;
 
 
 @Entity
-public class Transaction implements Serializable {
+public class Transactions implements Serializable {
 
     @SerializedName("id")
     private int id;

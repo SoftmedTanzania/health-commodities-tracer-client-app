@@ -5,7 +5,7 @@ import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.Query;
 
-import com.timotiusoktorio.inventoryapp.dom.objects.Transaction;
+import com.timotiusoktorio.inventoryapp.dom.objects.Transactions;
 
 import java.util.List;
 
@@ -21,11 +21,11 @@ import static android.arch.persistence.room.OnConflictStrategy.REPLACE;
 @Dao
 public interface TransactionModelDao {
 
-    @Query("select * from `Transaction`")
-    LiveData<List<Transaction>> getTransactions();
+    @Query("select * from Transactions")
+    LiveData<List<Transactions>> getTransactions();
 
 
     @Insert(onConflict = REPLACE)
-    void addTransaction(Transaction transaction);
+    void addTransactions(Transactions transactions);
 
 }
