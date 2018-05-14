@@ -1,10 +1,12 @@
 package com.timotiusoktorio.inventoryapp.activity;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.design.widget.Snackbar;
@@ -27,27 +29,23 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
 import com.timotiusoktorio.inventoryapp.LoadProductPhotoAsync;
 import com.timotiusoktorio.inventoryapp.R;
-import com.timotiusoktorio.inventoryapp.database.ProductDbHelper;
+import com.timotiusoktorio.inventoryapp.database.AppDatabase;
+import com.timotiusoktorio.inventoryapp.dom.objects.Category;
+import com.timotiusoktorio.inventoryapp.dom.objects.Product;
+import com.timotiusoktorio.inventoryapp.dom.objects.SubCategory;
 import com.timotiusoktorio.inventoryapp.fragment.ProductPhotoDialogFragment;
 import com.timotiusoktorio.inventoryapp.helper.PhotoHelper;
-import com.timotiusoktorio.inventoryapp.model.Model;
-import com.timotiusoktorio.inventoryapp.model.Product;
-import com.timotiusoktorio.inventoryapp.model.SubCategoryModel;
-import com.timotiusoktorio.inventoryapp.model.Type;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.ThreadPoolExecutor;
 
 import fr.ganfra.materialspinner.MaterialSpinner;
 
-/**
- * Created by Coze on 2016-08-03.
- */
 
 public class AddProductActivity extends AppCompatActivity implements DialogInterface.OnClickListener, ActivityCompat.OnRequestPermissionsResultCallback {
 
@@ -77,27 +75,32 @@ public class AddProductActivity extends AppCompatActivity implements DialogInter
     private TextInputLayout mProductPriceTIL;
     private TextInputLayout mProductQuantityTIL;
     private TextView description;
-    private ProductDbHelper mDbHelper;
     private Product mPassedProduct;
     // Global variable to hold the path of the photo file which gets created each time the user
     // capture a photo using camera intent. This is stored globally so the file can be accessed
     // later on. If the user cancel taking a picture via the camera intent or decided to choose
     // a photo from the gallery instead, the file needs to be deleted as it's no longer needed.
     private String mTempPhotoFilePath;
-    private MaterialSpinner categorySpinner,subCategorySpinner,typeSpinner;
-    private List<SubCategoryModel> subCategories;
-    private List<Type> types;
-    private long typeId;
-    private String subCategoryName,typeName;
 
+    private MaterialSpinner categorySpinner,subCategorySpinner, productsSpinner;
+    private List<SubCategory> subCategories;
+    private List<Product> products;
+    private long productId;
+    private String subCategoryName, productName;
+    public static AppDatabase baseDatabase;
+    private List<Category> categories;
+    private  List<String> categoryStrings= new ArrayList<>();;
+
+    @SuppressLint("StaticFieldLeak")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_add_product);
 
+        baseDatabase = AppDatabase.getDatabase(this);
+
         mProductPhotoImageView = (ImageView) findViewById(R.id.product_photo_image_view);
         mProductNameTIL = (TextInputLayout) findViewById(R.id.product_name_text_input_layout);
-//        mProductCodeTIL = (TextInputLayout) findViewById(R.id.product_code_text_input_layout);
         mProductSupplierTIL = (TextInputLayout) findViewById(R.id.product_supplier_text_input_layout);
         mProductSupplierEmailTIL = (TextInputLayout) findViewById(R.id.product_supplier_email_text_input_layout);
         mProductPriceTIL = (TextInputLayout) findViewById(R.id.product_price_text_input_layout);
@@ -107,12 +110,11 @@ public class AddProductActivity extends AppCompatActivity implements DialogInter
 
         categorySpinner = (MaterialSpinner) findViewById(R.id.spin_category);
         subCategorySpinner = (MaterialSpinner) findViewById(R.id.sub_category);
-        typeSpinner = (MaterialSpinner) findViewById(R.id.type);
+        productsSpinner = (MaterialSpinner) findViewById(R.id.type);
 
 
 
 
-        mDbHelper = ProductDbHelper.getInstance(getApplicationContext());
         mPassedProduct = getIntent().getParcelableExtra(INTENT_EXTRA_PRODUCT);
 
         Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
@@ -179,31 +181,51 @@ public class AddProductActivity extends AppCompatActivity implements DialogInter
             }
         });
 
-        List<Model> categories = mDbHelper.getCategories();
 
-        final List<String> categoryStrings= new ArrayList<>();
-        for(Model model:categories){
-            categoryStrings.add(model.getmName());
-        }
+        new AsyncTask<Void, Void, Void>(){
+            @Override
+            protected Void doInBackground(Void... voids) {
+                categories = baseDatabase.categoriesModel().getAllCategories();
+                return null;
+            }
 
-        ArrayAdapter<String> spinAdapter = new ArrayAdapter<String>(this, R.layout.simple_spinner_item_black, categoryStrings);
-        spinAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item_black);
-        categorySpinner.setAdapter(spinAdapter);
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                super.onPostExecute(aVoid);
+                for(Category category:categories){
+                    categoryStrings.add(category.getName());
+                }
+
+                ArrayAdapter<String> spinAdapter = new ArrayAdapter<String>(AddProductActivity.this, R.layout.simple_spinner_item_black, categoryStrings);
+                spinAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item_black);
+                categorySpinner.setAdapter(spinAdapter);
+            }
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+
 
         categorySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                subCategories = mDbHelper.getSubCategories(i+1);
+            public void onItemSelected(AdapterView<?> adapterView, View view, final int i, long l) {
+                new AsyncTask<Void, Void, Void>(){
+                    @Override
+                    protected Void doInBackground(Void... voids) {
+                        subCategories = baseDatabase.subCategoriesModel().getSubCategoryByCategoryId(i+1);
+                        return null;
+                    }
 
-                final List<String> subCategoryStrings= new ArrayList<>();
-                for(SubCategoryModel subCategoryModel:subCategories){
-                    subCategoryStrings.add(subCategoryModel.getmName());
-                }
+                    @Override
+                    protected void onPostExecute(Void aVoid) {
+                        super.onPostExecute(aVoid);
+                        final List<String> subCategoryStrings= new ArrayList<>();
+                        for(SubCategory subCategory:subCategories){
+                            subCategoryStrings.add(subCategory.getName());
+                        }
 
-                ArrayAdapter<String> spinAdapter = new ArrayAdapter<String>(AddProductActivity.this, R.layout.simple_spinner_item_black, subCategoryStrings);
-                spinAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item_black);
-                subCategorySpinner.setAdapter(spinAdapter);
-
+                        ArrayAdapter<String> spinAdapter = new ArrayAdapter<String>(AddProductActivity.this, R.layout.simple_spinner_item_black, subCategoryStrings);
+                        spinAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item_black);
+                        subCategorySpinner.setAdapter(spinAdapter);
+                    }
+                }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             }
 
             @Override
@@ -214,25 +236,36 @@ public class AddProductActivity extends AppCompatActivity implements DialogInter
 
         subCategorySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                types = new ArrayList<>();
-                try {
-                    subCategoryName = subCategories.get(i).getmName();
-                    types = mDbHelper.getTypes(subCategories.get(i).getmCategorySubCatogoryId());
-                }catch (Exception e){
-                    e.printStackTrace();
-                    subCategoryName="";
-                }
+            public void onItemSelected(AdapterView<?> adapterView, View view, final int i, long l) {
 
-                final List<String> typesStrings= new ArrayList<>();
-                for(Type type:types){
-                    typesStrings.add(type.getmName());
-                }
+                new AsyncTask<Void, Void, Void>(){
+                    @Override
+                    protected Void doInBackground(Void... voids) {
+                        products = new ArrayList<>();
+                        try {
+                            subCategoryName = subCategories.get(i).getName();
+                            products = baseDatabase.productsModelDao().getProductsBySubCategoryId(subCategories.get(i).getId());
+                        }catch (Exception e){
+                            e.printStackTrace();
+                            subCategoryName="";
+                        }
+                        return null;
+                    }
 
-                ArrayAdapter<String> spinAdapter = new ArrayAdapter<String>(AddProductActivity.this, R.layout.simple_spinner_item_black, typesStrings);
-                spinAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item_black);
-                typeSpinner.setAdapter(spinAdapter);
+                    @Override
+                    protected void onPostExecute(Void aVoid) {
+                        super.onPostExecute(aVoid);
 
+                        final List<String> ProductsNames= new ArrayList<>();
+                        for(Product product:products){
+                            ProductsNames.add(product.getName());
+                        }
+
+                        ArrayAdapter<String> spinAdapter = new ArrayAdapter<String>(AddProductActivity.this, R.layout.simple_spinner_item_black, ProductsNames);
+                        spinAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item_black);
+                        productsSpinner.setAdapter(spinAdapter);
+                    }
+                }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             }
 
             @Override
@@ -241,16 +274,16 @@ public class AddProductActivity extends AppCompatActivity implements DialogInter
             }
         });
 
-        typeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        productsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 try {
-                    typeName = types.get(i).getmName();
-                    description.setText(types.get(i).getmDescritption());
-                    typeId = types.get(i).getmId();
+                    productName = products.get(i).getName();
+                    description.setText(products.get(i).getDescription());
+                    productId = products.get(i).getId();
                 }catch (Exception e){
-                    typeId = -1;
-                    typeName = "";
+                    productId = -1;
+                    productName = "";
                     description.setText("");
                 }
 
@@ -310,14 +343,16 @@ public class AddProductActivity extends AppCompatActivity implements DialogInter
                 // Otherwise, create a new product object with the data and save it to the database.
                 if (mPassedProduct != null) {
                     buildProductWithUserInputData(mPassedProduct);
-                    mDbHelper.updateProduct(mPassedProduct);
+                    //TODO handle updating of product information
+//                    mDbHelper.updateProduct(mPassedProduct);
                     // Set previousActivityIntent to DetailActivity and pass back the updated product object.
                     previousActivityIntent = new Intent(this, DetailActivity.class);
                     previousActivityIntent.putExtra(INTENT_EXTRA_PRODUCT, mPassedProduct);
                 } else {
                     Product product = new Product();
                     buildProductWithUserInputData(product);
-                    mDbHelper.insertProduct(product);
+                    //TODO handle Adding a new product
+//                    mDbHelper.insertProduct(product);
                     // Set previousActivityIntent to MainActivity.
                     previousActivityIntent = new Intent(this, MainActivity.class);
                 }
@@ -395,17 +430,18 @@ public class AddProductActivity extends AppCompatActivity implements DialogInter
      * populated by the product object.
      */
     private void populateViewsWithPassedProductData() {
-        String photoPath = mPassedProduct.getmPhotoPath();
+        //TODO handle displaying of product photo
+        String photoPath = "";
+//        String photoPath = mPassedProduct.getmPhotoPath();
 //        mProductPhotoImageView.setTag(photoPath);
         if (!TextUtils.isEmpty(photoPath))
             showImage(mProductPhotoImageView,photoPath);
 
 //        mProductNameTIL.getEditText().setText(mPassedProduct.getmName());
-//        mProductCodeTIL.getEditText().setText(mPassedProduct.getCode());
-        mProductSupplierTIL.getEditText().setText(mPassedProduct.getmSupplier());
+//        mProductSupplierTIL.getEditText().setText(mPassedProduct.getmSupplier());
 //        mProductSupplierEmailTIL.getEditText().setText(mPassedProduct.getSupplierEmail());
-        mProductPriceTIL.getEditText().setText(String.valueOf(mPassedProduct.getmPrice()));
-        mProductQuantityTIL.getEditText().setText(String.valueOf(mPassedProduct.getmQuantity()));
+//        mProductPriceTIL.getEditText().setText(String.valueOf(mPassedProduct.getmPrice()));
+//        mProductQuantityTIL.getEditText().setText(String.valueOf(mPassedProduct.getmQuantity()));
     }
 
     /**
@@ -414,13 +450,13 @@ public class AddProductActivity extends AppCompatActivity implements DialogInter
      * @return true if all required inputs are present, false if not present.
      */
     private boolean validateUserInput() {
-       boolean isTypeIdSet = typeId != -1;
+       boolean isTypeIdSet = productId != -1;
        boolean isProductSupplierSet = !TextUtils.isEmpty(mProductSupplierTIL.getEditText().getText());
         boolean isProductPriceSet = !TextUtils.isEmpty(mProductPriceTIL.getEditText().getText());
         boolean isProductQtySet = !TextUtils.isEmpty(mProductQuantityTIL.getEditText().getText());
 
         if (!isTypeIdSet) {
-            typeSpinner.setError(getString(R.string.error_msg_product_type_empty));
+            productsSpinner.setError(getString(R.string.error_msg_product_type_empty));
         }
 
         if (!isProductSupplierSet) {
@@ -444,20 +480,21 @@ public class AddProductActivity extends AppCompatActivity implements DialogInter
      * @param product - The product object.
      */
     private void buildProductWithUserInputData(Product product) {
-        product.setTypeId(typeId);
-        product.setUnitOfMeasureId(1);
-
-        Log.d(TAG,"Product name = "+subCategoryName+" - "+typeName);
-        product.setmName(subCategoryName+" - "+typeName);
+        //TODO handle storing new product transaction
+//        product.setTypeId(productId);
+//        product.setUnitOfMeasureId(1);
+//
+//        Log.d(TAG,"Product name = "+subCategoryName+" - "+ productName);
+//        product.setmName(subCategoryName+" - "+ productName);
 //        product.setCode(mProductCodeTIL.getEditText().getText().toString());
-        product.setmSupplier(mProductSupplierTIL.getEditText().getText().toString());
+//        product.setmSupplier(mProductSupplierTIL.getEditText().getText().toString());
 //        product.setSupplierEmail(mProductSupplierEmailTIL.getEditText().getText().toString());
-        // Get the product photo path from the ImageView tag. The tag might contains null data, so
-        // it needs to be checked. If it's null, set the photo path to an empty string.
-        Object imageViewTag = mProductPhotoImageView.getTag();
-        product.setmPhotoPath( (imageViewTag != null) ? imageViewTag.toString() : "" );
-        product.setmPrice(Double.valueOf(mProductPriceTIL.getEditText().getText().toString()));
-        product.setmQuantity(Integer.valueOf(mProductQuantityTIL.getEditText().getText().toString()));
+//        // Get the product photo path from the ImageView tag. The tag might contains null data, so
+//        // it needs to be checked. If it's null, set the photo path to an empty string.
+//        Object imageViewTag = mProductPhotoImageView.getTag();
+//        product.setmPhotoPath( (imageViewTag != null) ? imageViewTag.toString() : "" );
+//        product.setmPrice(Double.valueOf(mProductPriceTIL.getEditText().getText().toString()));
+//        product.setmQuantity(Integer.valueOf(mProductQuantityTIL.getEditText().getText().toString()));
     }
 
     public void showImage(ImageView v, String photoPath) {

@@ -136,12 +136,10 @@ public class LoginActivity extends BaseActivity {
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-//                if (getAuthenticationCredentials()){
-//                    loginProgress.setVisibility(View.VISIBLE);
-//                    loginUser();
-//                }
-
-                loginUser();
+                if (getAuthenticationCredentials()){
+                    loginProgress.setVisibility(View.VISIBLE);
+                    loginUser();
+                }
             }
         });
 
@@ -195,11 +193,12 @@ public class LoginActivity extends BaseActivity {
 
     private boolean getAuthenticationCredentials(){
 
-        if (!isDeviceRegistered()){
-            loginMessages.setText("Device is Not Registered for Notifications, please Register");
-            return false;
-        }
-        else if (usernameEt.getText().length() <= 0){
+//        if (!isDeviceRegistered()){
+//            loginMessages.setText("Device is Not Registered for Notifications, please Register");
+//            return false;
+//        }
+//        else
+        if (usernameEt.getText().length() <= 0){
             Toast.makeText(this, getResources().getString(R.string.username_required), Toast.LENGTH_SHORT).show();
             return false;
         }else if (passwordEt.getText().length() <= 0){
@@ -207,6 +206,7 @@ public class LoginActivity extends BaseActivity {
             return false;
         }
         else {
+            Log.d(TAG,"obtaining login credentials");
             usernameValue = usernameEt.getText().toString();
             passwordValue = passwordEt.getText().toString();
 
@@ -239,7 +239,7 @@ public class LoginActivity extends BaseActivity {
 
                 @Override
                 protected Void doInBackground(Void... voids) {
-                    usersInfos = baseDatabase.userInfoDao().loggeInUser(usernameValue, passwordValue);
+                    usersInfos = baseDatabase.userInfoDao().loggeInUser(usernameValue);
                     Log.d("LoginActivity", usersInfos.size()+"");
                     return null;
                 }
@@ -284,6 +284,10 @@ public class LoginActivity extends BaseActivity {
             loginButton.setText(getResources().getString(R.string.loading_data));
             loginMessages.setVisibility(View.VISIBLE);
             loginMessages.setText(getResources().getString(R.string.loging_in));
+
+
+            Log.d(TAG, "username : "+usernameValue);
+            Log.d(TAG, "password : "+passwordValue);
 
             //Use Retrofit to make http request calls
             Endpoints.LoginService loginService = ServiceGenerator.createService(Endpoints.LoginService.class, usernameValue, passwordValue);
@@ -519,40 +523,6 @@ public class LoginActivity extends BaseActivity {
         }
     }
 
-    class addSubCategoriesAsyncTask extends AsyncTask<Void, Void, Void> {
-
-        List<SubCategory> results;
-
-        addSubCategoriesAsyncTask(List<SubCategory> responces){
-            this.results = responces;
-        }
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            loginMessages.setText("Finalizing Categories..");
-        }
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-
-            Log.d("InitialSync", "Referal Response size : "+results.size());
-
-            for (SubCategory mList : results){
-                baseDatabase.subCategoriesModel().addSubCategory(mList);
-                Log.d("InitialSync", "SubCategory  : "+mList.getName());
-            }
-
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-            callProducts();
-        }
-    }
-
     class addProductsAsyncTask extends AsyncTask<Void, Void, Void> {
 
         List<ProductsResponse> results;
@@ -575,7 +545,7 @@ public class LoginActivity extends BaseActivity {
             for (ProductsResponse mList : results){
                 baseDatabase.productsModelDao().addProduct(DomConverter.getProduct(mList));
                 baseDatabase.unitsDao().addUnit(DomConverter.getUnit(mList.getUnitResponses().get(0)));
-                Log.d("InitialSync", "SubCategory  : "+mList.getName());
+                Log.d("InitialSync", "Product  : "+mList.getName());
             }
 
             return null;
@@ -585,6 +555,12 @@ public class LoginActivity extends BaseActivity {
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
             //TODO implement loading transactions
+
+            //Call HomeActivity to log in user
+            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            startActivity(intent);
+            LoginActivity.this.finish();
         }
     }
 

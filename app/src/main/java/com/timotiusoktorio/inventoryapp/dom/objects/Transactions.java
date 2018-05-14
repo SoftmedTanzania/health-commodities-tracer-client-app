@@ -15,23 +15,28 @@ public class Transactions implements Serializable {
     @SerializedName("id")
     private int id;
 
-
     @PrimaryKey(autoGenerate = false)
     @NonNull
-    @SerializedName("uid")
-    private String uid;
+    @SerializedName("uuid")
+    private String uuid;
 
     @SerializedName("user_id")
-    private int userId;
+    private int user_id;
+
+    @SerializedName("transactiontype_id")
+    private int transactiontype_id;
 
     @SerializedName("product_id")
-    private String productId;
+    private int product_id;
 
-    @SerializedName("type")
-    private String type;
+    @SerializedName("status_id")
+    private int status_id;
 
     @SerializedName("amount")
     private int amount;
+
+    @SerializedName("price")
+    private int price;
 
     public int getId() {
         return id;
@@ -42,36 +47,44 @@ public class Transactions implements Serializable {
     }
 
     @NonNull
-    public String getUid() {
-        return uid;
+    public String getUuid() {
+        return uuid;
     }
 
-    public void setUid(@NonNull String uid) {
-        this.uid = uid;
+    public void setUuid(@NonNull String uuid) {
+        this.uuid = uuid;
     }
 
-    public int getUserId() {
-        return userId;
+    public int getUser_id() {
+        return user_id;
     }
 
-    public void setUserId(int userId) {
-        this.userId = userId;
+    public void setUser_id(int user_id) {
+        this.user_id = user_id;
     }
 
-    public String getProductId() {
-        return productId;
+    public int getTransactiontype_id() {
+        return transactiontype_id;
     }
 
-    public void setProductId(String productId) {
-        this.productId = productId;
+    public void setTransactiontype_id(int transactiontype_id) {
+        this.transactiontype_id = transactiontype_id;
     }
 
-    public String getType() {
-        return type;
+    public int getProduct_id() {
+        return product_id;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setProduct_id(int product_id) {
+        this.product_id = product_id;
+    }
+
+    public int getStatus_id() {
+        return status_id;
+    }
+
+    public void setStatus_id(int status_id) {
+        this.status_id = status_id;
     }
 
     public int getAmount() {
@@ -80,5 +93,13 @@ public class Transactions implements Serializable {
 
     public void setAmount(int amount) {
         this.amount = amount;
+    }
+
+    public int getPrice() {
+        return price;
+    }
+
+    public void setPrice(int price) {
+        this.price = price;
     }
 }

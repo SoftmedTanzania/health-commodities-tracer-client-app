@@ -1,6 +1,7 @@
 package com.timotiusoktorio.inventoryapp.utils;
 
 import android.text.TextUtils;
+import android.util.Log;
 
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -14,6 +15,7 @@ import retrofit2.converter.gson.GsonConverterFactory;
 public class ServiceGenerator {
 
     public static final String API_BASE_URL = Constants.BASE_URL;
+    private static final String TAG = ServiceGenerator.class.getSimpleName();
 
     private static OkHttpClient.Builder httpClient = new OkHttpClient.Builder();
 
@@ -34,9 +36,11 @@ public class ServiceGenerator {
 
     public static <S> S createService(
             Class<S> serviceClass, String username, String password) {
-        if (!TextUtils.isEmpty(username)
-                && !TextUtils.isEmpty(password)) {
+
+        Log.d(TAG,"creating service : "+serviceClass.getSimpleName());
+        if (!TextUtils.isEmpty(username) && !TextUtils.isEmpty(password)) {
             String authToken = Credentials.basic(username, password);
+            Log.d(TAG,"AuthToken : "+authToken);
             return createService(serviceClass, authToken);
         }
 

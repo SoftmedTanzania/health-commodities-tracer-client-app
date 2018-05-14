@@ -2,6 +2,7 @@ package com.timotiusoktorio.inventoryapp.api;
 
 import com.timotiusoktorio.inventoryapp.dom.objects.Category;
 import com.timotiusoktorio.inventoryapp.dom.objects.SubCategory;
+import com.timotiusoktorio.inventoryapp.dom.objects.TransactionType;
 import com.timotiusoktorio.inventoryapp.dom.objects.Transactions;
 import com.timotiusoktorio.inventoryapp.dom.objects.Unit;
 import com.timotiusoktorio.inventoryapp.dom.objects.UsersInfo;
@@ -27,7 +28,7 @@ public class Endpoints {
 
     public interface LoginService {
 
-        @GET("users/1")
+        @GET("users")
         Call<List<LoginResponse>> basicLogin();
 
     }
@@ -45,7 +46,10 @@ public class Endpoints {
 
     public interface TransactionServices{
         @GET("transactions")
-        Call<TransactionsResponse> getTransactions();
+        Call<List<Transactions>> getTransactions();
+
+        @GET("transactionTypes")
+        Call<List<TransactionType>> getTransactionTypes();
 
 //        @POST("transactions")
 //        Call<CategoriesResponse> postEncounter(@Header("From") String serviceProviderUUID, @Body RequestBody e);

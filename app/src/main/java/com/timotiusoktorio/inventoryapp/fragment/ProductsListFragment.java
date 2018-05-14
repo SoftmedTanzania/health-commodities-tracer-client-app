@@ -1,22 +1,29 @@
 package com.timotiusoktorio.inventoryapp.fragment;
 
+import android.annotation.SuppressLint;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import com.timotiusoktorio.inventoryapp.R;
 import com.timotiusoktorio.inventoryapp.activity.AddProductActivity;
 import com.timotiusoktorio.inventoryapp.activity.DetailActivity;
+import com.timotiusoktorio.inventoryapp.activity.LoginActivity;
+import com.timotiusoktorio.inventoryapp.activity.MainActivity;
 import com.timotiusoktorio.inventoryapp.adapter.ProductAdapter;
 import com.timotiusoktorio.inventoryapp.database.AppDatabase;
 import com.timotiusoktorio.inventoryapp.dom.objects.Product;
+import com.timotiusoktorio.inventoryapp.dom.objects.UsersInfo;
 import com.timotiusoktorio.inventoryapp.helper.PhotoHelper;
 import com.timotiusoktorio.inventoryapp.utility.DividerItemDecoration;
 
@@ -31,6 +38,7 @@ public class ProductsListFragment extends Fragment implements
     private LinearLayout mEmptyView;
     private AppDatabase database;
     private ProductAdapter mAdapter;
+    private List<Product> products;
 
     public ProductsListFragment() {
         // Required empty public constructor
@@ -125,7 +133,9 @@ public class ProductsListFragment extends Fragment implements
             public void onClick(DialogInterface dialogInterface, int i) {
                 mAdapter.deleteProduct(position);
                 database.productsModelDao().deleteProduct(product);
-                PhotoHelper.deleteCapturedPhotoFile(product.getPhotoPath());
+
+                //TODO handle deletion of product photo
+//                PhotoHelper.deleteCapturedPhotoFile(product.getPhotoPath());
                 checkEmptyData();
             }
         };
@@ -156,11 +166,27 @@ public class ProductsListFragment extends Fragment implements
         mEmptyView.setVisibility(isDataEmpty ? View.VISIBLE : View.GONE);
     }
 
+    @SuppressLint("StaticFieldLeak")
     @Override
     public void onResume() {
         super.onResume();
-        List<Product> products = database.productsModelDao().getAllProducts();
-        mAdapter.refreshData(products);
-        checkEmptyData();
+
+        new AsyncTask<Void, Void, Void>(){
+            @Override
+            protected Void doInBackground(Void... voids) {
+                products = database.productsModelDao().getAllProducts();
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                super.onPostExecute(aVoid);
+                mAdapter.refreshData(products);
+                checkEmptyData();
+            }
+
+        }.execute();
+
+
     }
 }

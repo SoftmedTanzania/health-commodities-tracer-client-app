@@ -19,13 +19,9 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.timotiusoktorio.inventoryapp.R;
 import com.timotiusoktorio.inventoryapp.database.AppDatabase;
-import com.timotiusoktorio.inventoryapp.database.ProductDbHelper;
 import com.timotiusoktorio.inventoryapp.fragment.DashboardFragment;
 import com.timotiusoktorio.inventoryapp.fragment.OrdersFragment;
 import com.timotiusoktorio.inventoryapp.fragment.ProductsListFragment;
-import com.timotiusoktorio.inventoryapp.model.CategorySubCategory;
-import com.timotiusoktorio.inventoryapp.model.Model;
-import com.timotiusoktorio.inventoryapp.model.Type;
 import com.timotiusoktorio.inventoryapp.utils.SessionManager;
 
 import java.util.ArrayList;

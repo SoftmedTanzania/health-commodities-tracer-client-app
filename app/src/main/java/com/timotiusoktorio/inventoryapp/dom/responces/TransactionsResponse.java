@@ -2,6 +2,7 @@ package com.timotiusoktorio.inventoryapp.dom.responces;
 
 import com.google.gson.annotations.SerializedName;
 import com.timotiusoktorio.inventoryapp.dom.objects.Category;
+import com.timotiusoktorio.inventoryapp.dom.objects.TransactionType;
 import com.timotiusoktorio.inventoryapp.dom.objects.Transactions;
 
 import java.io.Serializable;
@@ -10,25 +11,32 @@ import java.util.List;
 
 public class TransactionsResponse implements Serializable {
 
-    @SerializedName("success")
-    private boolean success;
+    @SerializedName("id")
+    private int id;
 
-    @SerializedName("data")
-    List<Transactions> transactions;
+    @SerializedName("uuid")
+    private String uuid;
 
-    public boolean isSuccess() {
-        return success;
-    }
+    @SerializedName("user_id")
+    private int user_id;
 
-    public void setSuccess(boolean success) {
-        this.success = success;
-    }
+    @SerializedName("transactiontype_id")
+    private int transactiontype_id;
 
-    public List<Transactions> getTransactions() {
-        return transactions;
-    }
+    @SerializedName("product_id")
+    private int product_id;
 
-    public void setTransactions(List<Transactions> transactions) {
-        this.transactions = transactions;
-    }
+    @SerializedName("status_id")
+    private int status_id;
+
+    @SerializedName("amount")
+    private int amount;
+
+    @SerializedName("price")
+    private int price;
+
+
+    @SerializedName("transactiontype")
+    TransactionType transactionType;
+
 }

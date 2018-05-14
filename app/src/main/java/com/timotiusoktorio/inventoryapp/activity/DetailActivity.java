@@ -175,7 +175,9 @@ public class DetailActivity extends AppCompatActivity {
      * be quite long, a separate method is preferable for better readability.
      */
     private void populateViewsWithProductData() {
-        String photoPath = mProduct.getPhotoPath();
+        //TODO handle showing of product photo
+        String photoPath = "";
+//        String photoPath = mProduct.getPhotoPath();
         mProductPhotoImageView.setTag(photoPath);
         if (!TextUtils.isEmpty(photoPath)) {
 //            Glide.with(getApplicationContext()).load(photoPath).into(mProductPhotoImageView);
@@ -186,7 +188,6 @@ public class DetailActivity extends AppCompatActivity {
         productNameTextView.setText(mProduct.getName());
 
         TextView productCodeTextView = (TextView) findViewById(R.id.product_code_text_view);
-//        productCodeTextView.setText(getString(R.string.string_format_product_code, mProduct.getCode()));
 
         //TODO handle suppliers informations
 //        TextView productSupplierTextView = (TextView) findViewById(R.id.product_supplier_text_view);

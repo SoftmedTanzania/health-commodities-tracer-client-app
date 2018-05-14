@@ -18,8 +18,8 @@ import static android.arch.persistence.room.OnConflictStrategy.REPLACE;
 @Dao
 public interface UserInfoModelDao {
 
-    @Query("select * from UsersInfo where userName = :username and password = :password")
-    List<UsersInfo> loggeInUser(String username, String password);
+    @Query("select * from UsersInfo where userName = :username")
+    List<UsersInfo> loggeInUser(String username);
 
 
     @Insert(onConflict = REPLACE)
