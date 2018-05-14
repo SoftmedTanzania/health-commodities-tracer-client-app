@@ -1,17 +1,20 @@
-package com.timotiusoktorio.inventoryapp.dom.responces;
+package com.timotiusoktorio.inventoryapp.dom.objects;
 
+import android.arch.persistence.room.Entity;
+import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
 
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 
-
-public class SubCategoriesResponse implements Serializable {
+@Entity
+public class Location implements Serializable {
 
     @SerializedName("id")
     private int id;
 
+    @PrimaryKey(autoGenerate = false)
     @NonNull
     @SerializedName("uuid")
     private String uuid;
@@ -19,8 +22,11 @@ public class SubCategoriesResponse implements Serializable {
     @SerializedName("name")
     private String name;
 
-    @SerializedName("description")
-    private String description;
+    @SerializedName("latitude")
+    private double latitude;
+
+    @SerializedName("longitude")
+    private double longitude;
 
     public int getId() {
         return id;
@@ -47,11 +53,20 @@ public class SubCategoriesResponse implements Serializable {
         this.name = name;
     }
 
-    public String getDescription() {
-        return description;
+
+    public double getLatitude() {
+        return latitude;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
     }
 }

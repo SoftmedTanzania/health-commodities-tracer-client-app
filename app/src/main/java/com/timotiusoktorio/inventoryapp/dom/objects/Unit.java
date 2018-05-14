@@ -16,8 +16,8 @@ public class Unit implements Serializable {
 
     @PrimaryKey(autoGenerate = false)
     @NonNull
-    @SerializedName("uid")
-    private String uid;
+    @SerializedName("uuid")
+    private String uuid;
 
     @SerializedName("name")
     private String name;
@@ -33,12 +33,12 @@ public class Unit implements Serializable {
         this.id = id;
     }
 
-    public String getUid() {
-        return uid;
+    public String getUuid() {
+        return uuid;
     }
 
-    public void setUid(String uid) {
-        this.uid = uid;
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 
     public String getName() {

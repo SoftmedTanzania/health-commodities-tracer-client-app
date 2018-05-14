@@ -1,20 +1,21 @@
-package com.timotiusoktorio.inventoryapp.dom.responces;
+package com.timotiusoktorio.inventoryapp.dom.objects;
 
+import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
 import android.support.annotation.NonNull;
 
 import com.google.gson.annotations.SerializedName;
-import com.timotiusoktorio.inventoryapp.dom.objects.Category;
 
 import java.io.Serializable;
-import java.util.List;
 
-
-public class CategoriesResponse implements Serializable {
+@Entity
+public class Level implements Serializable {
 
     @SerializedName("id")
     private int id;
 
+    @PrimaryKey(autoGenerate = false)
+    @NonNull
     @SerializedName("uuid")
     private String uuid;
 
@@ -23,9 +24,6 @@ public class CategoriesResponse implements Serializable {
 
     @SerializedName("description")
     private String description;
-
-    @SerializedName("subcategories")
-    List<SubCategoriesResponse> subCategoriesResponses;
 
     public int getId() {
         return id;
@@ -57,13 +55,5 @@ public class CategoriesResponse implements Serializable {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public List<SubCategoriesResponse> getSubCategoriesResponses() {
-        return subCategoriesResponses;
-    }
-
-    public void setSubCategoriesResponses(List<SubCategoriesResponse> subCategoriesResponses) {
-        this.subCategoriesResponses = subCategoriesResponses;
     }
 }

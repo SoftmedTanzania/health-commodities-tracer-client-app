@@ -7,7 +7,6 @@ import android.support.annotation.NonNull;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
-import java.util.Map;
 
 @Entity
 public class UsersInfo implements Serializable {
@@ -18,14 +17,14 @@ public class UsersInfo implements Serializable {
 
     @PrimaryKey(autoGenerate = false)
     @NonNull
-    @SerializedName("uid")
-    private String uid;
+    @SerializedName("uuid")
+    private String uuid;
 
     @SerializedName("level_id")
-    private String levelId;
+    private int levelId;
 
     @SerializedName("location_id")
-    private String locationId;
+    private int locationId;
 
     @SerializedName("firstname")
     private String firstName;
@@ -42,12 +41,6 @@ public class UsersInfo implements Serializable {
     @SerializedName("username")
     private String username;
 
-    @SerializedName("password")
-    private String password;
-
-    @SerializedName("remember_token")
-    private String rememberToken;
-
     public int getId() {
         return id;
     }
@@ -56,27 +49,27 @@ public class UsersInfo implements Serializable {
         this.id = id;
     }
 
-    public String getUid() {
-        return uid;
+    public String getUuid() {
+        return uuid;
     }
 
-    public void setUid(String uid) {
-        this.uid = uid;
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 
-    public String getLevelId() {
+    public int getLevelId() {
         return levelId;
     }
 
-    public void setLevelId(String levelId) {
+    public void setLevelId(int levelId) {
         this.levelId = levelId;
     }
 
-    public String getLocationId() {
+    public int getLocationId() {
         return locationId;
     }
 
-    public void setLocationId(String locationId) {
+    public void setLocationId(int locationId) {
         this.locationId = locationId;
     }
 
@@ -118,21 +111,5 @@ public class UsersInfo implements Serializable {
 
     public void setUsername(String username) {
         this.username = username;
-    }
-
-    public String getPassword() {
-        return password;
-    }
-
-    public void setPassword(String password) {
-        this.password = password;
-    }
-
-    public String getRememberToken() {
-        return rememberToken;
-    }
-
-    public void setRememberToken(String rememberToken) {
-        this.rememberToken = rememberToken;
     }
 }

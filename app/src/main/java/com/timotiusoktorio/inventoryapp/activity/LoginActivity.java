@@ -26,7 +26,9 @@ import com.rey.material.widget.ProgressView;
 import com.timotiusoktorio.inventoryapp.R;
 import com.timotiusoktorio.inventoryapp.api.Endpoints;
 import com.timotiusoktorio.inventoryapp.database.AppDatabase;
+import com.timotiusoktorio.inventoryapp.dom.DomConverter;
 import com.timotiusoktorio.inventoryapp.dom.objects.Category;
+import com.timotiusoktorio.inventoryapp.dom.objects.Location;
 import com.timotiusoktorio.inventoryapp.dom.objects.Product;
 import com.timotiusoktorio.inventoryapp.dom.objects.SubCategory;
 import com.timotiusoktorio.inventoryapp.dom.objects.Transactions;
@@ -256,8 +258,8 @@ public class LoginActivity extends BaseActivity {
 
                         session.createLoginSession(
                                 loggedInSessions.getUsername(),
-                                loggedInSessions.getUid(),
-                                loggedInSessions.getPassword(),
+                                loggedInSessions.getUuid(),
+                                passwordValue,
                                 loggedInSessions.getLocationId(),
                                 loggedInSessions.getLevelId());
 
@@ -285,11 +287,11 @@ public class LoginActivity extends BaseActivity {
 
             //Use Retrofit to make http request calls
             Endpoints.LoginService loginService = ServiceGenerator.createService(Endpoints.LoginService.class, usernameValue, passwordValue);
-            Call<LoginResponse> call = loginService.basicLogin();
-            call.enqueue(new Callback<LoginResponse >() {
+            Call<List<LoginResponse>> call = loginService.basicLogin();
+            call.enqueue(new Callback<List<LoginResponse> >() {
                 @SuppressLint("StaticFieldLeak")
                 @Override
-                public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
+                public void onResponse(Call<List<LoginResponse>> call, Response<List<LoginResponse>> response) {
 
                     Log.d(TAG,"response = "+response.toString());
                     if (response.isSuccessful()) {
@@ -298,11 +300,10 @@ public class LoginActivity extends BaseActivity {
                         loginMessages.setText(getResources().getString(R.string.success));
 
                         Log.d(TAG,"response body = "+new Gson().toJson(response.body()).toString());
-                        userInfo = response.body().getUsersInfoList().get(0);
+                        userInfo = DomConverter.getUserInfo(response.body().get(0));
 
                         String userName = userInfo.getUsername();
-                        String userUUID = userInfo.getUid();
-
+                        String userUUID = userInfo.getUuid();
                         session.createLoginSession(
                                 userName,
                                 userUUID,
@@ -315,11 +316,14 @@ public class LoginActivity extends BaseActivity {
                         productsServices = ServiceGenerator.createService(Endpoints.ProductsService.class, session.getUserName(), session.getUserPass());
 
 
+                        final Location location = DomConverter.getLocation(response.body().get(0));
+
                         new AsyncTask<Void, Void, Void>(){
                             @Override
                             protected Void doInBackground(Void... voids) {
                                 Log.d(TAG,"userInfo : "+userInfo.toString());
                                 baseDatabase.userInfoDao().addUserInfo(userInfo);
+                                baseDatabase.locationsModelDao().addLocation(location);
                                 return null;
                             }
 
@@ -327,7 +331,7 @@ public class LoginActivity extends BaseActivity {
                             protected void onPostExecute(Void aVoid) {
                                 super.onPostExecute(aVoid);
                                 sendRegistrationToServer(deviceRegistrationId,
-                                        userInfo.getUid());
+                                        userInfo.getUuid());
                             }
                         }.execute();
 
@@ -343,7 +347,7 @@ public class LoginActivity extends BaseActivity {
                 }
 
                 @Override
-                public void onFailure(Call<LoginResponse> call, Throwable t) {
+                public void onFailure(Call<List<LoginResponse>> call, Throwable t) {
                     // something went completely south (like no internet connection)
                     try {
                         Log.d("Error", t.getMessage());
@@ -401,20 +405,20 @@ public class LoginActivity extends BaseActivity {
         loginMessages.setText(getResources().getString(R.string.loading_categories));
         loginMessages.setTextColor(getResources().getColor(R.color.amber_a700));
         if (session.isLoggedIn()){
-            Call<CategoriesResponse> call = categoriesService.getCategories();
-            call.enqueue(new Callback<CategoriesResponse>() {
+            Call<List<CategoriesResponse>> call = categoriesService.getCategories();
+            call.enqueue(new Callback<List<CategoriesResponse>>() {
 
                 @Override
-                public void onResponse(Call<CategoriesResponse> call, Response<CategoriesResponse> response) {
+                public void onResponse(Call<List<CategoriesResponse>> call, Response<List<CategoriesResponse>> response) {
                     //Here will handle the responce from the server
                     Log.d("CategoriesCheck", response.body()+"");
 
-                    addCategoriesAsyncTask task = new addCategoriesAsyncTask(response.body().getCategories());
+                    addCategoriesAsyncTask task = new addCategoriesAsyncTask(response.body());
                     task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                 }
 
                 @Override
-                public void onFailure(Call<CategoriesResponse> call, Throwable t) {
+                public void onFailure(Call<List<CategoriesResponse>> call, Throwable t) {
                     //Error!
                     //createDummyReferralData();
                     Log.e("", "An error encountered!");
@@ -424,79 +428,27 @@ public class LoginActivity extends BaseActivity {
         }
     }
 
-    private void callSubCategories(){
-            loginMessages.setText(getResources().getString(R.string.loading_sub_categories));
-            loginMessages.setTextColor(getResources().getColor(R.color.amber_a700));
-            if (session.isLoggedIn()){
-                Call<SubCategoriesResponse> call = categoriesService.getSubCategories();
-                call.enqueue(new Callback<SubCategoriesResponse>() {
-
-                    @Override
-                    public void onResponse(Call<SubCategoriesResponse> call, Response<SubCategoriesResponse> response) {
-                        //Here will handle the responce from the server
-                        Log.d("SubCategoriesCheck", response.body()+"");
-
-                        addSubCategoriesAsyncTask task = new addSubCategoriesAsyncTask(response.body().getSubCategories());
-                        task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-                    }
-
-                    @Override
-                    public void onFailure(Call<SubCategoriesResponse> call, Throwable t) {
-                        //Error!
-                        Log.e("", "An error encountered!");
-                        Log.d("SubCategoriesCheck", "failed with "+t.getMessage()+" "+t.toString());
-                    }
-                });
-            }
-        }
-
     private void callProducts(){
         loginMessages.setText(getResources().getString(R.string.loading_products));
         loginMessages.setTextColor(getResources().getColor(R.color.amber_a700));
         if (session.isLoggedIn()){
-            Call<ProductsResponse> call = productsServices.getProducts();
-            call.enqueue(new Callback<ProductsResponse>() {
+            Call<List<ProductsResponse>> call = productsServices.getProducts();
+            call.enqueue(new Callback<List<ProductsResponse>>() {
 
                 @Override
-                public void onResponse(Call<ProductsResponse> call, Response<ProductsResponse> response) {
+                public void onResponse(Call<List<ProductsResponse>> call, Response<List<ProductsResponse>> response) {
                     //Here will handle the responce from the server
                     Log.d("ProductsCheck", response.body()+"");
 
-                    addProductsAsyncTask task = new addProductsAsyncTask(response.body().getProducts());
+                    addProductsAsyncTask task = new addProductsAsyncTask(response.body());
                     task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                 }
 
                 @Override
-                public void onFailure(Call<ProductsResponse> call, Throwable t) {
+                public void onFailure(Call<List<ProductsResponse>> call, Throwable t) {
                     //Error!
                     Log.e("", "An error encountered!");
                     Log.d("SubCategoriesCheck", "failed with "+t.getMessage()+" "+t.toString());
-                }
-            });
-        }
-    }
-
-    private void callUnits(){
-        loginMessages.setText(getResources().getString(R.string.loading_units));
-        loginMessages.setTextColor(getResources().getColor(R.color.amber_a700));
-        if (session.isLoggedIn()){
-            Call<UnitsResponse> call = categoriesService.getUnits();
-            call.enqueue(new Callback<UnitsResponse>() {
-
-                @Override
-                public void onResponse(Call<UnitsResponse> call, Response<UnitsResponse> response) {
-                    //Here will handle the responce from the server
-                    Log.d("UnitsCheck", response.body()+"");
-
-                    addUnitsAsyncTask task = new addUnitsAsyncTask(response.body().getUnits());
-                    task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-                }
-
-                @Override
-                public void onFailure(Call<UnitsResponse> call, Throwable t) {
-                    //Error!
-                    Log.e("", "An error encountered!");
-                    Log.d("UnitsCheck", "failed with "+t.getMessage()+" "+t.toString());
                 }
             });
         }
@@ -531,9 +483,9 @@ public class LoginActivity extends BaseActivity {
 
     class addCategoriesAsyncTask extends AsyncTask<Void, Void, Void> {
 
-        List<Category> results;
+        List<CategoriesResponse> results;
 
-        addCategoriesAsyncTask(List<Category> responces){
+        addCategoriesAsyncTask(List<CategoriesResponse> responces){
             this.results = responces;
         }
 
@@ -548,8 +500,12 @@ public class LoginActivity extends BaseActivity {
 
             Log.d("InitialSync", "Referal Response size : "+results.size());
 
-            for (Category mList : results){
-                baseDatabase.categoriesModel().addCategory(mList);
+            for (CategoriesResponse mList : results){
+                baseDatabase.categoriesModel().addCategory(DomConverter.getCategory(mList));
+                List<SubCategory> subCategories = DomConverter.getSubCategories(mList);
+                for(SubCategory subCategory: subCategories){
+                    baseDatabase.subCategoriesModel().addSubCategory(subCategory);
+                }
                 Log.d("InitialSync", "Category  : "+mList.getName());
             }
 
@@ -559,7 +515,7 @@ public class LoginActivity extends BaseActivity {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            callSubCategories();
+            callProducts();
         }
     }
 
@@ -599,9 +555,9 @@ public class LoginActivity extends BaseActivity {
 
     class addProductsAsyncTask extends AsyncTask<Void, Void, Void> {
 
-        List<Product> results;
+        List<ProductsResponse> results;
 
-        addProductsAsyncTask(List<Product> responces){
+        addProductsAsyncTask(List<ProductsResponse> responces){
             this.results = responces;
         }
 
@@ -616,8 +572,9 @@ public class LoginActivity extends BaseActivity {
 
             Log.d("InitialSync", "Products Response size : "+results.size());
 
-            for (Product mList : results){
-                baseDatabase.productsModelDao().addProduct(mList);
+            for (ProductsResponse mList : results){
+                baseDatabase.productsModelDao().addProduct(DomConverter.getProduct(mList));
+                baseDatabase.unitsDao().addUnit(DomConverter.getUnit(mList.getUnitResponses().get(0)));
                 Log.d("InitialSync", "SubCategory  : "+mList.getName());
             }
 
@@ -627,41 +584,7 @@ public class LoginActivity extends BaseActivity {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            callUnits();
-        }
-    }
-
-    class addUnitsAsyncTask extends AsyncTask<Void, Void, Void> {
-
-        List<Unit> results;
-
-        addUnitsAsyncTask(List<Unit> responces){
-            this.results = responces;
-        }
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            loginMessages.setText("Finalizing Units..");
-        }
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-
-            Log.d("InitialSync", "Referal Response size : "+results.size());
-
-            for (Unit mList : results){
-                baseDatabase.unitsDao().addUnit(mList);
-                Log.d("InitialSync", "Unit  : "+mList.getName());
-            }
-
-            return null;
-        }
-
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-            callTransactions();
+            //TODO implement loading transactions
         }
     }
 

@@ -3,7 +3,7 @@ package com.timotiusoktorio.inventoryapp.utils;
 
 public class Constants {
 
-    public static String BASE_URL = "http://45.56.90.103/agra/public/index.php/api/";
+    public static String BASE_URL = "http://45.56.90.103/rucodia/public/index.php/api/";
 
 
     /** Database Names **/

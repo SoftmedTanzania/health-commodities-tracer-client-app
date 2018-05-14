@@ -17,8 +17,8 @@ public class Category implements Serializable {
 
     @PrimaryKey(autoGenerate = false)
     @NonNull
-    @SerializedName("uid")
-    private String uid;
+    @SerializedName("uuid")
+    private String uuid;
 
     @SerializedName("name")
     private String name;
@@ -34,12 +34,12 @@ public class Category implements Serializable {
         this.id = id;
     }
 
-    public String getUid() {
-        return uid;
+    public String getUuid() {
+        return uuid;
     }
 
-    public void setUid(String uid) {
-        this.uid = uid;
+    public void setUuid(String uid) {
+        this.uuid = uid;
     }
 
     public String getName() {

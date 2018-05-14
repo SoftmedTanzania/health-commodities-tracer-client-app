@@ -23,16 +23,14 @@ public class Product implements Serializable {
 
     @PrimaryKey(autoGenerate = false)
     @NonNull
-    @SerializedName("uid")
-    private String uid;
+    @SerializedName("uuid")
+    private String uuid;
 
     @SerializedName("name")
     private String name;
 
     @SerializedName("description")
     private String description;
-
-    private String photoPath;
 
     public int getId() {
         return id;
@@ -59,12 +57,12 @@ public class Product implements Serializable {
     }
 
     @NonNull
-    public String getUid() {
-        return uid;
+    public String getUuid() {
+        return uuid;
     }
 
-    public void setUid(@NonNull String uid) {
-        this.uid = uid;
+    public void setUuid(@NonNull String uuid) {
+        this.uuid = uuid;
     }
 
     public String getName() {
@@ -81,13 +79,5 @@ public class Product implements Serializable {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public String getPhotoPath() {
-        return photoPath;
-    }
-
-    public void setPhotoPath(String photoPath) {
-        this.photoPath = photoPath;
     }
 }

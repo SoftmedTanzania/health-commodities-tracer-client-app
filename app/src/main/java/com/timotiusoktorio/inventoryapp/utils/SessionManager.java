@@ -55,7 +55,7 @@ public class SessionManager {
     /**
      * Create login session
      * */
-    public void createLoginSession(String name, String personUUID, String pass, String locationId, String levelId){
+    public void createLoginSession(String name, String personUUID, String pass, int locationId, int levelId){
         // Storing login value as TRUE
         editor.putBoolean(IS_LOGIN, true);
 
@@ -69,10 +69,10 @@ public class SessionManager {
         editor.putString(USER_PASS, pass);
 
         //Storing Loation ID
-        editor.putString(KEY_LOCATION_ID, locationId);
+        editor.putInt(KEY_LOCATION_ID, locationId);
 
         //Store user level Id
-        editor.putString(KEY_LEVEL_ID, levelId);
+        editor.putInt(KEY_LEVEL_ID, levelId);
 
         // commit changes
         editor.commit();
@@ -97,8 +97,8 @@ public class SessionManager {
         return pref.getString(KEY_UUID, null);
     }
 
-    public String getKeyHfid(){
-        return pref.getString(KEY_LOCATION_ID, null );
+    public int getLocationId(){
+        return pref.getInt(KEY_LOCATION_ID, -1 );
     }
 
     public String getUserName(){
@@ -109,8 +109,8 @@ public class SessionManager {
         return pref.getString(USER_PASS, null);
     }
 
-    public String getUserRoles(){
-        return pref.getString(KEY_LEVEL_ID, null);
+    public int getUserRoles(){
+        return pref.getInt(KEY_LEVEL_ID, -1);
     }
 
     /**

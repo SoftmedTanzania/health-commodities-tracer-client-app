@@ -3,10 +3,10 @@ package com.timotiusoktorio.inventoryapp.dom.responces;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
-import java.util.List;
 
 
-public class ProductsResponse implements Serializable {
+public class LevelResponse implements Serializable {
+
     @SerializedName("id")
     private int id;
 
@@ -18,15 +18,6 @@ public class ProductsResponse implements Serializable {
 
     @SerializedName("description")
     private String description;
-
-    @SerializedName("price")
-    private int price;
-
-    @SerializedName("units")
-    List<UnitsResponse> unitResponses;
-
-    @SerializedName("subcategories")
-    List<SubCategoriesResponse> subcategories;
 
     public int getId() {
         return id;
@@ -58,29 +49,5 @@ public class ProductsResponse implements Serializable {
 
     public void setDescription(String description) {
         this.description = description;
-    }
-
-    public int getPrice() {
-        return price;
-    }
-
-    public void setPrice(int price) {
-        this.price = price;
-    }
-
-    public List<UnitsResponse> getUnitResponses() {
-        return unitResponses;
-    }
-
-    public void setUnitResponses(List<UnitsResponse> unitResponses) {
-        this.unitResponses = unitResponses;
-    }
-
-    public List<SubCategoriesResponse> getSubcategories() {
-        return subcategories;
-    }
-
-    public void setSubcategories(List<SubCategoriesResponse> subcategories) {
-        this.subcategories = subcategories;
     }
 }

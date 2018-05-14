@@ -1,14 +1,11 @@
 package com.timotiusoktorio.inventoryapp.dom.responces;
 
 import com.google.gson.annotations.SerializedName;
-import com.timotiusoktorio.inventoryapp.dom.objects.Category;
-import com.timotiusoktorio.inventoryapp.dom.objects.Unit;
 
 import java.io.Serializable;
-import java.util.List;
 
 
-public class UnitsResponse implements Serializable {
+public class LocationResponse implements Serializable {
 
     @SerializedName("id")
     private int id;
@@ -19,8 +16,11 @@ public class UnitsResponse implements Serializable {
     @SerializedName("name")
     private String name;
 
-    @SerializedName("description")
-    private String description;
+    @SerializedName("latitude")
+    private double latitude;
+
+    @SerializedName("longitude")
+    private double longitude;
 
     public int getId() {
         return id;
@@ -46,11 +46,19 @@ public class UnitsResponse implements Serializable {
         this.name = name;
     }
 
-    public String getDescription() {
-        return description;
+    public double getLatitude() {
+        return latitude;
     }
 
-    public void setDescription(String description) {
-        this.description = description;
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public double getLongitude() {
+        return longitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
     }
 }

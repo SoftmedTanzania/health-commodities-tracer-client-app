@@ -28,25 +28,19 @@ public class Endpoints {
     public interface LoginService {
 
         @GET("users/1")
-        Call<LoginResponse> basicLogin();
+        Call<List<LoginResponse>> basicLogin();
 
     }
 
     public interface CategoriesService {
-        @GET("units")
-        Call<UnitsResponse> getUnits();
-
-        @GET("subcategories")
-        Call<SubCategoriesResponse> getSubCategories();
-
         @GET("categories")
-        Call<CategoriesResponse> getCategories();
+        Call<List<CategoriesResponse>> getCategories();
 
     }
 
     public interface ProductsService {
         @GET("products")
-        Call<ProductsResponse> getProducts();
+        Call<List<ProductsResponse>> getProducts();
     }
 
     public interface TransactionServices{

@@ -11,13 +11,6 @@ import java.util.List;
 
 import static android.arch.persistence.room.OnConflictStrategy.REPLACE;
 
-/**
- * Created by issy on 1/8/18.
- *
- * @issyzac issyzac.iz@gmail.com
- * On Project HFReferralApp
- */
-
 @Dao
 public interface TransactionModelDao {
 
