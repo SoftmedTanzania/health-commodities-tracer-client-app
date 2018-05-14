@@ -59,13 +59,21 @@
         <item>Other Reasons</item>
     </string-array>
 
-    <string name="loading_categories">Loading Categories...</string>
-    <string name="loading_sub_categories">Loading Sub categories...</string>
-    <string name="loading_products">Loading Products...</string>
-    <string name="loading_units">Loading Units...</string>
-    <string name="loading_transactions">Loading Transactions...</string>
-    <string name="loading_data">Loading Data...</string>
-    <string name="loging_in">Loging In...</string>
+    <string name="loading_categories">Loading Categories…</string>
+    <string name="error_loading_categories">Error : Loading Categories…</string>
+    <string name="loading_sub_categories">Loading Sub categories…</string>
+    <string name="loading_products">Loading Products…</string>
+    <string name="error_loading_products">Error: Loading Products…</string>
+    <string name="loading_units">Loading Units…</string>
+    <string name="loading_transactions">Loading Transactions…</string>
+    <string name="error_loading_transactions">Error: Loading Transactions…</string>
+
+
+    <string name="loading_transactions_types">Loading Transaction Types…</string>
+    <string name="error_loading_transaction_types">Error: Loading Transaction Types…</string>
+
+    <string name="loading_data">Loading Data…</string>
+    <string name="loging_in">Loging In…</string>
     <string name="success">Success</string>
 
     <string name="username_required">Please fill the username</string>

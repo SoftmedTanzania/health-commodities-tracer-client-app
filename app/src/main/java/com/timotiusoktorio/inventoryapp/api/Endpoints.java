@@ -48,7 +48,7 @@ public class Endpoints {
         @GET("transactions")
         Call<List<Transactions>> getTransactions();
 
-        @GET("transactionTypes")
+        @GET("transactiontypes")
         Call<List<TransactionType>> getTransactionTypes();
 
 //        @POST("transactions")

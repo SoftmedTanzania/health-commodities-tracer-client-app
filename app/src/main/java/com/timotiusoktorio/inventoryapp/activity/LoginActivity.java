@@ -31,6 +31,7 @@ import com.timotiusoktorio.inventoryapp.dom.objects.Category;
 import com.timotiusoktorio.inventoryapp.dom.objects.Location;
 import com.timotiusoktorio.inventoryapp.dom.objects.Product;
 import com.timotiusoktorio.inventoryapp.dom.objects.SubCategory;
+import com.timotiusoktorio.inventoryapp.dom.objects.TransactionType;
 import com.timotiusoktorio.inventoryapp.dom.objects.Transactions;
 import com.timotiusoktorio.inventoryapp.dom.objects.Unit;
 import com.timotiusoktorio.inventoryapp.dom.objects.UsersInfo;
@@ -427,6 +428,10 @@ public class LoginActivity extends BaseActivity {
                     //createDummyReferralData();
                     Log.e("", "An error encountered!");
                     Log.d("CategoriesCheck", "failed with "+t.getMessage()+" "+t.toString());
+
+
+                    loginMessages.setText(getResources().getString(R.string.error_loading_categories));
+                    loginMessages.setTextColor(getResources().getColor(R.color.red_500));
                 }
             });
         }
@@ -453,6 +458,10 @@ public class LoginActivity extends BaseActivity {
                     //Error!
                     Log.e("", "An error encountered!");
                     Log.d("SubCategoriesCheck", "failed with "+t.getMessage()+" "+t.toString());
+
+
+                    loginMessages.setText(getResources().getString(R.string.error_loading_products));
+                    loginMessages.setTextColor(getResources().getColor(R.color.red_500));
                 }
             });
         }
@@ -462,23 +471,53 @@ public class LoginActivity extends BaseActivity {
         loginMessages.setText(getResources().getString(R.string.loading_transactions));
         loginMessages.setTextColor(getResources().getColor(R.color.amber_a700));
         if (session.isLoggedIn()){
-            Call<TransactionsResponse> call = transactionServices.getTransactions();
-            call.enqueue(new Callback<TransactionsResponse>() {
+            Call<List<Transactions>> call = transactionServices.getTransactions();
+            call.enqueue(new Callback<List<Transactions>>() {
 
                 @Override
-                public void onResponse(Call<TransactionsResponse> call, Response<TransactionsResponse> response) {
+                public void onResponse(Call<List<Transactions>> call, Response<List<Transactions>> response) {
                     //Here will handle the responce from the server
                     Log.d("transactionsCheck", response.body()+"");
 
-                    addTransactionsAsyncTask task = new addTransactionsAsyncTask(response.body().getTransactions());
+                    addTransactionsAsyncTask task = new addTransactionsAsyncTask(response.body());
                     task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                 }
 
                 @Override
-                public void onFailure(Call<TransactionsResponse> call, Throwable t) {
+                public void onFailure(Call<List<Transactions>> call, Throwable t) {
                     //Error!
                     Log.e("", "An error encountered!");
                     Log.d("TransactionCheck", "failed with "+t.getMessage()+" "+t.toString());
+                    loginMessages.setText(getResources().getString(R.string.error_loading_transactions));
+                    loginMessages.setTextColor(getResources().getColor(R.color.red_500));
+                }
+            });
+        }
+    }
+
+    private void callTransactionTypes(){
+        loginMessages.setText(getResources().getString(R.string.loading_transactions_types));
+        loginMessages.setTextColor(getResources().getColor(R.color.amber_a700));
+        if (session.isLoggedIn()){
+            Call<List<TransactionType>> call = transactionServices.getTransactionTypes();
+            call.enqueue(new Callback<List<TransactionType>>() {
+
+                @Override
+                public void onResponse(Call<List<TransactionType>> call, Response<List<TransactionType>> response) {
+                    //Here will handle the responce from the server
+                    Log.d("transactionsCheck", response.body()+"");
+
+                    addTransactionTypeAsyncTask task = new addTransactionTypeAsyncTask(response.body());
+                    task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                }
+
+                @Override
+                public void onFailure(Call<List<TransactionType>> call, Throwable t) {
+                    //Error!
+                    Log.e("", "An error encountered!");
+                    Log.d("TransactionCheck", "failed with "+t.getMessage()+" "+t.toString());
+                    loginMessages.setText(getResources().getString(R.string.error_loading_transaction_types));
+                    loginMessages.setTextColor(getResources().getColor(R.color.red_500));
                 }
             });
         }
@@ -554,13 +593,7 @@ public class LoginActivity extends BaseActivity {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            //TODO implement loading transactions
-
-            //Call HomeActivity to log in user
-            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_SINGLE_TOP);
-            startActivity(intent);
-            LoginActivity.this.finish();
+            callTransactions();
         }
     }
 
@@ -585,7 +618,41 @@ public class LoginActivity extends BaseActivity {
 
             for (Transactions mList : results){
                 baseDatabase.transactionsDao().addTransactions(mList);
-                Log.d("InitialSync", "Transactions type : "+mList.getType());
+                Log.d("InitialSync", "Transactions type : "+mList.getTransactiontype_id());
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            callTransactionTypes();
+        }
+    }
+
+    class addTransactionTypeAsyncTask extends AsyncTask<Void, Void, Void> {
+
+        List<TransactionType> results;
+
+        addTransactionTypeAsyncTask(List<TransactionType> responces){
+            this.results = responces;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            loginMessages.setText("Finalizing Transaction Types..");
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+
+            Log.d("InitialSync", "TransactionTypes Response size : "+results.size());
+
+            for (TransactionType mList : results){
+                baseDatabase.transactionTypeModelDao().addTransactionsTypes(mList);
+                Log.d("InitialSync", "Transactions type : "+mList.getName());
             }
 
             return null;
