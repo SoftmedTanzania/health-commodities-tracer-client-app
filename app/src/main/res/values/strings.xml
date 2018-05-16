@@ -27,7 +27,7 @@
     <string name="error_msg_product_price_empty">Please enter the product price.</string>
     <string name="error_msg_product_quantity_empty">Please enter the product quantity.</string>
 
-    <string name="string_format_product_price">$<xliff xliff:id="price">%s</xliff></string>
+    <string name="string_format_product_price">Tsh <xliff xliff:id="price">%s</xliff></string>
     <string name="string_format_product_quantity">Qty: <xliff xliff:id="quantity">%s</xliff></string>
     <string name="string_format_product_code">Product code: <xliff xliff:id="code">%s</xliff></string>
     <string name="string_format_product_supplier">Product supplier: <xliff xliff:id="supplier">%s</xliff></string>

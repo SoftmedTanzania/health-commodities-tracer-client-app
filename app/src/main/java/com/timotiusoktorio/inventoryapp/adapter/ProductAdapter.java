@@ -13,6 +13,7 @@ import android.widget.TextView;
 
 import com.timotiusoktorio.inventoryapp.R;
 import com.timotiusoktorio.inventoryapp.dom.objects.Product;
+import com.timotiusoktorio.inventoryapp.dom.objects.ProductList;
 
 import java.util.List;
 
@@ -20,14 +21,15 @@ import java.util.List;
 public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHolder> {
     private static final String TAG = ProductAdapter.class.getSimpleName();
     private Context mContext;
-    private List<Product> mProducts;
+    private List<ProductList> mProducts;
     private OnItemClickListener mOnItemClickListener;
     private OnItemSaleListener mOnItemSaleListener;
     private OnItemDeleteListener mOnItemDeleteListener;
 
-    public ProductAdapter(Context context, List<Product> products) {
+    public ProductAdapter(Context context, List<ProductList> products) {
         mContext = context;
         mProducts = products;
+        Log.d(TAG,"list data size = "+mProducts.size());
     }
 
     public void setOnItemClickListener(OnItemClickListener listener) {
@@ -42,7 +44,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         mOnItemDeleteListener = listener;
     }
 
-    public void refreshData(List<Product> products) {
+    public void refreshData(List<ProductList> products) {
         mProducts.clear();
         mProducts.addAll(products);
         notifyDataSetChanged();
@@ -59,8 +61,8 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
      * @param position - The ArrayList position of the selected product.
      * @return Product - The Product object if the quantity is decreased, or null if not.
      */
-    public Product decreaseProductQuantity(int position) {
-        Product product = mProducts.get(position);
+    public ProductList decreaseProductQuantity(int position) {
+        ProductList product = mProducts.get(position);
         //TODO handle quantity
 //        int quantity = product.getmQuantity();
 //        if (quantity > 0) {
@@ -89,19 +91,16 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
 
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
-        final Product product = mProducts.get(position);
+        final ProductList product = mProducts.get(position);
 
         Log.d(TAG,"Adapter product item id : "+product.getId());
         holder.mProductNameTextView.setText(product.getName());
 
 
         // Product price needs to be rounded to nearest 2 decimal places to avoid super long price.
-
-
-        //TODO handle showing of prices and quantity
-//        double roundedPrice = Math.round(product.getmPrice() * 100.0) / 100.0;
-//        holder.mProductPriceTextView.setText(String.format(mContext.getString(R.string.string_format_product_price), roundedPrice));
-//        holder.mProductQuantityTextView.setText(String.format(mContext.getString(R.string.string_format_product_quantity), product.getmQuantity()));
+        double roundedPrice = Math.round(product.getPrice() * 100.0) / 100.0;
+        holder.mProductPriceTextView.setText(String.format(mContext.getString(R.string.string_format_product_price), String.valueOf(roundedPrice)));
+        holder.mProductQuantityTextView.setText(String.format(mContext.getString(R.string.string_format_product_quantity), String.valueOf(product.getBalance()))+" "+product.getUnit());
         // Set an OnClickListener to the overflow button which will inflate a popup menu that allows
         // user to track a sale or delete the selected product.
         holder.mOverflowButton.setOnClickListener(new View.OnClickListener() {
@@ -142,11 +141,12 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
 
     @Override
     public int getItemCount() {
+        Log.d(TAG,"item count = "+mProducts.size());
         return mProducts.size();
     }
 
     public interface OnItemClickListener {
-        void onItemClick(Product product);
+        void onItemClick(ProductList product);
     }
 
     public interface OnItemSaleListener {
@@ -154,7 +154,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
     }
 
     public interface OnItemDeleteListener {
-        void onItemDelete(Product product, int position);
+        void onItemDelete(ProductList product, int position);
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {

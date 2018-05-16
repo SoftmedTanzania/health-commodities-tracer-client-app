@@ -1,10 +1,13 @@
 package com.timotiusoktorio.inventoryapp.fragment;
 
 import android.annotation.SuppressLint;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -23,9 +26,11 @@ import com.timotiusoktorio.inventoryapp.activity.MainActivity;
 import com.timotiusoktorio.inventoryapp.adapter.ProductAdapter;
 import com.timotiusoktorio.inventoryapp.database.AppDatabase;
 import com.timotiusoktorio.inventoryapp.dom.objects.Product;
+import com.timotiusoktorio.inventoryapp.dom.objects.ProductList;
 import com.timotiusoktorio.inventoryapp.dom.objects.UsersInfo;
 import com.timotiusoktorio.inventoryapp.helper.PhotoHelper;
 import com.timotiusoktorio.inventoryapp.utility.DividerItemDecoration;
+import com.timotiusoktorio.inventoryapp.viewmodels.ProductsViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -39,7 +44,7 @@ public class ProductsListFragment extends Fragment implements
     private LinearLayout mEmptyView;
     private AppDatabase database;
     private ProductAdapter mAdapter;
-    private List<Product> products;
+    private ProductsViewModel productsViewModel;
 
     public ProductsListFragment() {
         // Required empty public constructor
@@ -75,7 +80,7 @@ public class ProductsListFragment extends Fragment implements
 
         database = AppDatabase.getDatabase(getActivity().getApplicationContext());
 
-        mAdapter = new ProductAdapter(getActivity(), new ArrayList<Product>());
+        mAdapter = new ProductAdapter(getActivity(), new ArrayList<ProductList>());
 
         mAdapter.setOnItemClickListener(this);
         mAdapter.setOnItemSaleListener(this);
@@ -85,6 +90,18 @@ public class ProductsListFragment extends Fragment implements
         mRecyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         mRecyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL_LIST));
         mRecyclerView.setHasFixedSize(true);
+
+        productsViewModel = ViewModelProviders.of(this).get(ProductsViewModel.class);
+        productsViewModel.getAvailableProducts().observe(getActivity(), new Observer<List<ProductList>>() {
+            @Override
+            public void onChanged(@Nullable List<ProductList> productLists) {
+                Log.d(TAG,"products list size = "+productLists.size());
+                mAdapter.refreshData(productLists);
+                checkEmptyData();
+
+            }
+        });
+
         return v;
     }
 
@@ -94,7 +111,7 @@ public class ProductsListFragment extends Fragment implements
      * @param product - The selected product.
      */
     @Override
-    public void onItemClick(Product product) {
+    public void onItemClick(ProductList product) {
 
         Log.d(TAG,"Clicked Product Id = "+product.getId());
 
@@ -114,7 +131,7 @@ public class ProductsListFragment extends Fragment implements
         DialogInterface.OnClickListener onClickListener = new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                Product product = mAdapter.decreaseProductQuantity(position);
+                ProductList product = mAdapter.decreaseProductQuantity(position);
                 //TODO handle updating of agro delers quantity
 //                if (product != null) mDbHelper.updateProductQuantity(product.getmId(), product.getmQuantity());
             }
@@ -133,14 +150,14 @@ public class ProductsListFragment extends Fragment implements
      * @param position - The ArrayList position of the selected product.
      */
     @Override
-    public void onItemDelete(final Product product, final int position) {
+    public void onItemDelete(final ProductList product, final int position) {
         DialogInterface.OnClickListener onClickListener = new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
                 mAdapter.deleteProduct(position);
-                database.productsModelDao().deleteProduct(product);
 
                 //TODO handle deletion of product photo
+//                database.productsModelDao().deleteProduct(product);
 //                PhotoHelper.deleteCapturedPhotoFile(product.getPhotoPath());
                 checkEmptyData();
             }
@@ -172,33 +189,5 @@ public class ProductsListFragment extends Fragment implements
         mEmptyView.setVisibility(isDataEmpty ? View.VISIBLE : View.GONE);
     }
 
-    @SuppressLint("StaticFieldLeak")
-    @Override
-    public void onResume() {
-        super.onResume();
 
-        new AsyncTask<Void, Void, Void>(){
-            @Override
-            protected Void doInBackground(Void... voids) {
-                products = database.productsModelDao().getAvailableProducts();
-
-                for(int i=0;i<products.size();i++){
-                   Log.d(TAG,"pId : "+products.get(i).getId());
-                }
-
-
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Void aVoid) {
-                super.onPostExecute(aVoid);
-                mAdapter.refreshData(products);
-                checkEmptyData();
-            }
-
-        }.execute();
-
-
-    }
 }

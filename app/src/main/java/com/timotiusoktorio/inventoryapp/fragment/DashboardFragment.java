@@ -1,11 +1,8 @@
 package com.timotiusoktorio.inventoryapp.fragment;
 
-import android.annotation.SuppressLint;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
-import android.database.Cursor;
 import android.graphics.Color;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -23,38 +20,25 @@ import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
-import com.github.mikephil.charting.data.BarData;
-import com.github.mikephil.charting.data.BarDataSet;
-import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.github.mikephil.charting.formatter.PercentFormatter;
-import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.github.mikephil.charting.utils.ColorTemplate;
 import com.github.mikephil.charting.utils.MPPointF;
 import com.timotiusoktorio.inventoryapp.R;
-import com.timotiusoktorio.inventoryapp.activity.DetailActivity;
 import com.timotiusoktorio.inventoryapp.database.AppDatabase;
-import com.timotiusoktorio.inventoryapp.dom.objects.Category;
 import com.timotiusoktorio.inventoryapp.dom.objects.CategoryBalance;
 import com.timotiusoktorio.inventoryapp.dom.objects.Product;
 import com.timotiusoktorio.inventoryapp.dom.objects.ProductBalance;
 import com.timotiusoktorio.inventoryapp.dom.objects.TransactionSummary;
-import com.timotiusoktorio.inventoryapp.dom.objects.Transactions;
 import com.timotiusoktorio.inventoryapp.viewmodels.CategoryBalanceViewModel;
-import com.timotiusoktorio.inventoryapp.viewmodels.ProductBalanceViewModel;
+import com.timotiusoktorio.inventoryapp.viewmodels.ProductsViewModel;
 import com.timotiusoktorio.inventoryapp.viewmodels.TransactionsListViewModel;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
-
-import static android.provider.BaseColumns._ID;
 
 public class DashboardFragment extends Fragment {
 
@@ -67,7 +51,7 @@ public class DashboardFragment extends Fragment {
     private LinearLayout productBalancesList;
 
     private CategoryBalanceViewModel categoryBalanceViewModel;
-    private ProductBalanceViewModel productBalanceViewModel;
+    private ProductsViewModel productsViewModel;
     private List<CategoryBalance> categoryBalances;
 
     private TransactionsListViewModel transactionsListViewModel;
@@ -202,8 +186,8 @@ public class DashboardFragment extends Fragment {
             }
         });
 
-        productBalanceViewModel = ViewModelProviders.of(this).get(ProductBalanceViewModel.class);
-        productBalanceViewModel.getProductBalances().observe(getActivity(), new Observer<List<ProductBalance>>() {
+        productsViewModel = ViewModelProviders.of(this).get(ProductsViewModel.class);
+        productsViewModel.getProductBalances().observe(getActivity(), new Observer<List<ProductBalance>>() {
             @Override
             public void onChanged(@Nullable List<ProductBalance> productBalances) {
                 try{

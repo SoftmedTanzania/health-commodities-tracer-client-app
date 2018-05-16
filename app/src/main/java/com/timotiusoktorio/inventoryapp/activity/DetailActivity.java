@@ -37,6 +37,7 @@ import com.timotiusoktorio.inventoryapp.R;
 import com.timotiusoktorio.inventoryapp.database.AppDatabase;
 import com.timotiusoktorio.inventoryapp.dom.objects.Balances;
 import com.timotiusoktorio.inventoryapp.dom.objects.Product;
+import com.timotiusoktorio.inventoryapp.dom.objects.ProductList;
 import com.timotiusoktorio.inventoryapp.dom.objects.TransactionType;
 import com.timotiusoktorio.inventoryapp.dom.objects.Transactions;
 import com.timotiusoktorio.inventoryapp.fragment.ConfirmationDialogFragment;
@@ -168,7 +169,7 @@ public class DetailActivity extends AppCompatActivity {
 
 
         // Get the product object which was sent from MainActivity.
-        final Product product = (Product) getIntent().getSerializableExtra(INTENT_EXTRA_PRODUCT);
+        final ProductList product = (ProductList) getIntent().getSerializableExtra(INTENT_EXTRA_PRODUCT);
         // The product object currently doesn't have the complete product information.
         // Get the rest of the product information from the database.
 

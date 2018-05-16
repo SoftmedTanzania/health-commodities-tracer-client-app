@@ -1,5 +1,6 @@
 package com.timotiusoktorio.inventoryapp.dom.dao;
 
+import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
@@ -7,6 +8,7 @@ import android.arch.persistence.room.Query;
 
 import com.timotiusoktorio.inventoryapp.dom.objects.Category;
 import com.timotiusoktorio.inventoryapp.dom.objects.Product;
+import com.timotiusoktorio.inventoryapp.dom.objects.ProductList;
 
 import java.util.List;
 
@@ -19,10 +21,26 @@ public interface ProductsModelDao {
     @Query("select * from Product")
     List<Product> getAllProducts();
 
-    @Query("select Product.id,Product.subcategoryId,Product.description,Product.name,Product.unitId,Product.uuid from Product INNER JOIN Balances ON Product.id = Balances.product_id WHERE Balances.balance>0 ")
-    List<Product> getAvailableProducts();
+    @Query("select Product.id,SubCategory.name || ' - ' || Product.name AS name ,Unit.name as unit,Balances.balance, Balances.price  FROM Product " +
+            "INNER JOIN SubCategory ON Product.subcategoryId = SubCategory.id " +
+            "INNER JOIN Unit ON Product.unitId = Unit.id " +
+            "INNER JOIN Balances ON Product.id = Balances.product_id " +
+            " ")
+    LiveData<List<ProductList>> getAvailableProducts();
 
-    @Query("select * from Product where subcategoryId = :subCategoryId")
+
+
+    @Query("select Product.id,SubCategory.name || ' - ' || Product.name AS name ,Unit.name as unit,Balances.balance, Balances.price  FROM Product " +
+            "INNER JOIN SubCategory ON Product.subcategoryId = SubCategory.id " +
+            "INNER JOIN Unit ON Product.unitId = Unit.id " +
+            "INNER JOIN Balances ON Product.id = Balances.product_id " +
+            " ")
+    List<ProductList> getAvailableProductsTest();
+
+
+    @Query("select Product.id,Product.subcategoryId,Product.description,SubCategory.name || ' - ' || Product.name AS name ,Product.unitId,Product.uuid FROM Product " +
+            "INNER JOIN SubCategory ON Product.subcategoryId = SubCategory.id " +
+            "where subcategoryId = :subCategoryId")
     List<Product> getProductsBySubCategoryId(int subCategoryId);
 
 
