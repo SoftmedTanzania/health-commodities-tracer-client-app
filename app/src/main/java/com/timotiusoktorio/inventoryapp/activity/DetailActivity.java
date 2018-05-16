@@ -2,10 +2,8 @@ package com.timotiusoktorio.inventoryapp.activity;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.arch.lifecycle.LiveData;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
-import android.arch.persistence.room.Transaction;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -17,7 +15,6 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
@@ -31,18 +28,19 @@ import android.widget.ImageView;
 import android.widget.TableLayout;
 import android.widget.TextView;
 
-import com.bumptech.glide.Glide;
 import com.timotiusoktorio.inventoryapp.LoadProductPhotoAsync;
 import com.timotiusoktorio.inventoryapp.R;
 import com.timotiusoktorio.inventoryapp.database.AppDatabase;
 import com.timotiusoktorio.inventoryapp.dom.objects.Balances;
 import com.timotiusoktorio.inventoryapp.dom.objects.Product;
+import com.timotiusoktorio.inventoryapp.dom.objects.ProductBalance;
 import com.timotiusoktorio.inventoryapp.dom.objects.ProductList;
 import com.timotiusoktorio.inventoryapp.dom.objects.TransactionType;
 import com.timotiusoktorio.inventoryapp.dom.objects.Transactions;
 import com.timotiusoktorio.inventoryapp.fragment.ConfirmationDialogFragment;
 import com.timotiusoktorio.inventoryapp.helper.PhotoHelper;
 import com.timotiusoktorio.inventoryapp.utils.SessionManager;
+import com.timotiusoktorio.inventoryapp.viewmodels.ProductsViewModel;
 import com.timotiusoktorio.inventoryapp.viewmodels.TransactionsListViewModel;
 
 import java.util.ArrayList;
@@ -64,17 +62,17 @@ public class DetailActivity extends AppCompatActivity {
     private ImageView mProductPhotoImageView;
     private TextView mProductQuantityTextView;
     private AppDatabase database;
-    private Product mProduct;
-    private Balances balance;
+    private ProductBalance mProduct;
     private static final int REQUEST_CODE_CHOOSE_PHOTO = 1;
     private MaterialSpinner stockAdjustmentReasonSpinner;
     private List<TransactionType> transactionTypes;
 
     private TextInputLayout stockAdjustmentQuantity;
     private FloatingActionButton floatingActionButton;
-    private String stockAdjustmentReason;
+    private String stockAdjustmentReason="";
     private int stockAdjustmentReasonId;
     private TransactionsListViewModel transactionsListViewModel;
+    private ProductsViewModel productsViewModel;
     private TableLayout transactionsTable;
 
 
@@ -174,25 +172,19 @@ public class DetailActivity extends AppCompatActivity {
         // Get the rest of the product information from the database.
 
 
-        new AsyncTask<Void, Void, Void>(){
-            @Override
-            protected Void doInBackground(Void... voids) {
-                mProduct = database.productsModelDao().getProductById(product.getId());
+        productsViewModel = ViewModelProviders.of(DetailActivity.this).get(ProductsViewModel.class);
 
-                Log.d(TAG,"product id : "+product.getId());
-                balance = database.balanceModelDao().getBalance(product.getId());
-                return null;
-            }
-
+        productsViewModel.getProdictById(product.getId()).observe(DetailActivity.this, new Observer<ProductBalance>() {
             @Override
-            protected void onPostExecute(Void v) {
-                super.onPostExecute(v);
+            public void onChanged(@Nullable ProductBalance mProd) {
+                mProduct = mProd;
+
                 // Populate views with the product details data.
                 populateViewsWithProductData();
 
                 transactionsListViewModel = ViewModelProviders.of(DetailActivity.this).get(TransactionsListViewModel.class);
 
-                transactionsListViewModel.getTransactionsListByProductId(mProduct.getId()).observe(DetailActivity.this, new Observer<List<Transactions>>() {
+                transactionsListViewModel.getTransactionsListByProductId(mProduct.getProductId()).observe(DetailActivity.this, new Observer<List<Transactions>>() {
                     @Override
                     public void onChanged(@Nullable List<Transactions> transactions) {
                         transactionsTable.removeAllViews();
@@ -224,9 +216,9 @@ public class DetailActivity extends AppCompatActivity {
                         }
                     }
                 });
-
             }
-        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+        });
+
 
 
         floatingActionButton.setOnClickListener(new View.OnClickListener() {
@@ -242,13 +234,25 @@ public class DetailActivity extends AppCompatActivity {
                             protected Void doInBackground(Void... voids) {
                                 Transactions transactions = new Transactions();
                                 transactions.setUuid(UUID.randomUUID().toString());
-                                transactions.setProduct_id(mProduct.getId());
-                                transactions.setUser_id(Integer.valueOf(session.getServiceProviderUUID()));
+                                transactions.setProduct_id(mProduct.getProductId());
+                                transactions.setUser_id(Integer.valueOf(session.getUserUUID()));
                                 transactions.setTransactiontype_id(stockAdjustmentReasonId);
                                 transactions.setAmount(Integer.valueOf(stockAdjustmentQuantity.getEditText().getText().toString()));
-                                transactions.setPrice(balance.getPrice());
+                                transactions.setPrice(mProduct.getPrice());
                                 transactions.setStatus_id(1);
                                 database.transactionsDao().addTransactions(transactions);
+
+                                Balances balances = database.balanceModelDao().getBalance(mProduct.getProductId());
+
+                                if(stockAdjustmentReasonId==1){
+                                    balances.setBalance(balances.getBalance()+Integer.valueOf(stockAdjustmentQuantity.getEditText().getText().toString()));
+                                }else if(stockAdjustmentReasonId==2){
+                                    balances.setBalance(balances.getBalance()-Integer.valueOf(stockAdjustmentQuantity.getEditText().getText().toString()));
+                                }
+
+                                database.balanceModelDao().addBalance(balances);
+
+
                                 return null;
                             }
 
@@ -311,75 +315,27 @@ public class DetailActivity extends AppCompatActivity {
     }
 
     /**
-     * Method that gets invoked when the user presses either the '+ QTY' or '- QTY' button.
-     * This method will increase or decrease the product quantity by 1 for each click.
-     * Each time the quantity is changed, it will be updated in the database.
-     * @param view - Button ('+ QTY' or '- QTY' button).
-     */
-    public void modifyProductQuantity(View view) {
-//        int productQty = mProduct.getmQuantity();
-//        if (view.getId() == R.id.increase_qty_button) {
-//            // Increase the quantity of the product by 1.
-//            productQty = productQty + 1;
-//            updateProductQuantity(productQty);
-//        } else {
-//            // Decrease the quantity of the product by 1 only if it wouldn't result a negative qty.
-//            if (productQty > 0) {
-//                productQty = productQty - 1;
-//                updateProductQuantity(productQty);
-//            }
-//        }
-    }
-
-    /**
-     * Method that gets invoked when the user presses the 'Contact Supplier' button.
-     * This method will dispatch an email intent to the supplier using the supplier email address
-     * stored in the product object.
-     * @param view - Button ('Contact Supplier' button)
-     */
-    public void contactSupplier(View view) {
-        Intent intent = new Intent(Intent.ACTION_SENDTO);
-        intent.setData(Uri.parse("mailto:"));
-
-//        intent.putExtra(Intent.EXTRA_EMAIL, new String[] { mProduct.getSupplierEmail() });
-
-        intent.putExtra(Intent.EXTRA_SUBJECT, getString(R.string.email_subject_order_request, mProduct.getName()));
-        if (intent.resolveActivity(getPackageManager()) != null) startActivity(intent);
-    }
-
-    /**
      * Method for populating the views with the product data. As the code for populating views can
      * be quite long, a separate method is preferable for better readability.
      */
     private void populateViewsWithProductData() {
-        String photoPath = balance.getImage_path();
+        String photoPath = mProduct.getImagePath();
+
+        Log.d(TAG,"product path = "+photoPath);
         mProductPhotoImageView.setTag(photoPath);
         if (!TextUtils.isEmpty(photoPath)) {
             new LoadProductPhotoAsync(this, mProductPhotoImageView).execute(photoPath);
         }
 
         TextView productNameTextView = (TextView) findViewById(R.id.product_name_text_view);
-        productNameTextView.setText(mProduct.getName());
+        productNameTextView.setText(mProduct.getSubCategoryName()+" - "+mProduct.getProductName());
 
         TextView productPriceTextView = (TextView) findViewById(R.id.product_price_text_view);
-        double roundedPrice = Math.round(balance.getPrice() * 10000.0) / 10000.0;
+        double roundedPrice = Math.round(mProduct.getPrice() * 10000.0) / 10000.0;
         productPriceTextView.setText(getString(R.string.string_format_product_price_details, String.valueOf(roundedPrice)));
 
         mProductQuantityTextView = (TextView) findViewById(R.id.product_quantity_text_view);
-        mProductQuantityTextView.setText(getString(R.string.string_format_product_quantity_details, String.valueOf(balance.getBalance())));
-    }
-
-    /**
-     * Method for updating the product quantity TextView and the product in the database with the
-     * new product quantity after it has been modified when the user presses '+ QTY' or '- QTY' button.
-     * This method is created because the code is called twice in a separate statements.
-     * @param newQuantity - The new product quantity.
-     */
-    private void updateProductQuantity(int newQuantity) {
-        //TODO handle product quantity
-//        mProductQuantityTextView.setText(getString(R.string.string_format_product_quantity_details, newQuantity));
-        //-handle quantity
-//        mProduct.setmQuantity(newQuantity);
+        mProductQuantityTextView.setText(getString(R.string.string_format_product_quantity_details, String.valueOf(mProduct.getBalance())));
     }
 
 

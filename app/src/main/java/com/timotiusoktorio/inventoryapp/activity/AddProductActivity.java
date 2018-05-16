@@ -2,7 +2,6 @@ package com.timotiusoktorio.inventoryapp.activity;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.arch.persistence.room.Transaction;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -373,7 +372,7 @@ public class AddProductActivity extends AppCompatActivity implements DialogInter
                             transaction.setProduct_id(productId);
                             transaction.setAmount(Integer.valueOf(mProductQuantityTIL.getEditText().getText().toString()));
                             transaction.setPrice(Integer.valueOf(mProductPriceTIL.getEditText().getText().toString()));
-                            transaction.setUser_id(Integer.valueOf(session.getServiceProviderUUID()));
+                            transaction.setUser_id(Integer.valueOf(session.getUserUUID()));
                             transaction.setUuid(UUID.randomUUID().toString());
 
                             //TODO remove hardcoding of ids
@@ -522,6 +521,9 @@ public class AddProductActivity extends AppCompatActivity implements DialogInter
         // Get the product photo path from the ImageView tag. The tag might contains null data, so
         // it needs to be checked. If it's null, set the photo path to an empty string.
         Object imageViewTag = mProductPhotoImageView.getTag();
+
+        Log.d(TAG,"image path = "+imageViewTag.toString());
+
         balances.setImage_path( (imageViewTag != null) ? imageViewTag.toString() : "" );
         balances.setPrice(Integer.valueOf(mProductPriceTIL.getEditText().getText().toString()));
         balances.setBalance(Integer.valueOf(mProductQuantityTIL.getEditText().getText().toString()));

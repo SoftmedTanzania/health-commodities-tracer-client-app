@@ -5,7 +5,6 @@ import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 
 import com.timotiusoktorio.inventoryapp.database.AppDatabase;
-import com.timotiusoktorio.inventoryapp.dom.objects.CategoryBalance;
 import com.timotiusoktorio.inventoryapp.dom.objects.ProductBalance;
 import com.timotiusoktorio.inventoryapp.dom.objects.ProductList;
 
@@ -27,6 +26,10 @@ public class ProductsViewModel extends AndroidViewModel {
 
     public LiveData<List<ProductList>> getAvailableProducts() {
         return appDatabase.productsModelDao().getAvailableProducts();
+    }
+
+    public LiveData<ProductBalance> getProdictById(int productId) {
+        return appDatabase.balanceModelDao().getProductBalanceById(productId);
     }
 
     public LiveData<List<ProductBalance>> getProductBalances() {

@@ -63,13 +63,12 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
      */
     public ProductList decreaseProductQuantity(int position) {
         ProductList product = mProducts.get(position);
-        //TODO handle quantity
-//        int quantity = product.getmQuantity();
-//        if (quantity > 0) {
-//            product.setmQuantity(quantity - 1);
-//            notifyItemChanged(position);
-//            return product;
-//        }
+        int quantity = product.getBalance();
+        if (quantity > 0) {
+            product.setBalance(quantity - 1);
+            notifyItemChanged(position);
+            return product;
+        }
         return null;
     }
 

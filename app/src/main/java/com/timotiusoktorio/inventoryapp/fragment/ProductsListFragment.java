@@ -15,25 +15,25 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 import com.timotiusoktorio.inventoryapp.R;
 import com.timotiusoktorio.inventoryapp.activity.AddProductActivity;
 import com.timotiusoktorio.inventoryapp.activity.DetailActivity;
-import com.timotiusoktorio.inventoryapp.activity.LoginActivity;
-import com.timotiusoktorio.inventoryapp.activity.MainActivity;
 import com.timotiusoktorio.inventoryapp.adapter.ProductAdapter;
 import com.timotiusoktorio.inventoryapp.database.AppDatabase;
-import com.timotiusoktorio.inventoryapp.dom.objects.Product;
+import com.timotiusoktorio.inventoryapp.dom.objects.Balances;
 import com.timotiusoktorio.inventoryapp.dom.objects.ProductList;
-import com.timotiusoktorio.inventoryapp.dom.objects.UsersInfo;
-import com.timotiusoktorio.inventoryapp.helper.PhotoHelper;
+import com.timotiusoktorio.inventoryapp.dom.objects.TransactionType;
+import com.timotiusoktorio.inventoryapp.dom.objects.Transactions;
 import com.timotiusoktorio.inventoryapp.utility.DividerItemDecoration;
+import com.timotiusoktorio.inventoryapp.utils.SessionManager;
 import com.timotiusoktorio.inventoryapp.viewmodels.ProductsViewModel;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 public class ProductsListFragment extends Fragment implements
         ProductAdapter.OnItemClickListener, ProductAdapter.OnItemSaleListener, ProductAdapter.OnItemDeleteListener  {
@@ -45,6 +45,8 @@ public class ProductsListFragment extends Fragment implements
     private AppDatabase database;
     private ProductAdapter mAdapter;
     private ProductsViewModel productsViewModel;
+    // Session Manager Class
+    private SessionManager session;
 
     public ProductsListFragment() {
         // Required empty public constructor
@@ -54,6 +56,7 @@ public class ProductsListFragment extends Fragment implements
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        session = new SessionManager(getActivity());
     }
 
     @Override
@@ -129,11 +132,40 @@ public class ProductsListFragment extends Fragment implements
     @Override
     public void onItemSale(final int position) {
         DialogInterface.OnClickListener onClickListener = new DialogInterface.OnClickListener() {
+            @SuppressLint("StaticFieldLeak")
             @Override
             public void onClick(DialogInterface dialogInterface, int i) {
-                ProductList product = mAdapter.decreaseProductQuantity(position);
-                //TODO handle updating of agro delers quantity
-//                if (product != null) mDbHelper.updateProductQuantity(product.getmId(), product.getmQuantity());
+                final ProductList product = mAdapter.decreaseProductQuantity(position);
+                new AsyncTask<Void, Void, Void>(){
+                    @Override
+                    protected Void doInBackground(Void... voids) {
+                        if (product != null){
+                            Transactions transactions = new Transactions();
+                            transactions.setUuid(UUID.randomUUID().toString());
+                            transactions.setStatus_id(1);
+                            transactions.setPrice(product.getPrice());
+                            transactions.setAmount(1);
+                            transactions.setProduct_id(product.getId());
+                            //TODO remove hardcoding of ids
+                            transactions.setTransactiontype_id(2);
+                            transactions.setUser_id(Integer.valueOf(session.getUserUUID()));
+
+                            Log.d(TAG,"Saving transactions");
+                            database.transactionsDao().addTransactions(transactions);
+
+                            Balances balances = database.balanceModelDao().getBalance(product.getId());
+                            balances.setBalance(balances.getBalance()-1);
+                            database.balanceModelDao().addBalance(balances);
+                        }
+                        return null;
+                    }
+
+                    @Override
+                    protected void onPostExecute(Void v) {
+                        super.onPostExecute(v);
+                    }
+                }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+
             }
         };
         ConfirmationDialogFragment dialogFragment = ConfirmationDialogFragment.newInstance(

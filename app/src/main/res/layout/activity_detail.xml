@@ -49,8 +49,7 @@
 
             <TextView
                 android:id="@+id/product_name_text_view"
-                style="@style/ProductDetailsTextView.ProductName"
-                tools:text="MacBook Pro"/>
+                style="@style/ProductDetailsTextView.ProductName"/>
 
             <TextView
                 android:visibility="gone"

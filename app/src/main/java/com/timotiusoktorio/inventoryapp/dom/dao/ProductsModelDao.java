@@ -8,6 +8,7 @@ import android.arch.persistence.room.Query;
 
 import com.timotiusoktorio.inventoryapp.dom.objects.Category;
 import com.timotiusoktorio.inventoryapp.dom.objects.Product;
+import com.timotiusoktorio.inventoryapp.dom.objects.ProductBalance;
 import com.timotiusoktorio.inventoryapp.dom.objects.ProductList;
 
 import java.util.List;
@@ -47,9 +48,6 @@ public interface ProductsModelDao {
     @Query("select * from Product inner join SubCategory on SubCategory.id = Product.subcategoryId where SubCategory.categoryId = :categoryId")
     List<Product> getProductsByCategoryId(int categoryId);
 
-
-    @Query("select * from Product where id = :id")
-    Product getProductById(long id);
 
     @Query("select name || ' ' from Product where id = :id")
     String getProductNameById(int id);

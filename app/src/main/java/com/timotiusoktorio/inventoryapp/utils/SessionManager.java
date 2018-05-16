@@ -93,7 +93,7 @@ public class SessionManager {
         return user;
     }
 
-    public String getServiceProviderUUID(){
+    public String getUserUUID(){
         return pref.getString(KEY_UUID, null);
     }
 
