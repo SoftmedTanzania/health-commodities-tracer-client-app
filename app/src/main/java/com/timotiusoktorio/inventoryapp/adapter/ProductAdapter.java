@@ -3,6 +3,7 @@ package com.timotiusoktorio.inventoryapp.adapter;
 import android.content.Context;
 import android.support.v7.widget.PopupMenu;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -17,7 +18,7 @@ import java.util.List;
 
 
 public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHolder> {
-
+    private static final String TAG = ProductAdapter.class.getSimpleName();
     private Context mContext;
     private List<Product> mProducts;
     private OnItemClickListener mOnItemClickListener;
@@ -89,7 +90,11 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
     @Override
     public void onBindViewHolder(final ViewHolder holder, int position) {
         final Product product = mProducts.get(position);
+
+        Log.d(TAG,"Adapter product item id : "+product.getId());
         holder.mProductNameTextView.setText(product.getName());
+
+
         // Product price needs to be rounded to nearest 2 decimal places to avoid super long price.
 
 

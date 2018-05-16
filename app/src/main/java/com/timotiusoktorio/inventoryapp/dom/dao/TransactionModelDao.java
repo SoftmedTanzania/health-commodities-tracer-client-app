@@ -2,6 +2,7 @@ package com.timotiusoktorio.inventoryapp.dom.dao;
 
 import android.arch.lifecycle.LiveData;
 import android.arch.persistence.room.Dao;
+import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.Query;
 
@@ -20,5 +21,8 @@ public interface TransactionModelDao {
 
     @Insert(onConflict = REPLACE)
     void addTransactions(Transactions transactions);
+
+    @Delete
+    void deleteTransactions(Transactions transactions);
 
 }

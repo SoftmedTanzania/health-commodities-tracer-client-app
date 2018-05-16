@@ -259,7 +259,7 @@ public class LoginActivity extends BaseActivity {
 
                         session.createLoginSession(
                                 loggedInSessions.getUsername(),
-                                loggedInSessions.getUuid(),
+                                userInfo.getId(),
                                 passwordValue,
                                 loggedInSessions.getLocationId(),
                                 loggedInSessions.getLevelId());
@@ -311,7 +311,7 @@ public class LoginActivity extends BaseActivity {
                         String userUUID = userInfo.getUuid();
                         session.createLoginSession(
                                 userName,
-                                userUUID,
+                                userInfo.getId(),
                                 passwordValue,
                                 userInfo.getLocationId(),
                                 userInfo.getLevelId());

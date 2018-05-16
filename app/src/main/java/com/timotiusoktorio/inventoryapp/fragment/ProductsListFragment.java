@@ -32,6 +32,7 @@ import java.util.List;
 
 public class ProductsListFragment extends Fragment implements
         ProductAdapter.OnItemClickListener, ProductAdapter.OnItemSaleListener, ProductAdapter.OnItemDeleteListener  {
+    private static final String TAG = ProductsListFragment.class.getSimpleName();
     private static final String INTENT_EXTRA_PRODUCT = "INTENT_EXTRA_PRODUCT";
     private static final String CONFIRMATION_DIALOG_TAG = "CONFIRMATION_DIALOG_TAG";
     private RecyclerView mRecyclerView;
@@ -73,7 +74,9 @@ public class ProductsListFragment extends Fragment implements
         mEmptyView = (LinearLayout) v.findViewById(R.id.empty_view);
 
         database = AppDatabase.getDatabase(getActivity().getApplicationContext());
+
         mAdapter = new ProductAdapter(getActivity(), new ArrayList<Product>());
+
         mAdapter.setOnItemClickListener(this);
         mAdapter.setOnItemSaleListener(this);
         mAdapter.setOnItemDeleteListener(this);
@@ -92,6 +95,9 @@ public class ProductsListFragment extends Fragment implements
      */
     @Override
     public void onItemClick(Product product) {
+
+        Log.d(TAG,"Clicked Product Id = "+product.getId());
+
         Intent intent = new Intent(getActivity(), DetailActivity.class);
         intent.putExtra(INTENT_EXTRA_PRODUCT, product);
         startActivity(intent);
@@ -174,7 +180,13 @@ public class ProductsListFragment extends Fragment implements
         new AsyncTask<Void, Void, Void>(){
             @Override
             protected Void doInBackground(Void... voids) {
-                products = database.productsModelDao().getAllProducts();
+                products = database.productsModelDao().getAvailableProducts();
+
+                for(int i=0;i<products.size();i++){
+                   Log.d(TAG,"pId : "+products.get(i).getId());
+                }
+
+
                 return null;
             }
 

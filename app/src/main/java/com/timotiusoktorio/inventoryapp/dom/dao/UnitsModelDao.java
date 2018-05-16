@@ -20,6 +20,9 @@ public interface UnitsModelDao {
     @Query("select * from Unit")
     LiveData<List<Unit>> getUnit();
 
+    @Query("select * from Unit WHERE id=:unitId")
+    Unit getUnit(int unitId);
+
 
     @Insert(onConflict = REPLACE)
     void addUnit(Unit unit);

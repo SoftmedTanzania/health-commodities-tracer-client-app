@@ -16,7 +16,10 @@ import static android.arch.persistence.room.OnConflictStrategy.REPLACE;
 public interface TransactionTypeModelDao {
 
     @Query("select * from TransactionType")
-    LiveData<List<TransactionType>> getTransactionTypes();
+    List<TransactionType> getTransactionTypes();
+
+    @Query("select name || ' '  from TransactionType WHERE id=:id")
+    String getTransactionTypeName(int id);
 
 
     @Insert(onConflict = REPLACE)

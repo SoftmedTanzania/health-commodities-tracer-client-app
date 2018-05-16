@@ -2,6 +2,7 @@ package com.timotiusoktorio.inventoryapp.activity;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.arch.persistence.room.Transaction;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -32,17 +33,21 @@ import android.widget.TextView;
 import com.timotiusoktorio.inventoryapp.LoadProductPhotoAsync;
 import com.timotiusoktorio.inventoryapp.R;
 import com.timotiusoktorio.inventoryapp.database.AppDatabase;
+import com.timotiusoktorio.inventoryapp.dom.objects.Balances;
 import com.timotiusoktorio.inventoryapp.dom.objects.Category;
 import com.timotiusoktorio.inventoryapp.dom.objects.Product;
 import com.timotiusoktorio.inventoryapp.dom.objects.SubCategory;
+import com.timotiusoktorio.inventoryapp.dom.objects.Transactions;
+import com.timotiusoktorio.inventoryapp.dom.objects.Unit;
 import com.timotiusoktorio.inventoryapp.fragment.ProductPhotoDialogFragment;
 import com.timotiusoktorio.inventoryapp.helper.PhotoHelper;
+import com.timotiusoktorio.inventoryapp.utils.SessionManager;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.concurrent.ThreadPoolExecutor;
+import java.util.UUID;
 
 import fr.ganfra.materialspinner.MaterialSpinner;
 
@@ -68,10 +73,6 @@ public class AddProductActivity extends AppCompatActivity implements DialogInter
 
 
     private ImageView mProductPhotoImageView;
-    private TextInputLayout mProductNameTIL;
-    private TextInputLayout mProductCodeTIL;
-    private TextInputLayout mProductSupplierTIL;
-    private TextInputLayout mProductSupplierEmailTIL;
     private TextInputLayout mProductPriceTIL;
     private TextInputLayout mProductQuantityTIL;
     private TextView description;
@@ -85,11 +86,14 @@ public class AddProductActivity extends AppCompatActivity implements DialogInter
     private MaterialSpinner categorySpinner,subCategorySpinner, productsSpinner;
     private List<SubCategory> subCategories;
     private List<Product> products;
-    private long productId;
+    private int productId;
     private String subCategoryName, productName;
     public static AppDatabase baseDatabase;
     private List<Category> categories;
-    private  List<String> categoryStrings= new ArrayList<>();;
+    private  List<String> categoryStrings= new ArrayList<>();
+
+    // Session Manager Class
+    private SessionManager session;
 
     @SuppressLint("StaticFieldLeak")
     @Override
@@ -100,25 +104,23 @@ public class AddProductActivity extends AppCompatActivity implements DialogInter
         baseDatabase = AppDatabase.getDatabase(this);
 
         mProductPhotoImageView = (ImageView) findViewById(R.id.product_photo_image_view);
-        mProductNameTIL = (TextInputLayout) findViewById(R.id.product_name_text_input_layout);
-        mProductSupplierTIL = (TextInputLayout) findViewById(R.id.product_supplier_text_input_layout);
-        mProductSupplierEmailTIL = (TextInputLayout) findViewById(R.id.product_supplier_email_text_input_layout);
         mProductPriceTIL = (TextInputLayout) findViewById(R.id.product_price_text_input_layout);
         mProductQuantityTIL = (TextInputLayout) findViewById(R.id.product_quantity_text_input_layout);
         description = (TextView) findViewById(R.id.product_description);
 
 
-        categorySpinner = (MaterialSpinner) findViewById(R.id.spin_category);
-        subCategorySpinner = (MaterialSpinner) findViewById(R.id.sub_category);
-        productsSpinner = (MaterialSpinner) findViewById(R.id.type);
-
-
+        categorySpinner = (MaterialSpinner) findViewById(R.id.spin_category_spinner);
+        subCategorySpinner = (MaterialSpinner) findViewById(R.id.sub_category_spinner);
+        productsSpinner = (MaterialSpinner) findViewById(R.id.products_spinner);
 
 
         mPassedProduct = getIntent().getParcelableExtra(INTENT_EXTRA_PRODUCT);
 
         Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        session = new SessionManager(this);
+
 
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
@@ -129,23 +131,6 @@ public class AddProductActivity extends AppCompatActivity implements DialogInter
 //        if (mPassedProduct != null) populateViewsWithPassedProductData();
 
         // Add text changed listener to all text fields that needs to be validated.
-        mProductSupplierTIL.getEditText().addTextChangedListener(new TextWatcher() {
-            @Override
-            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-
-            }
-
-            @Override
-            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                if (i >= 0 && mProductSupplierTIL.isErrorEnabled())
-                    mProductSupplierTIL.setErrorEnabled(false);
-            }
-
-            @Override
-            public void afterTextChanged(Editable editable) {
-
-            }
-        });
         mProductPriceTIL.getEditText().addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -276,11 +261,33 @@ public class AddProductActivity extends AppCompatActivity implements DialogInter
 
         productsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+            public void onItemSelected(AdapterView<?> adapterView, View view,final int i, long l) {
                 try {
                     productName = products.get(i).getName();
                     description.setText(products.get(i).getDescription());
                     productId = products.get(i).getId();
+
+                    new AsyncTask<Void, Void, Unit>(){
+                        @Override
+                        protected Unit doInBackground(Void... voids) {
+                            Unit unit = baseDatabase.unitsDao().getUnit(products.get(i).getUnitId());
+                            return unit;
+                        }
+
+                        @Override
+                        protected void onPostExecute(Unit unit) {
+                            super.onPostExecute(unit);
+
+                            String priceHint= "Product Price / "+unit.getName();
+                            mProductPriceTIL.getEditText().setHint(priceHint);
+
+                            String hint="Product Quantity / "+unit.getName();
+                            mProductQuantityTIL.getEditText().setHint(hint);
+
+                        }
+                    }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+
+
                 }catch (Exception e){
                     productId = -1;
                     productName = "";
@@ -333,31 +340,65 @@ public class AddProductActivity extends AppCompatActivity implements DialogInter
         return super.onCreateOptionsMenu(menu);
     }
 
+    @SuppressLint("StaticFieldLeak")
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_done) {
             // The user presses the 'Done' action button. Validate user inputs before proceeding.
             if (validateUserInput()) {
-                Intent previousActivityIntent;
+
                 // If passed product object is present, update the product with the new data.
                 // Otherwise, create a new product object with the data and save it to the database.
                 if (mPassedProduct != null) {
-                    buildProductWithUserInputData(mPassedProduct);
                     //TODO handle updating of product information
+//                    buildProductWithUserInputData(mPassedProduct);
 //                    mDbHelper.updateProduct(mPassedProduct);
+
                     // Set previousActivityIntent to DetailActivity and pass back the updated product object.
-                    previousActivityIntent = new Intent(this, DetailActivity.class);
+                    Intent previousActivityIntent = new Intent(this, DetailActivity.class);
                     previousActivityIntent.putExtra(INTENT_EXTRA_PRODUCT, mPassedProduct);
+
+                    // Return to the previous activity which called this activity.
+                    NavUtils.navigateUpTo(this, previousActivityIntent);
                 } else {
-                    Product product = new Product();
-                    buildProductWithUserInputData(product);
-                    //TODO handle Adding a new product
-//                    mDbHelper.insertProduct(product);
-                    // Set previousActivityIntent to MainActivity.
-                    previousActivityIntent = new Intent(this, MainActivity.class);
+
+                    new AsyncTask<Void, Void, Void>(){
+                        @Override
+                        protected Void doInBackground(Void... voids) {
+                            Balances balances =  buildProductWithUserInputData();
+
+                            Transactions transaction = new Transactions();
+
+
+                            transaction.setProduct_id(productId);
+                            transaction.setAmount(Integer.valueOf(mProductQuantityTIL.getEditText().getText().toString()));
+                            transaction.setPrice(Integer.valueOf(mProductPriceTIL.getEditText().getText().toString()));
+                            transaction.setUser_id(Integer.valueOf(session.getServiceProviderUUID()));
+                            transaction.setUuid(UUID.randomUUID().toString());
+
+                            //TODO remove hardcoding of ids
+                            transaction.setTransactiontype_id(1);
+                            transaction.setStatus_id(1);
+
+                            baseDatabase.balanceModelDao().addBalance(balances);
+                            baseDatabase.transactionsDao().addTransactions(transaction);
+                            return null;
+                        }
+
+                        @Override
+                        protected void onPostExecute(Void v) {
+                            super.onPostExecute(v);
+
+                            Intent previousActivityIntent = new Intent(AddProductActivity.this, MainActivity.class);
+
+                            // Return to the previous activity which called this activity.
+                            NavUtils.navigateUpTo(AddProductActivity.this, previousActivityIntent);
+
+                        }
+                    }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+
+
                 }
-                // Return to the previous activity which called this activity.
-                NavUtils.navigateUpTo(this, previousActivityIntent);
             }
         } else if (item.getItemId() == android.R.id.home) {
             // The user presses the 'Back' action button. Before returning to MainActivity, check
@@ -451,7 +492,6 @@ public class AddProductActivity extends AppCompatActivity implements DialogInter
      */
     private boolean validateUserInput() {
        boolean isTypeIdSet = productId != -1;
-       boolean isProductSupplierSet = !TextUtils.isEmpty(mProductSupplierTIL.getEditText().getText());
         boolean isProductPriceSet = !TextUtils.isEmpty(mProductPriceTIL.getEditText().getText());
         boolean isProductQtySet = !TextUtils.isEmpty(mProductQuantityTIL.getEditText().getText());
 
@@ -459,10 +499,6 @@ public class AddProductActivity extends AppCompatActivity implements DialogInter
             productsSpinner.setError(getString(R.string.error_msg_product_type_empty));
         }
 
-        if (!isProductSupplierSet) {
-            mProductSupplierTIL.setError(getString(R.string.error_msg_product_supplier_empty));
-            mProductSupplierTIL.setErrorEnabled(true);
-        }
 
         if (!isProductPriceSet) {
             mProductPriceTIL.setError(getString(R.string.error_msg_product_price_empty));
@@ -472,29 +508,25 @@ public class AddProductActivity extends AppCompatActivity implements DialogInter
             mProductQuantityTIL.setError(getString(R.string.error_msg_product_quantity_empty));
             mProductQuantityTIL.setErrorEnabled(true);
         }
-        return  isTypeIdSet && isProductSupplierSet && isProductPriceSet && isProductQtySet;
+        return  isTypeIdSet && isProductPriceSet && isProductQtySet;
     }
 
     /**
-     * Method for extracting user inputs from the text fields to a product object.
-     * @param product - The product object.
+     * Method for extracting user inputs from the text fields to a balance object.
      */
-    private void buildProductWithUserInputData(Product product) {
-        //TODO handle storing new product transaction
-//        product.setTypeId(productId);
-//        product.setUnitOfMeasureId(1);
-//
-//        Log.d(TAG,"Product name = "+subCategoryName+" - "+ productName);
-//        product.setmName(subCategoryName+" - "+ productName);
-//        product.setCode(mProductCodeTIL.getEditText().getText().toString());
-//        product.setmSupplier(mProductSupplierTIL.getEditText().getText().toString());
-//        product.setSupplierEmail(mProductSupplierEmailTIL.getEditText().getText().toString());
-//        // Get the product photo path from the ImageView tag. The tag might contains null data, so
-//        // it needs to be checked. If it's null, set the photo path to an empty string.
-//        Object imageViewTag = mProductPhotoImageView.getTag();
-//        product.setmPhotoPath( (imageViewTag != null) ? imageViewTag.toString() : "" );
-//        product.setmPrice(Double.valueOf(mProductPriceTIL.getEditText().getText().toString()));
-//        product.setmQuantity(Integer.valueOf(mProductQuantityTIL.getEditText().getText().toString()));
+    private Balances buildProductWithUserInputData() {
+        Log.d(TAG,"Product Id = "+productId);
+        Balances balances = new Balances();
+        balances.setProduct_id(productId);
+        balances.setUuid(UUID.randomUUID().toString());
+        // Get the product photo path from the ImageView tag. The tag might contains null data, so
+        // it needs to be checked. If it's null, set the photo path to an empty string.
+        Object imageViewTag = mProductPhotoImageView.getTag();
+        balances.setImage_path( (imageViewTag != null) ? imageViewTag.toString() : "" );
+        balances.setPrice(Integer.valueOf(mProductPriceTIL.getEditText().getText().toString()));
+        balances.setBalance(Integer.valueOf(mProductQuantityTIL.getEditText().getText().toString()));
+
+        return balances;
     }
 
     public void showImage(ImageView v, String photoPath) {

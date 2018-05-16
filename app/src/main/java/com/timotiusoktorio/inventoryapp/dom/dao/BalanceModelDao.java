@@ -18,6 +18,9 @@ public interface BalanceModelDao {
     @Query("select * from Balances")
     LiveData<List<Balances>> getBalances();
 
+    @Query("select * from Balances WHERE Balances.product_id=:product_id")
+    Balances getBalance(int product_id);
+
 
     @Insert(onConflict = REPLACE)
     void addBalance(Balances balances);

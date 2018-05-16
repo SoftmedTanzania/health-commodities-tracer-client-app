@@ -1,30 +1,52 @@
 package com.timotiusoktorio.inventoryapp.activity;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
+import android.arch.lifecycle.LiveData;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
+import android.arch.persistence.room.Transaction;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
+import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.NavUtils;
 import android.support.v7.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ImageView;
+import android.widget.TableLayout;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.timotiusoktorio.inventoryapp.LoadProductPhotoAsync;
 import com.timotiusoktorio.inventoryapp.R;
 import com.timotiusoktorio.inventoryapp.database.AppDatabase;
+import com.timotiusoktorio.inventoryapp.dom.objects.Balances;
 import com.timotiusoktorio.inventoryapp.dom.objects.Product;
+import com.timotiusoktorio.inventoryapp.dom.objects.TransactionType;
+import com.timotiusoktorio.inventoryapp.dom.objects.Transactions;
 import com.timotiusoktorio.inventoryapp.fragment.ConfirmationDialogFragment;
 import com.timotiusoktorio.inventoryapp.helper.PhotoHelper;
+import com.timotiusoktorio.inventoryapp.utils.SessionManager;
+import com.timotiusoktorio.inventoryapp.viewmodels.TransactionsListViewModel;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.UUID;
 
 import fr.ganfra.materialspinner.MaterialSpinner;
 
@@ -42,8 +64,21 @@ public class DetailActivity extends AppCompatActivity {
     private TextView mProductQuantityTextView;
     private AppDatabase database;
     private Product mProduct;
+    private Balances balance;
     private static final int REQUEST_CODE_CHOOSE_PHOTO = 1;
     private MaterialSpinner stockAdjustmentReasonSpinner;
+    private List<TransactionType> transactionTypes;
+
+    private TextInputLayout stockAdjustmentQuantity;
+    private FloatingActionButton floatingActionButton;
+    private String stockAdjustmentReason;
+    private int stockAdjustmentReasonId;
+    private TransactionsListViewModel transactionsListViewModel;
+    private TableLayout transactionsTable;
+
+
+    // Session Manager Class
+    private SessionManager session;
 
     /**
      * Id to identify a contacts permission request.
@@ -70,6 +105,7 @@ public class DetailActivity extends AppCompatActivity {
         }
     };
 
+    @SuppressLint("StaticFieldLeak")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -77,25 +113,165 @@ public class DetailActivity extends AppCompatActivity {
 
         mProductPhotoImageView = (ImageView) findViewById(R.id.product_photo_image_view);
         mProductQuantityTextView = (TextView) findViewById(R.id.product_quantity_text_view);
+        stockAdjustmentQuantity = (TextInputLayout) findViewById(R.id.stock_adjustment_quantity);
+        floatingActionButton = (FloatingActionButton) findViewById(R.id.fab);
+        transactionsTable = (TableLayout)findViewById(R.id.transactions_table);
+
 
         // Get an instance of the database helper.
         database =  AppDatabase.getDatabase(this);
+        session = new SessionManager(this);
 
-        // Get the product object which was sent from MainActivity.
-        Product product = getIntent().getParcelableExtra(INTENT_EXTRA_PRODUCT);
-        // The product object currently doesn't have the complete product information.
-        // Get the rest of the product information from the database.
-        mProduct = database.productsModelDao().getProductById(product.getId());
+
         stockAdjustmentReasonSpinner = (MaterialSpinner)findViewById(R.id.stock_adjustment_reason);
 
+        new AsyncTask<Void, Void, Void>(){
+            @Override
+            protected Void doInBackground(Void... voids) {
+                transactionTypes = database.transactionTypeModelDao().getTransactionTypes();
+                return null;
+            }
 
-        ArrayAdapter<String> spinAdapter = new ArrayAdapter<String>(this, R.layout.simple_spinner_item_black, getResources().getStringArray(R.array.stock_adjustment_reasons));
-        spinAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item_black);
-        stockAdjustmentReasonSpinner.setAdapter(spinAdapter);
+            @Override
+            protected void onPostExecute(Void v) {
+                super.onPostExecute(v);
+
+                List<String> transactionTypesNames = new ArrayList<>();
+
+                for(TransactionType tType:transactionTypes){
+                    transactionTypesNames.add(tType.getName());
+                }
+
+                ArrayAdapter<String> spinAdapter = new ArrayAdapter<String>(DetailActivity.this, R.layout.simple_spinner_item_black, transactionTypesNames);
+                spinAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item_black);
+                stockAdjustmentReasonSpinner.setAdapter(spinAdapter);
+
+            }
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+
+        stockAdjustmentReasonSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                try {
+                    stockAdjustmentReason = transactionTypes.get(i).getName();
+                    stockAdjustmentReasonId = transactionTypes.get(i).getId();
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
 
 
-        // Populate views with the product details data.
-        populateViewsWithProductData();
+        // Get the product object which was sent from MainActivity.
+        final Product product = (Product) getIntent().getSerializableExtra(INTENT_EXTRA_PRODUCT);
+        // The product object currently doesn't have the complete product information.
+        // Get the rest of the product information from the database.
+
+
+        new AsyncTask<Void, Void, Void>(){
+            @Override
+            protected Void doInBackground(Void... voids) {
+                mProduct = database.productsModelDao().getProductById(product.getId());
+
+                Log.d(TAG,"product id : "+product.getId());
+                balance = database.balanceModelDao().getBalance(product.getId());
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void v) {
+                super.onPostExecute(v);
+                // Populate views with the product details data.
+                populateViewsWithProductData();
+
+            }
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+
+
+        floatingActionButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(!stockAdjustmentReason.equals("")){
+
+                    if(!stockAdjustmentQuantity.getEditText().getText().toString().equals("")){
+
+
+                        new AsyncTask<Void, Void, Void>(){
+                            @Override
+                            protected Void doInBackground(Void... voids) {
+                                Transactions transactions = new Transactions();
+                                transactions.setUuid(UUID.randomUUID().toString());
+                                transactions.setProduct_id(mProduct.getId());
+                                transactions.setUser_id(Integer.valueOf(session.getServiceProviderUUID()));
+                                transactions.setTransactiontype_id(stockAdjustmentReasonId);
+                                transactions.setAmount(Integer.valueOf(stockAdjustmentQuantity.getEditText().getText().toString()));
+                                transactions.setPrice(balance.getPrice());
+                                transactions.setStatus_id(1);
+                                database.transactionsDao().addTransactions(transactions);
+                                return null;
+                            }
+
+                            @Override
+                            protected void onPostExecute(Void v) {
+                                super.onPostExecute(v);
+                                stockAdjustmentQuantity.getEditText().setText("");
+
+                            }
+                        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+
+
+
+                    }else{
+                        stockAdjustmentQuantity.getEditText().setError("Please fill the adjustment quantity");
+                    }
+                }else{
+                    stockAdjustmentReasonSpinner.setError("Please select the transaction type");
+                }
+
+            }
+        });
+
+        transactionsListViewModel = ViewModelProviders.of(this).get(TransactionsListViewModel.class);
+
+        transactionsListViewModel.getTransactionsList().observe(DetailActivity.this, new Observer<List<Transactions>>() {
+            @Override
+            public void onChanged(@Nullable List<Transactions> transactions) {
+                transactionsTable.removeAllViews();
+
+                int i=0;
+                for(final Transactions transactions1:transactions){
+                    i++;
+                    final View v = LayoutInflater.from(DetailActivity.this).inflate(R.layout.view_transaction_item,null);
+                    ((TextView)v.findViewById(R.id.sn)).setText(String.valueOf(i));
+
+                    new AsyncTask<Void, Void, String>(){
+                        @Override
+                        protected String doInBackground(Void... voids) {
+                            return database.transactionTypeModelDao().getTransactionTypeName(transactions1.getTransactiontype_id());
+                        }
+
+                        @Override
+                        protected void onPostExecute(String name) {
+                            super.onPostExecute(name);
+                            ((TextView)v.findViewById(R.id.transaction_type)).setText(name);
+                        }
+                    }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+
+                    ((TextView)v.findViewById(R.id.price_per_item)).setText(String.valueOf(transactions1.getPrice()));
+                    ((TextView)v.findViewById(R.id.total)).setText(String.valueOf(transactions1.getAmount() * transactions1.getPrice()));
+                    ((TextView)v.findViewById(R.id.quantity)).setText(String.valueOf(transactions1.getAmount()));
+
+                    transactionsTable.addView(v);
+                }
+            }
+        });
+
+
     }
 
     @Override
@@ -175,32 +351,21 @@ public class DetailActivity extends AppCompatActivity {
      * be quite long, a separate method is preferable for better readability.
      */
     private void populateViewsWithProductData() {
-        //TODO handle showing of product photo
-        String photoPath = "";
-//        String photoPath = mProduct.getPhotoPath();
+        String photoPath = balance.getImage_path();
         mProductPhotoImageView.setTag(photoPath);
         if (!TextUtils.isEmpty(photoPath)) {
-//            Glide.with(getApplicationContext()).load(photoPath).into(mProductPhotoImageView);
             new LoadProductPhotoAsync(this, mProductPhotoImageView).execute(photoPath);
         }
 
         TextView productNameTextView = (TextView) findViewById(R.id.product_name_text_view);
         productNameTextView.setText(mProduct.getName());
 
-        TextView productCodeTextView = (TextView) findViewById(R.id.product_code_text_view);
-
-        //TODO handle suppliers informations
-//        TextView productSupplierTextView = (TextView) findViewById(R.id.product_supplier_text_view);
-//        productSupplierTextView.setText(getString(R.string.string_format_product_supplier, mProduct.getmSupplier()));
-
         TextView productPriceTextView = (TextView) findViewById(R.id.product_price_text_view);
-        //todo handle prices
-//        double roundedPrice = Math.round(mProduct.getmPrice() * 10000.0) / 10000.0;
-//        productPriceTextView.setText(getString(R.string.string_format_product_price_details, roundedPrice));
+        double roundedPrice = Math.round(balance.getPrice() * 10000.0) / 10000.0;
+        productPriceTextView.setText(getString(R.string.string_format_product_price_details, String.valueOf(roundedPrice)));
 
-        //todo handle quantity
         mProductQuantityTextView = (TextView) findViewById(R.id.product_quantity_text_view);
-//        mProductQuantityTextView.setText(getString(R.string.string_format_product_quantity_details, mProduct.getmQuantity()));
+        mProductQuantityTextView.setText(getString(R.string.string_format_product_quantity_details, String.valueOf(balance.getBalance())));
     }
 
     /**
@@ -212,8 +377,8 @@ public class DetailActivity extends AppCompatActivity {
     private void updateProductQuantity(int newQuantity) {
         //TODO handle product quantity
 //        mProductQuantityTextView.setText(getString(R.string.string_format_product_quantity_details, newQuantity));
-        //handle quantity
-//        mProduct.setmQuantity(newQuantity);;
+        //-handle quantity
+//        mProduct.setmQuantity(newQuantity);
     }
 
 

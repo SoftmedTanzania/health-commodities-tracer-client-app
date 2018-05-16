@@ -19,6 +19,9 @@ public interface ProductsModelDao {
     @Query("select * from Product")
     List<Product> getAllProducts();
 
+    @Query("select Product.id,Product.subcategoryId,Product.description,Product.name,Product.unitId,Product.uuid from Product INNER JOIN Balances ON Product.id = Balances.product_id WHERE Balances.balance>0 ")
+    List<Product> getAvailableProducts();
+
     @Query("select * from Product where subcategoryId = :subCategoryId")
     List<Product> getProductsBySubCategoryId(int subCategoryId);
 

@@ -3,8 +3,7 @@ package com.timotiusoktorio.inventoryapp.utils;
 
 public class Constants {
 
-    public static String BASE_URL = "http://45.56.90.103/rucodia/public/index.php/api/";
-
+    public static String BASE_URL = "http://45.56.90.103/rucodia/public/index.php/api/v1/";
 
     /** Database Names **/
     public static final String DEVICE_REGISTRATION_ID = "device_registration_id";
@@ -25,5 +24,6 @@ public class Constants {
 
     public static final int RESPONCE_SUCCESS = 200;
     public static final int RESPONCE_CREATED = 201;
+
 
 }

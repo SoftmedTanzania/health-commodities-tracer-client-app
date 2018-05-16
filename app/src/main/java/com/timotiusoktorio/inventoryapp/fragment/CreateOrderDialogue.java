@@ -95,9 +95,9 @@ public class CreateOrderDialogue extends android.support.v4.app.DialogFragment {
 
 
         description = (TextView) dialogueLayout.findViewById(R.id.product_description);
-        categorySpinner = (MaterialSpinner) dialogueLayout.findViewById(R.id.spin_category);
-        subCategorySpinner = (MaterialSpinner) dialogueLayout.findViewById(R.id.sub_category);
-        productsSpinner = (MaterialSpinner) dialogueLayout.findViewById(R.id.type);
+        categorySpinner = (MaterialSpinner) dialogueLayout.findViewById(R.id.spin_category_spinner);
+        subCategorySpinner = (MaterialSpinner) dialogueLayout.findViewById(R.id.sub_category_spinner);
+        productsSpinner = (MaterialSpinner) dialogueLayout.findViewById(R.id.products_spinner);
 
 
 

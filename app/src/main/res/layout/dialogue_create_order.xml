@@ -35,7 +35,7 @@
                 android:background="@color/card_separator" />
 
             <fr.ganfra.materialspinner.MaterialSpinner
-                android:id="@+id/spin_category"
+                android:id="@+id/spin_category_spinner"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
@@ -58,7 +58,7 @@
                 app_ms:ms_multiline="false" />
 
             <fr.ganfra.materialspinner.MaterialSpinner
-                android:id="@+id/sub_category"
+                android:id="@+id/sub_category_spinner"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
@@ -80,7 +80,7 @@
                 app_ms:ms_multiline="false" />
 
             <fr.ganfra.materialspinner.MaterialSpinner
-                android:id="@+id/type"
+                android:id="@+id/products_spinner"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
