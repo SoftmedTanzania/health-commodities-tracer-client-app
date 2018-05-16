@@ -1,10 +1,13 @@
 package com.timotiusoktorio.inventoryapp.fragment;
 
 import android.annotation.SuppressLint;
+import android.arch.lifecycle.Observer;
+import android.arch.lifecycle.ViewModelProviders;
 import android.database.Cursor;
 import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -31,9 +34,14 @@ import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.github.mikephil.charting.utils.ColorTemplate;
 import com.github.mikephil.charting.utils.MPPointF;
 import com.timotiusoktorio.inventoryapp.R;
+import com.timotiusoktorio.inventoryapp.activity.DetailActivity;
 import com.timotiusoktorio.inventoryapp.database.AppDatabase;
 import com.timotiusoktorio.inventoryapp.dom.objects.Category;
+import com.timotiusoktorio.inventoryapp.dom.objects.CategoryBalance;
 import com.timotiusoktorio.inventoryapp.dom.objects.Product;
+import com.timotiusoktorio.inventoryapp.dom.objects.Transactions;
+import com.timotiusoktorio.inventoryapp.viewmodels.CategoryBalanceViewModel;
+import com.timotiusoktorio.inventoryapp.viewmodels.TransactionsListViewModel;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -54,6 +62,9 @@ public class DashboardFragment extends Fragment {
     private List<Product> products;
     private LinearLayout productBalancesList;
 
+    private CategoryBalanceViewModel categoryBalanceViewModel;
+    private List<CategoryBalance> categoryBalances;
+
     public DashboardFragment() {
         // Required empty public constructor
     }
@@ -66,7 +77,6 @@ public class DashboardFragment extends Fragment {
         View rowview = inflater.inflate(R.layout.fragment_dashboard, container, false);
 
         appDatabase = AppDatabase.getDatabase(getActivity().getApplicationContext());
-
 
         productBalancesList = (LinearLayout) rowview.findViewById(R.id.product_balances_list);
 
@@ -171,7 +181,20 @@ public class DashboardFragment extends Fragment {
         // l.setCustom(ColorTemplate.VORDIPLOM_COLORS, new String[] { "abc",
         // "def", "ghj", "ikl", "mno" });
 
-        loadReportData(0,0);
+
+        categoryBalanceViewModel = ViewModelProviders.of(this).get(CategoryBalanceViewModel.class);
+        categoryBalanceViewModel.getCategoryBalances().observe(getActivity(), new Observer<List<CategoryBalance>>() {
+            @Override
+            public void onChanged(@Nullable List<CategoryBalance> categoryBalances) {
+                DashboardFragment.this.categoryBalances = categoryBalances;
+                setData();
+                mChart1.highlightValues(null);
+                mChart1.invalidate();
+            }
+        });
+
+
+
 
         return rowview;
     }
@@ -202,9 +225,9 @@ public class DashboardFragment extends Fragment {
 
     private void setData() {
         ArrayList<PieEntry> entries = new ArrayList<PieEntry>();
-        for (int i = 0; i < sizes.size() ; i++) {
-            entries.add(new PieEntry((float) (sizes.get(i)),
-                    categoryNames.get(i),
+        for (CategoryBalance categoryBalance:categoryBalances) {
+            entries.add(new PieEntry((float) (categoryBalance.getBalance()),
+                    categoryBalance.getName(),
                     getResources().getDrawable(R.drawable.ic_content_paste_white_24dp)));
         }
 
@@ -248,9 +271,9 @@ public class DashboardFragment extends Fragment {
         mChart1.invalidate();
     }
 
-    @SuppressLint("StaticFieldLeak")
-    private void loadReportData(final long fromDateTimestamp, final long toDateTimestamp){
-
+//    @SuppressLint("StaticFieldLeak")
+//    private void loadReportData(final long fromDateTimestamp, final long toDateTimestamp){
+//
 //        new AsyncTask<Void, String, String>(){
 //
 //            @Override
@@ -339,8 +362,8 @@ public class DashboardFragment extends Fragment {
 //
 //            }
 //        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-
-    }
+//
+//    }
 
 
 }
