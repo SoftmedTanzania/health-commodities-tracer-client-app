@@ -39,8 +39,10 @@ import com.timotiusoktorio.inventoryapp.database.AppDatabase;
 import com.timotiusoktorio.inventoryapp.dom.objects.Category;
 import com.timotiusoktorio.inventoryapp.dom.objects.CategoryBalance;
 import com.timotiusoktorio.inventoryapp.dom.objects.Product;
+import com.timotiusoktorio.inventoryapp.dom.objects.ProductBalance;
 import com.timotiusoktorio.inventoryapp.dom.objects.Transactions;
 import com.timotiusoktorio.inventoryapp.viewmodels.CategoryBalanceViewModel;
+import com.timotiusoktorio.inventoryapp.viewmodels.ProductBalanceViewModel;
 import com.timotiusoktorio.inventoryapp.viewmodels.TransactionsListViewModel;
 
 import org.json.JSONArray;
@@ -63,6 +65,7 @@ public class DashboardFragment extends Fragment {
     private LinearLayout productBalancesList;
 
     private CategoryBalanceViewModel categoryBalanceViewModel;
+    private ProductBalanceViewModel productBalanceViewModel;
     private List<CategoryBalance> categoryBalances;
 
     public DashboardFragment() {
@@ -190,6 +193,32 @@ public class DashboardFragment extends Fragment {
                 setData();
                 mChart1.highlightValues(null);
                 mChart1.invalidate();
+            }
+        });
+
+        productBalanceViewModel = ViewModelProviders.of(this).get(ProductBalanceViewModel.class);
+        productBalanceViewModel.getProductBalances().observe(getActivity(), new Observer<List<ProductBalance>>() {
+            @Override
+            public void onChanged(@Nullable List<ProductBalance> productBalances) {
+                try{
+                    productBalancesList.removeAllViews();
+                    int i=1;
+                    for (ProductBalance productBalance : productBalances) {
+                        View v = getLayoutInflater().inflate(R.layout.view_inventory_balance_item,null);
+                        ((TextView)v.findViewById(R.id.sn)).setText(String.valueOf(i));
+                        ((TextView) v.findViewById(R.id.product_name)).setText(productBalance.getSubCategoryName()+" - "+productBalance.getProductName());
+
+                        String balance = String.valueOf(productBalance.getBalance());
+                        if(i>1) {
+                            balance+=" "+productBalance.getUnit();
+                        }
+                        ((TextView)v.findViewById(R.id.balance)).setText(balance);
+                        i++;
+                        productBalancesList.addView(v);
+                    }
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
             }
         });
 
