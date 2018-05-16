@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:layout_marginTop="8dp"
+        android:layout_width="match_parent"
+        android:layout_height="50dp"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        android:id="@+id/linear_title">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="0.05"
+            android:layout_height="wrap_content"
+            android:id="@+id/sn"
+            android:textStyle="bold"/>
+
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="0.2"
+            android:layout_height="wrap_content"
+            android:id="@+id/product_name"
+            android:textStyle="bold"/>
+
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.1"
+            android:gravity="center_horizontal"
+            android:textStyle="bold"
+            android:id="@+id/transaction_type"/>
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.1"
+            android:gravity="center_horizontal"
+            android:textStyle="bold"
+            android:id="@+id/quantity" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_weight="0.1"
+            android:gravity="center_horizontal"
+            android:id="@+id/price_per_item"
+            android:layout_height="wrap_content"
+            android:textStyle="bold"/>
+
+    </LinearLayout>
+
+</LinearLayout>

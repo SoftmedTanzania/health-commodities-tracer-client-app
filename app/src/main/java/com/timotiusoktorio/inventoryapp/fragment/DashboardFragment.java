@@ -13,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+import android.widget.TableLayout;
 import android.widget.TextView;
 
 import com.github.mikephil.charting.animation.Easing;
@@ -40,6 +41,7 @@ import com.timotiusoktorio.inventoryapp.dom.objects.Category;
 import com.timotiusoktorio.inventoryapp.dom.objects.CategoryBalance;
 import com.timotiusoktorio.inventoryapp.dom.objects.Product;
 import com.timotiusoktorio.inventoryapp.dom.objects.ProductBalance;
+import com.timotiusoktorio.inventoryapp.dom.objects.TransactionSummary;
 import com.timotiusoktorio.inventoryapp.dom.objects.Transactions;
 import com.timotiusoktorio.inventoryapp.viewmodels.CategoryBalanceViewModel;
 import com.timotiusoktorio.inventoryapp.viewmodels.ProductBalanceViewModel;
@@ -68,6 +70,9 @@ public class DashboardFragment extends Fragment {
     private ProductBalanceViewModel productBalanceViewModel;
     private List<CategoryBalance> categoryBalances;
 
+    private TransactionsListViewModel transactionsListViewModel;
+    private TableLayout transactionSummaryTable;
+
     public DashboardFragment() {
         // Required empty public constructor
     }
@@ -82,6 +87,7 @@ public class DashboardFragment extends Fragment {
         appDatabase = AppDatabase.getDatabase(getActivity().getApplicationContext());
 
         productBalancesList = (LinearLayout) rowview.findViewById(R.id.product_balances_list);
+        transactionSummaryTable = (TableLayout) rowview.findViewById(R.id.transaction_summary_table);
 
         //Pie chart configurations
         mChart1 = (PieChart) rowview.findViewById(R.id.chart1);
@@ -209,9 +215,7 @@ public class DashboardFragment extends Fragment {
                         ((TextView) v.findViewById(R.id.product_name)).setText(productBalance.getSubCategoryName()+" - "+productBalance.getProductName());
 
                         String balance = String.valueOf(productBalance.getBalance());
-                        if(i>1) {
-                            balance+=" "+productBalance.getUnit();
-                        }
+                        balance+=" "+productBalance.getUnit();
                         ((TextView)v.findViewById(R.id.balance)).setText(balance);
                         i++;
                         productBalancesList.addView(v);
@@ -222,6 +226,29 @@ public class DashboardFragment extends Fragment {
             }
         });
 
+        transactionsListViewModel = ViewModelProviders.of(this).get(TransactionsListViewModel.class);
+
+        transactionsListViewModel.getTransactionSummaryList().observe(getActivity(), new Observer<List<TransactionSummary>>() {
+            @Override
+            public void onChanged(@Nullable List<TransactionSummary> transactionSummaries) {
+                transactionSummaryTable.removeAllViews();
+
+                int i=0;
+                for(final TransactionSummary transactionSummary:transactionSummaries){
+                    i++;
+                    final View v = LayoutInflater.from(getActivity()).inflate(R.layout.view_transaction_summary_item,null);
+
+                    ((TextView)v.findViewById(R.id.sn)).setText(String.valueOf(i));
+
+                    ((TextView)v.findViewById(R.id.product_name)).setText(String.valueOf(transactionSummary.getProductName()+" - "+transactionSummary.getSubCategoryName()));
+                    ((TextView)v.findViewById(R.id.price_per_item)).setText(String.valueOf(transactionSummary.getPrice()));
+                    ((TextView)v.findViewById(R.id.transaction_type)).setText(transactionSummary.getTransactionType());
+                    ((TextView)v.findViewById(R.id.quantity)).setText(String.valueOf(transactionSummary.getAmount()));
+
+                    transactionSummaryTable.addView(v);
+                }
+            }
+        });
 
 
 

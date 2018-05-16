@@ -213,7 +213,7 @@
                             android:layout_weight="0.1"
                             android:gravity="center_horizontal"
                             android:textStyle="bold"
-                            android:text="Quantity"/>
+                            android:text="Transaction"/>
 
                         <TextView
                             android:layout_width="0dp"
@@ -221,7 +221,7 @@
                             android:layout_weight="0.1"
                             android:gravity="center_horizontal"
                             android:textStyle="bold"
-                            android:text="Amount" />
+                            android:text="Quantity" />
 
                         <TextView
                             android:layout_width="0dp"
@@ -230,7 +230,7 @@
                             android:id="@+id/mothers_contacts_title"
                             android:layout_height="wrap_content"
                             android:textStyle="bold"
-                            android:text="Total"/>
+                            android:text="Price"/>
 
                     </LinearLayout>
 
@@ -247,7 +247,7 @@
                     android:background="#f5f5f5"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:id="@+id/services_table"/>
+                    android:id="@+id/transaction_summary_table"/>
 
             </LinearLayout>
 

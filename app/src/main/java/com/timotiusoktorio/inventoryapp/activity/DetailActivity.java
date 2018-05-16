@@ -189,6 +189,41 @@ public class DetailActivity extends AppCompatActivity {
                 // Populate views with the product details data.
                 populateViewsWithProductData();
 
+                transactionsListViewModel = ViewModelProviders.of(DetailActivity.this).get(TransactionsListViewModel.class);
+
+                transactionsListViewModel.getTransactionsListByProductId(mProduct.getId()).observe(DetailActivity.this, new Observer<List<Transactions>>() {
+                    @Override
+                    public void onChanged(@Nullable List<Transactions> transactions) {
+                        transactionsTable.removeAllViews();
+
+                        int i=0;
+                        for(final Transactions transactions1:transactions){
+                            i++;
+                            final View v = LayoutInflater.from(DetailActivity.this).inflate(R.layout.view_transaction_item,null);
+                            ((TextView)v.findViewById(R.id.sn)).setText(String.valueOf(i));
+
+                            new AsyncTask<Void, Void, String>(){
+                                @Override
+                                protected String doInBackground(Void... voids) {
+                                    return database.transactionTypeModelDao().getTransactionTypeName(transactions1.getTransactiontype_id());
+                                }
+
+                                @Override
+                                protected void onPostExecute(String name) {
+                                    super.onPostExecute(name);
+                                    ((TextView)v.findViewById(R.id.transaction_type)).setText(name);
+                                }
+                            }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+
+                            ((TextView)v.findViewById(R.id.price_per_item)).setText(String.valueOf(transactions1.getPrice()));
+                            ((TextView)v.findViewById(R.id.total)).setText(String.valueOf(transactions1.getAmount() * transactions1.getPrice()));
+                            ((TextView)v.findViewById(R.id.quantity)).setText(String.valueOf(transactions1.getAmount()));
+
+                            transactionsTable.addView(v);
+                        }
+                    }
+                });
+
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
@@ -233,41 +268,6 @@ public class DetailActivity extends AppCompatActivity {
                     stockAdjustmentReasonSpinner.setError("Please select the transaction type");
                 }
 
-            }
-        });
-
-        transactionsListViewModel = ViewModelProviders.of(this).get(TransactionsListViewModel.class);
-
-        transactionsListViewModel.getTransactionsList().observe(DetailActivity.this, new Observer<List<Transactions>>() {
-            @Override
-            public void onChanged(@Nullable List<Transactions> transactions) {
-                transactionsTable.removeAllViews();
-
-                int i=0;
-                for(final Transactions transactions1:transactions){
-                    i++;
-                    final View v = LayoutInflater.from(DetailActivity.this).inflate(R.layout.view_transaction_item,null);
-                    ((TextView)v.findViewById(R.id.sn)).setText(String.valueOf(i));
-
-                    new AsyncTask<Void, Void, String>(){
-                        @Override
-                        protected String doInBackground(Void... voids) {
-                            return database.transactionTypeModelDao().getTransactionTypeName(transactions1.getTransactiontype_id());
-                        }
-
-                        @Override
-                        protected void onPostExecute(String name) {
-                            super.onPostExecute(name);
-                            ((TextView)v.findViewById(R.id.transaction_type)).setText(name);
-                        }
-                    }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-
-                    ((TextView)v.findViewById(R.id.price_per_item)).setText(String.valueOf(transactions1.getPrice()));
-                    ((TextView)v.findViewById(R.id.total)).setText(String.valueOf(transactions1.getAmount() * transactions1.getPrice()));
-                    ((TextView)v.findViewById(R.id.quantity)).setText(String.valueOf(transactions1.getAmount()));
-
-                    transactionsTable.addView(v);
-                }
             }
         });
 
