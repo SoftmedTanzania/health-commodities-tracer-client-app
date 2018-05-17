@@ -22,6 +22,9 @@ public class TransactionSummary implements Serializable {
     @SerializedName("price")
     private int price;
 
+    @SerializedName("created_at")
+    private long created_at;
+
     public String getSubCategoryName() {
         return subCategoryName;
     }
@@ -60,5 +63,13 @@ public class TransactionSummary implements Serializable {
 
     public void setPrice(int price) {
         this.price = price;
+    }
+
+    public long getCreated_at() {
+        return created_at;
+    }
+
+    public void setCreated_at(long created_at) {
+        this.created_at = created_at;
     }
 }

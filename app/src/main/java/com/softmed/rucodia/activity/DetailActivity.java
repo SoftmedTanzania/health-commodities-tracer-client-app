@@ -26,6 +26,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.TableLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.softmed.rucodia.LoadProductPhotoAsync;
 import com.softmed.rucodia.R;
@@ -41,11 +42,17 @@ import com.softmed.rucodia.utils.SessionManager;
 import com.softmed.rucodia.viewmodels.ProductsViewModel;
 import com.softmed.rucodia.viewmodels.TransactionsListViewModel;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
 import fr.ganfra.materialspinner.MaterialSpinner;
+
+import static com.softmed.rucodia.utils.Calendars.toBeginningOfTheDay;
 
 /**
  * Created by Coze on 2016-08-08.
@@ -206,6 +213,23 @@ public class DetailActivity extends AppCompatActivity {
                                 }
                             }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
+
+
+
+                            Log.d(TAG,"timestamp Date = "+transactions1.getCreated_at());
+
+
+                            Date date = new Date(transactions1.getCreated_at());
+                            DateFormat formatter = new SimpleDateFormat("YYYY-MM-dd");
+                            String dateFormatted = formatter.format(date);
+
+
+                            Log.d(TAG,"formated Date = "+dateFormatted);
+
+                            ((TextView)v.findViewById(R.id.date)).setText(dateFormatted);
+
+
+
                             ((TextView)v.findViewById(R.id.price_per_item)).setText(String.valueOf(transactions1.getPrice()));
                             ((TextView)v.findViewById(R.id.total)).setText(String.valueOf(transactions1.getAmount() * transactions1.getPrice()));
                             ((TextView)v.findViewById(R.id.quantity)).setText(String.valueOf(transactions1.getAmount()));
@@ -238,6 +262,11 @@ public class DetailActivity extends AppCompatActivity {
                                 transactions.setAmount(Integer.valueOf(stockAdjustmentQuantity.getEditText().getText().toString()));
                                 transactions.setPrice(mProduct.getPrice());
                                 transactions.setStatus_id(1);
+
+                                Calendar c = Calendar.getInstance();
+                                toBeginningOfTheDay(c);
+
+                                transactions.setCreated_at(c.getTimeInMillis());
                                 database.transactionsDao().addTransactions(transactions);
 
                                 Balances balances = database.balanceModelDao().getBalance(mProduct.getProductId());
@@ -258,6 +287,7 @@ public class DetailActivity extends AppCompatActivity {
                             protected void onPostExecute(Void v) {
                                 super.onPostExecute(v);
                                 stockAdjustmentQuantity.getEditText().setText("");
+                                Toast.makeText(DetailActivity.this,"Transaction Added successfully",Toast.LENGTH_LONG).show();
 
                             }
                         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);

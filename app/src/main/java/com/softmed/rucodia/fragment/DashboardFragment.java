@@ -6,6 +6,7 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,11 +38,14 @@ import com.softmed.rucodia.viewmodels.CategoryBalanceViewModel;
 import com.softmed.rucodia.viewmodels.ProductsViewModel;
 import com.softmed.rucodia.viewmodels.TransactionsListViewModel;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 public class DashboardFragment extends Fragment {
-
+    private static final String TAG = DashboardFragment.class.getSimpleName();
     private PieChart mChart1;
     private BarChart mChart2;
     private List<String> categoryNames = new ArrayList<>();
@@ -222,7 +226,18 @@ public class DashboardFragment extends Fragment {
                     i++;
                     final View v = LayoutInflater.from(getActivity()).inflate(R.layout.view_transaction_summary_item,null);
 
-                    ((TextView)v.findViewById(R.id.sn)).setText(String.valueOf(i));
+
+                    Log.d(TAG,"timestamp Date = "+transactionSummary.getCreated_at());
+
+
+                    Date date = new Date(transactionSummary.getCreated_at());
+                    DateFormat formatter = new SimpleDateFormat("YYYY-MM-dd");
+                    String dateFormatted = formatter.format(date);
+
+
+                    Log.d(TAG,"formated Date = "+dateFormatted);
+
+                    ((TextView)v.findViewById(R.id.date)).setText(dateFormatted);
 
                     ((TextView)v.findViewById(R.id.product_name)).setText(String.valueOf(transactionSummary.getProductName()+" - "+transactionSummary.getSubCategoryName()));
                     ((TextView)v.findViewById(R.id.price_per_item)).setText(String.valueOf(transactionSummary.getPrice()));

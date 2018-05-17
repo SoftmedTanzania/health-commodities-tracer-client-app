@@ -194,6 +194,15 @@
                         android:layout_width="0dp"
                         android:layout_weight="0.2"
                         android:layout_height="wrap_content"
+                        android:text="Date"
+                        android:id="@+id/date"
+                        android:textStyle="bold"/>
+
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_weight="0.2"
+                        android:layout_height="wrap_content"
                         android:id="@+id/child_names_title"
                         android:text="Transaction Type"
                         android:textStyle="bold"/>

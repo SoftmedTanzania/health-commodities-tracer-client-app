@@ -30,8 +30,11 @@ import com.softmed.rucodia.utils.SessionManager;
 import com.softmed.rucodia.viewmodels.ProductsViewModel;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.UUID;
+
+import static com.softmed.rucodia.utils.Calendars.toBeginningOfTheDay;
 
 public class ProductsListFragment extends Fragment implements
         ProductAdapter.OnItemClickListener, ProductAdapter.OnItemSaleListener, ProductAdapter.OnItemDeleteListener  {
@@ -147,6 +150,12 @@ public class ProductsListFragment extends Fragment implements
                             //TODO remove hardcoding of ids
                             transactions.setTransactiontype_id(2);
                             transactions.setUser_id(Integer.valueOf(session.getUserUUID()));
+
+                            Calendar c = Calendar.getInstance();
+                            toBeginningOfTheDay(c);
+
+                            transactions.setCreated_at(c.getTimeInMillis());
+
 
                             Log.d(TAG,"Saving transactions");
                             database.transactionsDao().addTransactions(transactions);

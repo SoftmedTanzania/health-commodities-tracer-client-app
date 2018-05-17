@@ -41,6 +41,9 @@ public class Transactions implements Serializable {
     @SerializedName("syncStatus")
     private int syncStatus = 0;
 
+    @SerializedName("created_at")
+    private long created_at;
+
     public int getId() {
         return id;
     }
@@ -112,5 +115,13 @@ public class Transactions implements Serializable {
 
     public void setSyncStatus(int syncStatus) {
         this.syncStatus = syncStatus;
+    }
+
+    public long getCreated_at() {
+        return created_at;
+    }
+
+    public void setCreated_at(long created_at) {
+        this.created_at = created_at;
     }
 }

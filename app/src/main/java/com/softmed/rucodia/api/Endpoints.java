@@ -5,7 +5,6 @@ import com.softmed.rucodia.dom.objects.Transactions;
 import com.softmed.rucodia.dom.responces.CategoriesResponse;
 import com.softmed.rucodia.dom.responces.LoginResponse;
 import com.softmed.rucodia.dom.responces.ProductsResponse;
-import com.softmed.rucodia.dom.responces.TransactionsResponse;
 
 import java.util.List;
 
@@ -14,6 +13,7 @@ import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
 import retrofit2.http.POST;
+import retrofit2.http.Url;
 
 
 public class Endpoints {
@@ -39,14 +39,14 @@ public class Endpoints {
     }
 
     public interface TransactionServices{
-        @GET("transactions")
-        Call<List<Transactions>> getTransactions();
+        @GET
+        Call<List<Transactions>> getTransactions(@Url String url);
 
         @GET("transactiontypes")
         Call<List<TransactionType>> getTransactionTypes();
 
         @POST("transactions")
-        Call<TransactionsResponse> postTransaction(@Body RequestBody e);
+        Call<Transactions> postTransaction(@Body RequestBody e);
 
     }
 

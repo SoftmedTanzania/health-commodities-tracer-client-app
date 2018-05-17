@@ -44,11 +44,17 @@ import com.softmed.rucodia.utils.SessionManager;
 
 import java.io.File;
 import java.io.IOException;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
 import fr.ganfra.materialspinner.MaterialSpinner;
+
+import static com.softmed.rucodia.utils.Calendars.toBeginningOfTheDay;
 
 
 public class AddProductActivity extends AppCompatActivity implements DialogInterface.OnClickListener, ActivityCompat.OnRequestPermissionsResultCallback {
@@ -386,6 +392,10 @@ public class AddProductActivity extends AppCompatActivity implements DialogInter
                             //TODO remove hardcoding of ids
                             transaction.setTransactiontype_id(1);
                             transaction.setStatus_id(1);
+
+                            Calendar c = Calendar.getInstance();
+                            toBeginningOfTheDay(c);
+                            transaction.setCreated_at(c.getTimeInMillis());
 
                             baseDatabase.balanceModelDao().addBalance(balances);
                             baseDatabase.transactionsDao().addTransactions(transaction);

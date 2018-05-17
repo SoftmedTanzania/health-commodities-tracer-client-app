@@ -35,6 +35,7 @@ import com.softmed.rucodia.dom.responces.CategoriesResponse;
 import com.softmed.rucodia.dom.responces.LoginResponse;
 import com.softmed.rucodia.dom.responces.ProductsResponse;
 import com.softmed.rucodia.utils.Config;
+import com.softmed.rucodia.utils.Constants;
 import com.softmed.rucodia.utils.LargeDiagonalCutPathDrawable;
 import com.softmed.rucodia.utils.ServiceGenerator;
 import com.softmed.rucodia.utils.SessionManager;
@@ -463,11 +464,14 @@ public class LoginActivity extends BaseActivity {
         loginMessages.setText(getResources().getString(R.string.loading_transactions));
         loginMessages.setTextColor(getResources().getColor(R.color.amber_a700));
         if (session.isLoggedIn()){
-            Call<List<Transactions>> call = transactionServices.getTransactions();
+            Call<List<Transactions>> call = transactionServices.getTransactions("users/"+session.getUserUUID()+"/transactions");
             call.enqueue(new Callback<List<Transactions>>() {
 
                 @Override
                 public void onResponse(Call<List<Transactions>> call, Response<List<Transactions>> response) {
+
+
+                    Log.d(TAG,"TransactionCheck Code = "+response.code());
                     //Here will handle the responce from the server
                     Log.d("transactionsCheck", response.body()+"");
 
@@ -605,9 +609,6 @@ public class LoginActivity extends BaseActivity {
 
         @Override
         protected Void doInBackground(Void... voids) {
-
-            Log.d("InitialSync", "Transactions Response size : "+results.size());
-
             for (Transactions mList : results){
                 baseDatabase.transactionsDao().addTransactions(mList);
                 Log.d("InitialSync", "Transactions type : "+mList.getTransactiontype_id());

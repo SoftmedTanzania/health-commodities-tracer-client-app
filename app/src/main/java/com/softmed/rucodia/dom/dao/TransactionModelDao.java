@@ -16,12 +16,19 @@ import static android.arch.persistence.room.OnConflictStrategy.REPLACE;
 @Dao
 public interface TransactionModelDao {
 
-    @Query("select SubCategory.name as subCategoryName, Product.name as productName, SUM(Transactions.amount) as amount, Transactions.price ,TransactionType.name as transactionType  from Transactions " +
+    @Query("select " +
+            "SubCategory.name as subCategoryName, " +
+            "Product.name as productName, " +
+            "SUM(Transactions.amount) as amount, " +
+            "Transactions.price ," +
+            "TransactionType.name as transactionType,  " +
+            "Transactions.created_at as created_at  " +
+            "from Transactions " +
             "INNER JOIN Product ON Transactions.product_id=Product.id " +
             "INNER JOIN TransactionType ON Transactions.transactiontype_id=TransactionType.id " +
             "INNER JOIN Unit ON Product.unitId=Unit.id " +
             "INNER JOIN SubCategory ON Product.subcategoryId = Subcategory.id "+
-            " GROUP BY SubCategory.name,Product.name, Transactions.price ,TransactionType.name ")
+            " GROUP BY SubCategory.name,Product.name, Transactions.price ,TransactionType.name, Transactions.created_at ")
     LiveData<List<TransactionSummary>> getTransactionSummary();
 
     @Query("select * from Transactions WHERE product_id = :productId")
