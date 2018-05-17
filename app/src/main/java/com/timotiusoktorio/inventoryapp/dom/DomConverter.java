@@ -28,8 +28,12 @@ public class DomConverter {
         usersInfo.setUuid(loginResponse.getUuid());
         usersInfo.setId(loginResponse.getId());
         usersInfo.setSurname(loginResponse.getUsername());
-        usersInfo.setLevelId(loginResponse.getLevelResponses().get(0).getId());
-        usersInfo.setLocationId(loginResponse.getLocationResponses().get(0).getId());
+        try {
+            usersInfo.setLevelId(loginResponse.getLevelResponses().get(0).getId());
+            usersInfo.setLocationId(loginResponse.getLocationResponses().get(0).getId());
+        }catch (Exception e){
+            e.printStackTrace();
+        }
 
         return usersInfo;
 

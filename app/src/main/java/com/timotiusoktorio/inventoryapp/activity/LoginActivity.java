@@ -292,11 +292,11 @@ public class LoginActivity extends BaseActivity {
 
             //Use Retrofit to make http request calls
             Endpoints.LoginService loginService = ServiceGenerator.createService(Endpoints.LoginService.class, usernameValue, passwordValue);
-            Call<List<LoginResponse>> call = loginService.basicLogin();
-            call.enqueue(new Callback<List<LoginResponse> >() {
+            Call<LoginResponse> call = loginService.basicLogin();
+            call.enqueue(new Callback<LoginResponse>() {
                 @SuppressLint("StaticFieldLeak")
                 @Override
-                public void onResponse(Call<List<LoginResponse>> call, Response<List<LoginResponse>> response) {
+                public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
 
                     Log.d(TAG,"response = "+response.toString());
                     if (response.isSuccessful()) {
@@ -305,12 +305,11 @@ public class LoginActivity extends BaseActivity {
                         loginMessages.setText(getResources().getString(R.string.success));
 
                         Log.d(TAG,"response body = "+new Gson().toJson(response.body()).toString());
-                        userInfo = DomConverter.getUserInfo(response.body().get(0));
+                        userInfo = DomConverter.getUserInfo(response.body());
 
-                        String userName = userInfo.getUsername();
                         String userUUID = userInfo.getUuid();
                         session.createLoginSession(
-                                userName,
+                                usernameValue,
                                 userInfo.getId(),
                                 passwordValue,
                                 userInfo.getLocationId(),
@@ -321,14 +320,14 @@ public class LoginActivity extends BaseActivity {
                         productsServices = ServiceGenerator.createService(Endpoints.ProductsService.class, session.getUserName(), session.getUserPass());
 
 
-                        final Location location = DomConverter.getLocation(response.body().get(0));
+//                        final Location location = DomConverter.getLocation(response.body());
 
                         new AsyncTask<Void, Void, Void>(){
                             @Override
                             protected Void doInBackground(Void... voids) {
                                 Log.d(TAG,"userInfo : "+userInfo.toString());
                                 baseDatabase.userInfoDao().addUserInfo(userInfo);
-                                baseDatabase.locationsModelDao().addLocation(location);
+//                                baseDatabase.locationsModelDao().addLocation(location);
                                 return null;
                             }
 
@@ -352,7 +351,7 @@ public class LoginActivity extends BaseActivity {
                 }
 
                 @Override
-                public void onFailure(Call<List<LoginResponse>> call, Throwable t) {
+                public void onFailure(Call<LoginResponse> call, Throwable t) {
                     // something went completely south (like no internet connection)
                     try {
                         Log.d("Error", t.getMessage());

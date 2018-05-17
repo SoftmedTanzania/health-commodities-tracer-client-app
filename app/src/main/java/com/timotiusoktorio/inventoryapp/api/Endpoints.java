@@ -28,8 +28,8 @@ public class Endpoints {
 
     public interface LoginService {
 
-        @GET("users")
-        Call<List<LoginResponse>> basicLogin();
+        @GET("auth")
+        Call<LoginResponse> basicLogin();
 
     }
 
@@ -51,8 +51,8 @@ public class Endpoints {
         @GET("transactiontypes")
         Call<List<TransactionType>> getTransactionTypes();
 
-//        @POST("transactions")
-//        Call<CategoriesResponse> postEncounter(@Header("From") String serviceProviderUUID, @Body RequestBody e);
+        @POST("transactions")
+        Call<TransactionsResponse> postTransaction(@Body RequestBody e);
 
     }
 

@@ -57,6 +57,14 @@
             android:windowSoftInputMode="stateHidden"
             android:configChanges="locale">
         </activity>
+
+        <service android:name=".Services.PostOfficeService"
+            android:exported="false"/>
+
+        <receiver
+            android:name=".utils.AlarmReceiver"
+            android:process=":remote">
+        </receiver>
     </application>
 
 </manifest>

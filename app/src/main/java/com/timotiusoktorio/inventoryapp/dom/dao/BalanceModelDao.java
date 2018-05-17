@@ -43,7 +43,7 @@ public interface BalanceModelDao {
             "Product.name AS productName, " +
             "Unit.name as unit, " +
             "Balances.price as price, " +
-            "Balances.image_path as image_path, " +
+            "Balances.image_path as imagePath, " +
             "Balances.balance, " +
             "Product.id as productId " +
             " FROM Balances " +

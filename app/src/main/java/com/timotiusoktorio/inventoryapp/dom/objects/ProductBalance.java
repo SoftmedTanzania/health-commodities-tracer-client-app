@@ -20,7 +20,7 @@ public class ProductBalance implements Serializable {
     @SerializedName("unit")
     private String unit;
 
-    @SerializedName("image_path")
+    @SerializedName("imagePath")
     private String imagePath;
 
     @SerializedName("balance")

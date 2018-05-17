@@ -38,6 +38,9 @@ public class Transactions implements Serializable {
     @SerializedName("price")
     private int price;
 
+    @SerializedName("syncStatus")
+    private int syncStatus = 0;
+
     public int getId() {
         return id;
     }
@@ -101,5 +104,13 @@ public class Transactions implements Serializable {
 
     public void setPrice(int price) {
         this.price = price;
+    }
+
+    public int getSyncStatus() {
+        return syncStatus;
+    }
+
+    public void setSyncStatus(int syncStatus) {
+        this.syncStatus = syncStatus;
     }
 }

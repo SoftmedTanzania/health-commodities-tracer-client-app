@@ -1,6 +1,9 @@
 package com.timotiusoktorio.inventoryapp.activity;
 
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.TabLayout;
@@ -22,10 +25,13 @@ import com.timotiusoktorio.inventoryapp.database.AppDatabase;
 import com.timotiusoktorio.inventoryapp.fragment.DashboardFragment;
 import com.timotiusoktorio.inventoryapp.fragment.OrdersFragment;
 import com.timotiusoktorio.inventoryapp.fragment.ProductsListFragment;
+import com.timotiusoktorio.inventoryapp.utils.AlarmReceiver;
 import com.timotiusoktorio.inventoryapp.utils.SessionManager;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import static android.app.AlarmManager.INTERVAL_FIFTEEN_MINUTES;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -74,7 +80,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
+        scheduleAlarm();
     }
 
     @Override
@@ -164,6 +170,21 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
+    }
+
+    public void scheduleAlarm() {
+        // Construct an intent that will execute the AlarmReceiver
+        Intent intent = new Intent(getApplicationContext(), AlarmReceiver.class);
+        // Create a PendingIntent to be triggered when the alarm goes off
+        final PendingIntent pIntent = PendingIntent.getBroadcast(this, AlarmReceiver.REQUEST_CODE,
+                intent, PendingIntent.FLAG_UPDATE_CURRENT);
+        // Setup periodic alarm every every half hour from this point onwards
+        long firstMillis = System.currentTimeMillis(); // alarm is set right away
+        AlarmManager alarm = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
+        // First parameter is the type: ELAPSED_REALTIME, ELAPSED_REALTIME_WAKEUP, RTC_WAKEUP
+        // Interval can be INTERVAL_FIFTEEN_MINUTES, INTERVAL_HALF_HOUR, INTERVAL_HOUR, INTERVAL_DAY
+        alarm.setInexactRepeating(AlarmManager.RTC_WAKEUP, firstMillis,
+                INTERVAL_FIFTEEN_MINUTES, pIntent);
     }
 
 }

@@ -364,7 +364,15 @@ public class AddProductActivity extends AppCompatActivity implements DialogInter
                     new AsyncTask<Void, Void, Void>(){
                         @Override
                         protected Void doInBackground(Void... voids) {
-                            Balances balances =  buildProductWithUserInputData();
+                            Balances b = baseDatabase.balanceModelDao().getBalance(productId);
+                            String uuid=null;
+                            int balance = 0;
+                            if(b!=null){
+                                uuid = b.getUuid();
+                                balance = b.getBalance();
+                            }
+
+                            Balances balances =  buildProductWithUserInputData(uuid,balance);
 
                             Transactions transaction = new Transactions();
 
@@ -513,20 +521,23 @@ public class AddProductActivity extends AppCompatActivity implements DialogInter
     /**
      * Method for extracting user inputs from the text fields to a balance object.
      */
-    private Balances buildProductWithUserInputData() {
+    private Balances buildProductWithUserInputData(String uuid, int balance) {
         Log.d(TAG,"Product Id = "+productId);
         Balances balances = new Balances();
+
         balances.setProduct_id(productId);
-        balances.setUuid(UUID.randomUUID().toString());
+        if(uuid==null) {
+            balances.setUuid(UUID.randomUUID().toString());
+        }else{
+            balances.setUuid(uuid);
+        }
         // Get the product photo path from the ImageView tag. The tag might contains null data, so
         // it needs to be checked. If it's null, set the photo path to an empty string.
         Object imageViewTag = mProductPhotoImageView.getTag();
 
-        Log.d(TAG,"image path = "+imageViewTag.toString());
-
         balances.setImage_path( (imageViewTag != null) ? imageViewTag.toString() : "" );
         balances.setPrice(Integer.valueOf(mProductPriceTIL.getEditText().getText().toString()));
-        balances.setBalance(Integer.valueOf(mProductQuantityTIL.getEditText().getText().toString()));
+        balances.setBalance(Integer.valueOf(mProductQuantityTIL.getEditText().getText().toString())+balance);
 
         return balances;
     }

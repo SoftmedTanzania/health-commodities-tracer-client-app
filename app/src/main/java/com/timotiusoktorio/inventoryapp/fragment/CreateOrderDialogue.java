@@ -3,6 +3,7 @@ package com.timotiusoktorio.inventoryapp.fragment;
 import android.Manifest;
 import android.app.Activity;
 import android.content.pm.PackageManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
@@ -49,6 +50,7 @@ public class CreateOrderDialogue extends android.support.v4.app.DialogFragment {
     private TextView description;
     private long typeId;
     public static AppDatabase baseDatabase;
+    private  List<Category> categories;
     private static final String PRODUCT_PHOTO_DIALOG_TAG = "PRODUCT_PHOTO_DIALOG_TAG";
     /**
      * Permissions required to read and write contacts. Used by the {@link AddProductActivity}.
@@ -102,8 +104,26 @@ public class CreateOrderDialogue extends android.support.v4.app.DialogFragment {
 
 
 
-
-        List<Category> categories = baseDatabase.categoriesModel().getAllCategories();
+//
+//        new AsyncTask<Void, Void, Void>(){
+//            @Override
+//            protected Void doInBackground(Void... voids) {
+//                categories = baseDatabase.categoriesModel().getAllCategories();
+//                return null;
+//            }
+//
+//            @Override
+//            protected void onPostExecute(Void aVoid) {
+//                super.onPostExecute(aVoid);
+//                for(Category category:categories){
+//                    categoryStrings.add(category.getName());
+//                }
+//
+//                ArrayAdapter<String> spinAdapter = new ArrayAdapter<String>(AddProductActivity.this, R.layout.simple_spinner_item_black, categoryStrings);
+//                spinAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item_black);
+//                categorySpinner.setAdapter(spinAdapter);
+//            }
+//        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
         final List<String> categoryStrings= new ArrayList<>();
         for(Category category:categories){

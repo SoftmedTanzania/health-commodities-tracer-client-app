@@ -27,6 +27,9 @@ public interface TransactionModelDao {
     @Query("select * from Transactions WHERE product_id = :productId")
     LiveData<List<Transactions>> getTransactionsByProductId(int productId);
 
+    @Query("select * from Transactions WHERE syncStatus = 0")
+    List<Transactions> getUnPostedTransactions();
+
 
     @Insert(onConflict = REPLACE)
     void addTransactions(Transactions transactions);
