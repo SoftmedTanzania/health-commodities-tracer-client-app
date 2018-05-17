@@ -36,7 +36,9 @@ import com.softmed.rucodia.dom.objects.ProductBalance;
 import com.softmed.rucodia.dom.objects.ProductList;
 import com.softmed.rucodia.dom.objects.TransactionType;
 import com.softmed.rucodia.dom.objects.Transactions;
+import com.softmed.rucodia.fragment.AddTransactionDialogue;
 import com.softmed.rucodia.fragment.ConfirmationDialogFragment;
+import com.softmed.rucodia.fragment.CreateOrderDialogue;
 import com.softmed.rucodia.helper.PhotoHelper;
 import com.softmed.rucodia.utils.SessionManager;
 import com.softmed.rucodia.viewmodels.ProductsViewModel;
@@ -69,13 +71,9 @@ public class DetailActivity extends AppCompatActivity {
     private AppDatabase database;
     private ProductBalance mProduct;
     private static final int REQUEST_CODE_CHOOSE_PHOTO = 1;
-    private MaterialSpinner stockAdjustmentReasonSpinner;
-    private List<TransactionType> transactionTypes;
 
-    private TextInputLayout stockAdjustmentQuantity;
     private FloatingActionButton floatingActionButton;
     private String stockAdjustmentReason="";
-    private int stockAdjustmentReasonId;
     private TransactionsListViewModel transactionsListViewModel;
     private ProductsViewModel productsViewModel;
     private TableLayout transactionsTable;
@@ -117,58 +115,12 @@ public class DetailActivity extends AppCompatActivity {
 
         mProductPhotoImageView = (ImageView) findViewById(R.id.product_photo_image_view);
         mProductQuantityTextView = (TextView) findViewById(R.id.product_quantity_text_view);
-        stockAdjustmentQuantity = (TextInputLayout) findViewById(R.id.stock_adjustment_quantity);
-        floatingActionButton = (FloatingActionButton) findViewById(R.id.fab);
         transactionsTable = (TableLayout)findViewById(R.id.transactions_table);
 
 
         // Get an instance of the database helper.
         database =  AppDatabase.getDatabase(this);
         session = new SessionManager(this);
-
-
-        stockAdjustmentReasonSpinner = (MaterialSpinner)findViewById(R.id.stock_adjustment_reason);
-
-        new AsyncTask<Void, Void, Void>(){
-            @Override
-            protected Void doInBackground(Void... voids) {
-                transactionTypes = database.transactionTypeModelDao().getTransactionTypes();
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Void v) {
-                super.onPostExecute(v);
-
-                List<String> transactionTypesNames = new ArrayList<>();
-
-                for(TransactionType tType:transactionTypes){
-                    transactionTypesNames.add(tType.getName());
-                }
-
-                ArrayAdapter<String> spinAdapter = new ArrayAdapter<String>(DetailActivity.this, R.layout.simple_spinner_item_black, transactionTypesNames);
-                spinAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item_black);
-                stockAdjustmentReasonSpinner.setAdapter(spinAdapter);
-
-            }
-        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-
-        stockAdjustmentReasonSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                try {
-                    stockAdjustmentReason = transactionTypes.get(i).getName();
-                    stockAdjustmentReasonId = transactionTypes.get(i).getId();
-                }catch (Exception e){
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
-        });
 
 
         // Get the product object which was sent from MainActivity.
@@ -241,68 +193,14 @@ public class DetailActivity extends AppCompatActivity {
             }
         });
 
-
-
-        floatingActionButton.setOnClickListener(new View.OnClickListener() {
+        findViewById(R.id.fab).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if(!stockAdjustmentReason.equals("")){
-
-                    if(!stockAdjustmentQuantity.getEditText().getText().toString().equals("")){
-
-
-                        new AsyncTask<Void, Void, Void>(){
-                            @Override
-                            protected Void doInBackground(Void... voids) {
-                                Transactions transactions = new Transactions();
-                                transactions.setUuid(UUID.randomUUID().toString());
-                                transactions.setProduct_id(mProduct.getProductId());
-                                transactions.setUser_id(Integer.valueOf(session.getUserUUID()));
-                                transactions.setTransactiontype_id(stockAdjustmentReasonId);
-                                transactions.setAmount(Integer.valueOf(stockAdjustmentQuantity.getEditText().getText().toString()));
-                                transactions.setPrice(mProduct.getPrice());
-                                transactions.setStatus_id(1);
-
-                                Calendar c = Calendar.getInstance();
-                                toBeginningOfTheDay(c);
-
-                                transactions.setCreated_at(c.getTimeInMillis());
-                                database.transactionsDao().addTransactions(transactions);
-
-                                Balances balances = database.balanceModelDao().getBalance(mProduct.getProductId());
-
-                                if(stockAdjustmentReasonId==1){
-                                    balances.setBalance(balances.getBalance()+Integer.valueOf(stockAdjustmentQuantity.getEditText().getText().toString()));
-                                }else if(stockAdjustmentReasonId==2){
-                                    balances.setBalance(balances.getBalance()-Integer.valueOf(stockAdjustmentQuantity.getEditText().getText().toString()));
-                                }
-
-                                database.balanceModelDao().addBalance(balances);
-
-
-                                return null;
-                            }
-
-                            @Override
-                            protected void onPostExecute(Void v) {
-                                super.onPostExecute(v);
-                                stockAdjustmentQuantity.getEditText().setText("");
-                                Toast.makeText(DetailActivity.this,"Transaction Added successfully",Toast.LENGTH_LONG).show();
-
-                            }
-                        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-
-
-
-                    }else{
-                        stockAdjustmentQuantity.getEditText().setError("Please fill the adjustment quantity");
-                    }
-                }else{
-                    stockAdjustmentReasonSpinner.setError("Please select the transaction type");
-                }
-
+                AddTransactionDialogue Dialogue = AddTransactionDialogue.newInstance(mProduct.getProductId(),mProduct.getPrice());
+                Dialogue.show(getSupportFragmentManager(), "Adding Transaction");
             }
         });
+
 
 
     }

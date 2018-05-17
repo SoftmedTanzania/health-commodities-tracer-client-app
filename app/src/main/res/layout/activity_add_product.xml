@@ -142,12 +142,6 @@
                     android:textColor="@color/colorPrimary"
                     android:textSize="16sp" />
 
-                <View
-                    android:layout_width="60dp"
-                    android:layout_height="3dp"
-                    android:layout_below="@id/clinical_information_title"
-                    android:layout_marginTop="8dp"
-                    android:background="@color/card_separator" />
 
                 <TextView
                     android:layout_marginTop="8dp"

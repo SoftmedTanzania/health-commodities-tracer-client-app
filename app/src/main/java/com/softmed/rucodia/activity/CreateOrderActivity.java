@@ -60,8 +60,8 @@ public class CreateOrderActivity extends AppCompatActivity implements  DialogInt
             @Override
             public void onClick(View view) {
                 Toast.makeText(CreateOrderActivity.this,"Available in upcoming nightly builds with supplier app",Toast.LENGTH_SHORT).show();
-//                CreateOrderDialogue Dialogue = new CreateOrderDialogue();
-//                Dialogue.show(getSupportFragmentManager(), "Adding Order");
+                CreateOrderDialogue Dialogue = new CreateOrderDialogue();
+                Dialogue.show(getSupportFragmentManager(), "Adding Order");
             }
         });
     }
