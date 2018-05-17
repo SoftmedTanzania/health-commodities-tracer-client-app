@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.timotiusoktorio.inventoryapp">
+    package="com.softmed.rucodia">
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -18,7 +18,7 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:theme="@style/AppTheme">
-        <activity android:name=".activity.MainActivity">
+        <activity android:name="com.softmed.rucodia.activity.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -26,16 +26,16 @@
             </intent-filter>
         </activity>
         <activity
-            android:name=".activity.AddProductActivity"
+            android:name="com.softmed.rucodia.activity.AddProductActivity"
             android:screenOrientation="portrait" />
         <activity
-            android:name=".activity.DetailActivity"
+            android:name="com.softmed.rucodia.activity.DetailActivity"
             android:label="@string/title_activity_detail"
-            android:parentActivityName=".activity.MainActivity"
+            android:parentActivityName="com.softmed.rucodia.activity.MainActivity"
             android:screenOrientation="portrait">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value=".activity.MainActivity" />
+                android:value="com.softmed.rucodia.activity.MainActivity" />
         </activity>
 
         <provider
@@ -49,20 +49,20 @@
         </provider>
 
         <activity
-            android:name=".activity.CreateOrderActivity"
+            android:name="com.softmed.rucodia.activity.CreateOrderActivity"
             android:label="@string/title_activity_create_order"
             android:theme="@style/AppTheme"/>
 
-        <activity android:name=".activity.LoginActivity"
+        <activity android:name="com.softmed.rucodia.activity.LoginActivity"
             android:windowSoftInputMode="stateHidden"
             android:configChanges="locale">
         </activity>
 
-        <service android:name=".Services.PostOfficeService"
+        <service android:name="com.softmed.rucodia.Services.PostOfficeService"
             android:exported="false"/>
 
         <receiver
-            android:name=".utils.AlarmReceiver"
+            android:name="com.softmed.rucodia.utils.AlarmReceiver"
             android:process=":remote">
         </receiver>
     </application>

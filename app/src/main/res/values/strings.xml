@@ -1,7 +1,7 @@
 <resources xmlns:xliff="urn:oasis:names:tc:xliff:document:1.2">
 
     <string name="app_name" translatable="false">Inventory App</string>
-    <string name="authority" translatable="false">com.timotiusoktorio.inventoryapp</string>
+    <string name="authority" translatable="false">com.softmed.rucodia</string>
     <string name="title_activity_detail">Product Details</string>
     <string name="title_action_bar_add_product">Add Product</string>
     <string name="title_action_bar_edit_product">Edit Product</string>

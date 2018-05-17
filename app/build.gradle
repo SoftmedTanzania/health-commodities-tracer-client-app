@@ -6,7 +6,7 @@ android {
 
     defaultConfig {
         vectorDrawables.useSupportLibrary = true
-        applicationId "com.timotiusoktorio.inventoryapp"
+        applicationId "com.softmed.rucodia"
         minSdkVersion 16
         targetSdkVersion 26
         versionCode 1

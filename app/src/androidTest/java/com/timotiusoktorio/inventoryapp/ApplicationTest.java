@@ -1,4 +1,4 @@
-package com.timotiusoktorio.inventoryapp;
+package com.softmed.rucodia;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

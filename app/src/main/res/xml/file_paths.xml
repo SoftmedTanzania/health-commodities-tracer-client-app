@@ -3,6 +3,6 @@
 
     <external-path
         name="my_images"
-        path="Android/data/com.timotiusoktorio.inventoryapp/files/Pictures"/>
+        path="Android/data/com.softmed.rucodia/files/Pictures"/>
 
 </paths>
