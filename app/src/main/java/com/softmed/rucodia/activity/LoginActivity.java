@@ -610,7 +610,8 @@ public class LoginActivity extends BaseActivity {
         @Override
         protected Void doInBackground(Void... voids) {
             for (Transactions mList : results){
-                baseDatabase.transactionsDao().addTransactions(mList);
+                //TODO uncoment this line to save users transaction from the server after pulling the balances
+//                baseDatabase.transactionsDao().addTransactions(mList);
                 Log.d("InitialSync", "Transactions type : "+mList.getTransactiontype_id());
             }
 

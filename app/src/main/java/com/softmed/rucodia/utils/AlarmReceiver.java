@@ -17,7 +17,11 @@ public class AlarmReceiver extends BroadcastReceiver {
     public void onReceive(Context context, Intent intent) {
         Intent i = new Intent(context, PostOfficeService.class);
         //i.putExtra("foo", "bar");
-        context.startService(i);
+        try {
+            context.startService(i);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
     }
 
 }
