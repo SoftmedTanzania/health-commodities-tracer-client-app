@@ -133,21 +133,19 @@
 
                 <LinearLayout
                     android:layout_width="match_parent"
-                    android:layout_height="300dp"
+                    android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
-                    android:layout_marginTop="32dp"
                     android:orientation="vertical">
 
                     <EditText
                         android:id="@+id/user_username_et"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="32dp"
                         android:fontFamily="@font/roboto_regular"
                         android:hint="@string/username"
                         android:textColor="@color/card_title_text"
                         android:textColorHint="@color/card_grid_text"
-                        android:textSize="24sp" />
+                        android:textSize="16sp" />
 
 
                     <EditText
@@ -161,12 +159,13 @@
                         android:inputType="textPassword"
                         android:textColor="@color/card_title_text"
                         android:textColorHint="@color/card_grid_tex"
-                        android:textSize="24sp" />
+                        android:textSize="16sp" />
 
                     <com.rey.material.widget.ProgressView
                         android:id="@+id/login_progress"
                         android:layout_width="40dp"
                         android:layout_height="40dp"
+                        android:visibility="gone"
                         android:layout_alignParentBottom="true"
                         android:layout_centerHorizontal="true"
                         android:layout_gravity="center_horizontal"
@@ -182,7 +181,7 @@
                 <Button
                     android:id="@+id/login_button"
                     android:layout_width="match_parent"
-                    android:layout_height="50dp"
+                    android:layout_height="wrap_content"
                     android:layout_alignParentBottom="true"
                     android:layout_alignParentRight="true"
                     android:background="@color/card_title_text"
@@ -211,7 +210,7 @@
             android:layout_marginTop="16dp"
             android:layout_marginLeft="16dp"
             android:layout_toRightOf="@id/login_screen_logo"
-            android:textSize="32sp"
+            android:textSize="22sp"
             android:text="Rucodia"
             android:textColor="@color/white"
             android:textStyle="bold"
@@ -224,7 +223,7 @@
             android:id="@+id/referral_text"
             android:layout_below="@id/login_screen_logo"
             android:layout_toRightOf="@id/login_screen_logo"
-            android:textSize="24sp"
+            android:textSize="16sp"
             android:textColor="@color/white"
             android:fontFamily="@font/roboto_light"
             android:text="Agro Dealers"/>
@@ -236,7 +235,7 @@
             android:id="@+id/application_text"
             android:layout_below="@id/referral_text"
             android:layout_toRightOf="@id/login_screen_logo"
-            android:textSize="24sp"
+            android:textSize="16sp"
             android:textColor="@color/white"
             android:fontFamily="@font/roboto_light"
             android:text="Application"/>
