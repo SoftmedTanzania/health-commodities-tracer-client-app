@@ -2,6 +2,7 @@ package com.softmed.rucodia.api;
 
 import com.softmed.rucodia.dom.objects.TransactionType;
 import com.softmed.rucodia.dom.objects.Transactions;
+import com.softmed.rucodia.dom.responces.BalancesResponse;
 import com.softmed.rucodia.dom.responces.CategoriesResponse;
 import com.softmed.rucodia.dom.responces.LoginResponse;
 import com.softmed.rucodia.dom.responces.ProductsResponse;
@@ -41,6 +42,9 @@ public class Endpoints {
     public interface TransactionServices{
         @GET
         Call<List<Transactions>> getTransactions(@Url String url);
+
+        @GET
+        Call<BalancesResponse> getBalances(@Url String url);
 
         @GET("transactiontypes")
         Call<List<TransactionType>> getTransactionTypes();

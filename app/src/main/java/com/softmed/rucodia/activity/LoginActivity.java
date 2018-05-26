@@ -27,10 +27,13 @@ import com.softmed.rucodia.R;
 import com.softmed.rucodia.api.Endpoints;
 import com.softmed.rucodia.database.AppDatabase;
 import com.softmed.rucodia.dom.DomConverter;
+import com.softmed.rucodia.dom.objects.Balances;
 import com.softmed.rucodia.dom.objects.SubCategory;
 import com.softmed.rucodia.dom.objects.TransactionType;
 import com.softmed.rucodia.dom.objects.Transactions;
 import com.softmed.rucodia.dom.objects.UsersInfo;
+import com.softmed.rucodia.dom.responces.BalanceResponse;
+import com.softmed.rucodia.dom.responces.BalancesResponse;
 import com.softmed.rucodia.dom.responces.CategoriesResponse;
 import com.softmed.rucodia.dom.responces.LoginResponse;
 import com.softmed.rucodia.dom.responces.ProductsResponse;
@@ -45,6 +48,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.UUID;
 
 import fr.ganfra.materialspinner.MaterialSpinner;
 import okhttp3.MediaType;
@@ -491,6 +495,35 @@ public class LoginActivity extends BaseActivity {
         }
     }
 
+    private void callBalances(){
+        loginMessages.setText(getResources().getString(R.string.loading_transactions));
+        loginMessages.setTextColor(getResources().getColor(R.color.amber_a700));
+        if (session.isLoggedIn()){
+            Call<BalancesResponse> call = transactionServices.getBalances("users/"+session.getUserUUID()+"/products");
+            call.enqueue(new Callback<BalancesResponse>() {
+
+                @Override
+                public void onResponse(Call<BalancesResponse> call, Response<BalancesResponse> response) {
+                    Log.d(TAG,"BalancesCheck Code = "+response.code());
+                    //Here will handle the responce from the server
+                    Log.d("balancesCheck", response.body()+"");
+
+                    addBalancesAsyncTask task = new addBalancesAsyncTask(response.body());
+                    task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                }
+
+                @Override
+                public void onFailure(Call<BalancesResponse> call, Throwable t) {
+                    //Error!
+                    Log.e("", "An error encountered!");
+                    Log.d("BalanceCheck", "failed with "+t.getMessage()+" "+t.toString());
+                    loginMessages.setText(getResources().getString(R.string.error_loading_transactions));
+                    loginMessages.setTextColor(getResources().getColor(R.color.red_500));
+                }
+            });
+        }
+    }
+
     private void callTransactionTypes(){
         loginMessages.setText(getResources().getString(R.string.loading_transactions_types));
         loginMessages.setTextColor(getResources().getColor(R.color.amber_a700));
@@ -625,6 +658,53 @@ public class LoginActivity extends BaseActivity {
         }
     }
 
+    class addBalancesAsyncTask extends AsyncTask<Void, Void, Void> {
+
+        BalancesResponse results;
+
+        addBalancesAsyncTask(BalancesResponse responces){
+            this.results = responces;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            loginMessages.setText("Finalizing Balances..");
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            List<BalanceResponse> products = results.getProducts();
+            for (BalanceResponse mList : products){
+
+                Balances balances = new Balances();
+                balances.setBalance(mList.getBalance());
+                balances.setPrice(mList.getPrice());
+                balances.setProduct_id(mList.getProductId());
+                balances.setUser_id(results.getUserId());
+                balances.setUuid(UUID.randomUUID().toString());
+
+                baseDatabase.balanceModelDao().addBalance(balances);
+                Log.d("InitialSync", "Transactions type : "+mList.getProductId());
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            loginMessages.setText(getResources().getString(R.string.success));
+            loginMessages.setTextColor(getResources().getColor(R.color.green_500));
+
+            //Call HomeActivity to log in user
+            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
+            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_SINGLE_TOP);
+            startActivity(intent);
+            LoginActivity.this.finish();
+        }
+    }
+
     class addTransactionTypeAsyncTask extends AsyncTask<Void, Void, Void> {
 
         List<TransactionType> results;
@@ -655,16 +735,9 @@ public class LoginActivity extends BaseActivity {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
+            callBalances();
 
 
-            loginMessages.setText(getResources().getString(R.string.success));
-            loginMessages.setTextColor(getResources().getColor(R.color.green_500));
-
-            //Call HomeActivity to log in user
-            Intent intent = new Intent(LoginActivity.this, MainActivity.class);
-            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_SINGLE_TOP);
-            startActivity(intent);
-            LoginActivity.this.finish();
         }
     }
 
@@ -690,7 +763,6 @@ public class LoginActivity extends BaseActivity {
             return null;
         }
     }
-
 
     private void setupview(){
 
