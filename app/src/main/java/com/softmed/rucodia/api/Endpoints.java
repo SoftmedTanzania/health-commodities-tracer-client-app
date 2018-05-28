@@ -5,6 +5,7 @@ import com.softmed.rucodia.dom.objects.Transactions;
 import com.softmed.rucodia.dom.responces.BalancesResponse;
 import com.softmed.rucodia.dom.responces.CategoriesResponse;
 import com.softmed.rucodia.dom.responces.LoginResponse;
+import com.softmed.rucodia.dom.responces.ProductsPostResponse;
 import com.softmed.rucodia.dom.responces.ProductsResponse;
 
 import java.util.List;
@@ -37,6 +38,9 @@ public class Endpoints {
     public interface ProductsService {
         @GET("products")
         Call<List<ProductsResponse>> getProducts();
+
+        @POST("products")
+        Call<ProductsPostResponse> postProducts(@Body RequestBody e);
     }
 
     public interface TransactionServices{

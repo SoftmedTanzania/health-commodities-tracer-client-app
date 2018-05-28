@@ -16,10 +16,10 @@ public class Product implements Serializable {
     private int id;
 
     @SerializedName("subcategory_id")
-    private int subcategoryId;
+    private int sub_category_id;
 
     @SerializedName("unit_id")
-    private int unitId;
+    private int unit_id;
 
     @PrimaryKey(autoGenerate = false)
     @NonNull
@@ -32,6 +32,12 @@ public class Product implements Serializable {
     @SerializedName("description")
     private String description;
 
+    @SerializedName("price")
+    private int price;
+
+    @SerializedName("status")
+    private int status = 1;
+
     public int getId() {
         return id;
     }
@@ -40,20 +46,22 @@ public class Product implements Serializable {
         this.id = id;
     }
 
-    public int getSubcategoryId() {
-        return subcategoryId;
+    public int getSub_category_id() {
+        return sub_category_id;
     }
 
-    public void setSubcategoryId(int subcategoryId) {
-        this.subcategoryId = subcategoryId;
+    public void setSub_category_id(int sub_category_id) {
+        this.sub_category_id = sub_category_id;
     }
 
-    public int getUnitId() {
-        return unitId;
+
+
+    public int getStatus() {
+        return status;
     }
 
-    public void setUnitId(int unitId) {
-        this.unitId = unitId;
+    public void setStatus(int status) {
+        this.status = status;
     }
 
     @NonNull
@@ -79,5 +87,13 @@ public class Product implements Serializable {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public int getPrice() {
+        return price;
+    }
+
+    public void setPrice(int price) {
+        this.price = price;
     }
 }

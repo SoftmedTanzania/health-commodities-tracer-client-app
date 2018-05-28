@@ -91,8 +91,8 @@ public class DomConverter {
         product.setName(productsResponse.getName());
         product.setDescription(productsResponse.getDescription());
         product.setUuid(productsResponse.getUuid());
-        product.setSubcategoryId(productsResponse.getSubcategories().get(0).getId());
-        product.setUnitId(productsResponse.getUnitResponses().get(0).getId());
+        product.setSub_category_id(productsResponse.getSubcategories().get(0).getId());
+        product.setUnit_id(productsResponse.getUnitResponses().get(0).getId());
 
 
         return product;

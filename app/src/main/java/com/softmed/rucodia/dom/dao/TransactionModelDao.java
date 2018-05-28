@@ -26,13 +26,17 @@ public interface TransactionModelDao {
             "from Transactions " +
             "INNER JOIN Product ON Transactions.product_id=Product.id " +
             "INNER JOIN TransactionType ON Transactions.transactiontype_id=TransactionType.id " +
-            "INNER JOIN Unit ON Product.unitId=Unit.id " +
-            "INNER JOIN SubCategory ON Product.subcategoryId = Subcategory.id "+
+            "INNER JOIN Unit ON Product.unit_id=Unit.id " +
+            "INNER JOIN SubCategory ON Product.sub_category_id = Subcategory.id "+
             " GROUP BY SubCategory.name,Product.name, Transactions.price ,TransactionType.name, Transactions.created_at ")
     LiveData<List<TransactionSummary>> getTransactionSummary();
 
     @Query("select * from Transactions WHERE product_id = :productId")
-    LiveData<List<Transactions>> getTransactionsByProductId(int productId);
+    LiveData<List<Transactions>> getLiveTransactionsByProductId(int productId);
+
+
+    @Query("select * from Transactions WHERE product_id = :productId")
+    List<Transactions> getTransactionsByProductId(int productId);
 
     @Query("select * from Transactions WHERE syncStatus = 0")
     List<Transactions> getUnPostedTransactions();

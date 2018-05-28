@@ -53,6 +53,12 @@
             android:label="@string/title_activity_create_order"
             android:theme="@style/AppTheme"/>
 
+
+        <activity
+            android:name="com.softmed.rucodia.activity.CreateProductActivity"
+            android:label="@string/title_activity_create_order"
+            android:theme="@style/AppTheme"/>
+
         <activity android:name="com.softmed.rucodia.activity.LoginActivity"
             android:windowSoftInputMode="stateHidden"
             android:configChanges="locale">

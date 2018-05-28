@@ -10,9 +10,13 @@ import android.util.Log;
 import com.google.gson.Gson;
 import com.softmed.rucodia.api.Endpoints;
 import com.softmed.rucodia.database.AppDatabase;
+import com.softmed.rucodia.dom.objects.Product;
 import com.softmed.rucodia.dom.objects.Transactions;
 import com.softmed.rucodia.utils.ServiceGenerator;
 import com.softmed.rucodia.utils.SessionManager;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.List;
 
@@ -30,6 +34,7 @@ public class PostOfficeService extends IntentService {
     AppDatabase database;
     SessionManager sess;
     Endpoints.TransactionServices transactionServices;
+    Endpoints.ProductsService productsService;
 
     public PostOfficeService() {
         super("PostOfficeService");
@@ -49,6 +54,71 @@ public class PostOfficeService extends IntentService {
         transactionServices = ServiceGenerator.createService(Endpoints.TransactionServices.class,
                 sess.getUserName(),
                 sess.getUserPass());
+
+        productsService = ServiceGenerator.createService(Endpoints.ProductsService.class,
+                sess.getUserName(),
+                sess.getUserPass());
+
+
+        List<Product> products = database.productsModelDao().getUnpostedProducts();
+
+        for (final Product product : products) {
+
+            Call call = productsService.postProducts(getProductRequestBody(product));
+            call.enqueue(new Callback() {
+                @SuppressLint("StaticFieldLeak")
+                @Override
+                public void onResponse(Call call, Response response) {
+                    //Store Received Patient Information, TbPatient as well as PatientAppointments
+                    if (response.code() == 200 ||response.code() == 201) {
+                        Log.d(TAG, "Successful Product responce " + response.body());
+
+                        final int tempProductId = product.getId();
+                        product.setStatus(1);
+                        JSONObject jsonObject = null;
+                        try {
+                            jsonObject = new JSONObject(response.body().toString());
+                            product.setId(jsonObject.getInt("id"));
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+
+
+                        new AsyncTask<Void, Void, Void>(){
+                            @Override
+                            protected Void doInBackground(Void... voids) {
+                                database.productsModelDao().addProduct(product);
+
+                                List<Transactions> transactions = database.transactionsDao().getTransactionsByProductId(tempProductId);
+                                for(Transactions transaction : transactions){
+                                    transaction.setProduct_id(product.getId());
+                                    database.transactionsDao().addTransactions(transaction);
+                                }
+
+                                return null;
+                            }
+
+                            @Override
+                            protected void onPostExecute(Void aVoid) {
+                                super.onPostExecute(aVoid);
+
+                            }
+                        }.execute();
+                    } else {
+                        Log.d(TAG, "Product Response Call URL " + call.request().url());
+                        Log.d(TAG, "Product Response Code " + response.code());
+                    }
+                }
+
+                @Override
+                public void onFailure(Call call, Throwable t) {
+                    Log.d(TAG,"PostOfficeService Error = "+ t.getMessage());
+                    Log.d(TAG,"PostOfficeService CALL URL = "+ call.request().url());
+                    Log.d(TAG,"PostOfficeService CALL Header = "+ call.request().header("Authorization"));
+                }
+            });
+        }
+
 
         List<Transactions> transactions = database.transactionsDao().getUnPostedTransactions();
 
@@ -106,6 +176,27 @@ public class PostOfficeService extends IntentService {
             datastream = new Gson().toJson(transactions);
 
             Log.d(TAG,"Transaction Object = "+datastream);
+
+            body = RequestBody.create(MediaType.parse("application/json"), datastream);
+
+        }catch (Exception e){
+            e.printStackTrace();
+            body = RequestBody.create(MediaType.parse("application/json"), datastream);
+        }
+
+        return body;
+
+    }
+
+    public static RequestBody getProductRequestBody(Product product){
+
+        RequestBody body;
+        String datastream = "";
+
+        try {
+            datastream = new Gson().toJson(product);
+
+            Log.d(TAG,"Product Object = "+datastream);
 
             body = RequestBody.create(MediaType.parse("application/json"), datastream);
 

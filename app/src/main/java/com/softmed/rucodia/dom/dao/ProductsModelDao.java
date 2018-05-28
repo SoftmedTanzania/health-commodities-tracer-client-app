@@ -20,9 +20,13 @@ public interface ProductsModelDao {
     @Query("select * from Product")
     List<Product> getAllProducts();
 
+
+    @Query("select * from Product where status = 0")
+    List<Product> getUnpostedProducts();
+
     @Query("select Product.id,SubCategory.name || ' - ' || Product.name AS name ,Unit.name as unit,Balances.balance, Balances.price  FROM Product " +
-            "INNER JOIN SubCategory ON Product.subcategoryId = SubCategory.id " +
-            "INNER JOIN Unit ON Product.unitId = Unit.id " +
+            "INNER JOIN SubCategory ON Product.sub_category_id = SubCategory.id " +
+            "INNER JOIN Unit ON Product.unit_id = Unit.id " +
             "INNER JOIN Balances ON Product.id = Balances.product_id " +
             " ")
     LiveData<List<ProductList>> getAvailableProducts();
@@ -30,20 +34,20 @@ public interface ProductsModelDao {
 
 
     @Query("select Product.id,SubCategory.name || ' - ' || Product.name AS name ,Unit.name as unit,Balances.balance, Balances.price  FROM Product " +
-            "INNER JOIN SubCategory ON Product.subcategoryId = SubCategory.id " +
-            "INNER JOIN Unit ON Product.unitId = Unit.id " +
+            "INNER JOIN SubCategory ON Product.sub_category_id = SubCategory.id " +
+            "INNER JOIN Unit ON Product.unit_id = Unit.id " +
             "INNER JOIN Balances ON Product.id = Balances.product_id " +
             " ")
     List<ProductList> getAvailableProductsTest();
 
 
-    @Query("select Product.id,Product.subcategoryId,Product.description,SubCategory.name || ' - ' || Product.name AS name ,Product.unitId,Product.uuid FROM Product " +
-            "INNER JOIN SubCategory ON Product.subcategoryId = SubCategory.id " +
-            "where subcategoryId = :subCategoryId")
+    @Query("select Product.id,Product.sub_category_id,Product.description,SubCategory.name || ' - ' || Product.name AS name ,Product.unit_id,Product.uuid,Product.status, price FROM Product " +
+            "INNER JOIN SubCategory ON Product.sub_category_id = SubCategory.id " +
+            "where sub_category_id = :subCategoryId")
     List<Product> getProductsBySubCategoryId(int subCategoryId);
 
 
-    @Query("select * from Product inner join SubCategory on SubCategory.id = Product.subcategoryId where SubCategory.categoryId = :categoryId")
+    @Query("select * from Product inner join SubCategory on SubCategory.id = Product.sub_category_id where SubCategory.categoryId = :categoryId")
     List<Product> getProductsByCategoryId(int categoryId);
 
 

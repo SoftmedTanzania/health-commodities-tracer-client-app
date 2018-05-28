@@ -18,7 +18,7 @@ import static android.arch.persistence.room.OnConflictStrategy.REPLACE;
 public interface UnitsModelDao {
 
     @Query("select * from Unit")
-    LiveData<List<Unit>> getUnit();
+    List<Unit> getUnit();
 
     @Query("select * from Unit WHERE id=:unitId")
     Unit getUnit(int unitId);

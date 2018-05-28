@@ -44,12 +44,10 @@ import com.softmed.rucodia.utils.SessionManager;
 
 import java.io.File;
 import java.io.IOException;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
+import java.util.Random;
 import java.util.UUID;
 
 import fr.ganfra.materialspinner.MaterialSpinner;
@@ -57,9 +55,9 @@ import fr.ganfra.materialspinner.MaterialSpinner;
 import static com.softmed.rucodia.utils.Calendars.toBeginningOfTheDay;
 
 
-public class AddProductActivity extends AppCompatActivity implements DialogInterface.OnClickListener, ActivityCompat.OnRequestPermissionsResultCallback {
+public class CreateProductActivity extends AppCompatActivity implements DialogInterface.OnClickListener, ActivityCompat.OnRequestPermissionsResultCallback {
 
-    private static final String TAG = AddProductActivity.class.getSimpleName();
+    private static final String TAG = CreateProductActivity.class.getSimpleName();
     private static final String PRODUCT_PHOTO_DIALOG_TAG = "PRODUCT_PHOTO_DIALOG_TAG";
     private static final String INTENT_EXTRA_PRODUCT = "INTENT_EXTRA_PRODUCT";
     private static final int REQUEST_CODE_TAKE_PHOTO = 0;
@@ -71,7 +69,7 @@ public class AddProductActivity extends AppCompatActivity implements DialogInter
     private static final int REQUEST_EXTERNAL_STORAGE = 1;
 
     /**
-     * Permissions required to read and write contacts. Used by the {@link AddProductActivity}.
+     * Permissions required to read and write contacts. Used by the {@link CreateProductActivity}.
      */
     private static String[] PERMISSIONS_EXTERNAL_STORAGE= {Manifest.permission.WRITE_EXTERNAL_STORAGE,
             Manifest.permission.READ_EXTERNAL_STORAGE};
@@ -80,22 +78,22 @@ public class AddProductActivity extends AppCompatActivity implements DialogInter
     private ImageView mProductPhotoImageView;
     private TextInputLayout mProductPriceTIL;
     private TextInputLayout mProductQuantityTIL;
+    private TextInputLayout mProductNameTIL;
+    private TextInputLayout mProductDescriptionTIL;
     private TextView description;
     private Product mPassedProduct;
-    // Global variable to hold the path of the photo file which gets created each time the user
-    // capture a photo using camera intent. This is stored globally so the file can be accessed
-    // later on. If the user cancel taking a picture via the camera intent or decided to choose
-    // a photo from the gallery instead, the file needs to be deleted as it's no longer needed.
     private String mTempPhotoFilePath;
 
-    private MaterialSpinner categorySpinner,subCategorySpinner, productsSpinner;
+    private MaterialSpinner categorySpinner,subCategorySpinner,unitsOfMeasureSpinner;
     private List<SubCategory> subCategories;
     private List<Product> products;
-    private int productId;
+    private int subCategoryId,unitId,productId;
     private String subCategoryName, productName;
     public static AppDatabase baseDatabase;
     private List<Category> categories;
+    private List<Unit> unitsOfMeasure;
     private  List<String> categoryStrings= new ArrayList<>();
+    private  List<String> unitsStrings= new ArrayList<>();
 
     // Session Manager Class
     private SessionManager session;
@@ -104,36 +102,29 @@ public class AddProductActivity extends AppCompatActivity implements DialogInter
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_add_product);
+        setContentView(R.layout.activity_create_product);
 
         baseDatabase = AppDatabase.getDatabase(this);
 
         mProductPhotoImageView = (ImageView) findViewById(R.id.product_photo_image_view);
         mProductPriceTIL = (TextInputLayout) findViewById(R.id.product_price_text_input_layout);
         mProductQuantityTIL = (TextInputLayout) findViewById(R.id.product_quantity_text_input_layout);
+        mProductDescriptionTIL = (TextInputLayout) findViewById(R.id.product_description_text_input_layout);
+        mProductNameTIL = (TextInputLayout) findViewById(R.id.product_name_text_input_layout);
         description = (TextView) findViewById(R.id.product_description);
-
 
         categorySpinner = (MaterialSpinner) findViewById(R.id.spin_category_spinner);
         subCategorySpinner = (MaterialSpinner) findViewById(R.id.sub_category_spinner);
-        productsSpinner = (MaterialSpinner) findViewById(R.id.products_spinner);
-
-
+        unitsOfMeasureSpinner = (MaterialSpinner) findViewById(R.id.unit_of_measure_spinner);
         mPassedProduct = getIntent().getParcelableExtra(INTENT_EXTRA_PRODUCT);
 
         Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         session = new SessionManager(this);
-
-
         ActionBar actionBar = getSupportActionBar();
         actionBar.setDisplayHomeAsUpEnabled(true);
         actionBar.setTitle((mPassedProduct == null) ? R.string.title_action_bar_add_product : R.string.title_action_bar_edit_product);
-
-        // If there is a product object passed from the intent, populate the views with the product data.
-        //TODO handle this
-//        if (mPassedProduct != null) populateViewsWithPassedProductData();
 
         // Add text changed listener to all text fields that needs to be validated.
         mProductPriceTIL.getEditText().addTextChangedListener(new TextWatcher() {
@@ -153,6 +144,7 @@ public class AddProductActivity extends AppCompatActivity implements DialogInter
 
             }
         });
+
         mProductQuantityTIL.getEditText().addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
@@ -171,11 +163,48 @@ public class AddProductActivity extends AppCompatActivity implements DialogInter
             }
         });
 
+        mProductNameTIL.getEditText().addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                if (i >= 0 && mProductNameTIL.isErrorEnabled())
+                    mProductNameTIL.setErrorEnabled(false);
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+
+        mProductDescriptionTIL.getEditText().addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                if (i >= 0 && mProductDescriptionTIL.isErrorEnabled())
+                    mProductDescriptionTIL.setErrorEnabled(false);
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+
+            }
+        });
+
 
         new AsyncTask<Void, Void, Void>(){
             @Override
             protected Void doInBackground(Void... voids) {
                 categories = baseDatabase.categoriesModel().getAllCategories();
+                unitsOfMeasure = baseDatabase.unitsDao().getUnit();
                 return null;
             }
 
@@ -186,9 +215,20 @@ public class AddProductActivity extends AppCompatActivity implements DialogInter
                     categoryStrings.add(category.getName());
                 }
 
-                ArrayAdapter<String> spinAdapter = new ArrayAdapter<String>(AddProductActivity.this, R.layout.simple_spinner_item_black, categoryStrings);
+                ArrayAdapter<String> spinAdapter = new ArrayAdapter<String>(CreateProductActivity.this, R.layout.simple_spinner_item_black, categoryStrings);
                 spinAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item_black);
                 categorySpinner.setAdapter(spinAdapter);
+
+
+
+                for(Unit unit:unitsOfMeasure){
+                    unitsStrings.add(unit.getName());
+                    Log.d(TAG,"Units Name = "+unit.getName());
+                }
+                ArrayAdapter<String> uAdapter = new ArrayAdapter<String>(CreateProductActivity.this, R.layout.simple_spinner_item_black, unitsStrings);
+                spinAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item_black);
+                unitsOfMeasureSpinner.setAdapter(uAdapter);
+
             }
         }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
@@ -211,7 +251,7 @@ public class AddProductActivity extends AppCompatActivity implements DialogInter
                             subCategoryStrings.add(subCategory.getName());
                         }
 
-                        ArrayAdapter<String> spinAdapter = new ArrayAdapter<String>(AddProductActivity.this, R.layout.simple_spinner_item_black, subCategoryStrings);
+                        ArrayAdapter<String> spinAdapter = new ArrayAdapter<String>(CreateProductActivity.this, R.layout.simple_spinner_item_black, subCategoryStrings);
                         spinAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item_black);
                         subCategorySpinner.setAdapter(spinAdapter);
                     }
@@ -227,78 +267,14 @@ public class AddProductActivity extends AppCompatActivity implements DialogInter
         subCategorySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, final int i, long l) {
-
-                new AsyncTask<Void, Void, Void>(){
-                    @Override
-                    protected Void doInBackground(Void... voids) {
-                        products = new ArrayList<>();
-                        try {
-                            subCategoryName = subCategories.get(i).getName();
-                            products = baseDatabase.productsModelDao().getProductsBySubCategoryId(subCategories.get(i).getId());
-                        }catch (Exception e){
-                            e.printStackTrace();
-                            subCategoryName="";
-                        }
-                        return null;
-                    }
-
-                    @Override
-                    protected void onPostExecute(Void aVoid) {
-                        super.onPostExecute(aVoid);
-
-                        final List<String> ProductsNames= new ArrayList<>();
-                        for(Product product:products){
-                            ProductsNames.add(product.getName());
-                        }
-
-                        ArrayAdapter<String> spinAdapter = new ArrayAdapter<String>(AddProductActivity.this, R.layout.simple_spinner_item_black, ProductsNames);
-                        spinAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item_black);
-                        productsSpinner.setAdapter(spinAdapter);
-                    }
-                }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
-        });
-
-        productsSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view,final int i, long l) {
                 try {
-                    productName = products.get(i).getName();
-                    description.setText(products.get(i).getDescription());
-                    productId = products.get(i).getId();
-
-                    new AsyncTask<Void, Void, Unit>(){
-                        @Override
-                        protected Unit doInBackground(Void... voids) {
-                            Unit unit = baseDatabase.unitsDao().getUnit(products.get(i).getUnit_id());
-                            return unit;
-                        }
-
-                        @Override
-                        protected void onPostExecute(Unit unit) {
-                            super.onPostExecute(unit);
-
-                            String priceHint= "Product Price / "+unit.getName();
-                            mProductPriceTIL.getEditText().setHint(priceHint);
-
-                            String hint="Product Quantity / "+unit.getName();
-                            mProductQuantityTIL.getEditText().setHint(hint);
-
-                        }
-                    }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-
-
+                    subCategoryName = subCategories.get(i).getName();
+                    subCategoryId = subCategories.get(i).getId();
                 }catch (Exception e){
-                    productId = -1;
-                    productName = "";
-                    description.setText("");
+                    e.printStackTrace();
+                    subCategoryName="";
+                    subCategoryId = -1;
                 }
-
             }
 
             @Override
@@ -306,7 +282,22 @@ public class AddProductActivity extends AppCompatActivity implements DialogInter
 
             }
         });
+        unitsOfMeasureSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, final int i, long l) {
+                try {
+                    unitId = unitsOfMeasure.get(i).getId();
+                }catch (Exception e){
+                    unitId = -1;
+                    e.printStackTrace();
+                }
+            }
 
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
 
     }
 
@@ -351,7 +342,6 @@ public class AddProductActivity extends AppCompatActivity implements DialogInter
         if (item.getItemId() == R.id.action_done) {
             // The user presses the 'Done' action button. Validate user inputs before proceeding.
             if (validateUserInput()) {
-
                 // If passed product object is present, update the product with the new data.
                 // Otherwise, create a new product object with the data and save it to the database.
                 if (mPassedProduct != null) {
@@ -370,7 +360,20 @@ public class AddProductActivity extends AppCompatActivity implements DialogInter
                     new AsyncTask<Void, Void, Void>(){
                         @Override
                         protected Void doInBackground(Void... voids) {
-                            Balances b = baseDatabase.balanceModelDao().getBalance(productId);
+                            Product product = new Product();
+                            product.setDescription(mProductDescriptionTIL.getEditText().getText().toString());
+                            product.setName(mProductNameTIL.getEditText().getText().toString());
+                            product.setSub_category_id(subCategoryId);
+                            product.setUnit_id(unitId);
+                            product.setPrice(Integer.valueOf(mProductPriceTIL.getEditText().getText().toString()));
+                            product.setUuid(UUID.randomUUID().toString());
+                            product.setStatus(0);
+
+                            Random rand = new Random();
+                            productId = rand.nextInt(100000) + 5000;
+                            product.setId(productId);
+
+                            Balances b = null;
                             String uuid=null;
                             int balance = 0;
                             if(b!=null){
@@ -381,15 +384,12 @@ public class AddProductActivity extends AppCompatActivity implements DialogInter
                             Balances balances =  buildProductWithUserInputData(uuid,balance);
 
                             Transactions transaction = new Transactions();
-
-
                             transaction.setProduct_id(productId);
                             transaction.setAmount(Integer.valueOf(mProductQuantityTIL.getEditText().getText().toString()));
                             transaction.setPrice(Integer.valueOf(mProductPriceTIL.getEditText().getText().toString()));
                             transaction.setUser_id(Integer.valueOf(session.getUserUUID()));
                             transaction.setUuid(UUID.randomUUID().toString());
 
-                            //TODO remove hardcoding of ids
                             transaction.setTransactiontype_id(1);
                             transaction.setStatus_id(1);
 
@@ -397,6 +397,7 @@ public class AddProductActivity extends AppCompatActivity implements DialogInter
                             toBeginningOfTheDay(c);
                             transaction.setCreated_at(c.getTimeInMillis());
 
+                            baseDatabase.productsModelDao().addProduct(product);
                             baseDatabase.balanceModelDao().addBalance(balances);
                             baseDatabase.transactionsDao().addTransactions(transaction);
                             return null;
@@ -406,10 +407,10 @@ public class AddProductActivity extends AppCompatActivity implements DialogInter
                         protected void onPostExecute(Void v) {
                             super.onPostExecute(v);
 
-                            Intent previousActivityIntent = new Intent(AddProductActivity.this, MainActivity.class);
+                            Intent previousActivityIntent = new Intent(CreateProductActivity.this, MainActivity.class);
 
                             // Return to the previous activity which called this activity.
-                            NavUtils.navigateUpTo(AddProductActivity.this, previousActivityIntent);
+                            NavUtils.navigateUpTo(CreateProductActivity.this, previousActivityIntent);
 
                         }
                     }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
@@ -482,25 +483,6 @@ public class AddProductActivity extends AppCompatActivity implements DialogInter
         dialogFragment.show(getSupportFragmentManager(), PRODUCT_PHOTO_DIALOG_TAG);
     }
 
-    /**
-     * Method for populating the views with the passed product data. Since the user might come to
-     * this activity to edit an existing product object, all text fields and ImageView must be
-     * populated by the product object.
-     */
-    private void populateViewsWithPassedProductData() {
-        //TODO handle displaying of product photo
-        String photoPath = "";
-//        String photoPath = mPassedProduct.getmPhotoPath();
-//        mProductPhotoImageView.setTag(photoPath);
-        if (!TextUtils.isEmpty(photoPath))
-            showImage(mProductPhotoImageView,photoPath);
-
-//        mProductNameTIL.getEditText().setText(mPassedProduct.getmName());
-//        mProductSupplierTIL.getEditText().setText(mPassedProduct.getmSupplier());
-//        mProductSupplierEmailTIL.getEditText().setText(mPassedProduct.getSupplierEmail());
-//        mProductPriceTIL.getEditText().setText(String.valueOf(mPassedProduct.getmPrice()));
-//        mProductQuantityTIL.getEditText().setText(String.valueOf(mPassedProduct.getmQuantity()));
-    }
 
     /**
      * Method for validating user inputs when the user presses the 'Done' action button.
@@ -511,10 +493,6 @@ public class AddProductActivity extends AppCompatActivity implements DialogInter
        boolean isTypeIdSet = productId != -1;
         boolean isProductPriceSet = !TextUtils.isEmpty(mProductPriceTIL.getEditText().getText());
         boolean isProductQtySet = !TextUtils.isEmpty(mProductQuantityTIL.getEditText().getText());
-
-        if (!isTypeIdSet) {
-            productsSpinner.setError(getString(R.string.error_msg_product_type_empty));
-        }
 
 
         if (!isProductPriceSet) {
@@ -595,7 +573,7 @@ public class AddProductActivity extends AppCompatActivity implements DialogInter
                         @Override
                         public void onClick(View view) {
                             ActivityCompat
-                                    .requestPermissions(AddProductActivity.this, PERMISSIONS_EXTERNAL_STORAGE,
+                                    .requestPermissions(CreateProductActivity.this, PERMISSIONS_EXTERNAL_STORAGE,
                                             REQUEST_EXTERNAL_STORAGE);
                         }
                     })

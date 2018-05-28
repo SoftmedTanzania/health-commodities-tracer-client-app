@@ -16,7 +16,7 @@ import static android.arch.persistence.room.OnConflictStrategy.REPLACE;
 public interface BalanceModelDao {
 
     @Query("select " +
-            "Product.subcategoryId as subcategoryId, " +
+            "Product.sub_category_id as subcategoryId, " +
             "Product.description as productDescription, " +
             "SubCategory.name as subCategoryName," +
             "Product.name as productName ," +
@@ -28,15 +28,15 @@ public interface BalanceModelDao {
 
             "FROM Balances " +
             "INNER JOIN Product ON Balances.product_id=Product.id " +
-            "INNER JOIN Unit ON Product.unitId=Unit.id " +
-            "INNER JOIN SubCategory ON Product.subcategoryId = Subcategory.id  ")
+            "INNER JOIN Unit ON Product.unit_id=Unit.id " +
+            "INNER JOIN SubCategory ON Product.sub_category_id = Subcategory.id  ")
     LiveData<List<ProductBalance>> getBalances();
 
 
 
 
     @Query("select Product.id as productId, " +
-            "Product.subcategoryId as subcategoryId, " +
+            "Product.sub_category_id as subcategoryId, " +
             "Product.description as productDescription, " +
             "SubCategory.name as subCategoryName, " +
             "Product.name AS productName, " +
@@ -48,8 +48,8 @@ public interface BalanceModelDao {
             " FROM Balances " +
 
             "INNER JOIN Product ON Balances.product_id=Product.id " +
-            "INNER JOIN SubCategory ON Product.subcategoryId = SubCategory.id " +
-            "INNER JOIN Unit ON Product.unitId=Unit.id " +
+            "INNER JOIN SubCategory ON Product.sub_category_id = SubCategory.id " +
+            "INNER JOIN Unit ON Product.unit_id=Unit.id " +
             "where Product.id = :id")
     LiveData<ProductBalance> getProductBalanceById(long id);
 

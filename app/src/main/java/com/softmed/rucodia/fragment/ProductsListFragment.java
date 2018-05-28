@@ -19,6 +19,7 @@ import android.widget.LinearLayout;
 
 import com.softmed.rucodia.R;
 import com.softmed.rucodia.activity.AddProductActivity;
+import com.softmed.rucodia.activity.CreateProductActivity;
 import com.softmed.rucodia.activity.DetailActivity;
 import com.softmed.rucodia.adapter.ProductAdapter;
 import com.softmed.rucodia.database.AppDatabase;
@@ -213,7 +214,10 @@ public class ProductsListFragment extends Fragment implements
      * @param - 'Add Product' button or the floating action button.
      */
     public void navigateToCreateActivity() {
-        Intent intent = new Intent(getActivity(), AddProductActivity.class);
+
+        //TODO fix this to the correct naming
+//        Intent intent = new Intent(getActivity(), AddProductActivity.class);
+        Intent intent = new Intent(getActivity(), CreateProductActivity.class);
         startActivity(intent);
     }
 

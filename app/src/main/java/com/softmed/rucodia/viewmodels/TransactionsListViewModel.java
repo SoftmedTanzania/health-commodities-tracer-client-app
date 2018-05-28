@@ -27,7 +27,7 @@ public class TransactionsListViewModel extends AndroidViewModel {
     }
 
     public LiveData<List<Transactions>> getTransactionsListByProductId(int productId) {
-        return appDatabase.transactionsDao().getTransactionsByProductId(productId);
+        return appDatabase.transactionsDao().getLiveTransactionsByProductId(productId);
     }
 
     private static class deleteAsyncTask extends AsyncTask<Transactions, Void, Void> {
