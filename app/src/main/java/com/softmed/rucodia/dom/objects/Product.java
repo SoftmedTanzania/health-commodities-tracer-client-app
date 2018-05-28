@@ -96,4 +96,12 @@ public class Product implements Serializable {
     public void setPrice(int price) {
         this.price = price;
     }
+
+    public int getUnit_id() {
+        return unit_id;
+    }
+
+    public void setUnit_id(int unit_id) {
+        this.unit_id = unit_id;
+    }
 }
