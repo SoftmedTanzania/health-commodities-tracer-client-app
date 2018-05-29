@@ -21,6 +21,7 @@ import com.softmed.rucodia.R;
 import com.softmed.rucodia.activity.AddProductActivity;
 import com.softmed.rucodia.activity.CreateProductActivity;
 import com.softmed.rucodia.activity.DetailActivity;
+import com.softmed.rucodia.activity.MainActivity;
 import com.softmed.rucodia.adapter.ProductAdapter;
 import com.softmed.rucodia.database.AppDatabase;
 import com.softmed.rucodia.dom.objects.Balances;
@@ -215,10 +216,17 @@ public class ProductsListFragment extends Fragment implements
      */
     public void navigateToCreateActivity() {
 
-        //TODO fix this to the correct naming
-//        Intent intent = new Intent(getActivity(), AddProductActivity.class);
-        Intent intent = new Intent(getActivity(), CreateProductActivity.class);
-        startActivity(intent);
+
+
+        if(session.getUserRoles()==2){
+            Intent intent = new Intent(getActivity(),CreateProductActivity.class);
+            startActivity(intent);
+        }else {
+
+            Intent intent = new Intent(getActivity(), AddProductActivity.class);
+            startActivity(intent);
+        }
+
     }
 
     /**

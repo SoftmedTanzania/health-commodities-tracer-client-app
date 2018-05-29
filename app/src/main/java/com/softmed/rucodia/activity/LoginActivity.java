@@ -612,6 +612,8 @@ public class LoginActivity extends BaseActivity {
 
             for (ProductsResponse mList : results){
                 baseDatabase.productsModelDao().addProduct(DomConverter.getProduct(mList));
+
+                Log.d(TAG,"Saved products = "+new Gson().toJson(DomConverter.getProduct(mList)));
                 baseDatabase.unitsDao().addUnit(DomConverter.getUnit(mList.getUnitResponses().get(0)));
                 Log.d("InitialSync", "Product  : "+mList.getName());
             }
@@ -674,7 +676,14 @@ public class LoginActivity extends BaseActivity {
 
         @Override
         protected Void doInBackground(Void... voids) {
-            List<BalanceResponse> products = results.getProducts();
+            List<BalanceResponse> products = new ArrayList<>();
+
+            try {
+                products = results.getProducts();
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+
             for (BalanceResponse mList : products){
 
                 Balances balances = new Balances();

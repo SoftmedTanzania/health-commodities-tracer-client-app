@@ -40,11 +40,18 @@ public class MainActivity extends AppCompatActivity {
     private ViewPager viewPager;
     private AppDatabase database;
 
+    // Session Manager Class
+    private SessionManager session;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+
+
+        // Session Manager
+        session = new SessionManager(getApplicationContext());
 
         database = AppDatabase.getDatabase(this);
 

@@ -8,6 +8,7 @@ import android.content.Context;
 import com.softmed.rucodia.dom.dao.BalanceModelDao;
 import com.softmed.rucodia.dom.dao.CategorieModelDao;
 import com.softmed.rucodia.dom.dao.LocationsModelDao;
+import com.softmed.rucodia.dom.dao.OrderModelDao;
 import com.softmed.rucodia.dom.dao.ProductsModelDao;
 import com.softmed.rucodia.dom.dao.SubCategorieModelDao;
 import com.softmed.rucodia.dom.dao.TransactionModelDao;
@@ -17,6 +18,7 @@ import com.softmed.rucodia.dom.dao.UserInfoModelDao;
 import com.softmed.rucodia.dom.objects.Balances;
 import com.softmed.rucodia.dom.objects.Category;
 import com.softmed.rucodia.dom.objects.Location;
+import com.softmed.rucodia.dom.objects.Orders;
 import com.softmed.rucodia.dom.objects.Product;
 import com.softmed.rucodia.dom.objects.SubCategory;
 import com.softmed.rucodia.dom.objects.TransactionType;
@@ -35,7 +37,8 @@ import com.softmed.rucodia.dom.objects.UsersInfo;
                 Unit.class,
                 Transactions.class,
                 TransactionType.class,
-                Balances.class
+                Balances.class,
+                Orders.class
         },
         version = 1)
 
@@ -68,5 +71,6 @@ public abstract class AppDatabase extends RoomDatabase {
     public abstract UserInfoModelDao userInfoDao();
 
     public abstract LocationsModelDao locationsModelDao();
+    public abstract OrderModelDao orderModelDao();
 
 }

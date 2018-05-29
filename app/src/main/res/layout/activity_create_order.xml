@@ -42,15 +42,16 @@
                     android:textSize="18sp"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Kilimo Shop"/>
+                    android:text="New Order"/>
 
                 <TextView
                     android:layout_below="@id/agro_dealer_name"
                     android:textStyle="bold"
                     android:textSize="15sp"
+                    android:id="@+id/ward"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:text="Kasulu"/>
+                    android:text=""/>
 
 
                 <TextView

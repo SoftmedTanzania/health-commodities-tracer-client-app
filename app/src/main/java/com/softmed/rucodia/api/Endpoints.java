@@ -27,6 +27,10 @@ public class Endpoints {
         @GET("auth")
         Call<LoginResponse> basicLogin();
 
+
+        @GET("users")
+        Call<List<LoginResponse>> getAllUsers();
+
     }
 
     public interface CategoriesService {

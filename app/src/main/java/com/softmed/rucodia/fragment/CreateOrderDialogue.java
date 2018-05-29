@@ -1,13 +1,14 @@
 package com.softmed.rucodia.fragment;
 
 import android.Manifest;
+import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.content.pm.PackageManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.Snackbar;
+import android.support.design.widget.TextInputLayout;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.view.PagerAdapter;
-import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,19 +20,29 @@ import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.softmed.rucodia.LoadProductPhotoAsync;
 import com.softmed.rucodia.R;
 import com.softmed.rucodia.activity.AddProductActivity;
+import com.softmed.rucodia.api.Endpoints;
 import com.softmed.rucodia.database.AppDatabase;
 import com.softmed.rucodia.dom.objects.Category;
+import com.softmed.rucodia.dom.objects.Orders;
 import com.softmed.rucodia.dom.objects.Product;
 import com.softmed.rucodia.dom.objects.SubCategory;
+import com.softmed.rucodia.dom.responces.LoginResponse;
+import com.softmed.rucodia.utils.ServiceGenerator;
+import com.softmed.rucodia.utils.SessionManager;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import fr.ganfra.materialspinner.MaterialSpinner;
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 
 /**
@@ -43,13 +54,16 @@ public class CreateOrderDialogue extends android.support.v4.app.DialogFragment {
     double longitude;
     double latitude;
     private RelativeLayout dialogueLayout;
-    private MaterialSpinner categorySpinner,subCategorySpinner, productsSpinner;
+    private MaterialSpinner categorySpinner,subCategorySpinner, productsSpinner,suppliersSpinner;
     private List<SubCategory> subCategories;
     private List<Product> products;
-    private TextView description;
+    private TextView description,price;
     private long typeId;
     public static AppDatabase baseDatabase;
-    private  List<Category> categories;
+    private  List<Category> categories = new ArrayList<>();
+    SessionManager sess;
+    private int supplierId;
+    private  String batchId;
     private static final String PRODUCT_PHOTO_DIALOG_TAG = "PRODUCT_PHOTO_DIALOG_TAG";
     /**
      * Permissions required to read and write contacts. Used by the {@link AddProductActivity}.
@@ -62,11 +76,25 @@ public class CreateOrderDialogue extends android.support.v4.app.DialogFragment {
      */
     private static final int REQUEST_EXTERNAL_STORAGE = 1;
 
+    private  List<String> suppliersNames = new ArrayList<>();
+    private  List<LoginResponse> suppliers = new ArrayList<>();
+
+    private List<String> categoryStrings = new ArrayList<>();
+
 
     public CreateOrderDialogue() {
     }
 
 
+    public static CreateOrderDialogue newInstance(String batchId) {
+        CreateOrderDialogue f = new CreateOrderDialogue();
+
+        // Supply num input as an argument.
+        Bundle args = new Bundle();
+        args.putString("batchId", batchId);
+        f.setArguments(args);
+        return f;
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -75,7 +103,10 @@ public class CreateOrderDialogue extends android.support.v4.app.DialogFragment {
         final Activity activity = getActivity();
         baseDatabase = AppDatabase.getDatabase(getActivity());
         activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+        batchId = getArguments().getString("batchId");
     }
+
+
 
     @Override
     public void onSaveInstanceState(Bundle outState) {
@@ -89,42 +120,37 @@ public class CreateOrderDialogue extends android.support.v4.app.DialogFragment {
         getDialog().setCanceledOnTouchOutside(false);
 
 
-
+        sess = new SessionManager(getActivity().getApplicationContext());
         dialogueLayout =(RelativeLayout)inflater.inflate(R.layout.dialogue_create_order, container, false);
-        final ViewPager viewPager = (ViewPager) dialogueLayout.findViewById(R.id.viewPagerVertical);
-
-
-
         description = (TextView) dialogueLayout.findViewById(R.id.product_description);
+        price = (TextView) dialogueLayout.findViewById(R.id.price);
         categorySpinner = (MaterialSpinner) dialogueLayout.findViewById(R.id.spin_category_spinner);
         subCategorySpinner = (MaterialSpinner) dialogueLayout.findViewById(R.id.sub_category_spinner);
         productsSpinner = (MaterialSpinner) dialogueLayout.findViewById(R.id.products_spinner);
+        suppliersSpinner = (MaterialSpinner) dialogueLayout.findViewById(R.id.suppliers_spinner);
 
 
+        new AsyncTask<Void, Void, Void>(){
+            @Override
+            protected Void doInBackground(Void... voids) {
+                categories = baseDatabase.categoriesModel().getAllCategories();
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                super.onPostExecute(aVoid);
+                for(Category category:categories){
+                    categoryStrings.add(category.getName());
+                }
+
+                ArrayAdapter<String> spinAdapter = new ArrayAdapter<String>(getActivity(), R.layout.simple_spinner_item_black, categoryStrings);
+                spinAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item_black);
+                categorySpinner.setAdapter(spinAdapter);
+            }
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
 
-//
-//        new AsyncTask<Void, Void, Void>(){
-//            @Override
-//            protected Void doInBackground(Void... voids) {
-//                categories = baseDatabase.categoriesModel().getAllCategories();
-//                return null;
-//            }
-//
-//            @Override
-//            protected void onPostExecute(Void aVoid) {
-//                super.onPostExecute(aVoid);
-//                for(Category category:categories){
-//                    categoryStrings.add(category.getName());
-//                }
-//
-//                ArrayAdapter<String> spinAdapter = new ArrayAdapter<String>(AddProductActivity.this, R.layout.simple_spinner_item_black, categoryStrings);
-//                spinAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item_black);
-//                categorySpinner.setAdapter(spinAdapter);
-//            }
-//        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-
-        final List<String> categoryStrings= new ArrayList<>();
         for(Category category:categories){
             categoryStrings.add(category.getName());
         }
@@ -132,20 +158,33 @@ public class CreateOrderDialogue extends android.support.v4.app.DialogFragment {
         ArrayAdapter<String> spinAdapter = new ArrayAdapter<String>(getActivity(), R.layout.simple_spinner_item_black, categoryStrings);
         spinAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item_black);
         categorySpinner.setAdapter(spinAdapter);
-
         categorySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @SuppressLint("StaticFieldLeak")
             @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                subCategories = baseDatabase.subCategoriesModel().getSubCategoryByCategoryId(i+1);
+            public void onItemSelected(AdapterView<?> adapterView, View view, final int i, long l) {
 
-                final List<String> subCategoryStrings= new ArrayList<>();
-                for(SubCategory subCategory:subCategories){
-                    subCategoryStrings.add(subCategory.getName());
-                }
+                new AsyncTask<Void, Void, Void>(){
+                    @Override
+                    protected Void doInBackground(Void... voids) {
+                        subCategories = baseDatabase.subCategoriesModel().getSubCategoryByCategoryId(i+1);
+                        return null;
+                    }
 
-                ArrayAdapter<String> spinAdapter = new ArrayAdapter<String>(getActivity(), R.layout.simple_spinner_item_black, subCategoryStrings);
-                spinAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item_black);
-                subCategorySpinner.setAdapter(spinAdapter);
+                    @Override
+                    protected void onPostExecute(Void v) {
+                        super.onPostExecute(v);
+
+                        final List<String> subCategoryStrings= new ArrayList<>();
+                        for(SubCategory subCategory:subCategories){
+                            subCategoryStrings.add(subCategory.getName());
+                        }
+
+                        ArrayAdapter<String> spinAdapter = new ArrayAdapter<String>(getActivity(), R.layout.simple_spinner_item_black, subCategoryStrings);
+                        spinAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item_black);
+                        subCategorySpinner.setAdapter(spinAdapter);
+
+                    }
+                }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
             }
 
@@ -156,24 +195,38 @@ public class CreateOrderDialogue extends android.support.v4.app.DialogFragment {
         });
 
         subCategorySpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @SuppressLint("StaticFieldLeak")
             @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+            public void onItemSelected(AdapterView<?> adapterView, View view, final int i, long l) {
                 products = new ArrayList<>();
-                try {
-                    products = baseDatabase.productsModelDao().getProductsBySubCategoryId(subCategories.get(i).getId());
-                }catch (Exception e){
-                    e.printStackTrace();
-                }
 
-                final List<String> productsNames= new ArrayList<>();
-                for(Product product:products){
-                    productsNames.add(product.getName());
-                }
+                new AsyncTask<Void, Void, Void>(){
+                    @Override
+                    protected Void doInBackground(Void... voids) {
+                        try {
+                            products = baseDatabase.productsModelDao().getProductsBySubCategoryId(subCategories.get(i).getId());
+                        }catch (Exception e){
+                            e.printStackTrace();
+                        }
+                        return null;
+                    }
 
-                ArrayAdapter<String> spinAdapter = new ArrayAdapter<String>(getActivity(), R.layout.simple_spinner_item_black, productsNames);
-                spinAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item_black);
-                productsSpinner.setAdapter(spinAdapter);
+                    @Override
+                    protected void onPostExecute(Void v) {
+                        super.onPostExecute(v);
 
+                        final List<String> productsNames= new ArrayList<>();
+                        for(Product product:products){
+                            productsNames.add(product.getName());
+                        }
+
+                        ArrayAdapter<String> spinAdapter = new ArrayAdapter<String>(getActivity(), R.layout.simple_spinner_item_black, productsNames);
+                        spinAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item_black);
+                        productsSpinner.setAdapter(spinAdapter);
+
+                    }
+
+                }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
             }
 
             @Override
@@ -187,10 +240,12 @@ public class CreateOrderDialogue extends android.support.v4.app.DialogFragment {
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 try {
                     description.setText(products.get(i).getDescription());
+                    price.setText(String.valueOf(products.get(i).getPrice()));
                     typeId = products.get(i).getId();
                 }catch (Exception e){
                     typeId = -1;
                     description.setText("");
+                    e.printStackTrace();
                 }
 
             }
@@ -203,31 +258,100 @@ public class CreateOrderDialogue extends android.support.v4.app.DialogFragment {
 
 
 
-
-        viewPager.setAdapter(new ViewPagerAdapter());
-
-
-        dialogueLayout.findViewById(R.id.another_location).setOnClickListener(new View.OnClickListener() {
+        Endpoints.LoginService loginService = ServiceGenerator.createService(Endpoints.LoginService.class, sess.getUserName(), sess.getUserPass());
+        Call<List<LoginResponse>> call = loginService.getAllUsers();
+        call.enqueue(new Callback<List<LoginResponse>>() {
+            @SuppressLint("StaticFieldLeak")
             @Override
-            public void onClick(View view) {
-                viewPager.setCurrentItem(1);
+            public void onResponse(Call<List<LoginResponse>> call, Response<List<LoginResponse>> response) {
+
+                Log.d(TAG,"response = "+response.toString());
+                if (response.isSuccessful()) {
+
+                    suppliersNames = new ArrayList<>();
+                    suppliers = new ArrayList<>();
+                   for(LoginResponse r : response.body()){
+                       if(r.getLevelResponses().get(0).getId()==2){
+                           suppliers.add(r);
+                           suppliersNames.add(r.getFirstName()+" "+r.getSurname());
+                       }
+                   }
+
+                    ArrayAdapter<String> spinAdapter = new ArrayAdapter<String>(getActivity(), R.layout.simple_spinner_item_black, suppliersNames);
+                    spinAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item_black);
+                    suppliersSpinner.setAdapter(spinAdapter);
+
+
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<LoginResponse>> call, Throwable t) {
+                // something went completely south (like no internet connection)
+                try {
+                    Log.d("Error", t.getMessage());
+                }catch (NullPointerException e){
+                    e.printStackTrace();
+                }
+            }
+
+        });
+
+
+        suppliersSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                try {
+                    supplierId = suppliers.get(i).getId();
+                }catch (Exception e){
+                    supplierId = -1;
+                }
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
             }
         });
 
-        dialogueLayout.findViewById(R.id.btn_done).setOnClickListener(new View.OnClickListener() {
+
+
+        dialogueLayout.findViewById(R.id.add_product).setOnClickListener(new View.OnClickListener() {
+            @SuppressLint("StaticFieldLeak")
             @Override
             public void onClick(View view) {
+
+                new AsyncTask<Void, Void, Void>(){
+                    @Override
+                    protected Void doInBackground(Void... voids) {
+                        Orders order = new Orders();
+                        order.setBatch(batchId);
+                        order.setProduct_id((int)typeId);
+                        order.setDealer_id(Integer.valueOf(sess.getUserUUID()));
+                        order.setSupplier_id(supplierId);
+                        order.setStatus_id(0);
+                        order.setUuid(UUID.randomUUID().toString());
+                        order.setOrdered(Integer.valueOf(((TextInputLayout)dialogueLayout.findViewById(R.id.product_quantity_text_input_layout)).getEditText().getText().toString()));
+
+                        baseDatabase.orderModelDao().addOrder(order);
+                        return null;
+                    }
+
+                    @Override
+                    protected void onPostExecute(Void v) {
+                        super.onPostExecute(v);
+                        Toast.makeText(getActivity(),"Product Added Successfully",Toast.LENGTH_LONG).show();
+                        dismiss();
+
+                    }
+                }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+
+
 
             }
         });
 
-
-        dialogueLayout.findViewById(R.id.product_photo_container).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                showProductPhotoDialog(view);
-            }
-        });
 
 
         return dialogueLayout;
@@ -248,41 +372,8 @@ public class CreateOrderDialogue extends android.support.v4.app.DialogFragment {
     }
 
 
-    /**
-     * Method that gets invoked when the user presses the 'photo camera' floating action button.
-     * This method will inflate the product photo dialog using the product photo dialog fragment.
-     * @param view - 'photo camera' floating action button.
-     */
-    public void showProductPhotoDialog(View view) {
-        ProductPhotoDialogFragment dialogFragment = new ProductPhotoDialogFragment();
-        dialogFragment.show(getActivity().getSupportFragmentManager(), PRODUCT_PHOTO_DIALOG_TAG);
-    }
 
-    class ViewPagerAdapter extends PagerAdapter {
 
-        @Override
-        public int getCount() {
-            return 2;
-        }
-
-        @Override
-        public boolean isViewFromObject(View view, Object object) {
-            return view == ((View) object);
-        }
-
-        public Object instantiateItem(View collection, int position) {
-            int resId = 0;
-            switch (position) {
-                case 0:
-                    resId = R.id.add_product_layout;
-                    break;
-                case 1:
-                    resId = R.id.add_product_with_image;
-                    break;
-            }
-            return dialogueLayout.findViewById(resId);
-        }
-    }
 
     public void showImage(ImageView v, String photoPath) {
         Log.i(TAG, "Show contacts button pressed. Checking permissions.");
