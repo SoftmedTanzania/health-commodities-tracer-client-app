@@ -109,7 +109,7 @@ public class SessionManager {
         return pref.getString(USER_PASS, null);
     }
 
-    public int getUserRoles(){
+    public int getUserLevel(){
         return pref.getInt(KEY_LEVEL_ID, -1);
     }
 

@@ -215,11 +215,16 @@ public class ProductsListFragment extends Fragment implements
      * @param - 'Add Product' button or the floating action button.
      */
     public void navigateToCreateActivity() {
+        SessionManager session = new SessionManager(getContext());
 
-
-
-        Intent intent = new Intent(getActivity(),CreateProductActivity.class);
-        startActivity(intent);
+        Log.d(TAG,"USER LEVEL ID = "+session.getUserLevel());
+        if(session.getUserLevel()==2){
+            Intent intent = new Intent(getActivity(), CreateProductActivity.class);
+            startActivity(intent);
+        }else if(session.getUserLevel()!=4){
+            Intent intent = new Intent(getActivity(), AddProductActivity.class);
+            startActivity(intent);
+        }
     }
 
     /**
