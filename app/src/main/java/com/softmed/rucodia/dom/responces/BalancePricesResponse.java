@@ -5,14 +5,13 @@ import com.google.gson.annotations.SerializedName;
 import java.io.Serializable;
 
 
-public class BalanceResponse implements Serializable {
+public class BalancePricesResponse implements Serializable {
 
     @SerializedName("product_id")
     private int productId;
 
-    @SerializedName("product_balance")
-    private int balance;
-
+    @SerializedName("buying_price")
+    private int buyingPrice;
 
     public int getProductId() {
         return productId;
@@ -22,11 +21,11 @@ public class BalanceResponse implements Serializable {
         this.productId = productId;
     }
 
-    public int getBalance() {
-        return balance;
+    public int getBuyingPrice() {
+        return buyingPrice;
     }
 
-    public void setBalance(int balance) {
-        this.balance = balance;
+    public void setBuyingPrice(int buyingPrice) {
+        this.buyingPrice = buyingPrice;
     }
 }

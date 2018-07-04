@@ -10,9 +10,9 @@
         app:showAsAction="always"/>
 
     <item
-        android:id="@+id/action_empty_products"
+        android:id="@+id/action_logout"
         android:orderInCategory="1"
-        android:title="@string/title_action_empty_products"
+        android:title="@string/logout"
         app:showAsAction="never"/>
 
 </menu>

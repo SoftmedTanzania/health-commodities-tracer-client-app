@@ -26,6 +26,9 @@ public class BalancesResponse implements Serializable {
     @SerializedName("products")
     private List<BalanceResponse> products;
 
+    @SerializedName("prices")
+    private List<BalancePricesResponse> prices;
+
     public String getAction() {
         return action;
     }
@@ -72,5 +75,13 @@ public class BalancesResponse implements Serializable {
 
     public void setProducts(List<BalanceResponse> products) {
         this.products = products;
+    }
+
+    public List<BalancePricesResponse> getPrices() {
+        return prices;
+    }
+
+    public void setPrices(List<BalancePricesResponse> prices) {
+        this.prices = prices;
     }
 }

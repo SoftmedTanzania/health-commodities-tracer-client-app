@@ -49,30 +49,29 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
 
 
-
         // Session Manager
         session = new SessionManager(getApplicationContext());
 
         database = AppDatabase.getDatabase(this);
 
         SessionManager sessionManager = new SessionManager(this);
-        if (!sessionManager.isLoggedIn()){
+        if (!sessionManager.isLoggedIn()) {
             sessionManager.checkLogin();
             finish();
         }
 
-        Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        viewPager = (ViewPager)findViewById(R.id.viewPager);
+        viewPager = (ViewPager) findViewById(R.id.viewPager);
         ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
 
         DashboardFragment dashboardFragment = new DashboardFragment();
         ProductsListFragment productsListFragment = new ProductsListFragment();
         OrdersFragment ordersFragment = new OrdersFragment();
 
-        viewPagerAdapter.addFragment(dashboardFragment,"Dashboard");
-        viewPagerAdapter.addFragment(productsListFragment,"Products List");
+        viewPagerAdapter.addFragment(dashboardFragment, "Dashboard");
+        viewPagerAdapter.addFragment(productsListFragment, "Products List");
 //        viewPagerAdapter.addFragment(ordersFragment,"Order Fragment");
 
         viewPager.setAdapter(viewPagerAdapter);
@@ -98,15 +97,13 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        if (item.getItemId() == R.id.action_empty_products) {
-//            ConfirmationDialogFragment dialogFragment = ConfirmationDialogFragment.newInstance(
-//                    R.string.title_dialog_confirm_empty_products, R.string.message_dialog_confirm_empty_products);
-//            dialogFragment.setOnPositiveClickListener(mOnPositiveClickListener);
-//            dialogFragment.show(getSupportFragmentManager(), CONFIRMATION_DIALOG_TAG);
-        }else  if (item.getItemId() == R.id.action_create_order) {
-                Intent intent = new Intent(MainActivity.this,CreateOrderActivity.class);
-                startActivity(intent);
-            }
+        if (item.getItemId() == R.id.action_logout) {
+            session.logoutUser();
+            finish();
+        } else if (item.getItemId() == R.id.action_create_order) {
+            Intent intent = new Intent(MainActivity.this, CreateOrderActivity.class);
+            startActivity(intent);
+        }
 
         return super.onOptionsItemSelected(item);
     }
@@ -148,7 +145,7 @@ public class MainActivity extends AppCompatActivity {
         View dashboard = getLayoutInflater().inflate(R.layout.custom_tab, null);
         TextView dashboardTitle = dashboard.findViewById(R.id.title_text);
         dashboardTitle.setText("Dashboard");
-        ImageView dashboardIcon    = dashboard.findViewById(R.id.icon);
+        ImageView dashboardIcon = dashboard.findViewById(R.id.icon);
         dashboardIcon.setColorFilter(this.getResources().getColor(R.color.white));
         Glide.with(this).load(R.drawable.ic_dashboard_white_24dp).into(dashboardIcon);
         tabLayout.getTabAt(0).setCustomView(dashboard);
@@ -157,7 +154,7 @@ public class MainActivity extends AppCompatActivity {
         View myInventory = getLayoutInflater().inflate(R.layout.custom_tab, null);
         TextView opdTabTitle = myInventory.findViewById(R.id.title_text);
         opdTabTitle.setText("My Inventory");
-        ImageView inventoryIcon    = myInventory.findViewById(R.id.icon);
+        ImageView inventoryIcon = myInventory.findViewById(R.id.icon);
         inventoryIcon.setColorFilter(this.getResources().getColor(R.color.white));
         Glide.with(this).load(R.drawable.ic_content_paste_white_24dp).into(inventoryIcon);
         tabLayout.getTabAt(1).setCustomView(myInventory);
@@ -172,7 +169,7 @@ public class MainActivity extends AppCompatActivity {
             orderIcon.setColorFilter(this.getResources().getColor(R.color.white));
             Glide.with(this).load(R.drawable.ic_local_shipping_white_24dp).into(orderIcon);
             tabLayout.getTabAt(2).setCustomView(orderView);
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 

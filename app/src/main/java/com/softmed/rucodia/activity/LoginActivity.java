@@ -32,6 +32,7 @@ import com.softmed.rucodia.dom.objects.SubCategory;
 import com.softmed.rucodia.dom.objects.TransactionType;
 import com.softmed.rucodia.dom.objects.Transactions;
 import com.softmed.rucodia.dom.objects.UsersInfo;
+import com.softmed.rucodia.dom.responces.BalancePricesResponse;
 import com.softmed.rucodia.dom.responces.BalanceResponse;
 import com.softmed.rucodia.dom.responces.BalancesResponse;
 import com.softmed.rucodia.dom.responces.CategoriesResponse;
@@ -648,8 +649,9 @@ public class LoginActivity extends BaseActivity {
         @Override
         protected Void doInBackground(Void... voids) {
             for (Transactions mList : results){
+                mList.setCreated_at(mList.getCreated_at()*1000);
                 //TODO uncoment this line to save users transaction from the server after pulling the balances
-//                baseDatabase.transactionsDao().addTransactions(mList);
+                baseDatabase.transactionsDao().addTransactions(mList);
                 Log.d("InitialSync", "Transactions type : "+mList.getTransactiontype_id());
             }
 
@@ -680,6 +682,7 @@ public class LoginActivity extends BaseActivity {
         @Override
         protected Void doInBackground(Void... voids) {
             List<BalanceResponse> products = new ArrayList<>();
+            List<BalancePricesResponse> pricesResponses = new ArrayList<>();
 
             try {
                 products = results.getProducts();
@@ -687,11 +690,22 @@ public class LoginActivity extends BaseActivity {
                 e.printStackTrace();
             }
 
+            try {
+                pricesResponses = results.getPrices();
+            }catch (Exception e){
+                e.printStackTrace();
+            }
+
+
             for (BalanceResponse mList : products){
 
                 Balances balances = new Balances();
                 balances.setBalance(mList.getBalance());
-                balances.setPrice(mList.getPrice());
+
+                for(BalancePricesResponse balancePricesResponse:pricesResponses){
+                    if(balancePricesResponse.getProductId()==mList.getProductId())
+                        balances.setPrice(balancePricesResponse.getBuyingPrice());
+                }
                 balances.setProduct_id(mList.getProductId());
                 balances.setUser_id(results.getUserId());
                 balances.setUuid(UUID.randomUUID().toString());
