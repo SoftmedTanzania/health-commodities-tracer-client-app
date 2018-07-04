@@ -19,7 +19,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:text="Product Details"
-            android:textColor="@color/colorPrimary"
+            android:textColor="@color/primary"
             android:textSize="24sp" />
 
         <View
@@ -148,7 +148,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="8dp"
             android:text="Product Description"
-            android:textColor="@color/colorPrimary"
+            android:textColor="@color/primary"
             android:textSize="14sp" />
 
         <View
@@ -170,7 +170,7 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:text="Product Price"
-            android:textColor="@color/colorPrimary"
+            android:textColor="@color/primary"
             android:textSize="14sp" />
 
         <View

@@ -218,15 +218,8 @@ public class ProductsListFragment extends Fragment implements
 
 
 
-        if(session.getUserRoles()==2){
-            Intent intent = new Intent(getActivity(),CreateProductActivity.class);
-            startActivity(intent);
-        }else {
-
-            Intent intent = new Intent(getActivity(), AddProductActivity.class);
-            startActivity(intent);
-        }
-
+        Intent intent = new Intent(getActivity(),CreateProductActivity.class);
+        startActivity(intent);
     }
 
     /**

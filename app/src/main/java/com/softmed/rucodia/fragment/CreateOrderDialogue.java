@@ -331,6 +331,7 @@ public class CreateOrderDialogue extends android.support.v4.app.DialogFragment {
                         order.setDealer_id(Integer.valueOf(sess.getUserUUID()));
                         order.setSupplier_id(supplierId);
                         order.setStatus_id(0);
+                        order.setStatus(0);
                         order.setUuid(UUID.randomUUID().toString());
                         order.setOrdered(Integer.valueOf(((TextInputLayout)dialogueLayout.findViewById(R.id.product_quantity_text_input_layout)).getEditText().getText().toString()));
 

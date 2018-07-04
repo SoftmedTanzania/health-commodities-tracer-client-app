@@ -14,7 +14,7 @@
         android:layout_marginTop="16dp"
         android:text="Add Transaction"
         android:textStyle="bold"
-        android:textColor="@color/colorPrimary"
+        android:textColor="@color/primary"
         android:textSize="24sp" />
 
     <View
@@ -85,7 +85,7 @@
             android:elevation="4dp"
             android:scaleType="centerInside"
             android:textStyle="bold"
-            android:textColor="@color/colorAccent"
+            android:textColor="@color/accent"
             style="?android:attr/borderlessButtonStyle"
             android:text="Add Transaction" />
     </RelativeLayout>

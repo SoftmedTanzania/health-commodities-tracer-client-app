@@ -73,6 +73,18 @@ public class CreateOrderActivity extends AppCompatActivity {
         });
 
 
+        FloatingActionButton fab1 = (FloatingActionButton) findViewById(R.id.fab1);
+        fab1.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(totalCOst>0) {
+                    Toast.makeText(CreateOrderActivity.this, "Order Sent successfully", Toast.LENGTH_SHORT).show();
+                    finish();
+                }
+            }
+        });
+
+
         Date date = Calendar.getInstance().getTime();
         DateFormat formatter = new SimpleDateFormat("YYYY-MM-dd");
         String dateFormatted = formatter.format(date);
@@ -113,7 +125,6 @@ public class CreateOrderActivity extends AppCompatActivity {
                 }catch (Exception e){
                     e.printStackTrace();
                 }
-
             }
 
         }.execute();

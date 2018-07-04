@@ -39,20 +39,20 @@ public class DomConverter {
 
     }
 
-    public static Location getLocation(LoginResponse loginResponse){
-        LocationResponse locationResponse = loginResponse.getLocationResponses().get(0);
-
-        Location location = new Location();
-        location.setId(locationResponse.getId());
-        location.setLatitude(locationResponse.getLatitude());
-        location.setLatitude(locationResponse.getLongitude());
-        location.setName(locationResponse.getName());
-        location.setUuid(locationResponse.getUuid());
-
-
-        return location;
-
-    }
+//    public static Location getLocation(LoginResponse loginResponse){
+//        LocationResponse locationResponse = loginResponse.getLocationResponses().get(0);
+//
+//        Location location = new Location();
+//        location.setId(locationResponse.getId());
+//        location.setLatitude(locationResponse.getLatitude());
+//        location.setLatitude(locationResponse.getLongitude());
+//        location.setName(locationResponse.getName());
+//        location.setUuid(locationResponse.getUuid());
+//
+//
+//        return location;
+//
+//    }
 
     public static Category getCategory(CategoriesResponse categoriesResponse){
         Category category = new Category();

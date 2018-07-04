@@ -30,7 +30,7 @@
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:background="@color/colorPrimaryDark"
+                    android:background="@color/primary_dark"
                     android:alpha="0.9"/>
 
             </RelativeLayout>
@@ -61,7 +61,7 @@
                 android:layout_marginRight="16dp"/>
 
             <fr.ganfra.materialspinner.MaterialSpinner
-                android:id="@+id/spin_language"
+                android:id="@+id/language"
                 android:layout_width="100dp"
                 android:layout_height="wrap_content"
                 android:divider="@null"
@@ -73,14 +73,11 @@
                 app_ms:ms_enableFloatingLabel="true"
                 app_ms:ms_enableErrorLabel="false"
                 app_ms:ms_floatingLabelText="@string/language"
-                app_ms:ms_baseColor="@color/white"
-                app_ms:ms_highlightColor="@color/colorPrimary"
-                app_ms:ms_errorColor="@color/red_500"
-                app_ms:ms_hintColor="#b3b3b3"
                 app_ms:ms_arrowColor="@color/white"
                 app_ms:ms_arrowSize="12dp"
                 app_ms:ms_alignLabels="false"
-                app_ms:ms_floatingLabelColor="@color/white"/>
+                app_ms:ms_floatingLabelColor="@color/white"
+                app:ms_highlightColor="@color/primary" />
 
         </LinearLayout>
 
@@ -172,7 +169,7 @@
                         android:layout_gravity="center_horizontal"
                         android:layout_marginBottom="15dp"
                         android:layout_marginTop="16dp"
-                        app:cpd_strokeColor="@color/colorPrimary"
+                        app:cpd_strokeColor="@color/primary"
                         app:pv_circular="true"
                         app:pv_progressMode="indeterminate"
                         app:pv_progressStyle="@style/Material.Drawable.CircularProgress" />

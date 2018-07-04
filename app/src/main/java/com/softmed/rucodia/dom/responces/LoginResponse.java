@@ -1,6 +1,7 @@
 package com.softmed.rucodia.dom.responces;
 
 import com.google.gson.annotations.SerializedName;
+import com.softmed.rucodia.dom.objects.Location;
 
 import java.io.Serializable;
 import java.util.List;
@@ -32,7 +33,7 @@ public class LoginResponse implements Serializable{
     List<LevelResponse> levelResponses;
 
     @SerializedName("locations")
-    List<LocationResponse> locationResponses;
+    List<Location> locationResponses;
 
     public int getId() {
         return id;
@@ -98,11 +99,11 @@ public class LoginResponse implements Serializable{
         this.levelResponses = levelResponses;
     }
 
-    public List<LocationResponse> getLocationResponses() {
+    public List<Location> getLocationResponses() {
         return locationResponses;
     }
 
-    public void setLocationResponses(List<LocationResponse> locationResponses) {
+    public void setLocationResponses(List<Location> locationResponses) {
         this.locationResponses = locationResponses;
     }
 }

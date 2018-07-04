@@ -25,7 +25,7 @@ public class Endpoints {
     public interface LoginService {
 
         @GET("auth")
-        Call<LoginResponse> basicLogin();
+        Call<List<LoginResponse>> basicLogin();
 
 
         @GET("users")
@@ -65,6 +65,10 @@ public class Endpoints {
     public interface NotificationServices{
         @POST("save-push-notification-token")
         Call<String> registerDevice(@Body RequestBody u);
+    }
+    public interface OrdersServices{
+        @POST("orders")
+        Call<BalancesResponse> sendOrder(@Body RequestBody u);
     }
 
 }

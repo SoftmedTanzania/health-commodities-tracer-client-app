@@ -18,6 +18,9 @@ public interface OrderModelDao {
     @Query("select Product.name, Orders.ordered, Product.price as prices from Orders INNER JOIN Product ON Orders.product_id = Product.id WHERE batch=:batch")
     LiveData<List<OrdersItems>> getOrdersByBatchNo(String batch);
 
+    @Query("select * from Orders WHERE status = 0")
+    List<Orders> getUnpostedOrders();
+
 
     @Insert(onConflict = REPLACE)
     void addOrder(Orders order);

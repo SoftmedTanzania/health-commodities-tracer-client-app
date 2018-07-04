@@ -38,7 +38,6 @@ import com.softmed.rucodia.dom.responces.CategoriesResponse;
 import com.softmed.rucodia.dom.responces.LoginResponse;
 import com.softmed.rucodia.dom.responces.ProductsResponse;
 import com.softmed.rucodia.utils.Config;
-import com.softmed.rucodia.utils.Constants;
 import com.softmed.rucodia.utils.LargeDiagonalCutPathDrawable;
 import com.softmed.rucodia.utils.ServiceGenerator;
 import com.softmed.rucodia.utils.SessionManager;
@@ -290,11 +289,11 @@ public class LoginActivity extends BaseActivity {
 
             //Use Retrofit to make http request calls
             Endpoints.LoginService loginService = ServiceGenerator.createService(Endpoints.LoginService.class, usernameValue, passwordValue);
-            Call<LoginResponse> call = loginService.basicLogin();
-            call.enqueue(new Callback<LoginResponse>() {
+            Call<List<LoginResponse>> call = loginService.basicLogin();
+            call.enqueue(new Callback<List<LoginResponse>>() {
                 @SuppressLint("StaticFieldLeak")
                 @Override
-                public void onResponse(Call<LoginResponse> call, Response<LoginResponse> response) {
+                public void onResponse(Call<List<LoginResponse>> call, final Response<List<LoginResponse>> response) {
 
                     Log.d(TAG,"response = "+response.toString());
                     if (response.isSuccessful()) {
@@ -303,7 +302,7 @@ public class LoginActivity extends BaseActivity {
                         loginMessages.setText(getResources().getString(R.string.success));
 
                         Log.d(TAG,"response body = "+new Gson().toJson(response.body()).toString());
-                        userInfo = DomConverter.getUserInfo(response.body());
+                        userInfo = DomConverter.getUserInfo(response.body().get(0));
 
                         String userUUID = userInfo.getUuid();
                         session.createLoginSession(
@@ -325,7 +324,7 @@ public class LoginActivity extends BaseActivity {
                             protected Void doInBackground(Void... voids) {
                                 Log.d(TAG,"userInfo : "+userInfo.toString());
                                 baseDatabase.userInfoDao().addUserInfo(userInfo);
-//                                baseDatabase.locationsModelDao().addLocation(location);
+                                baseDatabase.locationsModelDao().addLocation(response.body().get(0).getLocationResponses().get(0));
                                 return null;
                             }
 
@@ -349,13 +348,11 @@ public class LoginActivity extends BaseActivity {
                 }
 
                 @Override
-                public void onFailure(Call<LoginResponse> call, Throwable t) {
+                public void onFailure(Call<List<LoginResponse>> call, Throwable t) {
                     // something went completely south (like no internet connection)
-                    try {
-                        Log.d("Error", t.getMessage());
-                    }catch (NullPointerException e){
-                        e.printStackTrace();
-                    }
+                    t.printStackTrace();
+
+                    loginMessages.setText(getResources().getString(R.string.error_logging_in));
                 }
 
             });
@@ -468,6 +465,9 @@ public class LoginActivity extends BaseActivity {
         loginMessages.setText(getResources().getString(R.string.loading_transactions));
         loginMessages.setTextColor(getResources().getColor(R.color.amber_a700));
         if (session.isLoggedIn()){
+
+            Log.d(TAG,"userId Transactions = "+session.getUserUUID());
+
             Call<List<Transactions>> call = transactionServices.getTransactions("users/"+session.getUserUUID()+"/transactions");
             call.enqueue(new Callback<List<Transactions>>() {
 
@@ -499,6 +499,9 @@ public class LoginActivity extends BaseActivity {
         loginMessages.setText(getResources().getString(R.string.loading_transactions));
         loginMessages.setTextColor(getResources().getColor(R.color.amber_a700));
         if (session.isLoggedIn()){
+
+            Log.d(TAG,"userId Balance = "+session.getUserUUID());
+
             Call<BalancesResponse> call = transactionServices.getBalances("users/"+session.getUserUUID()+"/products");
             call.enqueue(new Callback<BalancesResponse>() {
 
@@ -775,7 +778,7 @@ public class LoginActivity extends BaseActivity {
 
     private void setupview(){
 
-        languageSpinner = (MaterialSpinner) findViewById(R.id.spin_language);
+        languageSpinner = (MaterialSpinner) findViewById(R.id.language);
 
         credentialCard = (RelativeLayout) findViewById(R.id.credential_card);
         credentialCard.setBackground(new LargeDiagonalCutPathDrawable(50));

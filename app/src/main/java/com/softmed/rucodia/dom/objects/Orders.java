@@ -42,6 +42,9 @@ public class Orders implements Serializable {
     @SerializedName("supplier_id")
     private int supplier_id;
 
+    @SerializedName("status")
+    private int status=1;
+
 
     public int getId() {
         return id;
@@ -114,5 +117,13 @@ public class Orders implements Serializable {
 
     public void setSupplier_id(int supplier_id) {
         this.supplier_id = supplier_id;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
     }
 }

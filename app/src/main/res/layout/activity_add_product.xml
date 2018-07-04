@@ -15,7 +15,7 @@
             android:id="@+id/toolbar"
             android:layout_width="fill_parent"
             android:layout_height="48dp"
-            android:background="@color/colorPrimary"
+            android:background="@color/primary"
             app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
             android:focusableInTouchMode="true"/>
@@ -59,7 +59,7 @@
                     android:layout_marginTop="16dp"
                     android:textStyle="bold"
                     android:text="Product Info"
-                    android:textColor="@color/colorPrimary"
+                    android:textColor="@color/primary"
                     android:textSize="16sp" />
 
                 <View
@@ -139,7 +139,7 @@
                     android:layout_marginTop="16dp"
                     android:textStyle="bold"
                     android:text="Product Description"
-                    android:textColor="@color/colorPrimary"
+                    android:textColor="@color/primary"
                     android:textSize="16sp" />
 
 

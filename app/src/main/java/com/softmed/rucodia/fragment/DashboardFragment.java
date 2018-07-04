@@ -230,14 +230,17 @@ public class DashboardFragment extends Fragment {
                     Log.d(TAG,"timestamp Date = "+transactionSummary.getCreated_at());
 
 
-                    Date date = new Date(transactionSummary.getCreated_at());
-                    DateFormat formatter = new SimpleDateFormat("YYYY-MM-dd");
-                    String dateFormatted = formatter.format(date);
+                    try {
+                        Date date = new Date(transactionSummary.getCreated_at());
+                        DateFormat formatter = new SimpleDateFormat("YYYY-MM-dd");
+                        String dateFormatted = formatter.format(date);
 
 
-                    Log.d(TAG,"formated Date = "+dateFormatted);
+                        Log.d(TAG, "formated Date = " + dateFormatted);
+                        ((TextView)v.findViewById(R.id.date)).setText(dateFormatted);
+                    }catch (Exception e){e.printStackTrace();}
 
-                    ((TextView)v.findViewById(R.id.date)).setText(dateFormatted);
+
 
                     ((TextView)v.findViewById(R.id.product_name)).setText(String.valueOf(transactionSummary.getProductName()+" - "+transactionSummary.getSubCategoryName()));
                     ((TextView)v.findViewById(R.id.price_per_item)).setText(String.valueOf(transactionSummary.getPrice()));

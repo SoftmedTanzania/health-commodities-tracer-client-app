@@ -40,7 +40,7 @@ import com.softmed.rucodia.dom.objects.UsersInfo;
                 Balances.class,
                 Orders.class
         },
-        version = 1)
+        version = 2)
 
 public abstract class AppDatabase extends RoomDatabase {
 

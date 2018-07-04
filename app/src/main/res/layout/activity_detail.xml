@@ -37,7 +37,7 @@
                 android:layout_marginTop="8dp"
                 android:text="Product Details"
                 android:textStyle="bold"
-                android:textColor="@color/colorPrimary"
+                android:textColor="@color/primary"
                 android:textSize="16sp" />
 
             <TextView
@@ -73,7 +73,7 @@
                     android:textSize="16sp"
                     android:layout_marginTop="16dp"
                     android:textStyle="bold"
-                    android:textColor="@color/colorPrimary"
+                    android:textColor="@color/primary"
                     android:text="Transactions History"/>
                 <View
                     android:layout_below="@id/initial_information_title"
