@@ -26,6 +26,11 @@ public class TransactionsListViewModel extends AndroidViewModel {
         return appDatabase.transactionsDao().getTransactionSummary();
     }
 
+
+    public LiveData<List<TransactionSummary>> getReceivedStockSummaryList() {
+        return appDatabase.transactionsDao().getTransactionSummary();
+    }
+
     public LiveData<List<Transactions>> getTransactionsListByProductId(int productId) {
         return appDatabase.transactionsDao().getLiveTransactionsByProductId(productId);
     }

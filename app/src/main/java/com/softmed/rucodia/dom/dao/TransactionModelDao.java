@@ -28,8 +28,27 @@ public interface TransactionModelDao {
             "INNER JOIN TransactionType ON Transactions.transactiontype_id=TransactionType.id " +
             "INNER JOIN Unit ON Product.unit_id=Unit.id " +
             "INNER JOIN SubCategory ON Product.sub_category_id = Subcategory.id "+
+            " WHERE TransactionType.name<>'stock' "+
             " GROUP BY SubCategory.name,Product.name, Transactions.price ,TransactionType.name, Transactions.created_at ")
     LiveData<List<TransactionSummary>> getTransactionSummary();
+
+
+    @Query("select " +
+            "SubCategory.name as subCategoryName, " +
+            "Product.name as productName, " +
+            "SUM(Transactions.amount) as amount, " +
+            "Transactions.price ," +
+            "TransactionType.name as transactionType,  " +
+            "Transactions.created_at as created_at  " +
+            "from Transactions " +
+            "INNER JOIN Product ON Transactions.product_id=Product.id " +
+            "INNER JOIN TransactionType ON Transactions.transactiontype_id=TransactionType.id " +
+            "INNER JOIN Unit ON Product.unit_id=Unit.id " +
+            "INNER JOIN SubCategory ON Product.sub_category_id = Subcategory.id "+
+            " WHERE TransactionType.name='stock' "+
+            " GROUP BY SubCategory.name,Product.name, Transactions.price ,TransactionType.name, Transactions.created_at ")
+    LiveData<List<TransactionSummary>> getReceivedStock();
+
 
     @Query("select * from Transactions WHERE product_id = :productId")
     LiveData<List<Transactions>> getLiveTransactionsByProductId(int productId);

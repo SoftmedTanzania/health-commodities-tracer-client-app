@@ -86,7 +86,12 @@ public class CreateOrderActivity extends AppCompatActivity {
 
 
         Date date = Calendar.getInstance().getTime();
-        DateFormat formatter = new SimpleDateFormat("YYYY-MM-dd");
+        DateFormat formatter=null;
+        try {
+            formatter = new SimpleDateFormat("YYYY-MM-dd");
+        }catch (Exception e){
+            formatter = DateFormat.getDateInstance();
+        }
         String dateFormatted = formatter.format(date);
 
         ((TextView)findViewById(R.id.todays_date)).setText(dateFormatted);

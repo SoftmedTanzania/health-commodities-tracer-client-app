@@ -59,7 +59,7 @@ public class DashboardFragment extends Fragment {
     private List<CategoryBalance> categoryBalances;
 
     private TransactionsListViewModel transactionsListViewModel;
-    private TableLayout transactionSummaryTable;
+    private TableLayout transactionSummaryTable, receivedStockSummaryTable;
 
     public DashboardFragment() {
         // Required empty public constructor
@@ -76,6 +76,7 @@ public class DashboardFragment extends Fragment {
 
         productBalancesList = (LinearLayout) rowview.findViewById(R.id.product_balances_list);
         transactionSummaryTable = (TableLayout) rowview.findViewById(R.id.transaction_summary_table);
+        receivedStockSummaryTable = (TableLayout) rowview.findViewById(R.id.received_stock_summary_table);
 
         //Pie chart configurations
         mChart1 = (PieChart) rowview.findViewById(R.id.chart1);
@@ -248,6 +249,40 @@ public class DashboardFragment extends Fragment {
                     ((TextView)v.findViewById(R.id.quantity)).setText(String.valueOf(transactionSummary.getAmount()));
 
                     transactionSummaryTable.addView(v);
+                }
+            }
+        });
+
+
+        transactionsListViewModel.getReceivedStockSummaryList().observe(getActivity(), new Observer<List<TransactionSummary>>() {
+            @Override
+            public void onChanged(@Nullable List<TransactionSummary> transactionSummaries) {
+                receivedStockSummaryTable.removeAllViews();
+
+                int i=0;
+                for(final TransactionSummary transactionSummary:transactionSummaries){
+                    i++;
+                    final View v = LayoutInflater.from(getActivity()).inflate(R.layout.view_received_stock_summary_item,null);
+
+                    Log.d(TAG,"timestamp Date = "+transactionSummary.getCreated_at());
+
+                    try {
+                        Date date = new Date(transactionSummary.getCreated_at());
+                        DateFormat formatter = new SimpleDateFormat("YYYY-MM-dd");
+                        String dateFormatted = formatter.format(date);
+
+
+                        Log.d(TAG, "formated Date = " + dateFormatted);
+                        ((TextView)v.findViewById(R.id.date)).setText(dateFormatted);
+                    }catch (Exception e){e.printStackTrace();}
+
+
+
+                    ((TextView)v.findViewById(R.id.product_name)).setText(String.valueOf(transactionSummary.getProductName()+" - "+transactionSummary.getSubCategoryName()));
+                    ((TextView)v.findViewById(R.id.price_per_item)).setText(String.valueOf(transactionSummary.getPrice()));
+                    ((TextView)v.findViewById(R.id.quantity)).setText(String.valueOf(transactionSummary.getAmount()));
+
+                    receivedStockSummaryTable.addView(v);
                 }
             }
         });
