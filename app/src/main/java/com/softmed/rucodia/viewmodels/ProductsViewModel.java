@@ -4,9 +4,9 @@ import android.app.Application;
 import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 
-import com.softmed.rucodia.database.AppDatabase;
-import com.softmed.rucodia.dom.objects.ProductBalance;
-import com.softmed.rucodia.dom.objects.ProductList;
+import com.softmed.rucodia.Database.AppDatabase;
+import com.softmed.rucodia.Dom.entities.ProductBalance;
+import com.softmed.rucodia.Dom.entities.ProductList;
 
 import java.util.List;
 

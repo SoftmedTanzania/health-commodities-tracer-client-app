@@ -5,9 +5,9 @@ import android.arch.lifecycle.AndroidViewModel;
 import android.arch.lifecycle.LiveData;
 import android.os.AsyncTask;
 
-import com.softmed.rucodia.database.AppDatabase;
-import com.softmed.rucodia.dom.objects.TransactionSummary;
-import com.softmed.rucodia.dom.objects.Transactions;
+import com.softmed.rucodia.Database.AppDatabase;
+import com.softmed.rucodia.Dom.entities.TransactionSummary;
+import com.softmed.rucodia.Dom.entities.Transactions;
 
 import java.util.List;
 

@@ -9,12 +9,12 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 import com.softmed.rucodia.api.Endpoints;
-import com.softmed.rucodia.database.AppDatabase;
-import com.softmed.rucodia.dom.objects.Orders;
-import com.softmed.rucodia.dom.objects.Product;
-import com.softmed.rucodia.dom.objects.Transactions;
-import com.softmed.rucodia.utils.ServiceGenerator;
-import com.softmed.rucodia.utils.SessionManager;
+import com.softmed.rucodia.Database.AppDatabase;
+import com.softmed.rucodia.Dom.entities.Orders;
+import com.softmed.rucodia.Dom.entities.Product;
+import com.softmed.rucodia.Dom.entities.Transactions;
+import com.softmed.rucodia.Utils.ServiceGenerator;
+import com.softmed.rucodia.Utils.SessionManager;
 
 import org.json.JSONException;
 import org.json.JSONObject;

@@ -1,12 +1,12 @@
 package com.softmed.rucodia.api;
 
-import com.softmed.rucodia.dom.objects.TransactionType;
-import com.softmed.rucodia.dom.objects.Transactions;
-import com.softmed.rucodia.dom.responces.BalancesResponse;
-import com.softmed.rucodia.dom.responces.CategoriesResponse;
-import com.softmed.rucodia.dom.responces.LoginResponse;
-import com.softmed.rucodia.dom.responces.ProductsPostResponse;
-import com.softmed.rucodia.dom.responces.ProductsResponse;
+import com.softmed.rucodia.Dom.entities.TransactionType;
+import com.softmed.rucodia.Dom.entities.Transactions;
+import com.softmed.rucodia.Dom.responces.BalancesResponse;
+import com.softmed.rucodia.Dom.responces.CategoriesResponse;
+import com.softmed.rucodia.Dom.responces.LoginResponse;
+import com.softmed.rucodia.Dom.responces.ProductsPostResponse;
+import com.softmed.rucodia.Dom.responces.ProductsResponse;
 
 import java.util.List;
 
@@ -23,10 +23,8 @@ public class Endpoints {
     private String HFUUID = "";
 
     public interface LoginService {
-
         @GET("auth")
         Call<List<LoginResponse>> basicLogin();
-
 
         @GET("users")
         Call<List<LoginResponse>> getAllUsers();
