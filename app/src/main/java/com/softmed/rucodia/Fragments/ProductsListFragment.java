@@ -96,6 +96,7 @@ public class ProductsListFragment extends Fragment implements
         mRecyclerView.addItemDecoration(new DividerItemDecoration(getActivity(), DividerItemDecoration.VERTICAL_LIST));
         mRecyclerView.setHasFixedSize(true);
 
+
         productsViewModel = ViewModelProviders.of(this).get(ProductsViewModel.class);
         productsViewModel.getAvailableProducts().observe(getActivity(), new Observer<List<ProductList>>() {
             @Override

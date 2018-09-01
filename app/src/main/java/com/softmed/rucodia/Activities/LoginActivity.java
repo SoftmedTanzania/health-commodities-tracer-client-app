@@ -229,9 +229,7 @@ public class LoginActivity extends BaseActivity {
         userInfo = null;
         if (!isNetworkAvailable()){
             //login locally
-
             Log.d("LoginActivity", "Inside no network");
-
             new AsyncTask<Void, Void, Void>(){
 
                 List<UsersInfo> usersInfos = new ArrayList<>();
@@ -290,7 +288,9 @@ public class LoginActivity extends BaseActivity {
 
             //Use Retrofit to make http request calls
             Endpoints.LoginService loginService = ServiceGenerator.createService(Endpoints.LoginService.class, usernameValue, passwordValue);
+
             Call<List<LoginResponse>> call = loginService.basicLogin();
+
             call.enqueue(new Callback<List<LoginResponse>>() {
                 @SuppressLint("StaticFieldLeak")
                 @Override
