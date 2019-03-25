@@ -271,9 +271,13 @@ public class CreateOrderDialogue extends android.support.v4.app.DialogFragment {
                     suppliersNames = new ArrayList<>();
                     suppliers = new ArrayList<>();
                    for(LoginResponse r : response.body()){
-                       if(r.getLevelResponses().get(0).getId()==2){
-                           suppliers.add(r);
-                           suppliersNames.add(r.getFirstName()+" "+r.getSurname());
+                       try {
+                           if (r.getLevelResponses().get(0).getId() == 2) {
+                               suppliers.add(r);
+                               suppliersNames.add(r.getFirstName() + " " + r.getSurname());
+                           }
+                       }catch (Exception e){
+                           e.printStackTrace();
                        }
                    }
 

@@ -168,7 +168,11 @@ public class MainActivity extends AppCompatActivity {
             ImageView orderIcon = orderView.findViewById(R.id.icon);
             orderIcon.setColorFilter(this.getResources().getColor(R.color.white));
             Glide.with(this).load(R.drawable.ic_local_shipping_white_24dp).into(orderIcon);
-            tabLayout.getTabAt(2).setCustomView(orderView);
+            try {
+                tabLayout.getTabAt(2).setCustomView(orderView);
+            }catch (Exception e){
+                e.printStackTrace();
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

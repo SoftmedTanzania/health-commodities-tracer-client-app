@@ -221,7 +221,7 @@ public class ProductsListFragment extends Fragment implements
         if(session.getUserLevel()==2){
             Intent intent = new Intent(getActivity(), CreateProductActivity.class);
             startActivity(intent);
-        }else if(session.getUserLevel()!=4){
+        }else {
             Intent intent = new Intent(getActivity(), AddProductActivity.class);
             startActivity(intent);
         }
