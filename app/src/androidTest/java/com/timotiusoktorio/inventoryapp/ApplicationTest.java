@@ -1,4 +1,4 @@
-package com.softmed.rucodia;
+package com.softmed.stockapp;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

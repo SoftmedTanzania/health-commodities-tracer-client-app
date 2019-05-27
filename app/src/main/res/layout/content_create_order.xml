@@ -6,7 +6,7 @@
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     xmlns:app_ms="http://schemas.android.com/apk/res-auto"
-    tools:context="com.softmed.rucodia.Activities.CreateOrderActivity"
+    tools:context="com.softmed.stockapp.Activities.CreateOrderActivity"
     tools:showIn="@layout/activity_create_order">
     <LinearLayout
         android:layout_width="match_parent"
