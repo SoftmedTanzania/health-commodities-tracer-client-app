@@ -18,10 +18,10 @@ public interface BalanceModelDao {
     @Query("select " +
             "Product.category_id as subcategoryId, " +
             "Product.description as productDescription, " +
-            "Category.name as subCategoryName," +
+            "Category.name as productCategory," +
             "Product.name as productName ," +
             "Unit.name as unit, " +
-            "Balances.price as price, " +
+            "Balances.numberOfClientsOnRegime as numberOfClientsOnRegime, " +
             "Balances.image_path as image_path, " +
             "Balances.balance, " +
             "Product.id as productId " +
@@ -38,10 +38,10 @@ public interface BalanceModelDao {
     @Query("select Product.id as productId, " +
             "Product.category_id as subcategoryId, " +
             "Product.description as productDescription, " +
-            "Category.name as subCategoryName, " +
+            "Category.name as productCategory, " +
             "Product.name AS productName, " +
             "Unit.name as unit, " +
-            "Balances.price as price, " +
+            "Balances.numberOfClientsOnRegime as numberOfClientsOnRegime, " +
             "Balances.image_path as imagePath, " +
             "Balances.balance, " +
             "Product.id as productId " +

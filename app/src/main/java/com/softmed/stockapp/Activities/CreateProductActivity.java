@@ -105,8 +105,8 @@ public class CreateProductActivity extends AppCompatActivity implements DialogIn
         baseDatabase = AppDatabase.getDatabase(this);
 
         mProductPhotoImageView = (ImageView) findViewById(R.id.product_photo_image_view);
-        mProductPriceTIL = (TextInputLayout) findViewById(R.id.product_price_text_input_layout);
-        mProductQuantityTIL = (TextInputLayout) findViewById(R.id.product_quantity_text_input_layout);
+        mProductPriceTIL = (TextInputLayout) findViewById(R.id.clients_on_regime_input_layout);
+        mProductQuantityTIL = (TextInputLayout) findViewById(R.id.product_stock_on_hand_input_layout);
         mProductDescriptionTIL = (TextInputLayout) findViewById(R.id.product_description_text_input_layout);
         mProductNameTIL = (TextInputLayout) findViewById(R.id.product_name_text_input_layout);
         description = (TextView) findViewById(R.id.product_description);
@@ -353,7 +353,7 @@ public class CreateProductActivity extends AppCompatActivity implements DialogIn
                             Transactions transaction = new Transactions();
                             transaction.setProduct_id(productId);
                             transaction.setAmount(Integer.valueOf(mProductQuantityTIL.getEditText().getText().toString()));
-                            transaction.setPrice(Integer.valueOf(mProductPriceTIL.getEditText().getText().toString()));
+                            transaction.setClientsOnRegime(Integer.valueOf(mProductPriceTIL.getEditText().getText().toString()));
                             transaction.setUser_id(Integer.valueOf(session.getUserUUID()));
                             transaction.setUuid(UUID.randomUUID().toString());
 
@@ -491,7 +491,7 @@ public class CreateProductActivity extends AppCompatActivity implements DialogIn
         Object imageViewTag = mProductPhotoImageView.getTag();
 
         balances.setImage_path( (imageViewTag != null) ? imageViewTag.toString() : "" );
-        balances.setPrice(Integer.valueOf(mProductPriceTIL.getEditText().getText().toString()));
+        balances.setNumberOfClientsOnRegime(Integer.valueOf(mProductPriceTIL.getEditText().getText().toString()));
         balances.setBalance(Integer.valueOf(mProductQuantityTIL.getEditText().getText().toString())+balance);
 
         return balances;

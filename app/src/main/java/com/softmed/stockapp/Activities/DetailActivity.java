@@ -53,7 +53,7 @@ public class DetailActivity extends AppCompatActivity {
     private static final String INTENT_EXTRA_PRODUCT = "INTENT_EXTRA_PRODUCT";
 
     private ImageView mProductPhotoImageView;
-    private TextView mProductQuantityTextView;
+    private TextView mProductQuantityTextView,numberOfClientsOnRegimeTextView ;
     private AppDatabase database;
     private ProductBalance mProduct;
     private static final int REQUEST_CODE_CHOOSE_PHOTO = 1;
@@ -127,6 +127,14 @@ public class DetailActivity extends AppCompatActivity {
 
                 transactionsListViewModel = ViewModelProviders.of(DetailActivity.this).get(TransactionsListViewModel.class);
 
+//                transactionsListViewModel.getLastTransactionByProductId(mProduct.getProductId()).observe(DetailActivity.this, new Observer<Transactions>() {
+//                    @Override
+//                    public void onChanged(@Nullable Transactions transactions) {
+//                        TextView numberOfClientsOnRegime = (TextView) findViewById(R.id.number_of_clients_on_regime);
+//                        numberOfClientsOnRegime.setText(String.format("%s %s", R.string.string_format_product_clients_on_regime, String.valueOf(transactions.getClientsOnRegime())));
+//                    }
+//                });
+
                 transactionsListViewModel.getTransactionsListByProductId(mProduct.getProductId()).observe(DetailActivity.this, new Observer<List<Transactions>>() {
                     @Override
                     public void onChanged(@Nullable List<Transactions> transactions) {
@@ -168,8 +176,8 @@ public class DetailActivity extends AppCompatActivity {
 
 
 
-                            ((TextView)v.findViewById(R.id.price_per_item)).setText(String.valueOf(transactions1.getPrice()));
-                            ((TextView)v.findViewById(R.id.total)).setText(String.valueOf(transactions1.getAmount() * transactions1.getPrice()));
+                            ((TextView)v.findViewById(R.id.price_per_item)).setText(String.valueOf(transactions1.getClientsOnRegime()));
+                            ((TextView)v.findViewById(R.id.total)).setText(String.valueOf(transactions1.getAmount() * transactions1.getClientsOnRegime()));
                             ((TextView)v.findViewById(R.id.quantity)).setText(String.valueOf(transactions1.getAmount()));
 
                             transactionsTable.addView(v);
@@ -182,7 +190,7 @@ public class DetailActivity extends AppCompatActivity {
         findViewById(R.id.fab).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                AddTransactionDialogue Dialogue = AddTransactionDialogue.newInstance(mProduct.getProductId(),mProduct.getPrice());
+                AddTransactionDialogue Dialogue = AddTransactionDialogue.newInstance(mProduct.getProductId());
                 Dialogue.show(getSupportFragmentManager(), "Adding Transaction");
             }
         });
@@ -240,14 +248,14 @@ public class DetailActivity extends AppCompatActivity {
         }
 
         TextView productNameTextView = (TextView) findViewById(R.id.product_name_text_view);
-        productNameTextView.setText(mProduct.getSubCategoryName()+" - "+mProduct.getProductName());
-
-        TextView productPriceTextView = (TextView) findViewById(R.id.product_price_text_view);
-        double roundedPrice = Math.round(mProduct.getPrice() * 10000.0) / 10000.0;
-        productPriceTextView.setText(getString(R.string.string_format_product_price_details, String.valueOf(roundedPrice)));
+        productNameTextView.setText(mProduct.getProductCategory()+" - "+mProduct.getProductName());
 
         mProductQuantityTextView = (TextView) findViewById(R.id.product_quantity_text_view);
-        mProductQuantityTextView.setText(getString(R.string.string_format_product_quantity_details, String.valueOf(mProduct.getBalance())));
+        mProductQuantityTextView.setText(String.format("%s %s", String.valueOf(mProduct.getBalance()), String.valueOf(mProduct.getUnit())));
+
+        numberOfClientsOnRegimeTextView = (TextView) findViewById(R.id.number_of_clients_on_regime);
+        numberOfClientsOnRegimeTextView.setText(String.format("%s %s", String.valueOf(mProduct.getNumberOfClientsOnRegime()),getString(R.string.clients_label)));
+
     }
 
 

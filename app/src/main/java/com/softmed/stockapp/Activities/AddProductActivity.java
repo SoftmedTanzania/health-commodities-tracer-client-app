@@ -74,7 +74,7 @@ public class AddProductActivity extends AppCompatActivity implements DialogInter
 
 
     private ImageView mProductPhotoImageView;
-    private TextInputLayout mProductPriceTIL;
+    private TextInputLayout mClientsOnRegimes;
     private TextInputLayout mProductQuantityTIL;
     private TextView description;
     private Product mPassedProduct;
@@ -103,8 +103,8 @@ public class AddProductActivity extends AppCompatActivity implements DialogInter
         baseDatabase = AppDatabase.getDatabase(this);
 
         mProductPhotoImageView = (ImageView) findViewById(R.id.product_photo_image_view);
-        mProductPriceTIL = (TextInputLayout) findViewById(R.id.product_price_text_input_layout);
-        mProductQuantityTIL = (TextInputLayout) findViewById(R.id.product_quantity_text_input_layout);
+        mClientsOnRegimes = (TextInputLayout) findViewById(R.id.clients_on_regime_input_layout);
+        mProductQuantityTIL = (TextInputLayout) findViewById(R.id.product_stock_on_hand_input_layout);
         description = (TextView) findViewById(R.id.product_description);
 
 
@@ -129,7 +129,7 @@ public class AddProductActivity extends AppCompatActivity implements DialogInter
 //        if (mPassedProduct != null) populateViewsWithPassedProductData();
 
         // Add text changed listener to all text fields that needs to be validated.
-        mProductPriceTIL.getEditText().addTextChangedListener(new TextWatcher() {
+        mClientsOnRegimes.getEditText().addTextChangedListener(new TextWatcher() {
             @Override
             public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
@@ -137,8 +137,8 @@ public class AddProductActivity extends AppCompatActivity implements DialogInter
 
             @Override
             public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
-                if (i >= 0 && mProductPriceTIL.isErrorEnabled())
-                    mProductPriceTIL.setErrorEnabled(false);
+                if (i >= 0 && mClientsOnRegimes.isErrorEnabled())
+                    mClientsOnRegimes.setErrorEnabled(false);
             }
 
             @Override
@@ -245,11 +245,11 @@ public class AddProductActivity extends AppCompatActivity implements DialogInter
                         protected void onPostExecute(Unit unit) {
                             super.onPostExecute(unit);
 
-                            String priceHint= "Product Price / "+unit.getName();
-                            mProductPriceTIL.getEditText().setHint(priceHint);
 
-                            String hint="Product Quantity / "+unit.getName();
-                            mProductQuantityTIL.getEditText().setHint(hint);
+
+                            String hint="Product Stock on Hand per "+unit.getName();
+                            mProductQuantityTIL.setHint(hint);
+                            mProductQuantityTIL.invalidate();
 
                         }
                     }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
@@ -346,7 +346,7 @@ public class AddProductActivity extends AppCompatActivity implements DialogInter
 
                             transaction.setProduct_id(productId);
                             transaction.setAmount(Integer.valueOf(mProductQuantityTIL.getEditText().getText().toString()));
-                            transaction.setPrice(Integer.valueOf(mProductPriceTIL.getEditText().getText().toString()));
+                            transaction.setClientsOnRegime(Integer.valueOf(mClientsOnRegimes.getEditText().getText().toString()));
                             transaction.setUser_id(Integer.valueOf(session.getUserUUID()));
                             transaction.setUuid(UUID.randomUUID().toString());
 
@@ -470,7 +470,7 @@ public class AddProductActivity extends AppCompatActivity implements DialogInter
      */
     private boolean validateUserInput() {
        boolean isTypeIdSet = productId != -1;
-        boolean isProductPriceSet = !TextUtils.isEmpty(mProductPriceTIL.getEditText().getText());
+        boolean isProductPriceSet = !TextUtils.isEmpty(mClientsOnRegimes.getEditText().getText());
         boolean isProductQtySet = !TextUtils.isEmpty(mProductQuantityTIL.getEditText().getText());
 
         if (!isTypeIdSet) {
@@ -479,8 +479,8 @@ public class AddProductActivity extends AppCompatActivity implements DialogInter
 
 
         if (!isProductPriceSet) {
-            mProductPriceTIL.setError(getString(R.string.error_msg_product_price_empty));
-            mProductPriceTIL.setErrorEnabled(true);
+            mClientsOnRegimes.setError(getString(R.string.error_msg_product_price_empty));
+            mClientsOnRegimes.setErrorEnabled(true);
         }
         if (!isProductQtySet) {
             mProductQuantityTIL.setError(getString(R.string.error_msg_product_quantity_empty));
@@ -507,7 +507,7 @@ public class AddProductActivity extends AppCompatActivity implements DialogInter
         Object imageViewTag = mProductPhotoImageView.getTag();
 
         balances.setImage_path( (imageViewTag != null) ? imageViewTag.toString() : "" );
-        balances.setPrice(Integer.valueOf(mProductPriceTIL.getEditText().getText().toString()));
+        balances.setNumberOfClientsOnRegime(Integer.valueOf(mClientsOnRegimes.getEditText().getText().toString()));
         balances.setBalance(Integer.valueOf(mProductQuantityTIL.getEditText().getText().toString())+balance);
 
         return balances;

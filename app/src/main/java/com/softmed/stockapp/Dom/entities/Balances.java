@@ -30,8 +30,8 @@ public class Balances implements Serializable {
     private String image_path;
 
 
-    @SerializedName("price")
-    private int price;
+    @SerializedName("numberOfClientsOnRegime")
+    private int numberOfClientsOnRegime;
 
     @SerializedName("balance")
     private int balance;
@@ -77,12 +77,12 @@ public class Balances implements Serializable {
         this.image_path = image_path;
     }
 
-    public int getPrice() {
-        return price;
+    public int getNumberOfClientsOnRegime() {
+        return numberOfClientsOnRegime;
     }
 
-    public void setPrice(int price) {
-        this.price = price;
+    public void setNumberOfClientsOnRegime(int numberOfClientsOnRegime) {
+        this.numberOfClientsOnRegime = numberOfClientsOnRegime;
     }
 
     public int getBalance() {

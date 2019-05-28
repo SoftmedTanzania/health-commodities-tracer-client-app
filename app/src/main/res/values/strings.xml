@@ -24,15 +24,15 @@
     <string name="error_msg_product_supplier_empty">Please enter the product supplier.</string>
     <string name="error_msg_product_type_empty">Please select the product type.</string>
     <string name="error_msg_product_supplier_email_empty">Please enter the product supplier email address.</string>
-    <string name="error_msg_product_price_empty">Please enter the product price.</string>
-    <string name="error_msg_product_quantity_empty">Please enter the product quantity.</string>
+    <string name="error_msg_product_price_empty">Please enter the number of clients on Regime.</string>
+    <string name="error_msg_product_quantity_empty">Please enter the quantity of stock on hand.</string>
 
-    <string name="string_format_product_price">Tsh <xliff xliff:id="price">%s</xliff></string>
-    <string name="string_format_product_quantity">Quantity: <xliff xliff:id="quantity">%s</xliff></string>
-    <string name="string_format_product_code">Product code: <xliff xliff:id="code">%s</xliff></string>
-    <string name="string_format_product_supplier">Product supplier: <xliff xliff:id="supplier">%s</xliff></string>
-    <string name="string_format_product_price_details">Product price: <xliff xliff:id="price">%s</xliff></string>
-    <string name="string_format_product_quantity_details">Product quantity: <xliff xliff:id="quantity">%s</xliff></string>
+    <string name="string_format_product_price">Tsh </string>
+    <string name="string_format_product_quantity">Stock on Hand: </string>
+    <string name="string_format_product_code">Product code: </string>
+    <string name="string_format_product_supplier">Product supplier: </string>
+    <string name="string_format_product_clients_on_regime">Clients on Regime : </string>
+    <string name="string_format_product_quantity_details">Product Stock on hand </string>
 
     <string name="image_button_cd_overflow">Overflow button</string>
     <string name="image_view_cd_product_photo">Product Photo</string>
@@ -40,8 +40,8 @@
     <string name="edit_text_hint_product_code">Product Code</string>
     <string name="edit_text_hint_product_supplier">Product Supplier</string>
     <string name="edit_text_hint_product_supplier_email">Product Supplier Email</string>
-    <string name="edit_text_hint_product_price">Product Price</string>
-    <string name="edit_text_hint_product_quantity">Product Quantity</string>
+    <string name="edit_text_number_of_clients_on_regime">Number of Clients on Regime </string>
+    <string name="edit_text_hint_stock_on_hand">Product Stock on hand</string>
     <string name="text_view_empty">No products found</string>
     <string name="button_increase_qty"><xliff xliff:id="plus">+</xliff> qty</string>
     <string name="button_decrease_qty"><xliff xliff:id="minus">-</xliff> qty</string>
@@ -100,5 +100,6 @@
 
     <string name="language">Language</string>
     <string name="logout">Logout</string>
+    <string name="clients_label"> Clients</string>
 
 </resources>

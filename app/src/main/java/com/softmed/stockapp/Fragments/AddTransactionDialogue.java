@@ -43,7 +43,7 @@ public class AddTransactionDialogue extends android.support.v4.app.DialogFragmen
     private List<TransactionType> transactionTypes;
     private int stockAdjustmentReasonId;
     private TextInputLayout stockAdjustmentQuantity;
-    private int productId,price;
+    private int productId,numberOfClientsOnRegime;
 
     // Session Manager Class
     private SessionManager session;
@@ -52,13 +52,12 @@ public class AddTransactionDialogue extends android.support.v4.app.DialogFragmen
     }
 
 
-    public static AddTransactionDialogue newInstance(int productId, int price) {
+    public static AddTransactionDialogue newInstance(int productId) {
         AddTransactionDialogue f = new AddTransactionDialogue();
 
         // Supply num input as an argument.
         Bundle args = new Bundle();
         args.putInt("productId", productId);
-        args.putInt("price", price);
         f.setArguments(args);
         return f;
     }
@@ -71,7 +70,6 @@ public class AddTransactionDialogue extends android.support.v4.app.DialogFragmen
         baseDatabase = AppDatabase.getDatabase(getActivity());
         activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         productId = getArguments().getInt("productId");
-        price = getArguments().getInt("price");
         session = new SessionManager(getActivity());
     }
 
@@ -154,7 +152,7 @@ public class AddTransactionDialogue extends android.support.v4.app.DialogFragmen
                                 transactions.setUser_id(Integer.valueOf(session.getUserUUID()));
                                 transactions.setTransactiontype_id(stockAdjustmentReasonId);
                                 transactions.setAmount(Integer.valueOf(stockAdjustmentQuantity.getEditText().getText().toString()));
-                                transactions.setPrice(price);
+                                transactions.setClientsOnRegime(numberOfClientsOnRegime);
                                 transactions.setStatus_id(1);
 
                                 Calendar c = Calendar.getInstance();

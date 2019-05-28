@@ -6,8 +6,12 @@ import java.io.Serializable;
 
 public class ProductBalance implements Serializable {
 
-    @SerializedName("subCategoryName")
-    private String subCategoryName;
+
+    @SerializedName("productCategory")
+    private String productCategory;
+
+    @SerializedName("numberOfClientsOnRegime")
+    private int numberOfClientsOnRegime;
 
     @SerializedName("productName")
     private String productName;
@@ -26,18 +30,23 @@ public class ProductBalance implements Serializable {
     @SerializedName("balance")
     private int balance;
 
-    @SerializedName("price")
-    private int price;
-
     @SerializedName("productId")
     private int productId;
 
-    public String getSubCategoryName() {
-        return subCategoryName;
+    public String getProductCategory() {
+        return productCategory;
     }
 
-    public void setSubCategoryName(String subCategoryName) {
-        this.subCategoryName = subCategoryName;
+    public void setProductCategory(String productCategory) {
+        this.productCategory = productCategory;
+    }
+
+    public int getNumberOfClientsOnRegime() {
+        return numberOfClientsOnRegime;
+    }
+
+    public void setNumberOfClientsOnRegime(int numberOfClientsOnRegime) {
+        this.numberOfClientsOnRegime = numberOfClientsOnRegime;
     }
 
     public String getProductName() {
@@ -78,14 +87,6 @@ public class ProductBalance implements Serializable {
 
     public void setProductId(int productId) {
         this.productId = productId;
-    }
-
-    public int getPrice() {
-        return price;
-    }
-
-    public void setPrice(int price) {
-        this.price = price;
     }
 
     public String getImagePath() {

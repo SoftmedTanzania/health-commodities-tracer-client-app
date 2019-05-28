@@ -200,7 +200,7 @@ public class DashboardFragment extends Fragment {
                     for (ProductBalance productBalance : productBalances) {
                         View v = getLayoutInflater().inflate(R.layout.view_inventory_balance_item,null);
                         ((TextView)v.findViewById(R.id.sn)).setText(String.valueOf(i));
-                        ((TextView) v.findViewById(R.id.product_name)).setText(productBalance.getSubCategoryName()+" - "+productBalance.getProductName());
+                        ((TextView) v.findViewById(R.id.product_name)).setText(productBalance.getProductCategory()+" - "+productBalance.getProductName());
 
                         String balance = String.valueOf(productBalance.getBalance());
                         balance+=" "+productBalance.getUnit();
@@ -243,7 +243,7 @@ public class DashboardFragment extends Fragment {
 
 
                     ((TextView)v.findViewById(R.id.product_name)).setText(String.valueOf(transactionSummary.getProductName()+" - "+transactionSummary.getSubCategoryName()));
-                    ((TextView)v.findViewById(R.id.price_per_item)).setText(String.valueOf(transactionSummary.getPrice()));
+                    ((TextView)v.findViewById(R.id.price_per_item)).setText(String.valueOf(transactionSummary.getClientsOnRegime()));
                     ((TextView)v.findViewById(R.id.transaction_type)).setText(transactionSummary.getTransactionType());
                     ((TextView)v.findViewById(R.id.quantity)).setText(String.valueOf(transactionSummary.getAmount()));
 

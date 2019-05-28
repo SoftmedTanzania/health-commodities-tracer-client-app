@@ -55,12 +55,12 @@
             android:label="@string/title_activity_create_order"
             android:theme="@style/AppTheme" />
         <activity
-            android:name="com$softmed$stockapp$Activities$LoginActivity"
+            android:name="com.softmed.stockapp.Activities.LoginActivity"
             android:configChanges="locale"
             android:windowSoftInputMode="stateHidden"></activity>
 
         <service
-            android:name="com$softmed$stockapp$Services$PostOfficeService"
+            android:name="com.softmed.stockapp.Services.PostOfficeService"
             android:exported="false" />
 
         <receiver

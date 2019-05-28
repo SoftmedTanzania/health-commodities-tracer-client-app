@@ -30,7 +30,16 @@
             tools:text="MacBook Pro"/>
 
         <LinearLayout style="@style/HorizontalLinearLayout">
+
             <TextView
+                android:id="@+id/patients_on_regime"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textStyle="bold"
+                tools:text="20 patients"/>
+
+            <TextView
+                android:layout_marginLeft="16dp"
                 android:id="@+id/product_quantity_text_view"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"

@@ -19,8 +19,8 @@ public class TransactionSummary implements Serializable {
     @SerializedName("amount")
     private int amount;
 
-    @SerializedName("price")
-    private int price;
+    @SerializedName("clientsOnRegime")
+    private int clientsOnRegime;
 
     @SerializedName("created_at")
     private long created_at;
@@ -57,12 +57,12 @@ public class TransactionSummary implements Serializable {
         this.amount = amount;
     }
 
-    public int getPrice() {
-        return price;
+    public int getClientsOnRegime() {
+        return clientsOnRegime;
     }
 
-    public void setPrice(int price) {
-        this.price = price;
+    public void setClientsOnRegime(int clientsOnRegime) {
+        this.clientsOnRegime = clientsOnRegime;
     }
 
     public long getCreated_at() {

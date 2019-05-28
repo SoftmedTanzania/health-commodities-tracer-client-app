@@ -19,8 +19,8 @@ public class ProductList implements Serializable {
     @SerializedName("balance")
     private int balance;
 
-    @SerializedName("price")
-    private int price;
+    @SerializedName("numberOfClientsOnRegime")
+    private int numberOfClientsOnRegime;
 
     public String getName() {
         return name;
@@ -54,11 +54,11 @@ public class ProductList implements Serializable {
         this.balance = balance;
     }
 
-    public int getPrice() {
-        return price;
+    public int getNumberOfClientsOnRegime() {
+        return numberOfClientsOnRegime;
     }
 
-    public void setPrice(int price) {
-        this.price = price;
+    public void setNumberOfClientsOnRegime(int numberOfClientsOnRegime) {
+        this.numberOfClientsOnRegime = numberOfClientsOnRegime;
     }
 }

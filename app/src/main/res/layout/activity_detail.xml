@@ -50,15 +50,59 @@
                 style="@style/ProductDetailsTextView"
                 tools:text="Product code: 12441235"/>
 
-            <TextView
-                android:id="@+id/product_price_text_view"
-                style="@style/ProductDetailsTextView"
-                tools:text="Product price: $1,699.99"/>
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/card_separator_third">
+
+                <TextView
+                    android:id="@+id/stock_on_hand_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="Stock on Hand"
+                    android:textSize="16sp" />
+
+                <View
+                    android:id="@+id/strip"
+                    android:layout_width="60dp"
+                    android:layout_height="5dp"
+                    android:layout_below="@id/stock_on_hand_label"
+                    android:layout_marginTop="8dp"
+                    android:background="@color/accent" />
+            </RelativeLayout>
+
 
             <TextView
                 android:id="@+id/product_quantity_text_view"
                 style="@style/ProductDetailsTextView"
-                tools:text="Product quantity: 10"/>
+                tools:text="1,699.99 blisters"/>
+
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/card_separator_third">
+
+                <TextView
+                    android:id="@+id/number_of_clients_on_regime_label"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:text="Number of Clients on Regime"
+                    android:textSize="16sp" />
+
+                <View
+                    android:layout_width="60dp"
+                    android:layout_height="5dp"
+                    android:layout_below="@id/number_of_clients_on_regime_label"
+                    android:layout_marginTop="8dp"
+                    android:background="@color/accent" />
+            </RelativeLayout>
+
+            <TextView
+                android:id="@+id/number_of_clients_on_regime"
+                style="@style/ProductDetailsTextView"
+                tools:text="10 clients"/>
 
             <RelativeLayout
                 android:layout_marginTop="8dp"
@@ -74,7 +118,7 @@
                     android:layout_marginTop="16dp"
                     android:textStyle="bold"
                     android:textColor="@color/primary"
-                    android:text="Transactions History"/>
+                    android:text="Reporting History"/>
                 <View
                     android:layout_below="@id/initial_information_title"
                     android:layout_width="60dp"

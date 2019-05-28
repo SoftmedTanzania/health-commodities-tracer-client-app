@@ -35,8 +35,8 @@ public class Transactions implements Serializable {
     @SerializedName("amount")
     private int amount;
 
-    @SerializedName("price")
-    private int price;
+    @SerializedName("clientsOnRegime")
+    private int clientsOnRegime;
 
     @SerializedName("syncStatus")
     private int syncStatus = 0;
@@ -101,12 +101,12 @@ public class Transactions implements Serializable {
         this.amount = amount;
     }
 
-    public int getPrice() {
-        return price;
+    public int getClientsOnRegime() {
+        return clientsOnRegime;
     }
 
-    public void setPrice(int price) {
-        this.price = price;
+    public void setClientsOnRegime(int clientsOnRegime) {
+        this.clientsOnRegime = clientsOnRegime;
     }
 
     public int getSyncStatus() {

@@ -20,7 +20,7 @@ public interface TransactionModelDao {
             "Category.name as CategoryName, " +
             "Product.name as productName, " +
             "SUM(Transactions.amount) as amount, " +
-            "Transactions.price ," +
+            "Transactions.clientsOnRegime ," +
             "TransactionType.name as transactionType,  " +
             "Transactions.created_at as created_at  " +
             "from Transactions " +
@@ -29,29 +29,17 @@ public interface TransactionModelDao {
             "INNER JOIN Unit ON Product.unit_id=Unit.id " +
             "INNER JOIN Category ON Product.category_id = category.id "+
             " WHERE TransactionType.name<>'stock' "+
-            " GROUP BY Category.name,Product.name, Transactions.price ,TransactionType.name, Transactions.created_at ")
+            " GROUP BY Category.name,Product.name, Transactions.clientsOnRegime ,TransactionType.name, Transactions.created_at ")
     LiveData<List<TransactionSummary>> getTransactionSummary();
 
-
-    @Query("select " +
-            "Category.name as subCategoryName, " +
-            "Product.name as productName, " +
-            "SUM(Transactions.amount) as amount, " +
-            "Transactions.price ," +
-            "TransactionType.name as transactionType,  " +
-            "Transactions.created_at as created_at  " +
-            "from Transactions " +
-            "INNER JOIN Product ON Transactions.product_id=Product.id " +
-            "INNER JOIN TransactionType ON Transactions.transactiontype_id=TransactionType.id " +
-            "INNER JOIN Unit ON Product.unit_id=Unit.id " +
-            "INNER JOIN Category ON Product.category_id = category.id "+
-            " WHERE TransactionType.name='stock' "+
-            " GROUP BY Category.name,Product.name, Transactions.price ,TransactionType.name, Transactions.created_at ")
-    LiveData<List<TransactionSummary>> getReceivedStock();
 
 
     @Query("select * from Transactions WHERE product_id = :productId")
     LiveData<List<Transactions>> getLiveTransactionsByProductId(int productId);
+
+
+    @Query("select * from Transactions WHERE product_id = :productId ORDER BY created_at DESC Limit 1")
+    LiveData<Transactions> getLastTransactionByProductId(int productId);
 
 
     @Query("select * from Transactions WHERE product_id = :productId")

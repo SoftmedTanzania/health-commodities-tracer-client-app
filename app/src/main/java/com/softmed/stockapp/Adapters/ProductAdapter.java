@@ -96,8 +96,9 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
 
 
         // Product price needs to be rounded to nearest 2 decimal places to avoid super long price.
-        double roundedPrice = Math.round(product.getPrice() * 100.0) / 100.0;
-        holder.mProductQuantityTextView.setText(String.format(mContext.getString(R.string.string_format_product_quantity), String.valueOf(product.getBalance()))+" "+product.getUnit());
+        double roundedPrice = Math.round(product.getNumberOfClientsOnRegime() * 100.0) / 100.0;
+        holder.mProductQuantityTextView.setText(String.format("%s %s", mContext.getString(R.string.string_format_product_quantity), String.valueOf(product.getBalance()), product.getUnit()));
+        holder.mpatientsOnRegimeTextView.setText(String.format("%s %s", mContext.getString(R.string.string_format_product_clients_on_regime), String.valueOf(product.getNumberOfClientsOnRegime())));
         // Set an OnClickListener to the overflow button which will inflate a popup menu that allows
         // user to track a sale or delete the selected product.
         holder.mOverflowButton.setOnClickListener(new View.OnClickListener() {
@@ -157,14 +158,14 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
     static class ViewHolder extends RecyclerView.ViewHolder {
 
         private TextView mProductNameTextView;
-        private TextView mProductPriceTextView;
+        private TextView mpatientsOnRegimeTextView;
         private TextView mProductQuantityTextView;
         private ImageButton mOverflowButton;
 
         public ViewHolder(View itemView) {
             super(itemView);
             mProductNameTextView = (TextView) itemView.findViewById(R.id.product_name_text_view);
-            mProductPriceTextView = (TextView) itemView.findViewById(R.id.product_price_text_view);
+            mpatientsOnRegimeTextView = (TextView) itemView.findViewById(R.id.patients_on_regime);
             mProductQuantityTextView = (TextView) itemView.findViewById(R.id.product_quantity_text_view);
             mOverflowButton = (ImageButton) itemView.findViewById(R.id.overflow_button);
         }

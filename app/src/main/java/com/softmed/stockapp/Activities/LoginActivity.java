@@ -744,7 +744,7 @@ public class LoginActivity extends BaseActivity {
 
                 for (BalancePricesResponse balancePricesResponse : pricesResponses) {
                     if (balancePricesResponse.getProductId() == mList.getProductId())
-                        balances.setPrice(balancePricesResponse.getBuyingPrice());
+                        balances.setNumberOfClientsOnRegime(balancePricesResponse.getBuyingPrice());
                 }
                 balances.setProduct_id(mList.getProductId());
                 balances.setUser_id(results.getUserId());
