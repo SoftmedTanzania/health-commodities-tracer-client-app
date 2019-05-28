@@ -162,9 +162,10 @@
 
                     <TextView
                         android:layout_width="0dp"
-                        android:layout_weight="0.2"
+                        android:layout_weight="0.1"
                         android:layout_height="wrap_content"
                         android:id="@+id/child_names_title"
+                        android:visibility="gone"
                         android:text="Transaction Type"
                         android:textStyle="bold"/>
 
@@ -175,7 +176,7 @@
                         android:layout_weight="0.1"
                         android:gravity="center_horizontal"
                         android:textStyle="bold"
-                        android:text="Quantity"/>
+                        android:text="Stock on Hand"/>
 
                     <TextView
                         android:layout_width="0dp"
@@ -183,16 +184,8 @@
                         android:layout_weight="0.1"
                         android:gravity="center_horizontal"
                         android:textStyle="bold"
-                        android:text="Amount" />
+                        android:text="Clients On Regime" />
 
-                    <TextView
-                        android:layout_width="0dp"
-                        android:layout_weight="0.1"
-                        android:gravity="center_horizontal"
-                        android:id="@+id/mothers_contacts_title"
-                        android:layout_height="wrap_content"
-                        android:textStyle="bold"
-                        android:text="Total"/>
 
                 </LinearLayout>
 

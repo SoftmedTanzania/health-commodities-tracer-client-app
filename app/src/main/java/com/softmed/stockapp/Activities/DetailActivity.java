@@ -176,8 +176,7 @@ public class DetailActivity extends AppCompatActivity {
 
 
 
-                            ((TextView)v.findViewById(R.id.price_per_item)).setText(String.valueOf(transactions1.getClientsOnRegime()));
-                            ((TextView)v.findViewById(R.id.total)).setText(String.valueOf(transactions1.getAmount() * transactions1.getClientsOnRegime()));
+                            ((TextView)v.findViewById(R.id.number_of_clients_on_regime)).setText(String.valueOf(transactions1.getClientsOnRegime()));
                             ((TextView)v.findViewById(R.id.quantity)).setText(String.valueOf(transactions1.getAmount()));
 
                             transactionsTable.addView(v);

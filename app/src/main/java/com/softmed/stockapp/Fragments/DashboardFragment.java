@@ -1,8 +1,11 @@
 package com.softmed.stockapp.Fragments;
 
+import android.annotation.SuppressLint;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.database.Cursor;
 import android.graphics.Color;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
@@ -21,13 +24,18 @@ import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
 import com.github.mikephil.charting.components.YAxis;
+import com.github.mikephil.charting.data.BarData;
+import com.github.mikephil.charting.data.BarDataSet;
+import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.github.mikephil.charting.formatter.PercentFormatter;
+import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.github.mikephil.charting.utils.ColorTemplate;
 import com.github.mikephil.charting.utils.MPPointF;
+import com.softmed.stockapp.Dom.entities.Category;
 import com.softmed.stockapp.R;
 import com.softmed.stockapp.Database.AppDatabase;
 import com.softmed.stockapp.Dom.entities.CategoryBalance;
@@ -51,7 +59,7 @@ public class DashboardFragment extends Fragment {
     private List<String> categoryNames = new ArrayList<>();
     private List<Integer> sizes = new ArrayList<>();
     private AppDatabase appDatabase;
-    private List<Product> products;
+    private List<ProductBalance> mProductBalances;
     private LinearLayout productBalancesList;
 
     private CategoryBalanceViewModel categoryBalanceViewModel;
@@ -125,6 +133,8 @@ public class DashboardFragment extends Fragment {
         mChart2 = (BarChart) rowview.findViewById(R.id.chart2);
         mChart2.setDrawBarShadow(false);
         mChart2.setDrawValueAboveBar(true);
+        mChart2.setDragDecelerationFrictionCoef(0.95f);
+        mChart2.animateY(1400, Easing.EasingOption.EaseInOutQuad);
 
         mChart2.getDescription().setEnabled(false);
 
@@ -150,7 +160,7 @@ public class DashboardFragment extends Fragment {
 
         IAxisValueFormatter custom = new MyAxisValueFormatter();
 
-        YAxis leftAxis = mChart2.getAxisLeft();
+        final YAxis leftAxis = mChart2.getAxisLeft();
         leftAxis.setLabelCount(8, false);
         leftAxis.setValueFormatter(custom);
         leftAxis.setPosition(YAxis.YAxisLabelPosition.OUTSIDE_CHART);
@@ -185,8 +195,6 @@ public class DashboardFragment extends Fragment {
             public void onChanged(@Nullable List<CategoryBalance> categoryBalances) {
                 DashboardFragment.this.categoryBalances = categoryBalances;
                 setData();
-                mChart1.highlightValues(null);
-                mChart1.invalidate();
             }
         });
 
@@ -194,23 +202,49 @@ public class DashboardFragment extends Fragment {
         productsViewModel.getProductBalances().observe(getActivity(), new Observer<List<ProductBalance>>() {
             @Override
             public void onChanged(@Nullable List<ProductBalance> productBalances) {
+
+                mProductBalances = productBalances;
                 try{
                     productBalancesList.removeAllViews();
-                    int i=1;
+                    ArrayList<BarEntry> yVals1 = new ArrayList<BarEntry>();
+                    int i=0;
                     for (ProductBalance productBalance : productBalances) {
                         View v = getLayoutInflater().inflate(R.layout.view_inventory_balance_item,null);
-                        ((TextView)v.findViewById(R.id.sn)).setText(String.valueOf(i));
+                        ((TextView)v.findViewById(R.id.sn)).setText(String.valueOf(i+1));
                         ((TextView) v.findViewById(R.id.product_name)).setText(productBalance.getProductCategory()+" - "+productBalance.getProductName());
 
                         String balance = String.valueOf(productBalance.getBalance());
                         balance+=" "+productBalance.getUnit();
                         ((TextView)v.findViewById(R.id.balance)).setText(balance);
+
+                        yVals1.add(new BarEntry(i, productBalance.getBalance()));
                         i++;
                         productBalancesList.addView(v);
                     }
+
+                    BarDataSet set1 = new BarDataSet(yVals1, "Inventory Balances");
+                    set1.setDrawIcons(false);
+
+                    set1.setColors(ColorTemplate.MATERIAL_COLORS);
+
+                    ArrayList<IBarDataSet> dataSets = new ArrayList<IBarDataSet>();
+                    dataSets.add(set1);
+
+                    BarData data = new BarData(dataSets);
+                    data.setValueTextSize(10f);
+                    data.setBarWidth(0.9f);
+
+                    mChart2.setData(data);
+
+                    mChart2.highlightValues(null);
+                    mChart2.invalidate();
+
+                    Log.d(TAG,"Invalidated the graph");
                 }catch (Exception e){
                     e.printStackTrace();
                 }
+
+
             }
         });
 
@@ -220,10 +254,7 @@ public class DashboardFragment extends Fragment {
             @Override
             public void onChanged(@Nullable List<TransactionSummary> transactionSummaries) {
                 transactionSummaryTable.removeAllViews();
-
-                int i=0;
                 for(final TransactionSummary transactionSummary:transactionSummaries){
-                    i++;
                     final View v = LayoutInflater.from(getActivity()).inflate(R.layout.view_transaction_summary_item,null);
 
 
@@ -275,7 +306,8 @@ public class DashboardFragment extends Fragment {
 
         @Override
         public String getFormattedValue(float value, AxisBase axis) {
-            return products.get((int)value).getName();
+            Log.d(TAG,"format value = "+value);
+            return mProductBalances.get((int)value).getProductName();
         }
     }
 
@@ -326,100 +358,6 @@ public class DashboardFragment extends Fragment {
 
         mChart1.invalidate();
     }
-
-//    @SuppressLint("StaticFieldLeak")
-//    private void loadReportData(final long fromDateTimestamp, final long toDateTimestamp){
-//
-//        new AsyncTask<Void, String, String>(){
-//
-//            @Override
-//            protected String doInBackground(Void... voids) {
-//                categoryNames.clear();
-//                sizes.clear();
-//
-//
-//                List<Category> categories = appDatabase.categoriesModel().getAllCategories();
-//
-//                for(Category category:categories){
-//                    Cursor c = mDbHelper.query("SELECT * FROM "+TABLE_PRODUCT+
-//                            " INNER JOIN "+TABLE_TYPE+" ON "+TABLE_PRODUCT+"."+COLUMN_TYPE_ID+" = "+TABLE_TYPE+"."+_ID+
-//                            " INNER JOIN "+TABLE_CATEGORY_SUB_CATEGORY+" ON "+TABLE_TYPE+"."+COLUMN_CATEGORY_SUB_CATEGORY_ID+" = "+TABLE_CATEGORY_SUB_CATEGORY+"."+_ID +
-//                            " WHERE "+COLUMN_CATEGORY_ID+" = "+model.getmId()
-//                    );
-//
-//                    if(c.getCount()>0){
-//                        categoryNames.add(model.getmName());
-//                        sizes.add(c.getCount());
-//                    }
-//                }
-//                products = mDbHelper.queryProducts();
-//                return "";
-//            }
-//
-//            @Override
-//            protected void onPostExecute(String aVoid) {
-//                super.onPostExecute(aVoid);
-//
-//                setData();
-//                mChart1.highlightValues(null);
-//                mChart1.invalidate();
-//
-//                try{
-//                    productBalancesList.removeAllViews();
-//                    int i=1;
-//                    for (Product product : products) {
-//                        View v = getLayoutInflater().inflate(R.layout.view_inventory_balance_item,null);
-//                        ((TextView)v.findViewById(R.id.sn)).setText(String.valueOf(i));
-//                        ((TextView) v.findViewById(R.id.product_name)).setText(product.getmName());
-//
-//                        String balance = String.valueOf(product.getmQuantity());
-//
-//                        if(i>1) {
-//                            balance+=" Kgs";
-//                        }
-//                        ((TextView)v.findViewById(R.id.balance)).setText(balance);
-//
-//
-//                        i++;
-//                        productBalancesList.addView(v);
-//                    }
-//                }catch (Exception e){
-//                    e.printStackTrace();
-//                }
-//                try {
-//                    ArrayList<BarEntry> yVals1 = new ArrayList<BarEntry>();
-//                    int i=0;
-//                    for (Product product : products) {
-//                        yVals1.add(new BarEntry(i, product.getmQuantity()));
-//                        i++;
-//                    }
-//
-//                    BarDataSet set1 = new BarDataSet(yVals1, "Inventory Balances");
-//
-//                    set1.setDrawIcons(false);
-//
-//                    set1.setColors(ColorTemplate.MATERIAL_COLORS);
-//
-//                    ArrayList<IBarDataSet> dataSets = new ArrayList<IBarDataSet>();
-//                    dataSets.add(set1);
-//
-//                    BarData data = new BarData(dataSets);
-//                    data.setValueTextSize(10f);
-//                    data.setBarWidth(0.9f);
-//
-//                    mChart2.setData(data);
-//
-//                    mChart2.highlightValues(null);
-//                    mChart2.invalidate();
-//                }catch (Exception e){
-//                    e.printStackTrace();
-//                }
-//
-//
-//            }
-//        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-//
-//    }
 
 
 }

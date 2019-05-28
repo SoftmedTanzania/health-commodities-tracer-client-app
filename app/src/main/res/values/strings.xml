@@ -52,12 +52,6 @@
         <item>Choose photo</item>
     </string-array>
 
-    <string-array name="stock_adjustment_reasons">
-        <item>Arrival</item>
-        <item>Sold</item>
-        <item>Stock Count</item>
-        <item>Other Reasons</item>
-    </string-array>
 
     <string name="loading_categories">Loading Categories…</string>
     <string name="error_loading_categories">Error : Loading Categories…</string>
