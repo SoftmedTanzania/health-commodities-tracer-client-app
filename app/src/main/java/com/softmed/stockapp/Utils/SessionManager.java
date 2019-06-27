@@ -47,15 +47,13 @@ public class SessionManager {
     //Change this
     public static final String USER_PASS = "userPassword";
 
-    public static final String KEY_LEVEL_ID = "levelId";
-
     public static boolean sessionActive = false;
 
 
     /**
      * Create login session
      * */
-    public void createLoginSession(String name, int personUUID, String pass, int locationId, int levelId){
+    public void createLoginSession(String name, int personUUID, String pass, int locationId){
         // Storing login value as TRUE
         editor.putBoolean(IS_LOGIN, true);
 
@@ -70,9 +68,6 @@ public class SessionManager {
 
         //Storing Loation ID
         editor.putInt(KEY_LOCATION_ID, locationId);
-
-        //Store user level Id
-        editor.putInt(KEY_LEVEL_ID, levelId);
 
         // commit changes
         editor.commit();
@@ -107,10 +102,6 @@ public class SessionManager {
 
     public String getUserPass(){
         return pref.getString(USER_PASS, null);
-    }
-
-    public int getUserLevel(){
-        return pref.getInt(KEY_LEVEL_ID, -1);
     }
 
     /**

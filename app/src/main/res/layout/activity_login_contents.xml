@@ -209,7 +209,7 @@
             android:layout_marginLeft="16dp"
             android:layout_toRightOf="@id/login_screen_logo"
             android:textSize="32sp"
-            android:text="Rucodia"
+            android:text="Health Commodities"
             android:textColor="@color/white"
             android:textStyle="bold"
             android:fontFamily="@font/roboto_bold"/>
@@ -224,7 +224,7 @@
             android:textSize="24sp"
             android:textColor="@color/white"
             android:fontFamily="@font/roboto_light"
-            android:text="Agro Dealers"/>
+            android:text="Tracer"/>
 
         <TextView
             android:layout_width="wrap_content"

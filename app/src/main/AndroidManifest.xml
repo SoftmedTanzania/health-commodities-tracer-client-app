@@ -12,25 +12,25 @@
         android:required="true" />
 
     <application
+        android:allowBackup="true"
+        android:fullBackupContent="@xml/backup_descriptor"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme"
-        android:allowBackup="true"
-        android:fullBackupContent="@xml/backup_descriptor">
-        <activity android:name="com.softmed.stockapp.Activities.MainActivity">
+        android:usesCleartextTraffic="true"
+        android:theme="@style/AppTheme">
+        <activity android:name=".Activities.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name=".Activities.AddProductActivity" />
         <activity
-            android:name="com.softmed.stockapp.Activities.AddProductActivity" />
-        <activity
-            android:name="com.softmed.stockapp.Activities.DetailActivity"
+            android:name=".Activities.DetailActivity"
             android:label="@string/title_activity_detail"
-            android:parentActivityName="com.softmed.stockapp.Activities.MainActivity">
+            android:parentActivityName=".Activities.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
                 android:value="com.softmed.stockapp.Activities.MainActivity" />
@@ -47,27 +47,28 @@
         </provider>
 
         <activity
-            android:name="com.softmed.stockapp.Activities.CreateOrderActivity"
+            android:name=".Activities.CreateProductActivity"
             android:label="@string/title_activity_create_order"
             android:theme="@style/AppTheme" />
         <activity
-            android:name="com.softmed.stockapp.Activities.CreateProductActivity"
-            android:label="@string/title_activity_create_order"
-            android:theme="@style/AppTheme" />
-        <activity
-            android:name="com.softmed.stockapp.Activities.LoginActivity"
+            android:name=".Activities.LoginActivity"
             android:configChanges="locale"
-            android:windowSoftInputMode="stateHidden"></activity>
+            android:windowSoftInputMode="stateHidden" />
 
         <service
-            android:name="com.softmed.stockapp.Services.PostOfficeService"
+            android:name=".Services.PostOfficeService"
             android:exported="false" />
 
         <receiver
-            android:name="com.softmed.stockapp.Utils.AlarmReceiver"
-            android:process=":remote"></receiver>
+            android:name=".Utils.AlarmReceiver"
+            android:process=":remote" />
 
-        <activity android:name="com.softmed.stockapp.Activities.OrdersList"></activity>
+        <activity android:name=".Activities.OrdersList" />
+
+        <activity
+            android:name=".Activities.ManagedProductsActivity"
+            android:label="@string/title_activity_managed_products"
+            android:theme="@style/AppTheme"/>
     </application>
 
 </manifest>

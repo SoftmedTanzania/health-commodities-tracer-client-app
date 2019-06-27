@@ -1,5 +1,6 @@
 package com.softmed.stockapp.api;
 
+import com.softmed.stockapp.Dom.entities.ProductReportingSchedule;
 import com.softmed.stockapp.Dom.entities.TransactionType;
 import com.softmed.stockapp.Dom.entities.Transactions;
 import com.softmed.stockapp.Dom.responces.BalancesResponse;
@@ -7,6 +8,7 @@ import com.softmed.stockapp.Dom.responces.CategoriesResponse;
 import com.softmed.stockapp.Dom.responces.LoginResponse;
 import com.softmed.stockapp.Dom.responces.ProductsPostResponse;
 import com.softmed.stockapp.Dom.responces.ProductsResponse;
+import com.softmed.stockapp.Dom.responces.UnitsResponse;
 
 import java.util.List;
 
@@ -23,8 +25,8 @@ public class Endpoints {
     private String HFUUID = "";
 
     public interface LoginService {
-        @GET("auth")
-        Call<List<LoginResponse>> basicLogin();
+        @POST("rest-auth/login/")
+        Call<LoginResponse> basicLogin(@Body RequestBody e);
 
         @GET("users")
         Call<List<LoginResponse>> getAllUsers();
@@ -32,14 +34,17 @@ public class Endpoints {
     }
 
     public interface CategoriesService {
-        @GET("categories")
+        @GET("api_health_commodity_category")
         Call<List<CategoriesResponse>> getCategories();
 
     }
 
     public interface ProductsService {
-        @GET("products")
+        @GET("api_health_commodity")
         Call<List<ProductsResponse>> getProducts();
+
+        @GET("api_unit")
+        Call<List<UnitsResponse>> getUnits();
 
         @POST("products")
         Call<ProductsPostResponse> postProducts(@Body RequestBody e);
@@ -51,6 +56,9 @@ public class Endpoints {
 
         @GET
         Call<BalancesResponse> getBalances(@Url String url);
+
+        @GET("api_posting_schedule")
+        Call<List<ProductReportingSchedule>> getSchedule();
 
         @GET("transactiontypes")
         Call<List<TransactionType>> getTransactionTypes();

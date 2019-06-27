@@ -11,17 +11,11 @@ public class CategoriesResponse implements Serializable {
     @SerializedName("id")
     private int id;
 
-    @SerializedName("uuid")
-    private String uuid;
-
-    @SerializedName("name")
+    @SerializedName("health_commodity_category_description")
     private String name;
 
-    @SerializedName("description")
+    @SerializedName("health_commodity_category_name")
     private String description;
-
-    @SerializedName("subcategories")
-    List<SubCategoriesResponse> subCategoriesResponses;
 
     public int getId() {
         return id;
@@ -29,14 +23,6 @@ public class CategoriesResponse implements Serializable {
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public String getUuid() {
-        return uuid;
-    }
-
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
     }
 
     public String getName() {
@@ -55,11 +41,5 @@ public class CategoriesResponse implements Serializable {
         this.description = description;
     }
 
-    public List<SubCategoriesResponse> getSubCategoriesResponses() {
-        return subCategoriesResponses;
-    }
 
-    public void setSubCategoriesResponses(List<SubCategoriesResponse> subCategoriesResponses) {
-        this.subCategoriesResponses = subCategoriesResponses;
-    }
 }

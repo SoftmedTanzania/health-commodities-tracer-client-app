@@ -9,6 +9,7 @@ import com.softmed.stockapp.Dom.dao.BalanceModelDao;
 import com.softmed.stockapp.Dom.dao.CategorieModelDao;
 import com.softmed.stockapp.Dom.dao.LocationsModelDao;
 import com.softmed.stockapp.Dom.dao.OrderModelDao;
+import com.softmed.stockapp.Dom.dao.ProductReportingScheduleModelDao;
 import com.softmed.stockapp.Dom.dao.ProductsModelDao;
 import com.softmed.stockapp.Dom.dao.TransactionModelDao;
 import com.softmed.stockapp.Dom.dao.TransactionTypeModelDao;
@@ -19,6 +20,7 @@ import com.softmed.stockapp.Dom.entities.Category;
 import com.softmed.stockapp.Dom.entities.Location;
 import com.softmed.stockapp.Dom.entities.Orders;
 import com.softmed.stockapp.Dom.entities.Product;
+import com.softmed.stockapp.Dom.entities.ProductReportingSchedule;
 import com.softmed.stockapp.Dom.entities.TransactionType;
 import com.softmed.stockapp.Dom.entities.Transactions;
 import com.softmed.stockapp.Dom.entities.Unit;
@@ -35,10 +37,10 @@ import com.softmed.stockapp.Dom.entities.UsersInfo;
                 Transactions.class,
                 TransactionType.class,
                 Balances.class,
+                ProductReportingSchedule.class,
                 Orders.class
         },
-        version = 2)
-
+        version = 2,exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
 
     private static AppDatabase INSTANCE;
@@ -66,6 +68,9 @@ public abstract class AppDatabase extends RoomDatabase {
     public abstract UserInfoModelDao userInfoDao();
 
     public abstract LocationsModelDao locationsModelDao();
+
     public abstract OrderModelDao orderModelDao();
+
+    public abstract ProductReportingScheduleModelDao productReportingScheduleModelDao();
 
 }

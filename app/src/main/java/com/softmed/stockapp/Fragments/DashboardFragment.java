@@ -32,6 +32,7 @@ import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
 import com.github.mikephil.charting.formatter.IAxisValueFormatter;
 import com.github.mikephil.charting.formatter.PercentFormatter;
+import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.github.mikephil.charting.utils.ColorTemplate;
 import com.github.mikephil.charting.utils.MPPointF;
@@ -51,6 +52,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+
+import static com.github.mikephil.charting.animation.Easing.EaseInOutQuad;
 
 public class DashboardFragment extends Fragment {
     private static final String TAG = DashboardFragment.class.getSimpleName();
@@ -110,7 +113,7 @@ public class DashboardFragment extends Fragment {
         mChart1.setRotationEnabled(true);
         mChart1.setHighlightPerTapEnabled(true);
 
-        mChart1.animateY(1400, Easing.EasingOption.EaseInOutQuad);
+        mChart1.animateY(1400, EaseInOutQuad);
 
 
         Legend l = mChart1.getLegend();
@@ -134,7 +137,7 @@ public class DashboardFragment extends Fragment {
         mChart2.setDrawBarShadow(false);
         mChart2.setDrawValueAboveBar(true);
         mChart2.setDragDecelerationFrictionCoef(0.95f);
-        mChart2.animateY(1400, Easing.EasingOption.EaseInOutQuad);
+        mChart2.animateY(1400, EaseInOutQuad);
 
         mChart2.getDescription().setEnabled(false);
 
@@ -148,17 +151,22 @@ public class DashboardFragment extends Fragment {
         mChart2.setDrawGridBackground(false);
         // mChart2.setDrawYLabels(false);
 
-        IAxisValueFormatter xAxisFormatter = new XAxisValueFormatter();
+        ValueFormatter xAxisFormatter = new XAxisValueFormatter();
 
         XAxis xAxis = mChart2.getXAxis();
-        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+//        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setDrawGridLines(false);
-        xAxis.setGranularity(1f); // only intervals of 1 day
-//        xAxis.setLabelCount(7);
-        xAxis.setValueFormatter(xAxisFormatter);
-//        xAxis.setLabelRotationAngle(15f);
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM_INSIDE);
 
-        IAxisValueFormatter custom = new MyAxisValueFormatter();
+        xAxis.setGranularityEnabled(true);
+        xAxis.setGranularity(1f);
+//        xAxis.setLabelCount(labelCount, false);
+
+
+        xAxis.setValueFormatter(xAxisFormatter);
+        xAxis.setLabelRotationAngle(90f);
+
+        ValueFormatter custom = new MyAxisValueFormatter();
 
         final YAxis leftAxis = mChart2.getAxisLeft();
         leftAxis.setLabelCount(8, false);
@@ -286,7 +294,7 @@ public class DashboardFragment extends Fragment {
         return rowview;
     }
 
-    class MyAxisValueFormatter implements IAxisValueFormatter
+    class MyAxisValueFormatter extends ValueFormatter
     {
 
         public MyAxisValueFormatter() {
@@ -299,13 +307,13 @@ public class DashboardFragment extends Fragment {
         }
     }
 
-    class XAxisValueFormatter implements IAxisValueFormatter
+    class XAxisValueFormatter extends ValueFormatter
     {
         public XAxisValueFormatter() {
         }
 
         @Override
-        public String getFormattedValue(float value, AxisBase axis) {
+        public String getFormattedValue(float value) {
             Log.d(TAG,"format value = "+value);
             return mProductBalances.get((int)value).getProductName();
         }

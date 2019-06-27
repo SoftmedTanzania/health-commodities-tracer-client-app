@@ -229,28 +229,28 @@ public class CreateOrderDialogue extends android.support.v4.app.DialogFragment {
             @Override
             public void onResponse(Call<List<LoginResponse>> call, Response<List<LoginResponse>> response) {
 
-                Log.d(TAG,"response = "+response.toString());
-                if (response.isSuccessful()) {
-
-                    suppliersNames = new ArrayList<>();
-                    suppliers = new ArrayList<>();
-                   for(LoginResponse r : response.body()){
-                       try {
-                           if (r.getLevelResponses().get(0).getId() == 2) {
-                               suppliers.add(r);
-                               suppliersNames.add(r.getFirstName() + " " + r.getSurname());
-                           }
-                       }catch (Exception e){
-                           e.printStackTrace();
-                       }
-                   }
-
-                    ArrayAdapter<String> spinAdapter = new ArrayAdapter<String>(getActivity(), R.layout.simple_spinner_item_black, suppliersNames);
-                    spinAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item_black);
-                    suppliersSpinner.setAdapter(spinAdapter);
-
-
-                }
+//                Log.d(TAG,"response = "+response.toString());
+//                if (response.isSuccessful()) {
+//
+//                    suppliersNames = new ArrayList<>();
+//                    suppliers = new ArrayList<>();
+//                   for(LoginResponse r : response.body()){
+//                       try {
+//                           if (r.getLevelResponses().get(0).getId() == 2) {
+//                               suppliers.add(r);
+//                               suppliersNames.add(r.getFirstName() + " " + r.getSurname());
+//                           }
+//                       }catch (Exception e){
+//                           e.printStackTrace();
+//                       }
+//                   }
+//
+//                    ArrayAdapter<String> spinAdapter = new ArrayAdapter<String>(getActivity(), R.layout.simple_spinner_item_black, suppliersNames);
+//                    spinAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item_black);
+//                    suppliersSpinner.setAdapter(spinAdapter);
+//
+//
+//                }
             }
 
             @Override
@@ -270,7 +270,7 @@ public class CreateOrderDialogue extends android.support.v4.app.DialogFragment {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 try {
-                    supplierId = suppliers.get(i).getId();
+                    supplierId = suppliers.get(i).getUser().getId();
                 }catch (Exception e){
                     supplierId = -1;
                 }

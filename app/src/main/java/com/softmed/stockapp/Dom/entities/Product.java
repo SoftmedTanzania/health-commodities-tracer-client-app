@@ -12,6 +12,8 @@ import java.io.Serializable;
 @Entity
 public class Product implements Serializable {
 
+    @PrimaryKey(autoGenerate = false)
+    @NonNull
     @SerializedName("id")
     private int id;
 
@@ -20,11 +22,6 @@ public class Product implements Serializable {
 
     @SerializedName("unit_id")
     private int unit_id;
-
-    @PrimaryKey(autoGenerate = false)
-    @NonNull
-    @SerializedName("uuid")
-    private String uuid;
 
     @SerializedName("name")
     private String name;
@@ -38,11 +35,12 @@ public class Product implements Serializable {
     @SerializedName("status")
     private int status = 1;
 
+    @NonNull
     public int getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(@NonNull int id) {
         this.id = id;
     }
 
@@ -62,15 +60,6 @@ public class Product implements Serializable {
 
     public void setStatus(int status) {
         this.status = status;
-    }
-
-    @NonNull
-    public String getUuid() {
-        return uuid;
-    }
-
-    public void setUuid(@NonNull String uuid) {
-        this.uuid = uuid;
     }
 
     public String getName() {

@@ -12,10 +12,13 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
 
+import com.softmed.stockapp.Activities.MainActivity;
 import com.softmed.stockapp.Database.AppDatabase;
 import com.softmed.stockapp.Dom.entities.Balances;
+import com.softmed.stockapp.Dom.entities.Product;
 import com.softmed.stockapp.Dom.entities.TransactionType;
 import com.softmed.stockapp.Dom.entities.Transactions;
 import com.softmed.stockapp.R;
@@ -34,31 +37,32 @@ import static com.softmed.stockapp.Utils.Calendars.toBeginningOfTheDay;
 /**
  * Dialog allowing users to select a date.
  */
-public class AddTransactionDialogue extends android.support.v4.app.DialogFragment {
-    private static final String TAG = AddTransactionDialogue.class.getSimpleName();
+public class UpdateStockFragment extends android.support.v4.app.Fragment {
+    private static final String TAG = UpdateStockFragment.class.getSimpleName();
     public static AppDatabase baseDatabase;
     private View dialogueLayout;
-    private String stockAdjustmentReason = "";
     private MaterialSpinner stockAdjustmentReasonSpinner, availabilityOfClientsOnRegimeSpinner;
     private List<TransactionType> transactionTypes;
-    private int stockAdjustmentReasonId;
     private TextInputLayout stockAdjustmentQuantity, numberOfClientsOnRegimeInputLayout;
     private int productId, numberOfClientsOnRegime;
+    private String productName;
     private boolean availabilityOfClients = false;
+    private int stockQuantity;
 
     // Session Manager Class
     private SessionManager session;
 
-    public AddTransactionDialogue() {
+    public UpdateStockFragment() {
     }
 
 
-    public static AddTransactionDialogue newInstance(int productId) {
-        AddTransactionDialogue f = new AddTransactionDialogue();
+    public static UpdateStockFragment newInstance(Product product) {
+        UpdateStockFragment f = new UpdateStockFragment();
 
         // Supply num input as an argument.
         Bundle args = new Bundle();
-        args.putInt("productId", productId);
+        args.putInt("productId", product.getId());
+        args.putString("productName", product.getName());
         f.setArguments(args);
         return f;
     }
@@ -71,6 +75,7 @@ public class AddTransactionDialogue extends android.support.v4.app.DialogFragmen
         baseDatabase = AppDatabase.getDatabase(getActivity());
         activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         productId = getArguments().getInt("productId");
+        productName = getArguments().getString("productName");
         session = new SessionManager(getActivity());
     }
 
@@ -83,11 +88,12 @@ public class AddTransactionDialogue extends android.support.v4.app.DialogFragmen
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        getDialog().requestWindowFeature(Window.FEATURE_NO_TITLE);
-        getDialog().setCanceledOnTouchOutside(false);
 
-        dialogueLayout = inflater.inflate(R.layout.dialogue_create_transaction, container, false);
+        dialogueLayout = inflater.inflate(R.layout.fragment_update_stock, container, false);
 
+
+        TextView productTitle = dialogueLayout.findViewById(R.id.product_name);
+        productTitle.setText(productName);
 
         stockAdjustmentQuantity = dialogueLayout.findViewById(R.id.stock_adjustment_quantity);
         numberOfClientsOnRegimeInputLayout = dialogueLayout.findViewById(R.id.number_of_clients_on_regime);
@@ -95,30 +101,11 @@ public class AddTransactionDialogue extends android.support.v4.app.DialogFragmen
         stockAdjustmentReasonSpinner = dialogueLayout.findViewById(R.id.stock_adjustment_reason);
         availabilityOfClientsOnRegimeSpinner = dialogueLayout.findViewById(R.id.do_you_have_any_clients_on_regime);
 
-
         final String[] availabilityOfClientsOnRegime = {"Yes", "No"};
         ArrayAdapter<String> spinAdapter = new ArrayAdapter<String>(getActivity(), R.layout.simple_spinner_item_black, availabilityOfClientsOnRegime);
         spinAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item_black);
         availabilityOfClientsOnRegimeSpinner.setAdapter(spinAdapter);
-
-
-        stockAdjustmentReasonSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                try {
-                    stockAdjustmentReason = transactionTypes.get(i).getName();
-                    stockAdjustmentReasonId = transactionTypes.get(i).getId();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
-        });
-
+        availabilityOfClientsOnRegimeSpinner.setSelection(1);
         availabilityOfClientsOnRegimeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
@@ -167,12 +154,23 @@ public class AddTransactionDialogue extends android.support.v4.app.DialogFragmen
         dialogueLayout.findViewById(R.id.add_transaction).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                
+                if ((!availabilityOfClients || !numberOfClientsOnRegimeInputLayout.getEditText().getText().toString().equals(""))) {
+                    final Integer numberOfClientsOnRegime = Integer.valueOf(numberOfClientsOnRegimeInputLayout.getEditText().getText().toString());
+                    stockQuantity = 0;
+                    try {
+                         stockQuantity = Integer.valueOf(stockAdjustmentQuantity.getEditText().getText().toString());
 
-
-                if (!stockAdjustmentQuantity.getEditText().getText().toString().equals("") &&
-                        (!availabilityOfClients || !numberOfClientsOnRegimeInputLayout.getEditText().getText().toString().equals(""))) {
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
 
                     new AsyncTask<Void, Void, Void>() {
+                        @Override
+                        protected void onPreExecute() {
+                            super.onPreExecute();
+                        }
+
                         @Override
                         protected Void doInBackground(Void... voids) {
                             Transactions transactions = new Transactions();
@@ -180,10 +178,10 @@ public class AddTransactionDialogue extends android.support.v4.app.DialogFragmen
                             transactions.setProduct_id(productId);
                             transactions.setUser_id(Integer.valueOf(session.getUserUUID()));
                             transactions.setTransactiontype_id(1);
-                            transactions.setAmount(Integer.valueOf(stockAdjustmentQuantity.getEditText().getText().toString()));
+                            transactions.setAmount(stockQuantity);
 
                             if (availabilityOfClients)
-                                transactions.setClientsOnRegime(Integer.valueOf(numberOfClientsOnRegimeInputLayout.getEditText().getText().toString()));
+                                transactions.setClientsOnRegime(numberOfClientsOnRegime);
                             else
                                 transactions.setClientsOnRegime(0);
                             transactions.setStatus_id(1);
@@ -196,15 +194,8 @@ public class AddTransactionDialogue extends android.support.v4.app.DialogFragmen
 
                             Balances balances = baseDatabase.balanceModelDao().getBalance(productId);
 
-                            balances.setBalance(Integer.valueOf(stockAdjustmentQuantity.getEditText().getText().toString()));
-                            balances.setNumberOfClientsOnRegime(Integer.valueOf(numberOfClientsOnRegimeInputLayout.getEditText().getText().toString()));
-
-//                            if (stockAdjustmentReasonId == 1) {
-//                                balances.setBalance(balances.getBalance() + Integer.valueOf(stockAdjustmentQuantity.getEditText().getText().toString()));
-//                            } else if (stockAdjustmentReasonId == 2) {
-//                                balances.setBalance(balances.getBalance() - Integer.valueOf(stockAdjustmentQuantity.getEditText().getText().toString()));
-//                            }
-
+                            balances.setBalance(stockQuantity);
+                            balances.setNumberOfClientsOnRegime(numberOfClientsOnRegime);
                             baseDatabase.balanceModelDao().addBalance(balances);
 
 
@@ -214,12 +205,10 @@ public class AddTransactionDialogue extends android.support.v4.app.DialogFragmen
                         @Override
                         protected void onPostExecute(Void v) {
                             super.onPostExecute(v);
-                            stockAdjustmentQuantity.getEditText().setText("");
-                            Toast.makeText(getActivity(), "Transaction Added successfully", Toast.LENGTH_LONG).show();
-                            dismiss();
+                            ((MainActivity)getActivity()).moveToNextProduct();
 
                         }
-                    }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                    }.execute();
 
 
                 } else if(stockAdjustmentQuantity.getEditText().getText().toString().equals("")) {

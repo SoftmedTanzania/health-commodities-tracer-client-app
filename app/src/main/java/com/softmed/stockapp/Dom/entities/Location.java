@@ -11,13 +11,10 @@ import java.io.Serializable;
 @Entity
 public class Location implements Serializable {
 
-    @SerializedName("id")
-    private int id;
-
     @PrimaryKey(autoGenerate = false)
     @NonNull
-    @SerializedName("uuid")
-    private String uuid;
+    @SerializedName("id")
+    private int id;
 
     @SerializedName("name")
     private String name;
@@ -34,15 +31,6 @@ public class Location implements Serializable {
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    @NonNull
-    public String getUuid() {
-        return uuid;
-    }
-
-    public void setUuid(@NonNull String uuid) {
-        this.uuid = uuid;
     }
 
     public String getName() {

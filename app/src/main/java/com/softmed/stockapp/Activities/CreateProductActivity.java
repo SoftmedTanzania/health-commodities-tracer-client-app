@@ -333,7 +333,6 @@ public class CreateProductActivity extends AppCompatActivity implements DialogIn
                             product.setName(mProductNameTIL.getEditText().getText().toString());
                             product.setUnit_id(unitId);
                             product.setPrice(Integer.valueOf(mProductPriceTIL.getEditText().getText().toString()));
-                            product.setUuid(UUID.randomUUID().toString());
                             product.setStatus(0);
 
                             Random rand = new Random();
@@ -344,7 +343,6 @@ public class CreateProductActivity extends AppCompatActivity implements DialogIn
                             String uuid=null;
                             int balance = 0;
                             if(b!=null){
-                                uuid = b.getUuid();
                                 balance = b.getBalance();
                             }
 
@@ -481,16 +479,12 @@ public class CreateProductActivity extends AppCompatActivity implements DialogIn
         Balances balances = new Balances();
 
         balances.setProduct_id(productId);
-        if(uuid==null) {
-            balances.setUuid(UUID.randomUUID().toString());
-        }else{
-            balances.setUuid(uuid);
-        }
+
         // Get the product photo path from the ImageView tag. The tag might contains null data, so
         // it needs to be checked. If it's null, set the photo path to an empty string.
         Object imageViewTag = mProductPhotoImageView.getTag();
 
-        balances.setImage_path( (imageViewTag != null) ? imageViewTag.toString() : "" );
+//        balances.setImage_path( (imageViewTag != null) ? imageViewTag.toString() : "" );
         balances.setNumberOfClientsOnRegime(Integer.valueOf(mProductPriceTIL.getEditText().getText().toString()));
         balances.setBalance(Integer.valueOf(mProductQuantityTIL.getEditText().getText().toString())+balance);
 

@@ -217,14 +217,14 @@ public class ProductsListFragment extends Fragment implements
     public void navigateToCreateActivity() {
         SessionManager session = new SessionManager(getContext());
 
-        Log.d(TAG,"USER LEVEL ID = "+session.getUserLevel());
-        if(session.getUserLevel()==2){
-            Intent intent = new Intent(getActivity(), CreateProductActivity.class);
-            startActivity(intent);
-        }else {
-            Intent intent = new Intent(getActivity(), AddProductActivity.class);
-            startActivity(intent);
-        }
+//        Log.d(TAG,"USER LEVEL ID = "+session.getUserLevel());
+//        if(session.getUserLevel()==2){
+//            Intent intent = new Intent(getActivity(), CreateProductActivity.class);
+//            startActivity(intent);
+//        }else {
+//            Intent intent = new Intent(getActivity(), AddProductActivity.class);
+//            startActivity(intent);
+//        }
     }
 
     /**

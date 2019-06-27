@@ -38,16 +38,16 @@ public interface ProductsModelDao {
             "INNER JOIN Unit ON Product.unit_id = Unit.id " +
             "INNER JOIN Balances ON Product.id = Balances.product_id " +
             " ")
-    List<ProductList> getAvailableProductsTest();
+    List<ProductList> getAvailableProductsCheck();
 
 
-    @Query("select Product.id,Product.category_id,Product.description,Category.name || ' - ' || Product.name AS name ,Product.unit_id,Product.uuid,Product.status, price FROM Product " +
+    @Query("select Product.id,Product.category_id,Product.description,Category.name || ' - ' || Product.name AS name ,Product.unit_id,Product.status, price FROM Product " +
             "INNER JOIN Category ON Product.category_id = Category.id " +
             "where category_id = :categoryId")
     List<Product> getProductsSummaryByCategoryId(int categoryId);
 
 
-    @Query("select * from Product inner join Category on Category.id = Product.category_id where Category.id = :categoryId")
+    @Query("select Product.id,Product.name,Product.category_id,Product.unit_id,Product.description,Product.status, price from Product inner join Category on Category.id = Product.category_id where Category.id = :categoryId")
     List<Product> getProductsByCategoryId(int categoryId);
 
 

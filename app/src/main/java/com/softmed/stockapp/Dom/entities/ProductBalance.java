@@ -24,9 +24,6 @@ public class ProductBalance implements Serializable {
     @SerializedName("unit")
     private String unit;
 
-    @SerializedName("imagePath")
-    private String imagePath;
-
     @SerializedName("balance")
     private int balance;
 
@@ -87,13 +84,5 @@ public class ProductBalance implements Serializable {
 
     public void setProductId(int productId) {
         this.productId = productId;
-    }
-
-    public String getImagePath() {
-        return imagePath;
-    }
-
-    public void setImagePath(String imagePath) {
-        this.imagePath = imagePath;
     }
 }

@@ -28,6 +28,7 @@ import com.softmed.stockapp.Database.AppDatabase;
 import com.softmed.stockapp.Dom.DomConverter;
 import com.softmed.stockapp.Dom.entities.Balances;
 import com.softmed.stockapp.Dom.entities.Product;
+import com.softmed.stockapp.Dom.entities.ProductReportingSchedule;
 import com.softmed.stockapp.Dom.entities.TransactionType;
 import com.softmed.stockapp.Dom.entities.Transactions;
 import com.softmed.stockapp.Dom.entities.UsersInfo;
@@ -37,6 +38,7 @@ import com.softmed.stockapp.Dom.responces.BalancesResponse;
 import com.softmed.stockapp.Dom.responces.CategoriesResponse;
 import com.softmed.stockapp.Dom.responces.LoginResponse;
 import com.softmed.stockapp.Dom.responces.ProductsResponse;
+import com.softmed.stockapp.Dom.responces.UnitsResponse;
 import com.softmed.stockapp.R;
 import com.softmed.stockapp.Utils.Config;
 import com.softmed.stockapp.Utils.LargeDiagonalCutPathDrawable;
@@ -196,8 +198,9 @@ public class LoginActivity extends BaseActivity {
 //        }
 //        else
 
-        usernameEt.setText("kabuzi");
-        passwordEt.setText("123456");
+        usernameEt.setText("ilakoze");
+        passwordEt.setText("Tracer123");
+
         if (usernameEt.getText().length() <= 0) {
             Toast.makeText(this, getResources().getString(R.string.username_required), Toast.LENGTH_SHORT).show();
             return false;
@@ -257,8 +260,7 @@ public class LoginActivity extends BaseActivity {
                                 loggedInSessions.getUsername(),
                                 userInfo.getId(),
                                 passwordValue,
-                                loggedInSessions.getLocationId(),
-                                loggedInSessions.getLevelId());
+                                loggedInSessions.getHealth_facility());
 
                         //Call HomeActivity to log in user
                         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
@@ -289,12 +291,12 @@ public class LoginActivity extends BaseActivity {
             //Use Retrofit to make http request calls
             Endpoints.LoginService loginService = ServiceGenerator.createService(Endpoints.LoginService.class, usernameValue, passwordValue);
 
-            Call<List<LoginResponse>> call = loginService.basicLogin();
+            Call<LoginResponse> call = loginService.basicLogin(getCredentialsRequestBody(usernameValue,passwordValue));
 
-            call.enqueue(new Callback<List<LoginResponse>>() {
+            call.enqueue(new Callback<LoginResponse>() {
                 @SuppressLint("StaticFieldLeak")
                 @Override
-                public void onResponse(Call<List<LoginResponse>> call, final Response<List<LoginResponse>> response) {
+                public void onResponse(Call<LoginResponse> call, final Response<LoginResponse> response) {
 
                     Log.d(TAG, "response = " + response.toString());
                     if (response.isSuccessful()) {
@@ -303,37 +305,32 @@ public class LoginActivity extends BaseActivity {
                         loginMessages.setText(getResources().getString(R.string.success));
 
                         Log.d(TAG, "response body = " + new Gson().toJson(response.body()).toString());
-                        userInfo = DomConverter.getUserInfo(response.body().get(0));
+                        userInfo = DomConverter.getUserInfo(response.body());
 
-                        String userUUID = userInfo.getUuid();
+                        String userUUID = String.valueOf(userInfo.getId());
                         session.createLoginSession(
                                 usernameValue,
                                 userInfo.getId(),
                                 passwordValue,
-                                userInfo.getLocationId(),
-                                userInfo.getLevelId());
+                                userInfo.getHealth_facility());
 
                         categoriesService = ServiceGenerator.createService(Endpoints.CategoriesService.class, session.getUserName(), session.getUserPass());
                         transactionServices = ServiceGenerator.createService(Endpoints.TransactionServices.class, session.getUserName(), session.getUserPass());
                         productsServices = ServiceGenerator.createService(Endpoints.ProductsService.class, session.getUserName(), session.getUserPass());
-
-
-//                        final Location location = DomConverter.getLocation(response.body());
 
                         new AsyncTask<Void, Void, Void>() {
                             @Override
                             protected Void doInBackground(Void... voids) {
                                 Log.d(TAG, "userInfo : " + userInfo.toString());
                                 baseDatabase.userInfoDao().addUserInfo(userInfo);
-                                baseDatabase.locationsModelDao().addLocation(response.body().get(0).getLocationResponses().get(0));
+//                                baseDatabase.locationsModelDao().addLocation(response.body().getLocationResponses().get(0));
                                 return null;
                             }
 
                             @Override
                             protected void onPostExecute(Void aVoid) {
                                 super.onPostExecute(aVoid);
-                                sendRegistrationToServer(deviceRegistrationId,
-                                        userInfo.getUuid());
+                                sendRegistrationToServer(deviceRegistrationId,userInfo.getId()+"");
                             }
                         }.execute();
 
@@ -347,7 +344,7 @@ public class LoginActivity extends BaseActivity {
                 }
 
                 @Override
-                public void onFailure(Call<List<LoginResponse>> call, Throwable t) {
+                public void onFailure(Call<LoginResponse> call, Throwable t) {
                     // something went completely south (like no internet connection)
                     t.printStackTrace();
 
@@ -360,6 +357,7 @@ public class LoginActivity extends BaseActivity {
     }
 
     private void sendRegistrationToServer(String token, String userUiid) {
+        new AddUserData(baseDatabase).execute(userInfo);
 
         SessionManager sess = new SessionManager(getApplicationContext());
 
@@ -410,13 +408,13 @@ public class LoginActivity extends BaseActivity {
                 public void onResponse(Call<List<CategoriesResponse>> call, Response<List<CategoriesResponse>> response) {
                     //Here will handle the responce from the server
                     Log.d("CategoriesCheck", response.body() + "");
-//                    addCategoriesAsyncTask task = new addCategoriesAsyncTask(response.body());
+                    addCategoriesAsyncTask task = new addCategoriesAsyncTask(response.body());
 
-                    String categories = "[{\"id\":\"1\",\"name\":\"ADULT ARVS FORMULATIONS\",\"description\":\"ADULT ARVS FORMULATIONS for adults\",\"uuid\":\"ee21b325-d770-11e8-ba9c-f23c917bb7ec\"},{\"id\":\"2\",\"name\":\" PEDIATRIC ARVS FORMULATIONS\",\"description\":\" PEDIATRIC ARVS FORMULATIONS\",\"uuid\":\"ee21b325-d770-11e8-ba9c-f23c91234b7ec\"},{\"id\":\"3\",\"name\":\" EID\",\"description\":\" EID\",\"uuid\":\"ee21b325-d770-11e8-b57c-f23c91234b7ec\"}]";
-                    List<CategoriesResponse> categoriesResponses = new Gson().fromJson(categories, new TypeToken<List<CategoriesResponse>>() {
-                    }.getType());
-
-                    addCategoriesAsyncTask task = new addCategoriesAsyncTask(categoriesResponses);
+//                    String categories = "[{\"id\":\"1\",\"name\":\"ADULT ARVS FORMULATIONS\",\"description\":\"ADULT ARVS FORMULATIONS for adults\",\"uuid\":\"ee21b325-d770-11e8-ba9c-f23c917bb7ec\"},{\"id\":\"2\",\"name\":\" PEDIATRIC ARVS FORMULATIONS\",\"description\":\" PEDIATRIC ARVS FORMULATIONS\",\"uuid\":\"ee21b325-d770-11e8-ba9c-f23c91234b7ec\"},{\"id\":\"3\",\"name\":\" EID\",\"description\":\" EID\",\"uuid\":\"ee21b325-d770-11e8-b57c-f23c91234b7ec\"}]";
+//                    List<CategoriesResponse> categoriesResponses = new Gson().fromJson(categories, new TypeToken<List<CategoriesResponse>>() {
+//                    }.getType());
+//
+//                    addCategoriesAsyncTask task = new addCategoriesAsyncTask(categoriesResponses);
                     task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                 }
 
@@ -426,6 +424,37 @@ public class LoginActivity extends BaseActivity {
                     //createDummyReferralData();
                     Log.e("", "An error encountered!");
                     Log.d("CategoriesCheck", "failed with " + t.getMessage() + " " + t.toString());
+
+
+                    loginMessages.setText(getResources().getString(R.string.error_loading_categories));
+                    loginMessages.setTextColor(getResources().getColor(R.color.red_500));
+                }
+            });
+        }
+    }
+
+
+    private void callReportingSchedule() {
+        loginMessages.setText(getResources().getString(R.string.loading_categories));
+        loginMessages.setTextColor(getResources().getColor(R.color.amber_a700));
+        if (session.isLoggedIn()) {
+            Call<List<ProductReportingSchedule>> call = transactionServices.getSchedule();
+            call.enqueue(new Callback<List<ProductReportingSchedule>>() {
+
+                @Override
+                public void onResponse(Call<List<ProductReportingSchedule>> call, Response<List<ProductReportingSchedule>> response) {
+                    //Here will handle the responce from the server
+                    Log.d("Schedule Check", response.body() + "");
+                    addSchedule task = new addSchedule(response.body());
+                    task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                }
+
+                @Override
+                public void onFailure(Call<List<ProductReportingSchedule>> call, Throwable t) {
+                    //Error!
+                    //createDummyReferralData();
+                    Log.e("", "An error encountered!");
+                    Log.d("ScheduleCheck", "failed with " + t.getMessage() + " " + t.toString());
 
 
                     loginMessages.setText(getResources().getString(R.string.error_loading_categories));
@@ -447,18 +476,48 @@ public class LoginActivity extends BaseActivity {
                     //Here will handle the responce from the server
                     Log.d("ProductsCheck", response.body() + "");
 
-//                    addProductsAsyncTask task = new addProductsAsyncTask(response.body());
+                    addProductsAsyncTask task = new addProductsAsyncTask(response.body());
 
-                    String productsJson = "[{\"id\":\"1\",\"name\":\"TDF/3TC/EFV (300mg/300mg/600mg) Tabs\",\"description\":\"TDF/3TC/EFV (300mg/300mg/600mg) Tabs\",\"category_id\":1,\"uuid\":\"ee21b325-d770-11e8-ba9c-f25c917bb7ec\",\"units\":[{\"id\":1,\"name\":\"B/30\",\"description\":\"B/30 milligrams\",\"uuid\":\"ee22b325-d770-11e8-ba9c-f25c6717bb7ec\"},{\"id\":2,\"name\":\"B/60\",\"description\":\"B/60 milligrams\",\"uuid\":\"7e21442b325-d770-11e8-ba9c-573\"}]},{\"id\":\"2\",\"name\":\"Atazanavir 300mg/Retonavir 100mg\",\"description\":\"Atazanavir 300mg/Retonavir 100mg\",\"category_id\":1,\"uuid\":\"ee21og325-d770-11e8-ba9c-f23c91234b7ec\",\"units\":[{\"id\":2,\"name\":\"B/60\",\"description\":\"B/60 milligrams\",\"uuid\":\"7e21442b325-d770-11e8-ba9c-573\"}]},{\"id\":\"3\",\"name\":\"Abacavir 60mg/Lamivudune 30mg Tabs\",\"description\":\"Abacavir 60mg/Lamivudune 30mg Tabs\",\"category_id\":2,\"uuid\":\"ee21b325-d770-11e8-b957c-f23c91234b7ec\",\"units\":[{\"id\":2,\"name\":\"B/60\",\"description\":\"B/60 milligrams\",\"uuid\":\"7e21442b325-d770-11e8-ba9c-573\"}]},{\"id\":\"4\",\"name\":\"SD Bioline for HIV \",\"description\":\"Abacavir 60mg/Lamivudune 30mg Tabs\",\"category_id\":3,\"uuid\":\"ee2ps5-d770-65rs-b57c-f23c91234b7ec\",\"units\":[{\"id\":3,\"name\":\"Strips\",\"description\":\"Strips\",\"uuid\":\"7e21442b325-d770-11e8-dg563-573\"}]}]";
-                    List<ProductsResponse> categoriesResponses = new Gson().fromJson(productsJson, new TypeToken<List<ProductsResponse>>() {
-                    }.getType());
-
-                    addProductsAsyncTask task = new addProductsAsyncTask(categoriesResponses);
+//                    String productsJson = "[{\"id\":\"1\",\"name\":\"TDF/3TC/EFV (300mg/300mg/600mg) Tabs\",\"description\":\"TDF/3TC/EFV (300mg/300mg/600mg) Tabs\",\"category_id\":1,\"uuid\":\"ee21b325-d770-11e8-ba9c-f25c917bb7ec\",\"units\":[{\"id\":1,\"name\":\"B/30\",\"description\":\"B/30 milligrams\",\"uuid\":\"ee22b325-d770-11e8-ba9c-f25c6717bb7ec\"},{\"id\":2,\"name\":\"B/60\",\"description\":\"B/60 milligrams\",\"uuid\":\"7e21442b325-d770-11e8-ba9c-573\"}]},{\"id\":\"2\",\"name\":\"Atazanavir 300mg/Retonavir 100mg\",\"description\":\"Atazanavir 300mg/Retonavir 100mg\",\"category_id\":1,\"uuid\":\"ee21og325-d770-11e8-ba9c-f23c91234b7ec\",\"units\":[{\"id\":2,\"name\":\"B/60\",\"description\":\"B/60 milligrams\",\"uuid\":\"7e21442b325-d770-11e8-ba9c-573\"}]},{\"id\":\"3\",\"name\":\"Abacavir 60mg/Lamivudune 30mg Tabs\",\"description\":\"Abacavir 60mg/Lamivudune 30mg Tabs\",\"category_id\":2,\"uuid\":\"ee21b325-d770-11e8-b957c-f23c91234b7ec\",\"units\":[{\"id\":2,\"name\":\"B/60\",\"description\":\"B/60 milligrams\",\"uuid\":\"7e21442b325-d770-11e8-ba9c-573\"}]},{\"id\":\"4\",\"name\":\"SD Bioline for HIV \",\"description\":\"Abacavir 60mg/Lamivudune 30mg Tabs\",\"category_id\":3,\"uuid\":\"ee2ps5-d770-65rs-b57c-f23c91234b7ec\",\"units\":[{\"id\":3,\"name\":\"Strips\",\"description\":\"Strips\",\"uuid\":\"7e21442b325-d770-11e8-dg563-573\"}]}]";
+//                    List<ProductsResponse> categoriesResponses = new Gson().fromJson(productsJson, new TypeToken<List<ProductsResponse>>() {
+//                    }.getType());
+//
+//                    addProductsAsyncTask task = new addProductsAsyncTask(categoriesResponses);
                     task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                 }
 
                 @Override
                 public void onFailure(Call<List<ProductsResponse>> call, Throwable t) {
+                    //Error!
+                    Log.e("", "An error encountered!");
+                    Log.d("ProductsCheck", "failed with " + t.getMessage() + " " + t.toString());
+
+
+                    loginMessages.setText(getResources().getString(R.string.error_loading_products));
+                    loginMessages.setTextColor(getResources().getColor(R.color.red_500));
+                }
+            });
+        }
+    }
+
+    private void callUnits() {
+        loginMessages.setText(getResources().getString(R.string.loading_units));
+        loginMessages.setTextColor(getResources().getColor(R.color.amber_a700));
+        if (session.isLoggedIn()) {
+            Call<List<UnitsResponse>> call = productsServices.getUnits();
+            call.enqueue(new Callback<List<UnitsResponse>>() {
+
+                @Override
+                public void onResponse(Call<List<UnitsResponse>> call, Response<List<UnitsResponse>> response) {
+                    //Here will handle the responce from the server
+                    Log.d("ProductsCheck", response.body() + "");
+
+                    addUnitsAsyncTask task = new addUnitsAsyncTask(response.body());
+                    task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                }
+
+                @Override
+                public void onFailure(Call<List<UnitsResponse>> call, Throwable t) {
                     //Error!
                     Log.e("", "An error encountered!");
                     Log.d("ProductsCheck", "failed with " + t.getMessage() + " " + t.toString());
@@ -615,11 +674,41 @@ public class LoginActivity extends BaseActivity {
 
             for (CategoriesResponse mList : results) {
                 baseDatabase.categoriesModel().addCategory(DomConverter.getCategory(mList));
-//                List<SubCategory> subCategories = DomConverter.getSubCategories(mList);
-//                for (SubCategory subCategory : subCategories) {
-//                    baseDatabase.subCategoriesModel().addSubCategory(subCategory);
-//                }
                 Log.d("InitialSync", "Category  : " + mList.getName());
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            callReportingSchedule();
+        }
+    }
+
+    class addSchedule extends AsyncTask<Void, Void, Void> {
+
+        List<ProductReportingSchedule> results;
+
+        addSchedule(List<ProductReportingSchedule> responces) {
+            this.results = responces;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            loginMessages.setText("Finalizing Schedules..");
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+
+            Log.d("InitialSync", "Referal Response size : " + results.size());
+
+            for (ProductReportingSchedule schedule : results) {
+                baseDatabase.productReportingScheduleModelDao().addProductSchedule(schedule);
+                Log.d("InitialSync", "Schedule  : " + schedule.getScheduled_date());
             }
 
             return null;
@@ -655,12 +744,41 @@ public class LoginActivity extends BaseActivity {
                 baseDatabase.productsModelDao().addProduct(DomConverter.getProduct(mList));
 
                 Log.d(TAG, "Saved products = " + new Gson().toJson(DomConverter.getProduct(mList)));
-                baseDatabase.unitsDao().addUnit(DomConverter.getUnit(mList.getUnitResponses().get(0)));
-                Log.d("InitialSync", "Product  : " + mList.getName());
+//                baseDatabase.unitsDao().addUnit(DomConverter.getUnit(mList.getUnitResponses().get(0)));
+//                Log.d("InitialSync", "Product  : " + mList.getName());
             }
 
+            return null;
+        }
 
-            Product product = new Product();
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            callUnits();
+        }
+    }
+
+    class addUnitsAsyncTask extends AsyncTask<Void, Void, Void> {
+
+        List<UnitsResponse> results;
+
+        addUnitsAsyncTask(List<UnitsResponse> responces) {
+            this.results = responces;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            loginMessages.setText("Finalizing Units..");
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            Log.d("InitialSync", "Products UNITS size : " + results.size());
+
+            for (UnitsResponse mList : results) {
+                baseDatabase.unitsDao().addUnit(DomConverter.getUnit(mList));
+            }
 
             return null;
         }
@@ -688,11 +806,15 @@ public class LoginActivity extends BaseActivity {
 
         @Override
         protected Void doInBackground(Void... voids) {
-            for (Transactions mList : results) {
-                mList.setCreated_at(mList.getCreated_at() * 1000);
-                //TODO uncoment this line to save users transaction from the server after pulling the balances
-                baseDatabase.transactionsDao().addTransactions(mList);
-                Log.d("InitialSync", "Transactions type : " + mList.getTransactiontype_id());
+            try {
+                for (Transactions mList : results) {
+                    mList.setCreated_at(mList.getCreated_at() * 1000);
+                    //TODO uncomment this line to save users transaction from the server after pulling the balances
+                    baseDatabase.transactionsDao().addTransactions(mList);
+                    Log.d("InitialSync", "Transactions type : " + mList.getTransactiontype_id());
+                }
+            }catch (Exception e){
+                e.printStackTrace();
             }
 
             return null;
@@ -748,7 +870,6 @@ public class LoginActivity extends BaseActivity {
                 }
                 balances.setProduct_id(mList.getProductId());
                 balances.setUser_id(results.getUserId());
-                balances.setUuid(UUID.randomUUID().toString());
 
                 baseDatabase.balanceModelDao().addBalance(balances);
                 Log.d("InitialSync", "Transactions type : " + mList.getProductId());
@@ -787,12 +908,14 @@ public class LoginActivity extends BaseActivity {
 
         @Override
         protected Void doInBackground(Void... voids) {
+            try {
 
-            Log.d("InitialSync", "TransactionTypes Response size : " + results.size());
-
-            for (TransactionType mList : results) {
-                baseDatabase.transactionTypeModelDao().addTransactionsTypes(mList);
-                Log.d("InitialSync", "Transactions type : " + mList.getName());
+                for (TransactionType mList : results) {
+                    baseDatabase.transactionTypeModelDao().addTransactionsTypes(mList);
+                    Log.d("InitialSync", "Transactions type : " + mList.getName());
+                }
+            }catch (Exception e){
+                e.printStackTrace();
             }
 
             return null;
@@ -828,6 +951,30 @@ public class LoginActivity extends BaseActivity {
             database.userInfoDao().addUserInfo(userData[0]);
             return null;
         }
+    }
+
+    public static RequestBody getCredentialsRequestBody(String username,String password){
+
+        RequestBody body;
+        String datastream = "";
+        JSONObject object = new JSONObject();
+        try {
+            object.put("username",username);
+            object.put("email","");
+            object.put("password",password);
+            datastream =object.toString();
+
+            Log.d(TAG,"Credentials Object = "+datastream);
+
+            body = RequestBody.create(MediaType.parse("application/json"), datastream);
+
+        }catch (Exception e){
+            e.printStackTrace();
+            body = RequestBody.create(MediaType.parse("application/json"), datastream);
+        }
+
+        return body;
+
     }
 
 }

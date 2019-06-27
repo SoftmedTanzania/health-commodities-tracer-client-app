@@ -10,19 +10,16 @@ public class ProductsResponse implements Serializable {
     @SerializedName("id")
     private int id;
 
-    @SerializedName("uuid")
-    private String uuid;
-
-    @SerializedName("name")
+    @SerializedName("generic_name")
     private String name;
 
-    @SerializedName("description")
+    @SerializedName("brand_name")
     private String description;
 
-    @SerializedName("units")
-    List<UnitsResponse> unitResponses;
+    @SerializedName("unit")
+    private int unit;
 
-    @SerializedName("category_id")
+    @SerializedName("health_commodity_category")
     int category_id;
 
     public int getId() {
@@ -31,14 +28,6 @@ public class ProductsResponse implements Serializable {
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public String getUuid() {
-        return uuid;
-    }
-
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
     }
 
     public String getName() {
@@ -57,12 +46,12 @@ public class ProductsResponse implements Serializable {
         this.description = description;
     }
 
-    public List<UnitsResponse> getUnitResponses() {
-        return unitResponses;
+    public int getUnit() {
+        return unit;
     }
 
-    public void setUnitResponses(List<UnitsResponse> unitResponses) {
-        this.unitResponses = unitResponses;
+    public void setUnit(int unit) {
+        this.unit = unit;
     }
 
     public int getCategory_id() {

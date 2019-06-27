@@ -12,45 +12,34 @@ import java.io.Serializable;
 @Entity
 public class Balances implements Serializable {
 
-    @SerializedName("id")
-    private int id;
 
     @PrimaryKey(autoGenerate = false)
     @NonNull
-    @SerializedName("uuid")
-    private String uuid;
+    @SerializedName("id")
+    private int id;
 
-    @SerializedName("user_id")
+    @SerializedName("user_created")
     private int user_id;
 
-    @SerializedName("product_id")
+    @SerializedName("health_facility")
+    private int health_facility_id;
+
+    @SerializedName("health_commodity")
     private int product_id;
 
-    @SerializedName("image_path")
-    private String image_path;
-
-
-    @SerializedName("numberOfClientsOnRegime")
+    @SerializedName("quantity_available")
     private int numberOfClientsOnRegime;
 
     @SerializedName("balance")
     private int balance;
 
+    @NonNull
     public int getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(@NonNull int id) {
         this.id = id;
-    }
-
-    @NonNull
-    public String getUuid() {
-        return uuid;
-    }
-
-    public void setUuid(@NonNull String uuid) {
-        this.uuid = uuid;
     }
 
     public int getUser_id() {
@@ -61,20 +50,12 @@ public class Balances implements Serializable {
         this.user_id = user_id;
     }
 
-    public int getProduct_id() {
-        return product_id;
+    public int getHealth_facility_id() {
+        return health_facility_id;
     }
 
-    public void setProduct_id(int product_id) {
-        this.product_id = product_id;
-    }
-
-    public String getImage_path() {
-        return image_path;
-    }
-
-    public void setImage_path(String image_path) {
-        this.image_path = image_path;
+    public void setHealth_facility_id(int health_facility_id) {
+        this.health_facility_id = health_facility_id;
     }
 
     public int getNumberOfClientsOnRegime() {
@@ -91,5 +72,13 @@ public class Balances implements Serializable {
 
     public void setBalance(int balance) {
         this.balance = balance;
+    }
+
+    public int getProduct_id() {
+        return product_id;
+    }
+
+    public void setProduct_id(int product_id) {
+        this.product_id = product_id;
     }
 }

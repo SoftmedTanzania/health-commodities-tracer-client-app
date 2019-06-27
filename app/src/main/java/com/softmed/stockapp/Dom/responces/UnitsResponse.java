@@ -10,13 +10,10 @@ public class UnitsResponse implements Serializable {
     @SerializedName("id")
     private int id;
 
-    @SerializedName("uuid")
-    private String uuid;
-
-    @SerializedName("name")
+    @SerializedName("abbreviation")
     private String name;
 
-    @SerializedName("description")
+    @SerializedName("unit_description")
     private String description;
 
     public int getId() {
@@ -25,14 +22,6 @@ public class UnitsResponse implements Serializable {
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    public String getUuid() {
-        return uuid;
-    }
-
-    public void setUuid(String uuid) {
-        this.uuid = uuid;
     }
 
     public String getName() {

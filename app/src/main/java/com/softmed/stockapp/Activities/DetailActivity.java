@@ -238,7 +238,7 @@ public class DetailActivity extends AppCompatActivity {
      * be quite long, a separate method is preferable for better readability.
      */
     private void populateViewsWithProductData() {
-        String photoPath = mProduct.getImagePath();
+        String photoPath = "";//mProduct.getImagePath();
 
         Log.d(TAG,"product path = "+photoPath);
         mProductPhotoImageView.setTag(photoPath);
