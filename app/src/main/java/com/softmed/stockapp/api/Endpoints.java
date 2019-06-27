@@ -1,5 +1,6 @@
 package com.softmed.stockapp.api;
 
+import com.softmed.stockapp.Dom.entities.Product;
 import com.softmed.stockapp.Dom.entities.ProductReportingSchedule;
 import com.softmed.stockapp.Dom.entities.TransactionType;
 import com.softmed.stockapp.Dom.entities.Transactions;
@@ -7,7 +8,6 @@ import com.softmed.stockapp.Dom.responces.BalancesResponse;
 import com.softmed.stockapp.Dom.responces.CategoriesResponse;
 import com.softmed.stockapp.Dom.responces.LoginResponse;
 import com.softmed.stockapp.Dom.responces.ProductsPostResponse;
-import com.softmed.stockapp.Dom.responces.ProductsResponse;
 import com.softmed.stockapp.Dom.responces.UnitsResponse;
 
 import java.util.List;
@@ -41,7 +41,7 @@ public class Endpoints {
 
     public interface ProductsService {
         @GET("api_health_commodity")
-        Call<List<ProductsResponse>> getProducts();
+        Call<List<Product>> getProducts();
 
         @GET("api_unit")
         Call<List<UnitsResponse>> getUnits();
@@ -50,7 +50,7 @@ public class Endpoints {
         Call<ProductsPostResponse> postProducts(@Body RequestBody e);
     }
 
-    public interface TransactionServices{
+    public interface TransactionServices {
         @GET
         Call<List<Transactions>> getTransactions(@Url String url);
 
@@ -67,11 +67,12 @@ public class Endpoints {
         Call<Transactions> postTransaction(@Body RequestBody e);
     }
 
-    public interface NotificationServices{
+    public interface NotificationServices {
         @POST("save-push-notification-token")
         Call<String> registerDevice(@Body RequestBody u);
     }
-    public interface OrdersServices{
+
+    public interface OrdersServices {
         @POST("orders")
         Call<BalancesResponse> sendOrder(@Body RequestBody u);
     }

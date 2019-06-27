@@ -169,50 +169,6 @@ public class PostOfficeService extends IntentService {
         }
 
 
-
-        List<Orders> orders = database.orderModelDao().getUnpostedOrders();
-
-        for (final Orders order : orders) {
-
-            Call call = ordersServices.sendOrder(getTransactionRequestBody(order));
-            call.enqueue(new Callback() {
-                @SuppressLint("StaticFieldLeak")
-                @Override
-                public void onResponse(Call call, Response response) {
-                    //Store Received Patient Information, TbPatient as well as PatientAppointments
-                    if (response.code() == 200 ||response.code() == 201) {
-                        Log.d(TAG, "Successful Order responce " + response.body());
-                        order.setStatus(1);
-
-                        new AsyncTask<Void, Void, Void>(){
-                            @Override
-                            protected Void doInBackground(Void... voids) {
-                                database.orderModelDao().addOrder(order);
-                                return null;
-                            }
-
-                            @Override
-                            protected void onPostExecute(Void aVoid) {
-                                super.onPostExecute(aVoid);
-
-                            }
-                        }.execute();
-                    } else {
-                        Log.d(TAG, "Order Responce Call URL " + call.request().url());
-                        Log.d(TAG, "Order Responce Code " + response.code());
-                    }
-                }
-
-                @Override
-                public void onFailure(Call call, Throwable t) {
-                    Log.d(TAG,"PostOfficeService Error = "+ t.getMessage());
-                    Log.d(TAG,"PostOfficeService CALL URL = "+ call.request().url());
-                    Log.d(TAG,"PostOfficeService CALL Header = "+ call.request().header("Authorization"));
-                }
-            });
-        }
-
-
         // Release the wake lock provided by the WakefulBroadcastReceiver.
         WakefulBroadcastReceiver.completeWakefulIntent(intent);
     }

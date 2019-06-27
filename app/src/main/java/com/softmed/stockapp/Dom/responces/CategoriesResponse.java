@@ -11,10 +11,10 @@ public class CategoriesResponse implements Serializable {
     @SerializedName("id")
     private int id;
 
-    @SerializedName("health_commodity_category_description")
+    @SerializedName("health_commodity_category_name")
     private String name;
 
-    @SerializedName("health_commodity_category_name")
+    @SerializedName("description")
     private String description;
 
     public int getId() {

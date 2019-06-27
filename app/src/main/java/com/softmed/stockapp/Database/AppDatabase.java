@@ -8,7 +8,6 @@ import android.content.Context;
 import com.softmed.stockapp.Dom.dao.BalanceModelDao;
 import com.softmed.stockapp.Dom.dao.CategorieModelDao;
 import com.softmed.stockapp.Dom.dao.LocationsModelDao;
-import com.softmed.stockapp.Dom.dao.OrderModelDao;
 import com.softmed.stockapp.Dom.dao.ProductReportingScheduleModelDao;
 import com.softmed.stockapp.Dom.dao.ProductsModelDao;
 import com.softmed.stockapp.Dom.dao.TransactionModelDao;
@@ -40,7 +39,7 @@ import com.softmed.stockapp.Dom.entities.UsersInfo;
                 ProductReportingSchedule.class,
                 Orders.class
         },
-        version = 2,exportSchema = false)
+        version = 2, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
 
     private static AppDatabase INSTANCE;
@@ -48,7 +47,7 @@ public abstract class AppDatabase extends RoomDatabase {
     public static AppDatabase getDatabase(Context context) {
         if (INSTANCE == null) {
             INSTANCE = Room.databaseBuilder(context.getApplicationContext(), AppDatabase.class, "InventoryAppDb")
-                            .build();
+                    .build();
         }
         return INSTANCE;
     }
@@ -68,8 +67,6 @@ public abstract class AppDatabase extends RoomDatabase {
     public abstract UserInfoModelDao userInfoDao();
 
     public abstract LocationsModelDao locationsModelDao();
-
-    public abstract OrderModelDao orderModelDao();
 
     public abstract ProductReportingScheduleModelDao productReportingScheduleModelDao();
 

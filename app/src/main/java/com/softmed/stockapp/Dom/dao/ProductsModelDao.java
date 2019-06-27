@@ -32,7 +32,6 @@ public interface ProductsModelDao {
     LiveData<List<ProductList>> getAvailableProducts();
 
 
-
     @Query("select Product.id,Category.name || ' - ' || Product.name AS name ,Unit.name as unit,Balances.balance, Balances.numberOfClientsOnRegime  FROM Product " +
             "INNER JOIN Category ON Product.category_id = Category.id " +
             "INNER JOIN Unit ON Product.unit_id = Unit.id " +
@@ -41,13 +40,13 @@ public interface ProductsModelDao {
     List<ProductList> getAvailableProductsCheck();
 
 
-    @Query("select Product.id,Product.category_id,Product.description,Category.name || ' - ' || Product.name AS name ,Product.unit_id,Product.status, price FROM Product " +
+    @Query("select Product.id,Product.category_id,Product.description,Category.name || ' - ' || Product.name AS name ,Product.unit_id,Product.status,track_number_of_patients,track_wastage,track_quantity_expired FROM Product " +
             "INNER JOIN Category ON Product.category_id = Category.id " +
             "where category_id = :categoryId")
     List<Product> getProductsSummaryByCategoryId(int categoryId);
 
 
-    @Query("select Product.id,Product.name,Product.category_id,Product.unit_id,Product.description,Product.status, price from Product inner join Category on Category.id = Product.category_id where Category.id = :categoryId")
+    @Query("select Product.id,Product.name,Product.category_id,Product.unit_id,Product.description,Product.status,track_quantity_expired,track_wastage,track_number_of_patients from Product inner join Category on Category.id = Product.category_id where Category.id = :categoryId")
     List<Product> getProductsByCategoryId(int categoryId);
 
 

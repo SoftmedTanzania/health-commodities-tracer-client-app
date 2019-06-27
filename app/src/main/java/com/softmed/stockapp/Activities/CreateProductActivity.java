@@ -332,7 +332,6 @@ public class CreateProductActivity extends AppCompatActivity implements DialogIn
                             product.setDescription(mProductDescriptionTIL.getEditText().getText().toString());
                             product.setName(mProductNameTIL.getEditText().getText().toString());
                             product.setUnit_id(unitId);
-                            product.setPrice(Integer.valueOf(mProductPriceTIL.getEditText().getText().toString()));
                             product.setStatus(0);
 
                             Random rand = new Random();

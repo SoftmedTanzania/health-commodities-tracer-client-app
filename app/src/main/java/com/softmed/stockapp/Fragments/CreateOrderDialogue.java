@@ -204,7 +204,7 @@ public class CreateOrderDialogue extends android.support.v4.app.DialogFragment {
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 try {
                     description.setText(products.get(i).getDescription());
-                    price.setText(String.valueOf(products.get(i).getPrice()));
+//                    price.setText(String.valueOf(products.get(i).getPrice()));
                     typeId = products.get(i).getId();
                 }catch (Exception e){
                     typeId = -1;
@@ -303,7 +303,7 @@ public class CreateOrderDialogue extends android.support.v4.app.DialogFragment {
                         order.setUuid(UUID.randomUUID().toString());
                         order.setOrdered(Integer.valueOf(((TextInputLayout)dialogueLayout.findViewById(R.id.product_stock_on_hand_input_layout)).getEditText().getText().toString()));
 
-                        baseDatabase.orderModelDao().addOrder(order);
+//                        baseDatabase.orderModelDao().addOrder(order);
                         return null;
                     }
 

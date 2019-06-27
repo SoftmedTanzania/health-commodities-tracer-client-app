@@ -17,20 +17,26 @@ public class Product implements Serializable {
     @SerializedName("id")
     private int id;
 
-    @SerializedName("category_id")
+    @SerializedName("health_commodity_category")
     private int category_id;
 
-    @SerializedName("unit_id")
+    @SerializedName("unit")
     private int unit_id;
 
-    @SerializedName("name")
+    @SerializedName("health_commodity_name")
     private String name;
 
     @SerializedName("description")
     private String description;
 
-    @SerializedName("price")
-    private int price;
+    @SerializedName("track_number_of_patients")
+    private boolean track_number_of_patients;
+
+    @SerializedName("track_wastage")
+    private boolean track_wastage;
+
+    @SerializedName("track_quantity_expired")
+    private boolean track_quantity_expired;
 
     @SerializedName("status")
     private int status = 1;
@@ -78,19 +84,35 @@ public class Product implements Serializable {
         this.description = description;
     }
 
-    public int getPrice() {
-        return price;
-    }
-
-    public void setPrice(int price) {
-        this.price = price;
-    }
-
     public int getUnit_id() {
         return unit_id;
     }
 
     public void setUnit_id(int unit_id) {
         this.unit_id = unit_id;
+    }
+
+    public boolean isTrack_number_of_patients() {
+        return track_number_of_patients;
+    }
+
+    public void setTrack_number_of_patients(boolean track_number_of_patients) {
+        this.track_number_of_patients = track_number_of_patients;
+    }
+
+    public boolean isTrack_wastage() {
+        return track_wastage;
+    }
+
+    public void setTrack_wastage(boolean track_wastage) {
+        this.track_wastage = track_wastage;
+    }
+
+    public boolean isTrack_quantity_expired() {
+        return track_quantity_expired;
+    }
+
+    public void setTrack_quantity_expired(boolean track_quantity_expired) {
+        this.track_quantity_expired = track_quantity_expired;
     }
 }

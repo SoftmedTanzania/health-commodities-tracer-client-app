@@ -7,6 +7,7 @@ import android.support.annotation.NonNull;
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
+import java.util.Date;
 
 
 @Entity
@@ -24,7 +25,7 @@ public class ProductReportingSchedule implements Serializable {
     private int facility_id;
 
     @SerializedName("scheduled_date")
-    private long scheduled_date;
+    private String scheduled_date;
 
     @SerializedName("status")
     private String status;
@@ -55,11 +56,11 @@ public class ProductReportingSchedule implements Serializable {
         this.facility_id = facility_id;
     }
 
-    public long getScheduled_date() {
+    public String getScheduled_date() {
         return scheduled_date;
     }
 
-    public void setScheduled_date(long scheduled_date) {
+    public void setScheduled_date(String scheduled_date) {
         this.scheduled_date = scheduled_date;
     }
 

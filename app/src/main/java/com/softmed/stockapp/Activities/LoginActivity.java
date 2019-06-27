@@ -22,7 +22,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.rey.material.widget.ProgressView;
 import com.softmed.stockapp.Database.AppDatabase;
 import com.softmed.stockapp.Dom.DomConverter;
@@ -37,7 +36,6 @@ import com.softmed.stockapp.Dom.responces.BalanceResponse;
 import com.softmed.stockapp.Dom.responces.BalancesResponse;
 import com.softmed.stockapp.Dom.responces.CategoriesResponse;
 import com.softmed.stockapp.Dom.responces.LoginResponse;
-import com.softmed.stockapp.Dom.responces.ProductsResponse;
 import com.softmed.stockapp.Dom.responces.UnitsResponse;
 import com.softmed.stockapp.R;
 import com.softmed.stockapp.Utils.Config;
@@ -51,7 +49,6 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
-import java.util.UUID;
 
 import fr.ganfra.materialspinner.MaterialSpinner;
 import okhttp3.MediaType;
@@ -85,6 +82,30 @@ public class LoginActivity extends BaseActivity {
     private UsersInfo userInfo;
     // Session Manager Class
     private SessionManager session;
+
+    public static RequestBody getCredentialsRequestBody(String username, String password) {
+
+        RequestBody body;
+        String datastream = "";
+        JSONObject object = new JSONObject();
+        try {
+            object.put("username", username);
+            object.put("email", "");
+            object.put("password", password);
+            datastream = object.toString();
+
+            Log.d(TAG, "Credentials Object = " + datastream);
+
+            body = RequestBody.create(MediaType.parse("application/json"), datastream);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            body = RequestBody.create(MediaType.parse("application/json"), datastream);
+        }
+
+        return body;
+
+    }
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -291,7 +312,7 @@ public class LoginActivity extends BaseActivity {
             //Use Retrofit to make http request calls
             Endpoints.LoginService loginService = ServiceGenerator.createService(Endpoints.LoginService.class, usernameValue, passwordValue);
 
-            Call<LoginResponse> call = loginService.basicLogin(getCredentialsRequestBody(usernameValue,passwordValue));
+            Call<LoginResponse> call = loginService.basicLogin(getCredentialsRequestBody(usernameValue, passwordValue));
 
             call.enqueue(new Callback<LoginResponse>() {
                 @SuppressLint("StaticFieldLeak")
@@ -330,7 +351,7 @@ public class LoginActivity extends BaseActivity {
                             @Override
                             protected void onPostExecute(Void aVoid) {
                                 super.onPostExecute(aVoid);
-                                sendRegistrationToServer(deviceRegistrationId,userInfo.getId()+"");
+                                sendRegistrationToServer(deviceRegistrationId, userInfo.getId() + "");
                             }
                         }.execute();
 
@@ -433,7 +454,6 @@ public class LoginActivity extends BaseActivity {
         }
     }
 
-
     private void callReportingSchedule() {
         loginMessages.setText(getResources().getString(R.string.loading_categories));
         loginMessages.setTextColor(getResources().getColor(R.color.amber_a700));
@@ -468,26 +488,19 @@ public class LoginActivity extends BaseActivity {
         loginMessages.setText(getResources().getString(R.string.loading_products));
         loginMessages.setTextColor(getResources().getColor(R.color.amber_a700));
         if (session.isLoggedIn()) {
-            Call<List<ProductsResponse>> call = productsServices.getProducts();
-            call.enqueue(new Callback<List<ProductsResponse>>() {
+            Call<List<Product>> call = productsServices.getProducts();
+            call.enqueue(new Callback<List<Product>>() {
 
                 @Override
-                public void onResponse(Call<List<ProductsResponse>> call, Response<List<ProductsResponse>> response) {
-                    //Here will handle the responce from the server
+                public void onResponse(Call<List<Product>> call, Response<List<Product>> response) {
                     Log.d("ProductsCheck", response.body() + "");
 
                     addProductsAsyncTask task = new addProductsAsyncTask(response.body());
-
-//                    String productsJson = "[{\"id\":\"1\",\"name\":\"TDF/3TC/EFV (300mg/300mg/600mg) Tabs\",\"description\":\"TDF/3TC/EFV (300mg/300mg/600mg) Tabs\",\"category_id\":1,\"uuid\":\"ee21b325-d770-11e8-ba9c-f25c917bb7ec\",\"units\":[{\"id\":1,\"name\":\"B/30\",\"description\":\"B/30 milligrams\",\"uuid\":\"ee22b325-d770-11e8-ba9c-f25c6717bb7ec\"},{\"id\":2,\"name\":\"B/60\",\"description\":\"B/60 milligrams\",\"uuid\":\"7e21442b325-d770-11e8-ba9c-573\"}]},{\"id\":\"2\",\"name\":\"Atazanavir 300mg/Retonavir 100mg\",\"description\":\"Atazanavir 300mg/Retonavir 100mg\",\"category_id\":1,\"uuid\":\"ee21og325-d770-11e8-ba9c-f23c91234b7ec\",\"units\":[{\"id\":2,\"name\":\"B/60\",\"description\":\"B/60 milligrams\",\"uuid\":\"7e21442b325-d770-11e8-ba9c-573\"}]},{\"id\":\"3\",\"name\":\"Abacavir 60mg/Lamivudune 30mg Tabs\",\"description\":\"Abacavir 60mg/Lamivudune 30mg Tabs\",\"category_id\":2,\"uuid\":\"ee21b325-d770-11e8-b957c-f23c91234b7ec\",\"units\":[{\"id\":2,\"name\":\"B/60\",\"description\":\"B/60 milligrams\",\"uuid\":\"7e21442b325-d770-11e8-ba9c-573\"}]},{\"id\":\"4\",\"name\":\"SD Bioline for HIV \",\"description\":\"Abacavir 60mg/Lamivudune 30mg Tabs\",\"category_id\":3,\"uuid\":\"ee2ps5-d770-65rs-b57c-f23c91234b7ec\",\"units\":[{\"id\":3,\"name\":\"Strips\",\"description\":\"Strips\",\"uuid\":\"7e21442b325-d770-11e8-dg563-573\"}]}]";
-//                    List<ProductsResponse> categoriesResponses = new Gson().fromJson(productsJson, new TypeToken<List<ProductsResponse>>() {
-//                    }.getType());
-//
-//                    addProductsAsyncTask task = new addProductsAsyncTask(categoriesResponses);
                     task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                 }
 
                 @Override
-                public void onFailure(Call<List<ProductsResponse>> call, Throwable t) {
+                public void onFailure(Call<List<Product>> call, Throwable t) {
                     //Error!
                     Log.e("", "An error encountered!");
                     Log.d("ProductsCheck", "failed with " + t.getMessage() + " " + t.toString());
@@ -723,9 +736,9 @@ public class LoginActivity extends BaseActivity {
 
     class addProductsAsyncTask extends AsyncTask<Void, Void, Void> {
 
-        List<ProductsResponse> results;
+        List<Product> results;
 
-        addProductsAsyncTask(List<ProductsResponse> responces) {
+        addProductsAsyncTask(List<Product> responces) {
             this.results = responces;
         }
 
@@ -740,12 +753,10 @@ public class LoginActivity extends BaseActivity {
 
             Log.d("InitialSync", "Products Response size : " + results.size());
 
-            for (ProductsResponse mList : results) {
-                baseDatabase.productsModelDao().addProduct(DomConverter.getProduct(mList));
+            for (Product product : results) {
+                baseDatabase.productsModelDao().addProduct(product);
 
-                Log.d(TAG, "Saved products = " + new Gson().toJson(DomConverter.getProduct(mList)));
-//                baseDatabase.unitsDao().addUnit(DomConverter.getUnit(mList.getUnitResponses().get(0)));
-//                Log.d("InitialSync", "Product  : " + mList.getName());
+                Log.d(TAG, "Saved products = " + new Gson().toJson(product));
             }
 
             return null;
@@ -813,7 +824,7 @@ public class LoginActivity extends BaseActivity {
                     baseDatabase.transactionsDao().addTransactions(mList);
                     Log.d("InitialSync", "Transactions type : " + mList.getTransactiontype_id());
                 }
-            }catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
 
@@ -914,7 +925,7 @@ public class LoginActivity extends BaseActivity {
                     baseDatabase.transactionTypeModelDao().addTransactionsTypes(mList);
                     Log.d("InitialSync", "Transactions type : " + mList.getName());
                 }
-            }catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
 
@@ -951,30 +962,6 @@ public class LoginActivity extends BaseActivity {
             database.userInfoDao().addUserInfo(userData[0]);
             return null;
         }
-    }
-
-    public static RequestBody getCredentialsRequestBody(String username,String password){
-
-        RequestBody body;
-        String datastream = "";
-        JSONObject object = new JSONObject();
-        try {
-            object.put("username",username);
-            object.put("email","");
-            object.put("password",password);
-            datastream =object.toString();
-
-            Log.d(TAG,"Credentials Object = "+datastream);
-
-            body = RequestBody.create(MediaType.parse("application/json"), datastream);
-
-        }catch (Exception e){
-            e.printStackTrace();
-            body = RequestBody.create(MediaType.parse("application/json"), datastream);
-        }
-
-        return body;
-
     }
 
 }
