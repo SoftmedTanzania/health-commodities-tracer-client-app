@@ -1,10 +1,10 @@
 package com.softmed.stockapp.api;
 
+import com.softmed.stockapp.Dom.entities.Balances;
 import com.softmed.stockapp.Dom.entities.Product;
 import com.softmed.stockapp.Dom.entities.ProductReportingSchedule;
 import com.softmed.stockapp.Dom.entities.TransactionType;
 import com.softmed.stockapp.Dom.entities.Transactions;
-import com.softmed.stockapp.Dom.responces.BalancesResponse;
 import com.softmed.stockapp.Dom.responces.CategoriesResponse;
 import com.softmed.stockapp.Dom.responces.LoginResponse;
 import com.softmed.stockapp.Dom.responces.ProductsPostResponse;
@@ -55,7 +55,7 @@ public class Endpoints {
         Call<List<Transactions>> getTransactions(@Url String url);
 
         @GET
-        Call<BalancesResponse> getBalances(@Url String url);
+        Call<List<Balances>> getBalances(@Url String url);
 
         @GET("api_posting_schedule")
         Call<List<ProductReportingSchedule>> getSchedule();
@@ -72,9 +72,5 @@ public class Endpoints {
         Call<String> registerDevice(@Body RequestBody u);
     }
 
-    public interface OrdersServices {
-        @POST("orders")
-        Call<BalancesResponse> sendOrder(@Body RequestBody u);
-    }
 
 }

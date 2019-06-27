@@ -24,7 +24,7 @@ public interface ProductsModelDao {
     @Query("select * from Product where status = 0")
     List<Product> getUnpostedProducts();
 
-    @Query("select Product.id,Category.name || ' - ' || Product.name AS name ,Unit.name as unit,Balances.balance, Balances.numberOfClientsOnRegime  FROM Product " +
+    @Query("select Product.id,Category.name || ' - ' || Product.name AS name ,Unit.name as unit,Balances.balance FROM Product " +
             "INNER JOIN Category ON Product.category_id = Category.id " +
             "INNER JOIN Unit ON Product.unit_id = Unit.id " +
             "INNER JOIN Balances ON Product.id = Balances.product_id " +
@@ -32,7 +32,7 @@ public interface ProductsModelDao {
     LiveData<List<ProductList>> getAvailableProducts();
 
 
-    @Query("select Product.id,Category.name || ' - ' || Product.name AS name ,Unit.name as unit,Balances.balance, Balances.numberOfClientsOnRegime  FROM Product " +
+    @Query("select Product.id,Category.name || ' - ' || Product.name AS name ,Unit.name as unit,Balances.balance  FROM Product " +
             "INNER JOIN Category ON Product.category_id = Category.id " +
             "INNER JOIN Unit ON Product.unit_id = Unit.id " +
             "INNER JOIN Balances ON Product.id = Balances.product_id " +

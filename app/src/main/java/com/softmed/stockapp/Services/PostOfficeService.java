@@ -8,13 +8,12 @@ import android.support.v4.content.WakefulBroadcastReceiver;
 import android.util.Log;
 
 import com.google.gson.Gson;
-import com.softmed.stockapp.api.Endpoints;
 import com.softmed.stockapp.Database.AppDatabase;
-import com.softmed.stockapp.Dom.entities.Orders;
 import com.softmed.stockapp.Dom.entities.Product;
 import com.softmed.stockapp.Dom.entities.Transactions;
 import com.softmed.stockapp.Utils.ServiceGenerator;
 import com.softmed.stockapp.Utils.SessionManager;
+import com.softmed.stockapp.api.Endpoints;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -28,7 +27,6 @@ import retrofit2.Callback;
 import retrofit2.Response;
 
 
-
 public class PostOfficeService extends IntentService {
     private static final String TAG = PostOfficeService.class.getSimpleName();
 
@@ -36,10 +34,51 @@ public class PostOfficeService extends IntentService {
     SessionManager sess;
     Endpoints.TransactionServices transactionServices;
     Endpoints.ProductsService productsService;
-    Endpoints.OrdersServices ordersServices;
 
     public PostOfficeService() {
         super("PostOfficeService");
+    }
+
+    public static RequestBody getTransactionRequestBody(Object transactions) {
+
+        RequestBody body;
+        String datastream = "";
+
+        try {
+            datastream = new Gson().toJson(transactions);
+
+            Log.d(TAG, "Transaction Object = " + datastream);
+
+            body = RequestBody.create(MediaType.parse("application/json"), datastream);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            body = RequestBody.create(MediaType.parse("application/json"), datastream);
+        }
+
+        return body;
+
+    }
+
+    public static RequestBody getProductRequestBody(Product product) {
+
+        RequestBody body;
+        String datastream = "";
+
+        try {
+            datastream = new Gson().toJson(product);
+
+            Log.d(TAG, "Product Object = " + datastream);
+
+            body = RequestBody.create(MediaType.parse("application/json"), datastream);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            body = RequestBody.create(MediaType.parse("application/json"), datastream);
+        }
+
+        return body;
+
     }
 
     @Override
@@ -49,8 +88,8 @@ public class PostOfficeService extends IntentService {
         sess = new SessionManager(this.getApplicationContext());
 
 
-        Log.d(TAG,"username = "+ sess.getUserName());
-        Log.d(TAG,"password = "+ sess.getUserPass());
+        Log.d(TAG, "username = " + sess.getUserName());
+        Log.d(TAG, "password = " + sess.getUserPass());
 
 
         transactionServices = ServiceGenerator.createService(Endpoints.TransactionServices.class,
@@ -58,10 +97,6 @@ public class PostOfficeService extends IntentService {
                 sess.getUserPass());
 
         productsService = ServiceGenerator.createService(Endpoints.ProductsService.class,
-                sess.getUserName(),
-                sess.getUserPass());
-
-        ordersServices = ServiceGenerator.createService(Endpoints.OrdersServices.class,
                 sess.getUserName(),
                 sess.getUserPass());
 
@@ -76,7 +111,7 @@ public class PostOfficeService extends IntentService {
                 @Override
                 public void onResponse(Call call, Response response) {
                     //Store Received Patient Information, TbPatient as well as PatientAppointments
-                    if (response.code() == 200 ||response.code() == 201) {
+                    if (response.code() == 200 || response.code() == 201) {
                         Log.d(TAG, "Successful Product responce " + response.body());
 
                         final int tempProductId = product.getId();
@@ -90,13 +125,13 @@ public class PostOfficeService extends IntentService {
                         }
 
 
-                        new AsyncTask<Void, Void, Void>(){
+                        new AsyncTask<Void, Void, Void>() {
                             @Override
                             protected Void doInBackground(Void... voids) {
                                 database.productsModelDao().addProduct(product);
 
                                 List<Transactions> transactions = database.transactionsDao().getTransactionsByProductId(tempProductId);
-                                for(Transactions transaction : transactions){
+                                for (Transactions transaction : transactions) {
                                     transaction.setProduct_id(product.getId());
                                     database.transactionsDao().addTransactions(transaction);
                                 }
@@ -118,9 +153,9 @@ public class PostOfficeService extends IntentService {
 
                 @Override
                 public void onFailure(Call call, Throwable t) {
-                    Log.d(TAG,"PostOfficeService Error = "+ t.getMessage());
-                    Log.d(TAG,"PostOfficeService CALL URL = "+ call.request().url());
-                    Log.d(TAG,"PostOfficeService CALL Header = "+ call.request().header("Authorization"));
+                    Log.d(TAG, "PostOfficeService Error = " + t.getMessage());
+                    Log.d(TAG, "PostOfficeService CALL URL = " + call.request().url());
+                    Log.d(TAG, "PostOfficeService CALL Header = " + call.request().header("Authorization"));
                 }
             });
         }
@@ -136,11 +171,11 @@ public class PostOfficeService extends IntentService {
                 @Override
                 public void onResponse(Call call, Response response) {
                     //Store Received Patient Information, TbPatient as well as PatientAppointments
-                    if (response.code() == 200 ||response.code() == 201) {
+                    if (response.code() == 200 || response.code() == 201) {
                         Log.d(TAG, "Successful Transaction responce " + response.body());
                         transaction.setSyncStatus(1);
 
-                        new AsyncTask<Void, Void, Void>(){
+                        new AsyncTask<Void, Void, Void>() {
                             @Override
                             protected Void doInBackground(Void... voids) {
                                 database.transactionsDao().addTransactions(transaction);
@@ -161,9 +196,9 @@ public class PostOfficeService extends IntentService {
 
                 @Override
                 public void onFailure(Call call, Throwable t) {
-                    Log.d(TAG,"PostOfficeService Error = "+ t.getMessage());
-                    Log.d(TAG,"PostOfficeService CALL URL = "+ call.request().url());
-                    Log.d(TAG,"PostOfficeService CALL Header = "+ call.request().header("Authorization"));
+                    Log.d(TAG, "PostOfficeService Error = " + t.getMessage());
+                    Log.d(TAG, "PostOfficeService CALL URL = " + call.request().url());
+                    Log.d(TAG, "PostOfficeService CALL Header = " + call.request().header("Authorization"));
                 }
             });
         }
@@ -171,47 +206,5 @@ public class PostOfficeService extends IntentService {
 
         // Release the wake lock provided by the WakefulBroadcastReceiver.
         WakefulBroadcastReceiver.completeWakefulIntent(intent);
-    }
-
-    public static RequestBody getTransactionRequestBody(Object transactions){
-
-        RequestBody body;
-        String datastream = "";
-
-        try {
-            datastream = new Gson().toJson(transactions);
-
-            Log.d(TAG,"Transaction Object = "+datastream);
-
-            body = RequestBody.create(MediaType.parse("application/json"), datastream);
-
-        }catch (Exception e){
-            e.printStackTrace();
-            body = RequestBody.create(MediaType.parse("application/json"), datastream);
-        }
-
-        return body;
-
-    }
-
-    public static RequestBody getProductRequestBody(Product product){
-
-        RequestBody body;
-        String datastream = "";
-
-        try {
-            datastream = new Gson().toJson(product);
-
-            Log.d(TAG,"Product Object = "+datastream);
-
-            body = RequestBody.create(MediaType.parse("application/json"), datastream);
-
-        }catch (Exception e){
-            e.printStackTrace();
-            body = RequestBody.create(MediaType.parse("application/json"), datastream);
-        }
-
-        return body;
-
     }
 }

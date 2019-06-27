@@ -502,7 +502,6 @@ public class AddProductActivity extends AppCompatActivity implements DialogInter
         Object imageViewTag = mProductPhotoImageView.getTag();
 
 //        balances.setImage_path( (imageViewTag != null) ? imageViewTag.toString() : "" );
-        balances.setNumberOfClientsOnRegime(Integer.valueOf(mClientsOnRegimes.getEditText().getText().toString()));
         balances.setBalance(Integer.valueOf(mProductQuantityTIL.getEditText().getText().toString())+balance);
 
         return balances;

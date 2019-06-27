@@ -95,10 +95,8 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         holder.mProductNameTextView.setText(product.getName());
 
 
-        // Product price needs to be rounded to nearest 2 decimal places to avoid super long price.
-        double roundedPrice = Math.round(product.getNumberOfClientsOnRegime() * 100.0) / 100.0;
         holder.mProductQuantityTextView.setText(String.format("%s %s", mContext.getString(R.string.string_format_product_quantity), String.valueOf(product.getBalance()), product.getUnit()));
-        holder.mpatientsOnRegimeTextView.setText(String.format("%s %s", mContext.getString(R.string.string_format_product_clients_on_regime), String.valueOf(product.getNumberOfClientsOnRegime())));
+//        holder.mpatientsOnRegimeTextView.setText(String.format("%s %s", mContext.getString(R.string.string_format_product_clients_on_regime), String.valueOf(product.getNumberOfClientsOnRegime())));
         // Set an OnClickListener to the overflow button which will inflate a popup menu that allows
         // user to track a sale or delete the selected product.
         holder.mOverflowButton.setOnClickListener(new View.OnClickListener() {

@@ -484,7 +484,6 @@ public class CreateProductActivity extends AppCompatActivity implements DialogIn
         Object imageViewTag = mProductPhotoImageView.getTag();
 
 //        balances.setImage_path( (imageViewTag != null) ? imageViewTag.toString() : "" );
-        balances.setNumberOfClientsOnRegime(Integer.valueOf(mProductPriceTIL.getEditText().getText().toString()));
         balances.setBalance(Integer.valueOf(mProductQuantityTIL.getEditText().getText().toString())+balance);
 
         return balances;

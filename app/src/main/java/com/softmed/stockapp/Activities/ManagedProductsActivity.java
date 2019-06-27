@@ -60,28 +60,23 @@ public class ManagedProductsActivity extends AppCompatActivity {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
 
-                new AsyncTask<Void,Void,Void>(){
+                new AsyncTask<Void, Void, Void>() {
 
                     @Override
                     protected Void doInBackground(Void... voids) {
 
-                        Log.d(TAG,"balances = "+new Gson().toJson(baseDatabase.balanceModelDao().getBalances()));
+                        Log.d(TAG, "balances = " + new Gson().toJson(baseDatabase.balanceModelDao().getBalances()));
 
 
-                        for(Product product:managedProductIds) {
+                        for (Product product : managedProductIds) {
 
-                            Log.d(TAG,"Adding balance = "+product.getName());
-
-
-
-
+                            Log.d(TAG, "Adding balance = " + product.getName());
                             Balances balance = new Balances();
 
                             balance.setProduct_id(product.getId());
-                            balance.setNumberOfClientsOnRegime(0);
                             balance.setBalance(0);
 
-                            Log.d(TAG,"Saving balance = "+new Gson().toJson(balance));
+                            Log.d(TAG, "Saving balance = " + new Gson().toJson(balance));
                             baseDatabase.balanceModelDao().addBalance(balance);
                         }
 
@@ -124,18 +119,18 @@ public class ManagedProductsActivity extends AppCompatActivity {
 
             List<CategoryProducts> categoryProductsList = new ArrayList<>();
             List<Category> categories = baseDatabase.categoriesModel().getAllCategories();
-            Log.d(TAG,"all categories = "+new Gson().toJson(categories));
+            Log.d(TAG, "all categories = " + new Gson().toJson(categories));
 
             List<Product> ps = baseDatabase.productsModelDao().getAllProducts();
 
-            Log.d(TAG,"categories size = "+categories.size());
+            Log.d(TAG, "categories size = " + categories.size());
             for (Category category : categories) {
-                Log.d(TAG,"category name = "+category.getName());
+                Log.d(TAG, "category name = " + category.getName());
 
                 CategoryProducts categoryProducts = new CategoryProducts();
                 categoryProducts.setCategory(category);
 
-                List<Product> products  = baseDatabase.productsModelDao().getProductsByCategoryId(category.getId());
+                List<Product> products = baseDatabase.productsModelDao().getProductsByCategoryId(category.getId());
                 categoryProducts.setProducts(products);
 
                 categoryProductsList.add(categoryProducts);
@@ -149,7 +144,7 @@ public class ManagedProductsActivity extends AppCompatActivity {
             super.onPostExecute(categoryProductsList);
 
 
-            for(CategoryProducts categoryProducts:categoryProductsList) {
+            for (CategoryProducts categoryProducts : categoryProductsList) {
                 View productCategories = getLayoutInflater().inflate(R.layout.view_products_categories, null);
                 TextView categoryName = productCategories.findViewById(R.id.category_name);
                 categoryName.setText(categoryProducts.getCategory().getName());
@@ -163,9 +158,9 @@ public class ManagedProductsActivity extends AppCompatActivity {
                     managedProduct.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                         @Override
                         public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
-                            if(b){
+                            if (b) {
                                 managedProductIds.add(product);
-                            }else{
+                            } else {
                                 managedProductIds.remove(product);
                             }
                         }

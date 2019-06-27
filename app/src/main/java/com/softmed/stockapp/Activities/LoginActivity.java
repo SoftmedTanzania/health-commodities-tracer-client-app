@@ -31,9 +31,6 @@ import com.softmed.stockapp.Dom.entities.ProductReportingSchedule;
 import com.softmed.stockapp.Dom.entities.TransactionType;
 import com.softmed.stockapp.Dom.entities.Transactions;
 import com.softmed.stockapp.Dom.entities.UsersInfo;
-import com.softmed.stockapp.Dom.responces.BalancePricesResponse;
-import com.softmed.stockapp.Dom.responces.BalanceResponse;
-import com.softmed.stockapp.Dom.responces.BalancesResponse;
 import com.softmed.stockapp.Dom.responces.CategoriesResponse;
 import com.softmed.stockapp.Dom.responces.LoginResponse;
 import com.softmed.stockapp.Dom.responces.UnitsResponse;
@@ -584,11 +581,11 @@ public class LoginActivity extends BaseActivity {
 
             Log.d(TAG, "userId Balance = " + session.getUserUUID());
 
-            Call<BalancesResponse> call = transactionServices.getBalances("users/" + session.getUserUUID() + "/products");
-            call.enqueue(new Callback<BalancesResponse>() {
+            Call<List<Balances>> call = transactionServices.getBalances("api_health_commodity_mapping");
+            call.enqueue(new Callback<List<Balances>>() {
 
                 @Override
-                public void onResponse(Call<BalancesResponse> call, Response<BalancesResponse> response) {
+                public void onResponse(Call<List<Balances>> call, Response<List<Balances>> response) {
                     Log.d(TAG, "BalancesCheck Code = " + response.code());
                     //Here will handle the responce from the server
                     Log.d("balancesCheck", response.body() + "");
@@ -598,7 +595,7 @@ public class LoginActivity extends BaseActivity {
                 }
 
                 @Override
-                public void onFailure(Call<BalancesResponse> call, Throwable t) {
+                public void onFailure(Call<List<Balances>> call, Throwable t) {
                     //Error!
                     Log.e("", "An error encountered!");
                     Log.d("BalanceCheck", "failed with " + t.getMessage() + " " + t.toString());
@@ -840,9 +837,9 @@ public class LoginActivity extends BaseActivity {
 
     class addBalancesAsyncTask extends AsyncTask<Void, Void, Void> {
 
-        BalancesResponse results;
+        List<Balances> results;
 
-        addBalancesAsyncTask(BalancesResponse responces) {
+        addBalancesAsyncTask(List<Balances> responces) {
             this.results = responces;
         }
 
@@ -854,36 +851,9 @@ public class LoginActivity extends BaseActivity {
 
         @Override
         protected Void doInBackground(Void... voids) {
-            List<BalanceResponse> products = new ArrayList<>();
-            List<BalancePricesResponse> pricesResponses = new ArrayList<>();
 
-            try {
-                products = results.getProducts();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-            try {
-                pricesResponses = results.getPrices();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-
-
-            for (BalanceResponse mList : products) {
-
-                Balances balances = new Balances();
-                balances.setBalance(mList.getBalance());
-
-                for (BalancePricesResponse balancePricesResponse : pricesResponses) {
-                    if (balancePricesResponse.getProductId() == mList.getProductId())
-                        balances.setNumberOfClientsOnRegime(balancePricesResponse.getBuyingPrice());
-                }
-                balances.setProduct_id(mList.getProductId());
-                balances.setUser_id(results.getUserId());
-
-                baseDatabase.balanceModelDao().addBalance(balances);
-                Log.d("InitialSync", "Transactions type : " + mList.getProductId());
+            for (Balances balance : results) {
+                baseDatabase.balanceModelDao().addBalance(balance);
             }
 
             return null;

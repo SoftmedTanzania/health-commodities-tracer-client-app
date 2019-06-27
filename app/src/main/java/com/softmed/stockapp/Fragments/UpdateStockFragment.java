@@ -8,12 +8,10 @@ import android.support.design.widget.TextInputLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.softmed.stockapp.Activities.MainActivity;
 import com.softmed.stockapp.Database.AppDatabase;
@@ -154,14 +152,14 @@ public class UpdateStockFragment extends android.support.v4.app.Fragment {
         dialogueLayout.findViewById(R.id.add_transaction).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                
+
                 if ((!availabilityOfClients || !numberOfClientsOnRegimeInputLayout.getEditText().getText().toString().equals(""))) {
                     final Integer numberOfClientsOnRegime = Integer.valueOf(numberOfClientsOnRegimeInputLayout.getEditText().getText().toString());
                     stockQuantity = 0;
                     try {
-                         stockQuantity = Integer.valueOf(stockAdjustmentQuantity.getEditText().getText().toString());
+                        stockQuantity = Integer.valueOf(stockAdjustmentQuantity.getEditText().getText().toString());
 
-                    }catch (Exception e){
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
 
@@ -195,7 +193,6 @@ public class UpdateStockFragment extends android.support.v4.app.Fragment {
                             Balances balances = baseDatabase.balanceModelDao().getBalance(productId);
 
                             balances.setBalance(stockQuantity);
-                            balances.setNumberOfClientsOnRegime(numberOfClientsOnRegime);
                             baseDatabase.balanceModelDao().addBalance(balances);
 
 
@@ -205,15 +202,15 @@ public class UpdateStockFragment extends android.support.v4.app.Fragment {
                         @Override
                         protected void onPostExecute(Void v) {
                             super.onPostExecute(v);
-                            ((MainActivity)getActivity()).moveToNextProduct();
+                            ((MainActivity) getActivity()).moveToNextProduct();
 
                         }
                     }.execute();
 
 
-                } else if(stockAdjustmentQuantity.getEditText().getText().toString().equals("")) {
+                } else if (stockAdjustmentQuantity.getEditText().getText().toString().equals("")) {
                     stockAdjustmentQuantity.getEditText().setError("Please fill the stock on hand quantity");
-                }else if(numberOfClientsOnRegimeInputLayout.getEditText().getText().toString().equals("")) {
+                } else if (numberOfClientsOnRegimeInputLayout.getEditText().getText().toString().equals("")) {
                     numberOfClientsOnRegimeInputLayout.getEditText().setError("Please fill the number of clients on regime");
                 }
 

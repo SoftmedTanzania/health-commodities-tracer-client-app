@@ -197,7 +197,7 @@ public class AddTransactionDialogue extends android.support.v4.app.DialogFragmen
                             Balances balances = baseDatabase.balanceModelDao().getBalance(productId);
 
                             balances.setBalance(Integer.valueOf(stockAdjustmentQuantity.getEditText().getText().toString()));
-                            balances.setNumberOfClientsOnRegime(Integer.valueOf(numberOfClientsOnRegimeInputLayout.getEditText().getText().toString()));
+//                            balances.setNumberOfClientsOnRegime(Integer.valueOf(numberOfClientsOnRegimeInputLayout.getEditText().getText().toString()));
 
 //                            if (stockAdjustmentReasonId == 1) {
 //                                balances.setBalance(balances.getBalance() + Integer.valueOf(stockAdjustmentQuantity.getEditText().getText().toString()));

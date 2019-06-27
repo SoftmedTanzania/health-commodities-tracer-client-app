@@ -146,7 +146,7 @@ public class ProductsListFragment extends Fragment implements
                             Transactions transactions = new Transactions();
                             transactions.setUuid(UUID.randomUUID().toString());
                             transactions.setStatus_id(1);
-                            transactions.setClientsOnRegime(product.getNumberOfClientsOnRegime());
+//                            transactions.setClientsOnRegime(product.getNumberOfClientsOnRegime());
                             transactions.setAmount(1);
                             transactions.setProduct_id(product.getId());
                             //TODO remove hardcoding of ids

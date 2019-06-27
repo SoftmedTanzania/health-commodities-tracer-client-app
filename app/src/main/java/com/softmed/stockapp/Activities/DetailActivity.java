@@ -253,7 +253,7 @@ public class DetailActivity extends AppCompatActivity {
         mProductQuantityTextView.setText(String.format("%s %s", String.valueOf(mProduct.getBalance()), String.valueOf(mProduct.getUnit())));
 
         numberOfClientsOnRegimeTextView = (TextView) findViewById(R.id.number_of_clients_on_regime);
-        numberOfClientsOnRegimeTextView.setText(String.format("%s %s", String.valueOf(mProduct.getNumberOfClientsOnRegime()),getString(R.string.clients_label)));
+//        numberOfClientsOnRegimeTextView.setText(String.format("%s %s", String.valueOf(mProduct.getNumberOfClientsOnRegime()),getString(R.string.clients_label)));
 
     }
 

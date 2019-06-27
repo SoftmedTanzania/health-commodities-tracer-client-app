@@ -28,9 +28,6 @@ public class Balances implements Serializable {
     private int product_id;
 
     @SerializedName("quantity_available")
-    private int numberOfClientsOnRegime;
-
-    @SerializedName("balance")
     private int balance;
 
     @NonNull
@@ -56,14 +53,6 @@ public class Balances implements Serializable {
 
     public void setHealth_facility_id(int health_facility_id) {
         this.health_facility_id = health_facility_id;
-    }
-
-    public int getNumberOfClientsOnRegime() {
-        return numberOfClientsOnRegime;
-    }
-
-    public void setNumberOfClientsOnRegime(int numberOfClientsOnRegime) {
-        this.numberOfClientsOnRegime = numberOfClientsOnRegime;
     }
 
     public int getBalance() {

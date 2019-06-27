@@ -23,7 +23,6 @@ public interface BalanceModelDao {
             "Category.name as productCategory," +
             "Product.name as productName ," +
             "Unit.name as unit, " +
-            "Balances.numberOfClientsOnRegime as numberOfClientsOnRegime, " +
             "Balances.balance, " +
             "Product.id as productId " +
 
@@ -42,7 +41,6 @@ public interface BalanceModelDao {
             "Category.name as productCategory, " +
             "Product.name AS productName, " +
             "Unit.name as unit, " +
-            "Balances.numberOfClientsOnRegime as numberOfClientsOnRegime, " +
             "Balances.balance, " +
             "Product.id as productId " +
             " FROM Balances " +
