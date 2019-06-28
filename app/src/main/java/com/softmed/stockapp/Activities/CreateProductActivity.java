@@ -350,9 +350,8 @@ public class CreateProductActivity extends AppCompatActivity implements DialogIn
                             Transactions transaction = new Transactions();
                             transaction.setProduct_id(productId);
                             transaction.setAmount(Integer.valueOf(mProductQuantityTIL.getEditText().getText().toString()));
-                            transaction.setClientsOnRegime(Integer.valueOf(mProductPriceTIL.getEditText().getText().toString()));
+                            transaction.setClientsOnRegime(mProductPriceTIL.getEditText().getText().toString());
                             transaction.setUser_id(Integer.valueOf(session.getUserUUID()));
-                            transaction.setUuid(UUID.randomUUID().toString());
 
                             transaction.setTransactiontype_id(1);
                             transaction.setStatus_id(1);

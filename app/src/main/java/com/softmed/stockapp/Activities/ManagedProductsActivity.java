@@ -24,6 +24,7 @@ import com.softmed.stockapp.Dom.entities.Balances;
 import com.softmed.stockapp.Dom.entities.Category;
 import com.softmed.stockapp.Dom.entities.Product;
 import com.softmed.stockapp.R;
+import com.softmed.stockapp.Utils.SessionManager;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -87,6 +88,8 @@ public class ManagedProductsActivity extends AppCompatActivity {
                     protected void onPostExecute(Void aVoid) {
                         super.onPostExecute(aVoid);
 
+                        SessionManager session = new SessionManager(getApplicationContext());
+                        session.setIsFirstLogin(false);
                         //Call HomeActivity to log in user
                         Intent intent = new Intent(ManagedProductsActivity.this, MainActivity.class);
                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
@@ -109,6 +112,8 @@ public class ManagedProductsActivity extends AppCompatActivity {
     }
 
     class getProductsAsyncTask extends AsyncTask<Void, Void, List<CategoryProducts>> {
+
+        List<Balances> balances = new ArrayList<>();
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -136,6 +141,7 @@ public class ManagedProductsActivity extends AppCompatActivity {
                 categoryProductsList.add(categoryProducts);
             }
 
+            balances = baseDatabase.balanceModelDao().getAllBalances();
             return categoryProductsList;
         }
 
@@ -165,6 +171,14 @@ public class ManagedProductsActivity extends AppCompatActivity {
                             }
                         }
                     });
+
+                    for(Balances b:balances){
+                        if(b.getProduct_id()==product.getId()){
+                            managedProduct.setChecked(true);
+                            break;
+                        }
+                    }
+
                     Log.d(TAG, "Product Name = " + product.getName());
                     productsCheckBoxLayout.addView(v);
                 }

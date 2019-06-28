@@ -12,13 +12,9 @@ import java.io.Serializable;
 @Entity
 public class Transactions implements Serializable {
 
+    @PrimaryKey(autoGenerate = false)
     @SerializedName("id")
     private int id;
-
-    @PrimaryKey(autoGenerate = false)
-    @NonNull
-    @SerializedName("uuid")
-    private String uuid;
 
     @SerializedName("user_id")
     private int user_id;
@@ -35,8 +31,20 @@ public class Transactions implements Serializable {
     @SerializedName("amount")
     private int amount;
 
-    @SerializedName("clientsOnRegime")
-    private int clientsOnRegime;
+    @SerializedName("has_patients")
+    private boolean hasClients;
+
+    @SerializedName("number_of_clients")
+    private String clientsOnRegime;
+
+    @SerializedName("quantity_wasted")
+    private String wastage;
+
+    @SerializedName("quantity_expired")
+    private String quantityExpired;
+
+    @SerializedName("stock_out_days")
+    private int stockOutDays;
 
     @SerializedName("syncStatus")
     private int syncStatus = 0;
@@ -50,15 +58,6 @@ public class Transactions implements Serializable {
 
     public void setId(int id) {
         this.id = id;
-    }
-
-    @NonNull
-    public String getUuid() {
-        return uuid;
-    }
-
-    public void setUuid(@NonNull String uuid) {
-        this.uuid = uuid;
     }
 
     public int getUser_id() {
@@ -101,12 +100,36 @@ public class Transactions implements Serializable {
         this.amount = amount;
     }
 
-    public int getClientsOnRegime() {
+    public String getClientsOnRegime() {
         return clientsOnRegime;
     }
 
-    public void setClientsOnRegime(int clientsOnRegime) {
+    public void setClientsOnRegime(String clientsOnRegime) {
         this.clientsOnRegime = clientsOnRegime;
+    }
+
+    public String getWastage() {
+        return wastage;
+    }
+
+    public void setWastage(String wastage) {
+        this.wastage = wastage;
+    }
+
+    public String getQuantityExpired() {
+        return quantityExpired;
+    }
+
+    public void setQuantityExpired(String quantityExpired) {
+        this.quantityExpired = quantityExpired;
+    }
+
+    public int getStockOutDays() {
+        return stockOutDays;
+    }
+
+    public void setStockOutDays(int stockOutDays) {
+        this.stockOutDays = stockOutDays;
     }
 
     public int getSyncStatus() {
@@ -123,5 +146,13 @@ public class Transactions implements Serializable {
 
     public void setCreated_at(long created_at) {
         this.created_at = created_at;
+    }
+
+    public boolean isHasClients() {
+        return hasClients;
+    }
+
+    public void setHasClients(boolean hasClients) {
+        this.hasClients = hasClients;
     }
 }

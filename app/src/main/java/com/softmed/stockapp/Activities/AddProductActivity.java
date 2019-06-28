@@ -345,9 +345,8 @@ public class AddProductActivity extends AppCompatActivity implements DialogInter
 
                             transaction.setProduct_id(productId);
                             transaction.setAmount(Integer.valueOf(mProductQuantityTIL.getEditText().getText().toString()));
-                            transaction.setClientsOnRegime(Integer.valueOf(mClientsOnRegimes.getEditText().getText().toString()));
+                            transaction.setClientsOnRegime(mClientsOnRegimes.getEditText().getText().toString());
                             transaction.setUser_id(Integer.valueOf(session.getUserUUID()));
-                            transaction.setUuid(UUID.randomUUID().toString());
 
                             //TODO remove hardcoding of ids
                             transaction.setTransactiontype_id(1);

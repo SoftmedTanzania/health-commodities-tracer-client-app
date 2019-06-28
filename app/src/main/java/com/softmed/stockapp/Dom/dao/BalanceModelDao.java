@@ -58,7 +58,7 @@ public interface BalanceModelDao {
     Balances getBalance(int product_id);
 
     @Query("select * from Balances")
-    List<Balances> getAllBalance();
+    List<Balances> getAllBalances();
 
 
     @Insert(onConflict = REPLACE)

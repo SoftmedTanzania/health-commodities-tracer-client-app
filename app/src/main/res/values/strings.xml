@@ -41,6 +41,8 @@
     <string name="edit_text_hint_product_supplier">Product Supplier</string>
     <string name="edit_text_hint_product_supplier_email">Product Supplier Email</string>
     <string name="edit_text_number_of_clients_on_regime">Number of Clients on Regime </string>
+    <string name="edit_text_wastage">Wastage </string>
+    <string name="edit_text_quantity_expired">Quantity expired </string>
     <string name="edit_text_hint_stock_on_hand">Product Stock on hand</string>
     <string name="text_view_empty">No products found</string>
     <string name="button_increase_qty"><xliff xliff:id="plus">+</xliff> qty</string>

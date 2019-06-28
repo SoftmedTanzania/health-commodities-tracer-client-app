@@ -16,15 +16,12 @@ import android.widget.Toast;
 
 import com.softmed.stockapp.Database.AppDatabase;
 import com.softmed.stockapp.Dom.entities.Balances;
-import com.softmed.stockapp.Dom.entities.TransactionType;
+import com.softmed.stockapp.Dom.entities.Product;
 import com.softmed.stockapp.Dom.entities.Transactions;
 import com.softmed.stockapp.R;
 import com.softmed.stockapp.Utils.SessionManager;
 
-import java.util.ArrayList;
 import java.util.Calendar;
-import java.util.List;
-import java.util.UUID;
 
 import fr.ganfra.materialspinner.MaterialSpinner;
 
@@ -38,13 +35,11 @@ public class AddTransactionDialogue extends android.support.v4.app.DialogFragmen
     private static final String TAG = AddTransactionDialogue.class.getSimpleName();
     public static AppDatabase baseDatabase;
     private View dialogueLayout;
-    private String stockAdjustmentReason = "";
-    private MaterialSpinner stockAdjustmentReasonSpinner, availabilityOfClientsOnRegimeSpinner;
-    private List<TransactionType> transactionTypes;
-    private int stockAdjustmentReasonId;
-    private TextInputLayout stockAdjustmentQuantity, numberOfClientsOnRegimeInputLayout;
+    private TextInputLayout stockAdjustmentQuantity, numberOfClientsOnRegimeInputLayout,wastageInputLayout,quantityExpiredInputLayout,stockOutDaysInputLayout;
+    private MaterialSpinner  availabilityOfClientsOnRegimeSpinner;
     private int productId, numberOfClientsOnRegime;
-    private boolean availabilityOfClients = false;
+    private boolean hasClients = false;
+    private Product product;
 
     // Session Manager Class
     private SessionManager session;
@@ -88,13 +83,37 @@ public class AddTransactionDialogue extends android.support.v4.app.DialogFragmen
 
         dialogueLayout = inflater.inflate(R.layout.dialogue_create_transaction, container, false);
 
-
         stockAdjustmentQuantity = dialogueLayout.findViewById(R.id.stock_adjustment_quantity);
         numberOfClientsOnRegimeInputLayout = dialogueLayout.findViewById(R.id.number_of_clients_on_regime);
+        quantityExpiredInputLayout = dialogueLayout.findViewById(R.id.quantity_expired);
+        stockOutDaysInputLayout = dialogueLayout.findViewById(R.id.stock_out_days);
+        wastageInputLayout = dialogueLayout.findViewById(R.id.wastage);
 
-        stockAdjustmentReasonSpinner = dialogueLayout.findViewById(R.id.stock_adjustment_reason);
-        availabilityOfClientsOnRegimeSpinner = dialogueLayout.findViewById(R.id.do_you_have_any_clients_on_regime);
+        new AsyncTask<Void,Void,Void>(){
 
+            @Override
+            protected Void doInBackground(Void... voids) {
+                product = baseDatabase.productsModelDao().getProductByName(productId);
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void aVoid) {
+                super.onPostExecute(aVoid);
+                if(product.isTrack_wastage()){
+                    wastageInputLayout.setVisibility(View.VISIBLE);
+                }
+
+                if(product.isTrack_quantity_expired()){
+                    quantityExpiredInputLayout.setVisibility(View.VISIBLE);
+                }
+
+                if(product.isTrack_number_of_patients()){
+                    numberOfClientsOnRegimeInputLayout.setVisibility(View.VISIBLE);
+                }
+
+            }
+        }.execute();
 
         final String[] availabilityOfClientsOnRegime = {"Yes", "No"};
         ArrayAdapter<String> spinAdapter = new ArrayAdapter<String>(getActivity(), R.layout.simple_spinner_item_black, availabilityOfClientsOnRegime);
@@ -102,32 +121,15 @@ public class AddTransactionDialogue extends android.support.v4.app.DialogFragmen
         availabilityOfClientsOnRegimeSpinner.setAdapter(spinAdapter);
 
 
-        stockAdjustmentReasonSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
-            @Override
-            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                try {
-                    stockAdjustmentReason = transactionTypes.get(i).getName();
-                    stockAdjustmentReasonId = transactionTypes.get(i).getId();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-
-            @Override
-            public void onNothingSelected(AdapterView<?> adapterView) {
-
-            }
-        });
-
         availabilityOfClientsOnRegimeSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 try {
                     if (availabilityOfClientsOnRegime[i].equalsIgnoreCase("yes")) {
-                        availabilityOfClients = true;
+                        hasClients = true;
                         numberOfClientsOnRegimeInputLayout.setVisibility(View.VISIBLE);
                     } else {
-                        availabilityOfClients = false;
+                        hasClients = false;
                         numberOfClientsOnRegimeInputLayout.setVisibility(View.GONE);
                     }
                 } catch (Exception e) {
@@ -141,51 +143,26 @@ public class AddTransactionDialogue extends android.support.v4.app.DialogFragmen
             }
         });
 
-        new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void... voids) {
-                transactionTypes = baseDatabase.transactionTypeModelDao().getTransactionTypes();
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Void v) {
-                super.onPostExecute(v);
-                List<String> transactionTypesNames = new ArrayList<>();
-                for (TransactionType tType : transactionTypes) {
-                    transactionTypesNames.add(tType.getName());
-                }
-
-                ArrayAdapter<String> spinAdapter = new ArrayAdapter<String>(getActivity(), R.layout.simple_spinner_item_black, transactionTypesNames);
-                spinAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item_black);
-                stockAdjustmentReasonSpinner.setAdapter(spinAdapter);
-
-            }
-        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-
-
         dialogueLayout.findViewById(R.id.add_transaction).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
 
                 if (!stockAdjustmentQuantity.getEditText().getText().toString().equals("") &&
-                        (!availabilityOfClients || !numberOfClientsOnRegimeInputLayout.getEditText().getText().toString().equals(""))) {
+                        (!hasClients || !numberOfClientsOnRegimeInputLayout.getEditText().getText().toString().equals(""))) {
 
                     new AsyncTask<Void, Void, Void>() {
                         @Override
                         protected Void doInBackground(Void... voids) {
                             Transactions transactions = new Transactions();
-                            transactions.setUuid(UUID.randomUUID().toString());
                             transactions.setProduct_id(productId);
                             transactions.setUser_id(Integer.valueOf(session.getUserUUID()));
                             transactions.setTransactiontype_id(1);
                             transactions.setAmount(Integer.valueOf(stockAdjustmentQuantity.getEditText().getText().toString()));
 
-                            if (availabilityOfClients)
-                                transactions.setClientsOnRegime(Integer.valueOf(numberOfClientsOnRegimeInputLayout.getEditText().getText().toString()));
-                            else
-                                transactions.setClientsOnRegime(0);
+                            if (hasClients)
+                                transactions.setClientsOnRegime(numberOfClientsOnRegimeInputLayout.getEditText().getText().toString());
+
                             transactions.setStatus_id(1);
 
                             Calendar c = Calendar.getInstance();
@@ -233,6 +210,26 @@ public class AddTransactionDialogue extends android.support.v4.app.DialogFragmen
 
 
         return dialogueLayout;
+    }
+
+    public boolean checkInputs(){
+        if(stockAdjustmentQuantity.getEditText().getText().toString().equals("")){
+            stockAdjustmentQuantity.getEditText().setError("Please fill the stock on hand quantity");
+            return false;
+        } else if (numberOfClientsOnRegimeInputLayout.getEditText().getText().toString().equals("") && product.isTrack_number_of_patients() && hasClients) {
+            numberOfClientsOnRegimeInputLayout.getEditText().setError("Please fill the number of clients on regime");
+            return false;
+        } else if (stockOutDaysInputLayout.getEditText().getText().toString().equals("")) {
+            stockOutDaysInputLayout.getEditText().setError("Please fill the stockout days quantity");
+            return false;
+        } else if (wastageInputLayout.getEditText().getText().toString().equals("") && product.isTrack_wastage()) {
+            wastageInputLayout.getEditText().setError("Please fill wastage quantity");
+            return false;
+        } else if (quantityExpiredInputLayout.getEditText().getText().toString().equals("") && product.isTrack_quantity_expired()) {
+            quantityExpiredInputLayout.getEditText().setError("Please fill the quantity expired");
+            return false;
+        }
+        return true;
     }
 
     public void onResume() {

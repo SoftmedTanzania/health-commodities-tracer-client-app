@@ -144,7 +144,6 @@ public class ProductsListFragment extends Fragment implements
                     protected Void doInBackground(Void... voids) {
                         if (product != null){
                             Transactions transactions = new Transactions();
-                            transactions.setUuid(UUID.randomUUID().toString());
                             transactions.setStatus_id(1);
 //                            transactions.setClientsOnRegime(product.getNumberOfClientsOnRegime());
                             transactions.setAmount(1);

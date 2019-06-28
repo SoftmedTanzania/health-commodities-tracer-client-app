@@ -588,7 +588,7 @@ public class LoginActivity extends BaseActivity {
                 public void onResponse(Call<List<Balances>> call, Response<List<Balances>> response) {
                     Log.d(TAG, "BalancesCheck Code = " + response.code());
                     //Here will handle the responce from the server
-                    Log.d("balancesCheck", response.body() + "");
+                    Log.d("balancesCheck", new Gson().toJson(response.body()));
 
                     addBalancesAsyncTask task = new addBalancesAsyncTask(response.body());
                     task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);

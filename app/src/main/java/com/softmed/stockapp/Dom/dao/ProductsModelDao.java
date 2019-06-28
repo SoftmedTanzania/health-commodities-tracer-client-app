@@ -53,6 +53,9 @@ public interface ProductsModelDao {
     @Query("select name || ' ' from Product where id = :id")
     String getProductNameById(int id);
 
+    @Query("select * from Product where id = :id")
+    Product getProductByName(int id);
+
     @Insert(onConflict = REPLACE)
     void addProduct(Product product);
 

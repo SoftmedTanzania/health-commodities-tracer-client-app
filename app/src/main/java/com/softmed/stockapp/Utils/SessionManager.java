@@ -35,16 +35,14 @@ public class SessionManager {
     // All Shared Preferences Keys
     private static final String IS_LOGIN = "IsLoggedIn";
 
-    // User name (make variable public to access from outside)
     public static final String KEY_NAME = "name";
 
-    // Email address (make variable public to access from outside)
     public static final String KEY_UUID = "uuid";
 
-    //Health Facility ID (All the server calls require this
+    public static final String IS_FIRST_LOGIN = "IsFirstLogin";
+
     public static final String KEY_LOCATION_ID = "locationId";
 
-    //Change this
     public static final String USER_PASS = "userPassword";
 
     public static boolean sessionActive = false;
@@ -103,6 +101,17 @@ public class SessionManager {
     public String getUserPass(){
         return pref.getString(USER_PASS, null);
     }
+
+    public boolean getIsFirstLogin() {
+        return pref.getBoolean(IS_FIRST_LOGIN, true);
+    }
+
+    public void setIsFirstLogin(boolean isFirstLogin) {
+        editor.putBoolean(IS_FIRST_LOGIN, isFirstLogin);
+        editor.commit();
+    }
+
+
 
     /**
      * Check login method wil check user login status
