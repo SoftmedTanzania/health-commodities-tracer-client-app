@@ -80,8 +80,8 @@ public class ProductsListFragment extends Fragment implements
             }
         });
 
-        mRecyclerView = (RecyclerView) v.findViewById(R.id.recycler_view);
-        mEmptyView = (LinearLayout) v.findViewById(R.id.empty_view);
+        mRecyclerView = v.findViewById(R.id.recycler_view);
+        mEmptyView = v.findViewById(R.id.empty_view);
 
         database = AppDatabase.getDatabase(getActivity().getApplicationContext());
 

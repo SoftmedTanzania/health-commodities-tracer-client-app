@@ -1,58 +1,55 @@
 package com.softmed.stockapp.Dom.entities;
 
 import android.arch.persistence.room.Entity;
-import android.arch.persistence.room.PrimaryKey;
-import android.support.annotation.NonNull;
 
 import com.google.gson.annotations.SerializedName;
 
 import java.io.Serializable;
 
 
-@Entity
+@Entity(primaryKeys = {"healthFacilityId", "productId"})
 public class Balances implements Serializable {
 
-
-    @PrimaryKey(autoGenerate = false)
-    @NonNull
     @SerializedName("id")
     private int id;
 
     @SerializedName("user_created")
-    private int user_id;
+    private int userId;
 
     @SerializedName("health_facility")
-    private int health_facility_id;
+    private int healthFacilityId;
 
     @SerializedName("health_commodity")
-    private int product_id;
+    private int productId;
 
     @SerializedName("quantity_available")
     private int balance;
 
-    @NonNull
+    @SerializedName("sync_status")
+    private int syncStatus;
+
     public int getId() {
         return id;
     }
 
-    public void setId(@NonNull int id) {
+    public void setId(int id) {
         this.id = id;
     }
 
-    public int getUser_id() {
-        return user_id;
+    public int getUserId() {
+        return userId;
     }
 
-    public void setUser_id(int user_id) {
-        this.user_id = user_id;
+    public void setUserId(int userId) {
+        this.userId = userId;
     }
 
-    public int getHealth_facility_id() {
-        return health_facility_id;
+    public int getHealthFacilityId() {
+        return healthFacilityId;
     }
 
-    public void setHealth_facility_id(int health_facility_id) {
-        this.health_facility_id = health_facility_id;
+    public void setHealthFacilityId(int healthFacilityId) {
+        this.healthFacilityId = healthFacilityId;
     }
 
     public int getBalance() {
@@ -63,11 +60,19 @@ public class Balances implements Serializable {
         this.balance = balance;
     }
 
-    public int getProduct_id() {
-        return product_id;
+    public int getProductId() {
+        return productId;
     }
 
-    public void setProduct_id(int product_id) {
-        this.product_id = product_id;
+    public void setProductId(int productId) {
+        this.productId = productId;
+    }
+
+    public int getSyncStatus() {
+        return syncStatus;
+    }
+
+    public void setSyncStatus(int syncStatus) {
+        this.syncStatus = syncStatus;
     }
 }

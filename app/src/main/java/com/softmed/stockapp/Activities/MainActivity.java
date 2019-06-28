@@ -1,6 +1,7 @@
 package com.softmed.stockapp.Activities;
 
 
+import android.annotation.SuppressLint;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -25,21 +26,17 @@ import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
+import com.pixelcan.inkpageindicator.InkPageIndicator;
 import com.softmed.stockapp.Database.AppDatabase;
 import com.softmed.stockapp.Dom.entities.Product;
 import com.softmed.stockapp.Dom.entities.ProductList;
 import com.softmed.stockapp.Fragments.DashboardFragment;
-import com.softmed.stockapp.Fragments.OrdersFragment;
 import com.softmed.stockapp.Fragments.ProductsListFragment;
 import com.softmed.stockapp.Fragments.UpdateStockFragment;
 import com.softmed.stockapp.R;
 import com.softmed.stockapp.Utils.AlarmReceiver;
 import com.softmed.stockapp.Utils.SessionManager;
 import com.softmed.stockapp.Utils.ZoomOutPageTransformer;
-import com.softmed.stockapp.viewmodels.ProductsViewModel;
-import com.tbuonomo.viewpagerdotsindicator.DotsIndicator;
-import com.tbuonomo.viewpagerdotsindicator.SpringDotsIndicator;
-import com.tbuonomo.viewpagerdotsindicator.WormDotsIndicator;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -52,7 +49,6 @@ public class MainActivity extends AppCompatActivity {
     private static final String TAG = MainActivity.class.getSimpleName();
     private TabLayout tabLayout;
     private ViewPager viewPager;
-    private ProductsViewModel productsViewModel;
 
     // Session Manager Class
     private SessionManager session;
@@ -60,10 +56,13 @@ public class MainActivity extends AppCompatActivity {
     private ViewPager updateStockViewPager;
     private int managedProductsCount;
 
+    private InkPageIndicator inkPageIndicator;
+
     public static int convertDip2Pixels(Context context, int dip) {
         return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dip, context.getResources().getDisplayMetrics());
     }
 
+    @SuppressLint("StaticFieldLeak")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -82,7 +81,6 @@ public class MainActivity extends AppCompatActivity {
             finish();
         } else if (session.getIsFirstLogin()) {
             new AsyncTask<Void, Void, List<ProductList>>() {
-
                 @Override
                 protected List<ProductList> doInBackground(Void... voids) {
                     return baseDatabase.productsModelDao().getAvailableProductsCheck();
@@ -107,19 +105,17 @@ public class MainActivity extends AppCompatActivity {
             }.execute();
         }
 
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        viewPager = (ViewPager) findViewById(R.id.viewPager);
+        viewPager = findViewById(R.id.viewPager);
         ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
 
         DashboardFragment dashboardFragment = new DashboardFragment();
         ProductsListFragment productsListFragment = new ProductsListFragment();
-        OrdersFragment ordersFragment = new OrdersFragment();
 
         viewPagerAdapter.addFragment(dashboardFragment, "Dashboard");
         viewPagerAdapter.addFragment(productsListFragment, "Products List");
-//        viewPagerAdapter.addFragment(ordersFragment,"Order Fragment");
 
         viewPager.setAdapter(viewPagerAdapter);
 
@@ -128,7 +124,7 @@ public class MainActivity extends AppCompatActivity {
         viewPager.setPageMarginDrawable(cd);
 
 
-        tabLayout = (TabLayout) findViewById(R.id.tabs);
+        tabLayout = findViewById(R.id.tabs);
         tabLayout.post(new Runnable() {
             @Override
             public void run() {
@@ -138,9 +134,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-        DotsIndicator dotsIndicator = findViewById(R.id.dots_indicator);
-        SpringDotsIndicator springDotsIndicator = findViewById(R.id.spring_dots_indicator);
-        WormDotsIndicator wormDotsIndicator = findViewById(R.id.worm_dots_indicator);
+        inkPageIndicator = findViewById(R.id.indicator);
 
         updateStockViewPager = findViewById(R.id.view_pager);
         updateStockViewPager.setOffscreenPageLimit(20);
@@ -161,16 +155,12 @@ public class MainActivity extends AppCompatActivity {
                 managedProductsCount = productLists.size();
                 DotIndicatorPagerAdapter adapter = new DotIndicatorPagerAdapter(getSupportFragmentManager(), productLists);
                 updateStockViewPager.setAdapter(adapter);
+                inkPageIndicator.setViewPager(viewPager);
             }
         }.execute();
 
 
         updateStockViewPager.setPageTransformer(true, new ZoomOutPageTransformer());
-
-        dotsIndicator.setViewPager(updateStockViewPager);
-        springDotsIndicator.setViewPager(updateStockViewPager);
-        wormDotsIndicator.setViewPager(updateStockViewPager);
-
 
         scheduleAlarm();
     }
@@ -259,7 +249,7 @@ public class MainActivity extends AppCompatActivity {
     public static class DotIndicatorPagerAdapter extends FragmentPagerAdapter {
         private List<ProductList> productLists;
 
-        public DotIndicatorPagerAdapter(FragmentManager fm, List<ProductList> productLists) {
+        DotIndicatorPagerAdapter(FragmentManager fm, List<ProductList> productLists) {
             super(fm);
             this.productLists = productLists;
         }
@@ -285,7 +275,7 @@ public class MainActivity extends AppCompatActivity {
         private final List<Fragment> mFragmentList = new ArrayList<>();
         private final List<String> mFragmentTitleList = new ArrayList<>();
 
-        public ViewPagerAdapter(FragmentManager manager) {
+        ViewPagerAdapter(FragmentManager manager) {
             super(manager);
         }
 
@@ -299,15 +289,14 @@ public class MainActivity extends AppCompatActivity {
             return mFragmentList.size();
         }
 
-        public void addFragment(Fragment fragment, String title) {
+        void addFragment(Fragment fragment, String title) {
             mFragmentList.add(fragment);
             mFragmentTitleList.add(title);
         }
 
         @Override
         public CharSequence getPageTitle(int position) {
-//            return mFragmentTitleList.get(position);
-            return null;
+            return mFragmentTitleList.get(position);
         }
 
         @Override

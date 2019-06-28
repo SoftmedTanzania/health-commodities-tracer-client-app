@@ -26,7 +26,7 @@ public interface CategorieModelDao {
 
     @Query("select Category.name as name, SUM(Balances.balance) as balance from Category " +
             "INNER JOIN Product ON Category.id = Product.category_id  " +
-            "INNER JOIN Balances ON Product.id = Balances.product_id  " +
+            "INNER JOIN Balances ON Product.id = Balances.productId  " +
             "GROUP BY Category.name")
     LiveData<List<CategoryBalance>> getCategoriesBalance();
 

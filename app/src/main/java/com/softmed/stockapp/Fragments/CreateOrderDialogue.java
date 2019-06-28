@@ -120,12 +120,12 @@ public class CreateOrderDialogue extends android.support.v4.app.DialogFragment {
 
         sess = new SessionManager(getActivity().getApplicationContext());
         dialogueLayout =(RelativeLayout)inflater.inflate(R.layout.dialogue_create_order, container, false);
-        description = (TextView) dialogueLayout.findViewById(R.id.product_description);
-        price = (TextView) dialogueLayout.findViewById(R.id.price);
-        categorySpinner = (MaterialSpinner) dialogueLayout.findViewById(R.id.spin_category_spinner);
-        subCategorySpinner = (MaterialSpinner) dialogueLayout.findViewById(R.id.sub_category_spinner);
-        productsSpinner = (MaterialSpinner) dialogueLayout.findViewById(R.id.products_spinner);
-        suppliersSpinner = (MaterialSpinner) dialogueLayout.findViewById(R.id.suppliers_spinner);
+        description = dialogueLayout.findViewById(R.id.product_description);
+        price = dialogueLayout.findViewById(R.id.price);
+        categorySpinner = dialogueLayout.findViewById(R.id.spin_category_spinner);
+        subCategorySpinner = dialogueLayout.findViewById(R.id.sub_category_spinner);
+        productsSpinner = dialogueLayout.findViewById(R.id.products_spinner);
+        suppliersSpinner = dialogueLayout.findViewById(R.id.suppliers_spinner);
 
 
         new AsyncTask<Void, Void, Void>(){

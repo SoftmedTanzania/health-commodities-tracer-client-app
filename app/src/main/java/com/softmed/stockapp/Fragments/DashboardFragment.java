@@ -85,11 +85,11 @@ public class DashboardFragment extends Fragment {
 
         appDatabase = AppDatabase.getDatabase(getActivity().getApplicationContext());
 
-        productBalancesList = (LinearLayout) rowview.findViewById(R.id.product_balances_list);
-        transactionSummaryTable = (TableLayout) rowview.findViewById(R.id.transaction_summary_table);
+        productBalancesList = rowview.findViewById(R.id.product_balances_list);
+        transactionSummaryTable = rowview.findViewById(R.id.transaction_summary_table);
 
         //Pie chart configurations
-        mChart1 = (PieChart) rowview.findViewById(R.id.chart1);
+        mChart1 = rowview.findViewById(R.id.chart1);
         mChart1.setUsePercentValues(true);
         mChart1.getDescription().setEnabled(false);
         mChart1.setExtraOffsets(5, 10, 5, 5);
@@ -133,7 +133,7 @@ public class DashboardFragment extends Fragment {
 
 
         //Bar chart configurations
-        mChart2 = (BarChart) rowview.findViewById(R.id.chart2);
+        mChart2 = rowview.findViewById(R.id.chart2);
         mChart2.setDrawBarShadow(false);
         mChart2.setDrawValueAboveBar(true);
         mChart2.setDragDecelerationFrictionCoef(0.95f);

@@ -162,10 +162,10 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
 
         public ViewHolder(View itemView) {
             super(itemView);
-            mProductNameTextView = (TextView) itemView.findViewById(R.id.product_name_text_view);
-            mpatientsOnRegimeTextView = (TextView) itemView.findViewById(R.id.patients_on_regime);
-            mProductQuantityTextView = (TextView) itemView.findViewById(R.id.product_quantity_text_view);
-            mOverflowButton = (ImageButton) itemView.findViewById(R.id.overflow_button);
+            mProductNameTextView = itemView.findViewById(R.id.product_name_text_view);
+            mpatientsOnRegimeTextView = itemView.findViewById(R.id.patients_on_regime);
+            mProductQuantityTextView = itemView.findViewById(R.id.product_quantity_text_view);
+            mOverflowButton = itemView.findViewById(R.id.overflow_button);
         }
 
     }

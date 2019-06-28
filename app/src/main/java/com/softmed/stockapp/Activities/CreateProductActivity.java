@@ -47,7 +47,6 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 import java.util.Random;
-import java.util.UUID;
 
 import fr.ganfra.materialspinner.MaterialSpinner;
 
@@ -104,19 +103,19 @@ public class CreateProductActivity extends AppCompatActivity implements DialogIn
 
         baseDatabase = AppDatabase.getDatabase(this);
 
-        mProductPhotoImageView = (ImageView) findViewById(R.id.product_photo_image_view);
-        mProductPriceTIL = (TextInputLayout) findViewById(R.id.clients_on_regime_input_layout);
-        mProductQuantityTIL = (TextInputLayout) findViewById(R.id.product_stock_on_hand_input_layout);
-        mProductDescriptionTIL = (TextInputLayout) findViewById(R.id.product_description_text_input_layout);
-        mProductNameTIL = (TextInputLayout) findViewById(R.id.product_name_text_input_layout);
-        description = (TextView) findViewById(R.id.product_description);
+        mProductPhotoImageView = findViewById(R.id.product_photo_image_view);
+        mProductPriceTIL = findViewById(R.id.clients_on_regime_input_layout);
+        mProductQuantityTIL = findViewById(R.id.product_stock_on_hand_input_layout);
+        mProductDescriptionTIL = findViewById(R.id.product_description_text_input_layout);
+        mProductNameTIL = findViewById(R.id.product_name_text_input_layout);
+        description = findViewById(R.id.product_description);
 
-        categorySpinner = (MaterialSpinner) findViewById(R.id.spin_category_spinner);
-        subCategorySpinner = (MaterialSpinner) findViewById(R.id.sub_category_spinner);
-        unitsOfMeasureSpinner = (MaterialSpinner) findViewById(R.id.unit_of_measure_spinner);
+        categorySpinner = findViewById(R.id.spin_category_spinner);
+        subCategorySpinner = findViewById(R.id.sub_category_spinner);
+        unitsOfMeasureSpinner = findViewById(R.id.unit_of_measure_spinner);
         mPassedProduct = getIntent().getParcelableExtra(INTENT_EXTRA_PRODUCT);
 
-        Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         session = new SessionManager(this);
@@ -476,7 +475,7 @@ public class CreateProductActivity extends AppCompatActivity implements DialogIn
         Log.d(TAG,"Product Id = "+productId);
         Balances balances = new Balances();
 
-        balances.setProduct_id(productId);
+        balances.setProductId(productId);
 
         // Get the product photo path from the ImageView tag. The tag might contains null data, so
         // it needs to be checked. If it's null, set the photo path to an empty string.

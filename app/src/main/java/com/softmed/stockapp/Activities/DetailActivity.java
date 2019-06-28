@@ -24,14 +24,14 @@ import android.widget.ImageView;
 import android.widget.TableLayout;
 import android.widget.TextView;
 
-import com.softmed.stockapp.Utils.LoadProductPhotoAsync;
-import com.softmed.stockapp.R;
 import com.softmed.stockapp.Database.AppDatabase;
 import com.softmed.stockapp.Dom.entities.ProductBalance;
 import com.softmed.stockapp.Dom.entities.ProductList;
 import com.softmed.stockapp.Dom.entities.Transactions;
 import com.softmed.stockapp.Fragments.AddTransactionDialogue;
 import com.softmed.stockapp.Fragments.ConfirmationDialogFragment;
+import com.softmed.stockapp.R;
+import com.softmed.stockapp.Utils.LoadProductPhotoAsync;
 import com.softmed.stockapp.Utils.PhotoHelper;
 import com.softmed.stockapp.Utils.SessionManager;
 import com.softmed.stockapp.viewmodels.ProductsViewModel;
@@ -51,34 +51,27 @@ public class DetailActivity extends AppCompatActivity {
     private static final String TAG = DetailActivity.class.getSimpleName();
     private static final String CONFIRMATION_DIALOG_TAG = "CONFIRMATION_DIALOG_TAG";
     private static final String INTENT_EXTRA_PRODUCT = "INTENT_EXTRA_PRODUCT";
-
-    private ImageView mProductPhotoImageView;
-    private TextView mProductQuantityTextView,numberOfClientsOnRegimeTextView ;
-    private AppDatabase database;
-    private ProductBalance mProduct;
     private static final int REQUEST_CODE_CHOOSE_PHOTO = 1;
-
-    private FloatingActionButton floatingActionButton;
-    private String stockAdjustmentReason="";
-    private TransactionsListViewModel transactionsListViewModel;
-    private ProductsViewModel productsViewModel;
-    private TableLayout transactionsTable;
-
-
-    // Session Manager Class
-    private SessionManager session;
-
     /**
      * Id to identify a contacts permission request.
      */
     private static final int REQUEST_EXTERNAL_STORAGE = 1;
-
     /**
      * Permissions required to read and write contacts. Used by the {@link AddProductActivity}.
      */
-    private static String[] PERMISSIONS_EXTERNAL_STORAGE= {Manifest.permission.WRITE_EXTERNAL_STORAGE,
+    private static String[] PERMISSIONS_EXTERNAL_STORAGE = {Manifest.permission.WRITE_EXTERNAL_STORAGE,
             Manifest.permission.READ_EXTERNAL_STORAGE};
-
+    private ImageView mProductPhotoImageView;
+    private TextView mProductQuantityTextView, numberOfClientsOnRegimeTextView;
+    private AppDatabase database;
+    private ProductBalance mProduct;
+    private FloatingActionButton floatingActionButton;
+    private String stockAdjustmentReason = "";
+    private TransactionsListViewModel transactionsListViewModel;
+    private ProductsViewModel productsViewModel;
+    private TableLayout transactionsTable;
+    // Session Manager Class
+    private SessionManager session;
     // This is a DialogInterface listener that is used to communicate between the DialogFragment and
     // this activity. The method gets invoked when the user presses the 'OK' button on the dialog.
     private DialogInterface.OnClickListener mOnPositiveClickListener = new DialogInterface.OnClickListener() {
@@ -99,13 +92,13 @@ public class DetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
 
-        mProductPhotoImageView = (ImageView) findViewById(R.id.product_photo_image_view);
-        mProductQuantityTextView = (TextView) findViewById(R.id.product_quantity_text_view);
-        transactionsTable = (TableLayout)findViewById(R.id.transactions_table);
+        mProductPhotoImageView = findViewById(R.id.product_photo_image_view);
+        mProductQuantityTextView = findViewById(R.id.product_quantity_text_view);
+        transactionsTable = findViewById(R.id.transactions_table);
 
 
         // Get an instance of the database helper.
-        database =  AppDatabase.getDatabase(this);
+        database = AppDatabase.getDatabase(this);
         session = new SessionManager(this);
 
 
@@ -140,13 +133,13 @@ public class DetailActivity extends AppCompatActivity {
                     public void onChanged(@Nullable List<Transactions> transactions) {
                         transactionsTable.removeAllViews();
 
-                        int i=0;
-                        for(final Transactions transactions1:transactions){
+                        int i = 0;
+                        for (final Transactions transactions1 : transactions) {
                             i++;
-                            final View v = LayoutInflater.from(DetailActivity.this).inflate(R.layout.view_transaction_item,null);
-                            ((TextView)v.findViewById(R.id.sn)).setText(String.valueOf(i));
+                            final View v = LayoutInflater.from(DetailActivity.this).inflate(R.layout.view_transaction_item, null);
+                            ((TextView) v.findViewById(R.id.sn)).setText(String.valueOf(i));
 
-                            new AsyncTask<Void, Void, String>(){
+                            new AsyncTask<Void, Void, String>() {
                                 @Override
                                 protected String doInBackground(Void... voids) {
                                     return database.transactionTypeModelDao().getTransactionTypeName(transactions1.getTransactiontype_id());
@@ -155,14 +148,12 @@ public class DetailActivity extends AppCompatActivity {
                                 @Override
                                 protected void onPostExecute(String name) {
                                     super.onPostExecute(name);
-                                    ((TextView)v.findViewById(R.id.transaction_type)).setText(name);
+                                    ((TextView) v.findViewById(R.id.transaction_type)).setText(name);
                                 }
                             }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
 
-
-
-                            Log.d(TAG,"timestamp Date = "+transactions1.getCreated_at());
+                            Log.d(TAG, "timestamp Date = " + transactions1.getCreated_at());
 
 
                             Date date = new Date(transactions1.getCreated_at());
@@ -170,14 +161,13 @@ public class DetailActivity extends AppCompatActivity {
                             String dateFormatted = formatter.format(date);
 
 
-                            Log.d(TAG,"formated Date = "+dateFormatted);
+                            Log.d(TAG, "formated Date = " + dateFormatted);
 
-                            ((TextView)v.findViewById(R.id.date)).setText(dateFormatted);
+                            ((TextView) v.findViewById(R.id.date)).setText(dateFormatted);
 
 
-
-                            ((TextView)v.findViewById(R.id.number_of_clients_on_regime)).setText(String.valueOf(transactions1.getClientsOnRegime()));
-                            ((TextView)v.findViewById(R.id.quantity)).setText(String.valueOf(transactions1.getAmount()));
+                            ((TextView) v.findViewById(R.id.number_of_clients_on_regime)).setText(String.valueOf(transactions1.getClientsOnRegime()));
+                            ((TextView) v.findViewById(R.id.quantity)).setText(String.valueOf(transactions1.getAmount()));
 
                             transactionsTable.addView(v);
                         }
@@ -193,7 +183,6 @@ public class DetailActivity extends AppCompatActivity {
                 Dialogue.show(getSupportFragmentManager(), "Adding Transaction");
             }
         });
-
 
 
     }
@@ -227,6 +216,7 @@ public class DetailActivity extends AppCompatActivity {
     /**
      * Method that gets invoked when the user presses the product photo image view.
      * This method will dispatch a view intent to open the product photo in full screen.
+     *
      * @param view - FrameLayout (ViewGroup that contains the product photo image view).
      */
     public void viewProductPhoto(View view) {
@@ -240,19 +230,19 @@ public class DetailActivity extends AppCompatActivity {
     private void populateViewsWithProductData() {
         String photoPath = "";//mProduct.getImagePath();
 
-        Log.d(TAG,"product path = "+photoPath);
+        Log.d(TAG, "product path = " + photoPath);
         mProductPhotoImageView.setTag(photoPath);
         if (!TextUtils.isEmpty(photoPath)) {
             new LoadProductPhotoAsync(this, mProductPhotoImageView).execute(photoPath);
         }
 
-        TextView productNameTextView = (TextView) findViewById(R.id.product_name_text_view);
-        productNameTextView.setText(mProduct.getProductCategory()+" - "+mProduct.getProductName());
+        TextView productNameTextView = findViewById(R.id.product_name_text_view);
+        productNameTextView.setText(mProduct.getProductCategory() + " - " + mProduct.getProductName());
 
-        mProductQuantityTextView = (TextView) findViewById(R.id.product_quantity_text_view);
+        mProductQuantityTextView = findViewById(R.id.product_quantity_text_view);
         mProductQuantityTextView.setText(String.format("%s %s", String.valueOf(mProduct.getBalance()), String.valueOf(mProduct.getUnit())));
 
-        numberOfClientsOnRegimeTextView = (TextView) findViewById(R.id.number_of_clients_on_regime);
+        numberOfClientsOnRegimeTextView = findViewById(R.id.number_of_clients_on_regime);
 //        numberOfClientsOnRegimeTextView.setText(String.format("%s %s", String.valueOf(mProduct.getNumberOfClientsOnRegime()),getString(R.string.clients_label)));
 
     }
@@ -277,7 +267,7 @@ public class DetailActivity extends AppCompatActivity {
             Log.i(TAG, "Contact permissions have already been granted. Displaying contact details.");
             new LoadProductPhotoAsync(this, v).execute(photoPath);
 
-            Log.d(TAG,"show status");
+            Log.d(TAG, "show status");
 
         }
     }
@@ -326,7 +316,7 @@ public class DetailActivity extends AppCompatActivity {
                 // Save the file uri as a tag and display the selected photo on the ImageView.
                 String photoPath = data.getData().toString();
                 mProductPhotoImageView.setTag(photoPath);
-                showImage(mProductPhotoImageView,photoPath);
+                showImage(mProductPhotoImageView, photoPath);
             }
         }
     }

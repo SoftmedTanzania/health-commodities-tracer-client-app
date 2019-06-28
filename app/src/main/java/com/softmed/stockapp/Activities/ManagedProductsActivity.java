@@ -1,5 +1,6 @@
 package com.softmed.stockapp.Activities;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
@@ -37,14 +38,19 @@ public class ManagedProductsActivity extends AppCompatActivity {
     private AppDatabase baseDatabase;
     private LinearLayout productsLayout;
     private List<Product> managedProductIds = new ArrayList<>();
+    private List<Balances> currentBalances = new ArrayList<>();
+    private SessionManager session;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_managed_products);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         toolbar.setTitle("Choose Products Managed by the Facility");
+
+        // Session Manager
+        session = new SessionManager(getApplicationContext());
 
         Typeface rosarioRegular = ResourcesCompat.getFont(this, R.font.rosario_regular);
         Typeface robotoRegular = ResourcesCompat.getFont(this, R.font.roboto_regular);
@@ -54,31 +60,38 @@ public class ManagedProductsActivity extends AppCompatActivity {
         collapsingToolbar.setExpandedTitleTypeface(rosarioRegular);
 
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        FloatingActionButton fab = findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
+            @SuppressLint("StaticFieldLeak")
             @Override
             public void onClick(View view) {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
 
                 new AsyncTask<Void, Void, Void>() {
-
                     @Override
                     protected Void doInBackground(Void... voids) {
-
-                        Log.d(TAG, "balances = " + new Gson().toJson(baseDatabase.balanceModelDao().getBalances()));
-
-
+                        Log.d(TAG, "currentBalances = " + new Gson().toJson(baseDatabase.balanceModelDao().getBalances()));
                         for (Product product : managedProductIds) {
+                            boolean productAlreadyMapped = false;
+                            for (Balances b : currentBalances) {
+                                if (b.getProductId() == product.getId()) {
+                                    productAlreadyMapped = true;
+                                }
+                            }
 
-                            Log.d(TAG, "Adding balance = " + product.getName());
-                            Balances balance = new Balances();
+                            if (!productAlreadyMapped) {
+                                Log.d(TAG, "Adding balance = " + product.getName());
+                                Balances balance = new Balances();
 
-                            balance.setProduct_id(product.getId());
-                            balance.setBalance(0);
-
-                            Log.d(TAG, "Saving balance = " + new Gson().toJson(balance));
-                            baseDatabase.balanceModelDao().addBalance(balance);
+                                balance.setProductId(product.getId());
+                                balance.setBalance(0);
+                                balance.setUserId(Integer.parseInt(session.getUserUUID()));
+                                balance.setHealthFacilityId(session.getFacilityId());
+                                balance.setSyncStatus(0);
+                                Log.d(TAG, "Saving balance = " + new Gson().toJson(balance));
+                                baseDatabase.balanceModelDao().addBalance(balance);
+                            }
                         }
 
                         return null;
@@ -102,7 +115,6 @@ public class ManagedProductsActivity extends AppCompatActivity {
         });
 
         productsLayout = findViewById(R.id.products_categories);
-
         baseDatabase = AppDatabase.getDatabase(this);
         getCategories();
     }
@@ -111,9 +123,8 @@ public class ManagedProductsActivity extends AppCompatActivity {
         new getProductsAsyncTask().executeOnExecutor(THREAD_POOL_EXECUTOR);
     }
 
+    @SuppressLint("StaticFieldLeak")
     class getProductsAsyncTask extends AsyncTask<Void, Void, List<CategoryProducts>> {
-
-        List<Balances> balances = new ArrayList<>();
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
@@ -125,10 +136,8 @@ public class ManagedProductsActivity extends AppCompatActivity {
             List<CategoryProducts> categoryProductsList = new ArrayList<>();
             List<Category> categories = baseDatabase.categoriesModel().getAllCategories();
             Log.d(TAG, "all categories = " + new Gson().toJson(categories));
-
-            List<Product> ps = baseDatabase.productsModelDao().getAllProducts();
-
             Log.d(TAG, "categories size = " + categories.size());
+
             for (Category category : categories) {
                 Log.d(TAG, "category name = " + category.getName());
 
@@ -141,7 +150,7 @@ public class ManagedProductsActivity extends AppCompatActivity {
                 categoryProductsList.add(categoryProducts);
             }
 
-            balances = baseDatabase.balanceModelDao().getAllBalances();
+            currentBalances = baseDatabase.balanceModelDao().getAllBalances();
             return categoryProductsList;
         }
 
@@ -159,7 +168,7 @@ public class ManagedProductsActivity extends AppCompatActivity {
 
                 for (final Product product : categoryProducts.getProducts()) {
                     View v = getLayoutInflater().inflate(R.layout.view_checkbox, null);
-                    final CheckBox managedProduct = ((CheckBox) v.findViewById(R.id.checkbox));
+                    final CheckBox managedProduct = v.findViewById(R.id.checkbox);
                     managedProduct.setText(product.getName());
                     managedProduct.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                         @Override
@@ -172,8 +181,8 @@ public class ManagedProductsActivity extends AppCompatActivity {
                         }
                     });
 
-                    for(Balances b:balances){
-                        if(b.getProduct_id()==product.getId()){
+                    for (Balances b : currentBalances) {
+                        if (b.getProductId() == product.getId()) {
                             managedProduct.setChecked(true);
                             break;
                         }

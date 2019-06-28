@@ -27,7 +27,7 @@ public interface BalanceModelDao {
             "Product.id as productId " +
 
             "FROM Balances " +
-            "INNER JOIN Product ON Balances.product_id=Product.id " +
+            "INNER JOIN Product ON Balances.productId=Product.id " +
             "INNER JOIN Unit ON Product.unit_id=Unit.id " +
             "INNER JOIN Category ON Product.category_id = category.id  ")
     LiveData<List<ProductBalance>> getBalances();
@@ -45,7 +45,7 @@ public interface BalanceModelDao {
             "Product.id as productId " +
             " FROM Balances " +
 
-            "INNER JOIN Product ON Balances.product_id=Product.id " +
+            "INNER JOIN Product ON Balances.productId=Product.id " +
             "INNER JOIN Category ON Product.category_id = Category.id " +
             "INNER JOIN Unit ON Product.unit_id=Unit.id " +
             "where Product.id = :id")
@@ -54,7 +54,7 @@ public interface BalanceModelDao {
 
 
 
-    @Query("select * from Balances WHERE Balances.product_id=:product_id")
+    @Query("select * from Balances WHERE Balances.productId=:product_id")
     Balances getBalance(int product_id);
 
     @Query("select * from Balances")

@@ -46,7 +46,6 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import java.util.UUID;
 
 import fr.ganfra.materialspinner.MaterialSpinner;
 
@@ -102,19 +101,19 @@ public class AddProductActivity extends AppCompatActivity implements DialogInter
 
         baseDatabase = AppDatabase.getDatabase(this);
 
-        mProductPhotoImageView = (ImageView) findViewById(R.id.product_photo_image_view);
-        mClientsOnRegimes = (TextInputLayout) findViewById(R.id.clients_on_regime_input_layout);
-        mProductQuantityTIL = (TextInputLayout) findViewById(R.id.product_stock_on_hand_input_layout);
-        description = (TextView) findViewById(R.id.product_description);
+        mProductPhotoImageView = findViewById(R.id.product_photo_image_view);
+        mClientsOnRegimes = findViewById(R.id.clients_on_regime_input_layout);
+        mProductQuantityTIL = findViewById(R.id.product_stock_on_hand_input_layout);
+        description = findViewById(R.id.product_description);
 
 
-        categorySpinner = (MaterialSpinner) findViewById(R.id.spin_category_spinner);
-        productsSpinner = (MaterialSpinner) findViewById(R.id.products_spinner);
+        categorySpinner = findViewById(R.id.spin_category_spinner);
+        productsSpinner = findViewById(R.id.products_spinner);
 
 
         mPassedProduct = getIntent().getParcelableExtra(INTENT_EXTRA_PRODUCT);
 
-        Toolbar toolbar = (Toolbar)findViewById(R.id.toolbar);
+        Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         session = new SessionManager(this);
@@ -494,7 +493,7 @@ public class AddProductActivity extends AppCompatActivity implements DialogInter
         Log.d(TAG,"Product Id = "+productId);
         Balances balances = new Balances();
 
-        balances.setProduct_id(productId);
+        balances.setProductId(productId);
 
         // Get the product photo path from the ImageView tag. The tag might contains null data, so
         // it needs to be checked. If it's null, set the photo path to an empty string.

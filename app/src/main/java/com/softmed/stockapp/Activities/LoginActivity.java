@@ -238,11 +238,7 @@ public class LoginActivity extends BaseActivity {
     private boolean isDeviceRegistered() {
         SharedPreferences pref = getApplicationContext().getSharedPreferences(Config.SHARED_PREF, 0);
         deviceRegistrationId = pref.getString("regId", null);
-        if (deviceRegistrationId == null || deviceRegistrationId.isEmpty()) {
-            return false;
-        } else {
-            return true;
-        }
+        return deviceRegistrationId != null && !deviceRegistrationId.isEmpty();
     }
 
     @SuppressLint("StaticFieldLeak")
@@ -322,7 +318,7 @@ public class LoginActivity extends BaseActivity {
                         loginMessages.setTextColor(getResources().getColor(R.color.green_a700));
                         loginMessages.setText(getResources().getString(R.string.success));
 
-                        Log.d(TAG, "response body = " + new Gson().toJson(response.body()).toString());
+                        Log.d(TAG, "response body = " + new Gson().toJson(response.body()));
                         userInfo = DomConverter.getUserInfo(response.body());
 
                         String userUUID = String.valueOf(userInfo.getId());
@@ -427,12 +423,6 @@ public class LoginActivity extends BaseActivity {
                     //Here will handle the responce from the server
                     Log.d("CategoriesCheck", response.body() + "");
                     addCategoriesAsyncTask task = new addCategoriesAsyncTask(response.body());
-
-//                    String categories = "[{\"id\":\"1\",\"name\":\"ADULT ARVS FORMULATIONS\",\"description\":\"ADULT ARVS FORMULATIONS for adults\",\"uuid\":\"ee21b325-d770-11e8-ba9c-f23c917bb7ec\"},{\"id\":\"2\",\"name\":\" PEDIATRIC ARVS FORMULATIONS\",\"description\":\" PEDIATRIC ARVS FORMULATIONS\",\"uuid\":\"ee21b325-d770-11e8-ba9c-f23c91234b7ec\"},{\"id\":\"3\",\"name\":\" EID\",\"description\":\" EID\",\"uuid\":\"ee21b325-d770-11e8-b57c-f23c91234b7ec\"}]";
-//                    List<CategoriesResponse> categoriesResponses = new Gson().fromJson(categories, new TypeToken<List<CategoriesResponse>>() {
-//                    }.getType());
-//
-//                    addCategoriesAsyncTask task = new addCategoriesAsyncTask(categoriesResponses);
                     task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                 }
 
@@ -635,25 +625,25 @@ public class LoginActivity extends BaseActivity {
 
     private void setupview() {
 
-        languageSpinner = (MaterialSpinner) findViewById(R.id.language);
+        languageSpinner = findViewById(R.id.language);
 
-        credentialCard = (RelativeLayout) findViewById(R.id.credential_card);
+        credentialCard = findViewById(R.id.credential_card);
         credentialCard.setBackground(new LargeDiagonalCutPathDrawable(50));
 
 
-        background = (ImageView) findViewById(R.id.background);
+        background = findViewById(R.id.background);
 //        Glide.with(this).load(R.drawable.bg2).into(background);
 
-        loginMessages = (TextView) findViewById(R.id.login_messages);
+        loginMessages = findViewById(R.id.login_messages);
         loginMessages.setVisibility(View.GONE);
 
-        loginProgress = (ProgressView) findViewById(R.id.login_progress);
+        loginProgress = findViewById(R.id.login_progress);
         loginProgress.setVisibility(View.GONE);
 
-        loginButton = (Button) findViewById(R.id.login_button);
+        loginButton = findViewById(R.id.login_button);
 
-        usernameEt = (EditText) findViewById(R.id.user_username_et);
-        passwordEt = (EditText) findViewById(R.id.password_et);
+        usernameEt = findViewById(R.id.user_username_et);
+        passwordEt = findViewById(R.id.password_et);
     }
 
     private boolean isNetworkAvailable() {
@@ -817,7 +807,6 @@ public class LoginActivity extends BaseActivity {
             try {
                 for (Transactions mList : results) {
                     mList.setCreated_at(mList.getCreated_at() * 1000);
-                    //TODO uncomment this line to save users transaction from the server after pulling the balances
                     baseDatabase.transactionsDao().addTransactions(mList);
                     Log.d("InitialSync", "Transactions type : " + mList.getTransactiontype_id());
                 }
@@ -853,6 +842,7 @@ public class LoginActivity extends BaseActivity {
         protected Void doInBackground(Void... voids) {
 
             for (Balances balance : results) {
+                balance.setSyncStatus(1);
                 baseDatabase.balanceModelDao().addBalance(balance);
             }
 
