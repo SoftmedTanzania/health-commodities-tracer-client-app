@@ -36,13 +36,21 @@ import com.softmed.stockapp.Fragments.UpdateStockFragment;
 import com.softmed.stockapp.R;
 import com.softmed.stockapp.Utils.AlarmReceiver;
 import com.softmed.stockapp.Utils.SessionManager;
+import com.softmed.stockapp.Utils.VerticalArrow;
 import com.softmed.stockapp.Utils.ZoomOutPageTransformer;
+import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.util.ArrayList;
 import java.util.List;
 
+import tarek360.animated.icons.AnimatedIconView;
+import tarek360.animated.icons.IconFactory;
+import tarek360.animated.icons.drawables.NotificationAlert;
+
 import static android.app.AlarmManager.INTERVAL_FIFTEEN_MINUTES;
 import static android.view.View.GONE;
+import static com.sothree.slidinguppanel.SlidingUpPanelLayout.PanelState.COLLAPSED;
+import static com.sothree.slidinguppanel.SlidingUpPanelLayout.PanelState.EXPANDED;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -57,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
     private int managedProductsCount;
 
     private InkPageIndicator inkPageIndicator;
+    private AnimatedIconView arrowUp,reportingAlert,alarmCounterIcon;
 
     public static int convertDip2Pixels(Context context, int dip) {
         return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dip, context.getResources().getDisplayMetrics());
@@ -107,6 +116,60 @@ public class MainActivity extends AppCompatActivity {
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
+        arrowUp = findViewById(R.id.animated_arrow_up);
+        arrowUp.setAnimatedIcon(new VerticalArrow());
+
+
+        reportingAlert = findViewById(R.id.alarm_counter);
+        alarmCounterIcon = findViewById(R.id.alarm_counter_icon);
+
+
+        NotificationAlert notificationAlert = new NotificationAlert();
+        notificationAlert.setNotificationCount(3);
+
+        NotificationAlert notificationAlert2 = new NotificationAlert();
+        notificationAlert2.setNotificationCount(3);
+        reportingAlert.setAnimatedIcon(notificationAlert);
+        alarmCounterIcon.setAnimatedIcon(notificationAlert2);
+        alarmCounterIcon.startAnimation();
+
+
+
+        final SlidingUpPanelLayout slidingUpPanelLayout = findViewById(R.id.sliding_layout);
+        slidingUpPanelLayout.addPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
+            private SlidingUpPanelLayout.PanelState prevState = COLLAPSED;
+            @Override
+            public void onPanelSlide(View panel, float slideOffset) {
+
+            }
+
+            @Override
+            public void onPanelStateChanged(View panel, SlidingUpPanelLayout.PanelState previousState, SlidingUpPanelLayout.PanelState newState) {
+                if (newState == EXPANDED && prevState==COLLAPSED) {
+                    arrowUp.startAnimation();
+
+                    reportingAlert.setVisibility(View.VISIBLE);
+                    reportingAlert.startAnimation();
+                    alarmCounterIcon.setVisibility(GONE);
+                    prevState = EXPANDED;
+                } else if (newState == COLLAPSED && prevState==EXPANDED) {
+                    arrowUp.startAnimation();
+                    alarmCounterIcon.setVisibility(View.VISIBLE);
+                    alarmCounterIcon.startAnimation();
+
+                    reportingAlert.setVisibility(GONE);
+                    prevState = COLLAPSED;
+                }
+            }
+        });
+
+        alarmCounterIcon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                slidingUpPanelLayout.setPanelState(EXPANDED);
+            }
+        });
 
         viewPager = findViewById(R.id.viewPager);
         ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());

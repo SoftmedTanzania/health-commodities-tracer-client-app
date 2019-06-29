@@ -6,6 +6,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="bottom"
+    sothree:umanoParallaxOffset="64dp"
     sothree:umanoPanelHeight="68dp"
     sothree:umanoShadowHeight="4dp">
 
@@ -31,7 +32,31 @@
                     android:background="@color/primary"
                     android:focusableInTouchMode="true"
                     app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-                    app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
+                    app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+                    <RelativeLayout
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent">
+                        <TextView
+                            android:id="@+id/title"
+                            android:textSize="24sp"
+                            android:layout_marginLeft="16dp"
+                            android:text="@string/app_name"
+                            android:textStyle="bold"
+                            android:textColor="@color/white"
+                            android:layout_centerVertical="true"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content" />
+
+                        <tarek360.animated.icons.AnimatedIconView
+                            android:id="@+id/alarm_counter_icon"
+                            android:layout_width="48dp"
+                            android:layout_alignParentRight="true"
+                            android:layout_marginRight="8dp"
+                            android:layout_centerVertical="true"
+                            android:layout_height="48dp"/>
+                    </RelativeLayout>
+
+                </android.support.v7.widget.Toolbar>
 
                 <android.support.design.widget.TabLayout
                     android:id="@+id/tabs"
@@ -64,15 +89,44 @@
         android:fitsSystemWindows="true"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         tools:context="com.tbuonomo.dotsindicatorsample.MainActivity">
-        <android.support.v7.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
+        <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
             android:id="@+id/second_toolbar"
             android:layout_width="fill_parent"
             android:layout_height="72dp"
             android:background="@color/primary"
-            app:title="Report Stock Status"
             android:focusableInTouchMode="true"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-            app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
+            app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+
+            <tarek360.animated.icons.AnimatedIconView
+                android:id="@+id/animated_arrow_up"
+                android:layout_width="24dp"
+                android:layout_marginLeft="16dp"
+                android:layout_centerVertical="true"
+                android:layout_height="24dp"/>
+
+            <TextView
+                android:layout_toRightOf="@id/animated_arrow_up"
+                android:layout_marginLeft="16dp"
+                android:layout_width="wrap_content"
+                android:textColor="@color/white"
+                android:layout_height="match_parent"
+                android:gravity="center_vertical"
+                android:textSize="18sp"
+                android:textStyle="bold"
+                android:text="Report Stock Status"/>
+
+            <tarek360.animated.icons.AnimatedIconView
+                android:id="@+id/alarm_counter"
+                android:layout_width="48dp"
+                android:layout_alignParentRight="true"
+                android:layout_marginRight="16dp"
+                android:layout_centerVertical="true"
+                android:layout_height="48dp"/>
+
+
+
+        </RelativeLayout>
 
         <com.pixelcan.inkpageindicator.InkPageIndicator
             android:id="@+id/indicator"
