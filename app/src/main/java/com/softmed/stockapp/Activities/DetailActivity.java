@@ -25,6 +25,7 @@ import android.widget.TableLayout;
 import android.widget.TextView;
 
 import com.softmed.stockapp.Database.AppDatabase;
+import com.softmed.stockapp.Dom.entities.Product;
 import com.softmed.stockapp.Dom.entities.ProductBalance;
 import com.softmed.stockapp.Dom.entities.ProductList;
 import com.softmed.stockapp.Dom.entities.Transactions;
@@ -62,7 +63,7 @@ public class DetailActivity extends AppCompatActivity {
     private static String[] PERMISSIONS_EXTERNAL_STORAGE = {Manifest.permission.WRITE_EXTERNAL_STORAGE,
             Manifest.permission.READ_EXTERNAL_STORAGE};
     private ImageView mProductPhotoImageView;
-    private TextView mProductQuantityTextView, numberOfClientsOnRegimeTextView;
+    private TextView mProductQuantityTextView;
     private AppDatabase database;
     private ProductBalance mProduct;
     private FloatingActionButton floatingActionButton;
@@ -72,8 +73,6 @@ public class DetailActivity extends AppCompatActivity {
     private TableLayout transactionsTable;
     // Session Manager Class
     private SessionManager session;
-    // This is a DialogInterface listener that is used to communicate between the DialogFragment and
-    // this activity. The method gets invoked when the user presses the 'OK' button on the dialog.
     private DialogInterface.OnClickListener mOnPositiveClickListener = new DialogInterface.OnClickListener() {
         @Override
         public void onClick(DialogInterface dialogInterface, int i) {
@@ -97,22 +96,17 @@ public class DetailActivity extends AppCompatActivity {
         transactionsTable = findViewById(R.id.transactions_table);
 
 
-        // Get an instance of the database helper.
         database = AppDatabase.getDatabase(this);
         session = new SessionManager(this);
 
 
-        // Get the product object which was sent from MainActivity.
         final ProductList product = (ProductList) getIntent().getSerializableExtra(INTENT_EXTRA_PRODUCT);
-        // The product object currently doesn't have the complete product information.
-        // Get the rest of the product information from the database.
-
 
         productsViewModel = ViewModelProviders.of(DetailActivity.this).get(ProductsViewModel.class);
 
         productsViewModel.getProdictById(product.getId()).observe(DetailActivity.this, new Observer<ProductBalance>() {
             @Override
-            public void onChanged(@Nullable ProductBalance mProd) {
+            public void onChanged(@Nullable final ProductBalance mProd) {
                 mProduct = mProd;
 
                 // Populate views with the product details data.
@@ -120,13 +114,38 @@ public class DetailActivity extends AppCompatActivity {
 
                 transactionsListViewModel = ViewModelProviders.of(DetailActivity.this).get(TransactionsListViewModel.class);
 
-//                transactionsListViewModel.getLastTransactionByProductId(mProduct.getProductId()).observe(DetailActivity.this, new Observer<Transactions>() {
-//                    @Override
-//                    public void onChanged(@Nullable Transactions transactions) {
-//                        TextView numberOfClientsOnRegime = (TextView) findViewById(R.id.number_of_clients_on_regime);
-//                        numberOfClientsOnRegime.setText(String.format("%s %s", R.string.string_format_product_clients_on_regime, String.valueOf(transactions.getClientsOnRegime())));
-//                    }
-//                });
+                transactionsListViewModel.getLastTransactionByProductId(mProduct.getProductId()).observe(DetailActivity.this, new Observer<Transactions>() {
+                    @Override
+                    public void onChanged(@Nullable final Transactions transactions) {
+
+                        new AsyncTask<Void, Void, Void>() {
+                            private Product product;
+
+                            @Override
+                            protected Void doInBackground(Void... voids) {
+                                product = database.productsModelDao().getProductByName(mProduct.getProductId());
+                                return null;
+                            }
+
+                            @Override
+                            protected void onPostExecute(Void name) {
+                                super.onPostExecute(name);
+
+                                if (product.isTrack_number_of_patients()) {
+                                    View numberOfClientsLayout =  findViewById(R.id.number_of_clients_layout);
+                                    numberOfClientsLayout.setVisibility(View.VISIBLE);
+
+                                    TextView numberOfClientsOnRegime = findViewById(R.id.number_of_clients_on_regime);
+
+                                    Log.d(TAG,"number of clients on regime = "+String.valueOf(transactions.getClientsOnRegime()));
+
+                                    numberOfClientsOnRegime.setText(String.format("%s %s", getResources().getString(R.string.string_format_product_clients_on_regime), String.valueOf(transactions.getClientsOnRegime())));
+
+                                }
+                            }
+                        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                    }
+                });
 
                 transactionsListViewModel.getTransactionsListByProductId(mProduct.getProductId()).observe(DetailActivity.this, new Observer<List<Transactions>>() {
                     @Override
@@ -242,8 +261,6 @@ public class DetailActivity extends AppCompatActivity {
         mProductQuantityTextView = findViewById(R.id.product_quantity_text_view);
         mProductQuantityTextView.setText(String.format("%s %s", String.valueOf(mProduct.getBalance()), String.valueOf(mProduct.getUnit())));
 
-        numberOfClientsOnRegimeTextView = findViewById(R.id.number_of_clients_on_regime);
-//        numberOfClientsOnRegimeTextView.setText(String.format("%s %s", String.valueOf(mProduct.getNumberOfClientsOnRegime()),getString(R.string.clients_label)));
 
     }
 

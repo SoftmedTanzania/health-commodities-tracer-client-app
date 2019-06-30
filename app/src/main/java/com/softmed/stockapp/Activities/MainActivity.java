@@ -60,12 +60,11 @@ public class MainActivity extends AppCompatActivity {
 
     // Session Manager Class
     private SessionManager session;
-
     private ViewPager updateStockViewPager;
     private int managedProductsCount;
-
     private InkPageIndicator inkPageIndicator;
     private AnimatedIconView arrowUp,reportingAlert,alarmCounterIcon;
+    private SlidingUpPanelLayout slidingUpPanelLayout;
 
     public static int convertDip2Pixels(Context context, int dip) {
         return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dip, context.getResources().getDisplayMetrics());
@@ -82,38 +81,6 @@ public class MainActivity extends AppCompatActivity {
         session = new SessionManager(getApplicationContext());
 
         final AppDatabase baseDatabase = AppDatabase.getDatabase(this);
-
-        Log.d(TAG, "isFirstLogin = " + session.getIsFirstLogin());
-        SessionManager sessionManager = new SessionManager(this);
-        if (!sessionManager.isLoggedIn()) {
-            sessionManager.checkLogin();
-            finish();
-        } else if (session.getIsFirstLogin()) {
-            new AsyncTask<Void, Void, List<ProductList>>() {
-                @Override
-                protected List<ProductList> doInBackground(Void... voids) {
-                    return baseDatabase.productsModelDao().getAvailableProductsCheck();
-                }
-
-                @Override
-                protected void onPostExecute(List<ProductList> productLists) {
-                    super.onPostExecute(productLists);
-                    Log.d(TAG, "available products = " + new Gson().toJson(productLists));
-                    Intent i = new Intent(MainActivity.this, ManagedProductsActivity.class);
-
-                    // Closing all the Activities
-                    i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-
-                    // Add new Flag to start new Activity
-                    i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-
-                    // Staring Manage Products Activity
-                    MainActivity.this.startActivity(i);
-                    finish();
-                }
-            }.execute();
-        }
-
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -136,7 +103,7 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-        final SlidingUpPanelLayout slidingUpPanelLayout = findViewById(R.id.sliding_layout);
+        slidingUpPanelLayout = findViewById(R.id.sliding_layout);
         slidingUpPanelLayout.addPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
             private SlidingUpPanelLayout.PanelState prevState = COLLAPSED;
             @Override
@@ -226,6 +193,23 @@ public class MainActivity extends AppCompatActivity {
         updateStockViewPager.setPageTransformer(true, new ZoomOutPageTransformer());
 
         scheduleAlarm();
+
+        boolean initializeStock = getIntent().getBooleanExtra("reportStock",false);
+
+        Log.d(TAG, "isFirstLogin = " + session.getIsFirstLogin());
+        SessionManager sessionManager = new SessionManager(this);
+        if (!sessionManager.isLoggedIn()) {
+            sessionManager.checkLogin();
+            finish();
+        } else if (session.getIsFirstLogin()) {
+            Intent i = new Intent(MainActivity.this, ManagedProductsActivity.class);
+            i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+            MainActivity.this.startActivity(i);
+            finish();
+        }else if(initializeStock){
+            slidingUpPanelLayout.setPanelState(EXPANDED);
+        }
     }
 
     @Override
@@ -305,7 +289,7 @@ public class MainActivity extends AppCompatActivity {
         if (nextItem < managedProductsCount) {
             updateStockViewPager.setCurrentItem(nextItem, true);
         } else {
-            findViewById(R.id.products_stock_count).setVisibility(GONE);
+            slidingUpPanelLayout.setPanelState(COLLAPSED);
         }
     }
 
@@ -364,7 +348,15 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public float getPageWidth(int position) {
-            return 0.5f;
+
+            boolean tabletSize = getResources().getBoolean(R.bool.isTablet);
+            if (tabletSize) {
+                return 0.5f;
+            }else{
+                return 1f;
+            }
+
+
         }
     }
 

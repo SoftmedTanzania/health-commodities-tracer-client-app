@@ -47,7 +47,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
-            android:layout_marginRight="52dp"
+            android:layout_marginRight="8dp"
             android:layout_marginTop="16dp"
             android:orientation="horizontal"
             android:gravity="center_vertical">
@@ -58,11 +58,11 @@
                 android:src="@mipmap/ic_language"
                 android:scaleType="centerCrop"
                 android:layout_marginBottom="8dp"
-                android:layout_marginRight="16dp"/>
+                android:layout_marginRight="8dp"/>
 
             <fr.ganfra.materialspinner.MaterialSpinner
                 android:id="@+id/language"
-                android:layout_width="100dp"
+                android:layout_width="130dp"
                 android:layout_height="wrap_content"
                 android:divider="@null"
                 android:textSize="12sp"
@@ -83,9 +83,9 @@
 
         <RelativeLayout
             android:id="@+id/credential_card"
-            android:layout_width="match_parent"
-            android:layout_margin="56dp"
-            android:layout_height="400dp"
+            android:layout_width="300dp"
+            android:layout_margin="24dp"
+            android:layout_height="300dp"
             android:layout_centerInParent="true"
             android:background="@color/white"
             android:paddingBottom="32dp"
@@ -132,17 +132,19 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
+                    android:layout_marginTop="8dp"
                     android:orientation="vertical">
 
                     <EditText
                         android:id="@+id/user_username_et"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
                         android:fontFamily="@font/roboto_regular"
                         android:hint="@string/username"
                         android:textColor="@color/card_title_text"
                         android:textColorHint="@color/card_grid_text"
-                        android:textSize="16sp" />
+                        android:textSize="14sp" />
 
 
                     <EditText
@@ -156,13 +158,12 @@
                         android:inputType="textPassword"
                         android:textColor="@color/card_title_text"
                         android:textColorHint="@color/card_grid_tex"
-                        android:textSize="16sp" />
+                        android:textSize="14sp" />
 
                     <com.rey.material.widget.ProgressView
                         android:id="@+id/login_progress"
                         android:layout_width="40dp"
                         android:layout_height="40dp"
-                        android:visibility="gone"
                         android:layout_alignParentBottom="true"
                         android:layout_centerHorizontal="true"
                         android:layout_gravity="center_horizontal"
@@ -178,7 +179,7 @@
                 <Button
                     android:id="@+id/login_button"
                     android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
+                    android:layout_height="40dp"
                     android:layout_alignParentBottom="true"
                     android:layout_alignParentRight="true"
                     android:background="@color/card_title_text"
@@ -186,7 +187,7 @@
                     android:text="@string/login"
                     android:textAllCaps="false"
                     android:textColor="@color/white"
-                    android:textSize="18sp" />
+                    android:textSize="15sp" />
 
             </RelativeLayout>
 
@@ -198,6 +199,7 @@
             android:layout_marginLeft="16dp"
             android:layout_marginTop="16dp"
             android:scaleType="centerCrop"
+            android:visibility="gone"
             android:id="@+id/login_screen_logo"
             android:src="@mipmap/ic_logo_white"/>
 
@@ -206,8 +208,9 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="16dp"
             android:layout_marginLeft="16dp"
+            android:id="@+id/title1"
             android:layout_toRightOf="@id/login_screen_logo"
-            android:textSize="22sp"
+            android:textSize="15sp"
             android:text="Health Commodities"
             android:textColor="@color/white"
             android:textStyle="bold"
@@ -218,9 +221,9 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="16dp"
             android:id="@+id/referral_text"
-            android:layout_below="@id/login_screen_logo"
+            android:layout_below="@id/title1"
             android:layout_toRightOf="@id/login_screen_logo"
-            android:textSize="16sp"
+            android:textSize="14sp"
             android:textColor="@color/white"
             android:fontFamily="@font/roboto_light"
             android:text="Tracer"/>
@@ -232,7 +235,7 @@
             android:id="@+id/application_text"
             android:layout_below="@id/referral_text"
             android:layout_toRightOf="@id/login_screen_logo"
-            android:textSize="16sp"
+            android:textSize="14sp"
             android:textColor="@color/white"
             android:fontFamily="@font/roboto_light"
             android:text="Application"/>
@@ -243,7 +246,7 @@
             android:id="@+id/login_messages"
             android:layout_marginTop="16dp"
             android:fontFamily="@font/avenir_light"
-            android:textSize="18sp"
+            android:textSize="12sp"
             android:gravity="center"
             android:layout_centerHorizontal="true"
             android:textColor="@color/black"

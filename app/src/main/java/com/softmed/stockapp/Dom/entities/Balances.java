@@ -25,6 +25,9 @@ public class Balances implements Serializable {
     @SerializedName("quantity_available")
     private int balance;
 
+    @SerializedName("quantity_consumed")
+    private int consumptionQuantity;
+
     @SerializedName("sync_status")
     private int syncStatus;
 
@@ -50,6 +53,14 @@ public class Balances implements Serializable {
 
     public void setHealthFacilityId(int healthFacilityId) {
         this.healthFacilityId = healthFacilityId;
+    }
+
+    public int getConsumptionQuantity() {
+        return consumptionQuantity;
+    }
+
+    public void setConsumptionQuantity(int consumptionQuantity) {
+        this.consumptionQuantity = consumptionQuantity;
     }
 
     public int getBalance() {

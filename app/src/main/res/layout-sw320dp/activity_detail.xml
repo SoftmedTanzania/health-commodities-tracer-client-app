@@ -40,6 +40,14 @@
                 android:textColor="@color/primary"
                 android:textSize="16sp" />
 
+            <View
+                android:layout_below="@id/initial_information_title"
+                android:layout_width="60dp"
+                android:layout_height="5dp"
+                android:id="@+id/strip_one"
+                android:layout_marginTop="8dp"
+                android:background="@color/accent" />
+
             <TextView
                 android:id="@+id/product_name_text_view"
                 style="@style/ProductDetailsTextView.ProductName"/>
@@ -61,6 +69,8 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
                     android:text="Stock on Hand"
+                    android:textStyle="bold"
+                    android:textColor="@color/primary"
                     android:textSize="16sp" />
 
                 <View
@@ -90,6 +100,8 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="16dp"
+                    android:textStyle="bold"
+                    android:textColor="@color/primary"
                     android:text="Number of Clients on Regime"
                     android:textSize="16sp" />
 
@@ -129,13 +141,14 @@
                     android:layout_height="5dp"
                     android:id="@+id/strip_two"
                     android:layout_marginTop="8dp"
-                    android:background="@color/card_separator"/>
+                    android:background="@color/accent"/>
             </RelativeLayout>
 
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
+                android:paddingLeft="16dp"
                 android:background="#f5f5f5">
 
                 <LinearLayout
@@ -194,7 +207,6 @@
                 </LinearLayout>
 
                 <View
-                    android:layout_marginLeft="16dp"
                     android:layout_marginRight="16dp"
                     android:layout_width="match_parent"
                     android:layout_height="1dp"

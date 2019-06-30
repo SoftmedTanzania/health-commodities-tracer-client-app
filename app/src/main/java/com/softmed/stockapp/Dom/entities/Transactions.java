@@ -13,11 +13,15 @@ import java.io.Serializable;
 public class Transactions implements Serializable {
 
     @PrimaryKey(autoGenerate = false)
+    @NonNull
     @SerializedName("id")
-    private int id;
+    private String id;
 
-    @SerializedName("user_id")
+    @SerializedName("user_created")
     private int user_id;
+
+    @SerializedName("posting_schedule")
+    private int scheduleId;
 
     @SerializedName("transactiontype_id")
     private int transactiontype_id;
@@ -28,7 +32,7 @@ public class Transactions implements Serializable {
     @SerializedName("status_id")
     private int status_id;
 
-    @SerializedName("amount")
+    @SerializedName("quantity_available")
     private int amount;
 
     @SerializedName("has_patients")
@@ -49,14 +53,15 @@ public class Transactions implements Serializable {
     @SerializedName("syncStatus")
     private int syncStatus = 0;
 
-    @SerializedName("created_at")
+    @SerializedName("transaction_date_time")
     private long created_at;
 
-    public int getId() {
+    @NonNull
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(@NonNull String id) {
         this.id = id;
     }
 
@@ -154,5 +159,13 @@ public class Transactions implements Serializable {
 
     public void setHasClients(boolean hasClients) {
         this.hasClients = hasClients;
+    }
+
+    public int getScheduleId() {
+        return scheduleId;
+    }
+
+    public void setScheduleId(int scheduleId) {
+        this.scheduleId = scheduleId;
     }
 }

@@ -24,6 +24,10 @@ public class ProductBalance implements Serializable {
     @SerializedName("balance")
     private int balance;
 
+
+    @SerializedName("consumptionQuantity")
+    private int consumptionQuantity;
+
     @SerializedName("productId")
     private int productId;
 
@@ -74,5 +78,13 @@ public class ProductBalance implements Serializable {
 
     public void setProductId(int productId) {
         this.productId = productId;
+    }
+
+    public int getConsumptionQuantity() {
+        return consumptionQuantity;
+    }
+
+    public void setConsumptionQuantity(int consumptionQuantity) {
+        this.consumptionQuantity = consumptionQuantity;
     }
 }

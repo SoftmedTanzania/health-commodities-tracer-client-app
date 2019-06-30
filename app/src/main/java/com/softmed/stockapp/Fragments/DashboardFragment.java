@@ -64,13 +64,10 @@ public class DashboardFragment extends Fragment {
     private AppDatabase appDatabase;
     private List<ProductBalance> mProductBalances;
     private LinearLayout productBalancesList;
-
     private CategoryBalanceViewModel categoryBalanceViewModel;
     private ProductsViewModel productsViewModel;
     private List<CategoryBalance> categoryBalances;
 
-    private TransactionsListViewModel transactionsListViewModel;
-    private TableLayout transactionSummaryTable;
 
     public DashboardFragment() {
         // Required empty public constructor
@@ -86,7 +83,6 @@ public class DashboardFragment extends Fragment {
         appDatabase = AppDatabase.getDatabase(getActivity().getApplicationContext());
 
         productBalancesList = rowview.findViewById(R.id.product_balances_list);
-        transactionSummaryTable = rowview.findViewById(R.id.transaction_summary_table);
 
         //Pie chart configurations
         mChart1 = rowview.findViewById(R.id.chart1);
@@ -159,7 +155,6 @@ public class DashboardFragment extends Fragment {
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM_INSIDE);
 
         xAxis.setGranularityEnabled(true);
-        xAxis.setGranularity(1f);
 //        xAxis.setLabelCount(labelCount, false);
 
 
@@ -216,6 +211,10 @@ public class DashboardFragment extends Fragment {
                     productBalancesList.removeAllViews();
                     ArrayList<BarEntry> yVals1 = new ArrayList<BarEntry>();
                     int i=0;
+
+
+                    final List<Integer> chart2Colors = new ArrayList<>();
+
                     for (ProductBalance productBalance : productBalances) {
                         View v = getLayoutInflater().inflate(R.layout.view_inventory_balance_item,null);
                         ((TextView)v.findViewById(R.id.sn)).setText(String.valueOf(i+1));
@@ -225,6 +224,12 @@ public class DashboardFragment extends Fragment {
                         balance+=" "+productBalance.getUnit();
                         ((TextView)v.findViewById(R.id.balance)).setText(balance);
 
+                        if(productBalance.getBalance()>productBalance.getConsumptionQuantity()){
+                            chart2Colors.add(Color.rgb(0, 255, 0));
+                        }else{
+                            chart2Colors.add(Color.rgb(255, 0, 0));
+                        }
+
                         yVals1.add(new BarEntry(i, productBalance.getBalance()));
                         i++;
                         productBalancesList.addView(v);
@@ -233,7 +238,7 @@ public class DashboardFragment extends Fragment {
                     BarDataSet set1 = new BarDataSet(yVals1, "Inventory Balances");
                     set1.setDrawIcons(false);
 
-                    set1.setColors(ColorTemplate.MATERIAL_COLORS);
+                    set1.setColors(chart2Colors);
 
                     ArrayList<IBarDataSet> dataSets = new ArrayList<IBarDataSet>();
                     dataSets.add(set1);
@@ -253,41 +258,6 @@ public class DashboardFragment extends Fragment {
                 }
 
 
-            }
-        });
-
-        transactionsListViewModel = ViewModelProviders.of(this).get(TransactionsListViewModel.class);
-
-        transactionsListViewModel.getTransactionSummaryList().observe(getActivity(), new Observer<List<TransactionSummary>>() {
-            @Override
-            public void onChanged(@Nullable List<TransactionSummary> transactionSummaries) {
-                transactionSummaryTable.removeAllViews();
-                for(final TransactionSummary transactionSummary:transactionSummaries){
-                    final View v = LayoutInflater.from(getActivity()).inflate(R.layout.view_transaction_summary_item,null);
-
-
-                    Log.d(TAG,"timestamp Date = "+transactionSummary.getCreated_at());
-
-
-                    try {
-                        Date date = new Date(transactionSummary.getCreated_at());
-                        DateFormat formatter = new SimpleDateFormat("YYYY-MM-dd");
-                        String dateFormatted = formatter.format(date);
-
-
-                        Log.d(TAG, "formated Date = " + dateFormatted);
-                        ((TextView)v.findViewById(R.id.date)).setText(dateFormatted);
-                    }catch (Exception e){e.printStackTrace();}
-
-
-
-                    ((TextView)v.findViewById(R.id.product_name)).setText(String.valueOf(transactionSummary.getProductName()+" - "+transactionSummary.getSubCategoryName()));
-                    ((TextView)v.findViewById(R.id.price_per_item)).setText(String.valueOf(transactionSummary.getClientsOnRegime()));
-                    ((TextView)v.findViewById(R.id.transaction_type)).setText(transactionSummary.getTransactionType());
-                    ((TextView)v.findViewById(R.id.quantity)).setText(String.valueOf(transactionSummary.getAmount()));
-
-                    transactionSummaryTable.addView(v);
-                }
             }
         });
 
@@ -314,8 +284,8 @@ public class DashboardFragment extends Fragment {
 
         @Override
         public String getFormattedValue(float value) {
-            Log.d(TAG,"format value = "+value);
-            return mProductBalances.get((int)value).getProductName();
+            Log.d(TAG,"chart product name  = "+mProductBalances.get((int)value).getProductName());
+            return mProductBalances.get((int)value).getProductName().replace("PEDIATRIC ARVS FORMULATIONS","");
         }
     }
 

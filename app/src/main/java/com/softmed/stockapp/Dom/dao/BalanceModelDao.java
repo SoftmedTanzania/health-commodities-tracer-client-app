@@ -24,6 +24,7 @@ public interface BalanceModelDao {
             "Product.name as productName ," +
             "Unit.name as unit, " +
             "Balances.balance, " +
+            "Balances.consumptionQuantity, " +
             "Product.id as productId " +
 
             "FROM Balances " +
@@ -42,6 +43,7 @@ public interface BalanceModelDao {
             "Product.name AS productName, " +
             "Unit.name as unit, " +
             "Balances.balance, " +
+            "Balances.consumptionQuantity, " +
             "Product.id as productId " +
             " FROM Balances " +
 

@@ -18,6 +18,7 @@ import com.softmed.stockapp.Database.AppDatabase;
 import com.softmed.stockapp.Dom.entities.Balances;
 import com.softmed.stockapp.Dom.entities.Product;
 import com.softmed.stockapp.Dom.entities.Transactions;
+import com.softmed.stockapp.Dom.entities.Unit;
 import com.softmed.stockapp.R;
 import com.softmed.stockapp.Utils.SessionManager;
 
@@ -40,6 +41,7 @@ public class AddTransactionDialogue extends android.support.v4.app.DialogFragmen
     private int productId, numberOfClientsOnRegime;
     private boolean hasClients = false;
     private Product product;
+    private Unit unit;
 
     // Session Manager Class
     private SessionManager session;
@@ -94,12 +96,15 @@ public class AddTransactionDialogue extends android.support.v4.app.DialogFragmen
             @Override
             protected Void doInBackground(Void... voids) {
                 product = baseDatabase.productsModelDao().getProductByName(productId);
+                unit = baseDatabase.unitsDao().getUnit(product.getUnit_id());
                 return null;
             }
 
             @Override
             protected void onPostExecute(Void aVoid) {
                 super.onPostExecute(aVoid);
+
+                stockAdjustmentQuantity.setHint("Stock On Hand in ("+unit.getName()+")");
                 if(product.isTrack_wastage()){
                     wastageInputLayout.setVisibility(View.VISIBLE);
                 }
@@ -115,6 +120,8 @@ public class AddTransactionDialogue extends android.support.v4.app.DialogFragmen
             }
         }.execute();
 
+
+        availabilityOfClientsOnRegimeSpinner = dialogueLayout.findViewById(R.id.do_you_have_any_clients_on_regime);
         final String[] availabilityOfClientsOnRegime = {"Yes", "No"};
         ArrayAdapter<String> spinAdapter = new ArrayAdapter<String>(getActivity(), R.layout.simple_spinner_item_black, availabilityOfClientsOnRegime);
         spinAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item_black);

@@ -1,0 +1,259 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:app_ms="http://schemas.android.com/apk/res-auto"
+    tools:context="com.softmed.stockapp.Activities.DetailActivity">
+
+    <FrameLayout
+        android:id="@+id/product_photo_container"
+        android:layout_height="400dp"
+        android:layout_width="match_parent"
+        android:onClick="viewProductPhoto">
+
+        <ImageView
+            android:id="@+id/product_photo_image_view"
+            style="@style/ProductPhotoImageView"
+            android:contentDescription="@string/image_view_cd_product_photo"/>
+
+    </FrameLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@id/product_photo_container">
+        <ScrollView
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:padding="@dimen/activity_vertical_margin">
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="8dp"
+                    android:text="Product Details"
+                    android:textStyle="bold"
+                    android:textColor="@color/primary"
+                    android:textSize="16sp" />
+                <View
+                    android:layout_below="@id/initial_information_title"
+                    android:layout_width="60dp"
+                    android:layout_height="5dp"
+                    android:id="@+id/strip_one"
+                    android:layout_marginTop="8dp"
+                    android:background="@color/accent" />
+
+                <TextView
+                    android:id="@+id/product_name_text_view"
+                    style="@style/ProductDetailsTextView.ProductName"/>
+
+                <TextView
+                    android:visibility="gone"
+                    android:id="@+id/product_code_text_view"
+                    style="@style/ProductDetailsTextView"
+                    tools:text="Product code: 12441235"/>
+
+                <RelativeLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/card_separator_third">
+
+                    <TextView
+                        android:id="@+id/stock_on_hand_label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:text="Stock on Hand"
+                        android:textStyle="bold"
+                        android:textColor="@color/primary"
+                        android:textSize="16sp" />
+
+                    <View
+                        android:id="@+id/strip"
+                        android:layout_width="60dp"
+                        android:layout_height="5dp"
+                        android:layout_below="@id/stock_on_hand_label"
+                        android:layout_marginTop="8dp"
+                        android:background="@color/accent" />
+                </RelativeLayout>
+
+
+                <TextView
+                    android:id="@+id/product_quantity_text_view"
+                    style="@style/ProductDetailsTextView"
+                    tools:text="1,699.99 blisters"/>
+
+                <RelativeLayout
+                    android:id="@+id/number_of_clients_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:visibility="gone"
+                    android:background="@color/card_separator_third">
+
+                    <TextView
+                        android:id="@+id/number_of_clients_on_regime_label"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="16dp"
+                        android:textStyle="bold"
+                        android:textColor="@color/primary"
+                        android:text="Number of Clients on Regime"
+                        android:textSize="16sp" />
+
+                    <View
+                        android:id="@+id/view"
+                        android:layout_width="60dp"
+                        android:layout_height="5dp"
+                        android:layout_below="@id/number_of_clients_on_regime_label"
+                        android:layout_marginTop="8dp"
+                        android:background="@color/accent" />
+
+                    <TextView
+                        android:layout_below="@id/view"
+                        android:id="@+id/number_of_clients_on_regime"
+                        style="@style/ProductDetailsTextView"
+                        tools:text="10 clients"/>
+                </RelativeLayout>
+
+
+
+
+            </LinearLayout>
+        </ScrollView>
+
+        <ScrollView
+            android:layout_width="0dp"
+            android:layout_weight="1"
+            android:layout_height="match_parent">
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:padding="@dimen/activity_vertical_margin">
+
+                <RelativeLayout
+                    android:layout_marginTop="8dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@color/card_separator_third">
+
+                    <TextView
+                        android:id="@+id/initial_information_title"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:textSize="16sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/primary"
+                        android:text="Reporting History"/>
+                    <View
+                        android:layout_below="@id/initial_information_title"
+                        android:layout_width="60dp"
+                        android:layout_height="5dp"
+                        android:id="@+id/strip_two"
+                        android:layout_marginTop="8dp"
+                        android:background="@color/accent" />
+                </RelativeLayout>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical"
+                    android:paddingLeft="16dp"
+                    android:background="#f5f5f5">
+
+                    <LinearLayout
+                        android:layout_marginTop="8dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="50dp"
+                        android:orientation="horizontal"
+                        android:gravity="center_vertical"
+                        android:id="@+id/linear_title">
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_weight="0.05"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/sn_title"
+                            android:text="Sn"
+                            android:textStyle="bold"/>
+
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_weight="0.2"
+                            android:layout_height="wrap_content"
+                            android:text="Date"
+                            android:id="@+id/date"
+                            android:textStyle="bold"/>
+
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_weight="0.1"
+                            android:layout_height="wrap_content"
+                            android:id="@+id/child_names_title"
+                            android:visibility="gone"
+                            android:text="Transaction Type"
+                            android:textStyle="bold"/>
+
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.1"
+                            android:gravity="center_horizontal"
+                            android:textStyle="bold"
+                            android:text="Stock on Hand"/>
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.1"
+                            android:gravity="center_horizontal"
+                            android:textStyle="bold"
+                            android:text="Clients On Regime" />
+
+
+                    </LinearLayout>
+
+                    <View
+                        android:layout_marginRight="16dp"
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/card_grid_tex"/>
+
+                    <TableLayout
+                        android:background="#f5f5f5"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/transactions_table"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
+        </ScrollView>
+    </LinearLayout>
+
+
+
+    <android.support.design.widget.FloatingActionButton
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_marginRight="32dp"
+        android:layout_marginTop="4dp"
+        android:layout_marginBottom="32dp"
+        android:layout_height="wrap_content"
+        app:srcCompat="@drawable/ic_add_white_24dp"
+        />
+
+</RelativeLayout>

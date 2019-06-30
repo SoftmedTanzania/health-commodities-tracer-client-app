@@ -41,17 +41,4 @@
 
     </LinearLayout>
 
-    <android.support.design.widget.FloatingActionButton
-        android:id="@+id/fab"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentBottom="true"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom|end"
-        android:layout_margin="@dimen/fab_margin"
-        android:src="@drawable/ic_plus"
-        app:fabSize="normal"
-        app:layout_anchor="@id/recycler_view"
-        app:layout_anchorGravity="bottom|right|end"/>
-
 </RelativeLayout>

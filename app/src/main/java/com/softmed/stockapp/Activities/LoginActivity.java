@@ -843,6 +843,8 @@ public class LoginActivity extends BaseActivity {
 
             for (Balances balance : results) {
                 balance.setSyncStatus(1);
+                if(balance.getConsumptionQuantity()==0)
+                    balance.setConsumptionQuantity(100);
                 baseDatabase.balanceModelDao().addBalance(balance);
             }
 

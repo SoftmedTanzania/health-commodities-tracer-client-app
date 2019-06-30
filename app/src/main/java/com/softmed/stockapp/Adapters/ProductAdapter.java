@@ -94,8 +94,9 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         Log.d(TAG,"Adapter product item id : "+product.getId());
         holder.mProductNameTextView.setText(product.getName());
 
+        Log.d(TAG,"Product Unit = "+product.getUnit());
 
-        holder.mProductQuantityTextView.setText(String.format("%s %s", mContext.getString(R.string.string_format_product_quantity), String.valueOf(product.getBalance()), product.getUnit()));
+        holder.mProductQuantityTextView.setText(String.format("%s %s %s", mContext.getString(R.string.string_format_product_quantity), String.valueOf(product.getBalance()), product.getUnit()));
 //        holder.mpatientsOnRegimeTextView.setText(String.format("%s %s", mContext.getString(R.string.string_format_product_clients_on_regime), String.valueOf(product.getNumberOfClientsOnRegime())));
         // Set an OnClickListener to the overflow button which will inflate a popup menu that allows
         // user to track a sale or delete the selected product.

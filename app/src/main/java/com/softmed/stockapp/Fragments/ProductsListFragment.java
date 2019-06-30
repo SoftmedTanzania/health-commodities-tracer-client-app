@@ -73,13 +73,6 @@ public class ProductsListFragment extends Fragment implements
             }
         });
 
-        v.findViewById(R.id.fab).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                navigateToCreateActivity();
-            }
-        });
-
         mRecyclerView = v.findViewById(R.id.recycler_view);
         mEmptyView = v.findViewById(R.id.empty_view);
 

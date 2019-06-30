@@ -5,6 +5,7 @@ import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.TextInputLayout;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,12 +20,14 @@ import com.softmed.stockapp.Dom.entities.Balances;
 import com.softmed.stockapp.Dom.entities.Product;
 import com.softmed.stockapp.Dom.entities.TransactionType;
 import com.softmed.stockapp.Dom.entities.Transactions;
+import com.softmed.stockapp.Dom.entities.Unit;
 import com.softmed.stockapp.R;
 import com.softmed.stockapp.Utils.SessionManager;
 
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.UUID;
 
 import fr.ganfra.materialspinner.MaterialSpinner;
 
@@ -46,6 +49,7 @@ public class UpdateStockFragment extends android.support.v4.app.Fragment {
     private boolean hasClients = false;
     private int stockQuantity;
     private Product product;
+    private Unit unit;
     // Session Manager Class
     private SessionManager session;
 
@@ -102,12 +106,16 @@ public class UpdateStockFragment extends android.support.v4.app.Fragment {
             @Override
             protected Void doInBackground(Void... voids) {
                 product = baseDatabase.productsModelDao().getProductByName(productId);
+                unit = baseDatabase.unitsDao().getUnit(product.getUnit_id());
                 return null;
             }
 
             @Override
             protected void onPostExecute(Void aVoid) {
                 super.onPostExecute(aVoid);
+
+                stockAdjustmentQuantity.setHint("Stock On Hand in ("+unit.getName()+")");
+
                 if(product.isTrack_wastage()){
                     wastageInputLayout.setVisibility(View.VISIBLE);
                 }
@@ -203,11 +211,15 @@ public class UpdateStockFragment extends android.support.v4.app.Fragment {
                         @Override
                         protected Void doInBackground(Void... voids) {
                             Transactions transactions = new Transactions();
+
+                            transactions.setId(UUID.randomUUID().toString());
                             transactions.setProduct_id(productId);
                             transactions.setUser_id(Integer.valueOf(session.getUserUUID()));
                             transactions.setTransactiontype_id(1);
                             transactions.setAmount(stockQuantity);
                             transactions.setHasClients(hasClients);
+                            transactions.setSyncStatus(0);
+                            transactions.setCreated_at(Calendar.getInstance().getTimeInMillis());
                             transactions.setStockOutDays(Integer.parseInt(stockOutDaysInputLayout.getEditText().getText().toString()));
 
                             if (hasClients && product.isTrack_number_of_patients()) {
@@ -228,14 +240,13 @@ public class UpdateStockFragment extends android.support.v4.app.Fragment {
                             toBeginningOfTheDay(c);
 
                             transactions.setCreated_at(c.getTimeInMillis());
+
                             baseDatabase.transactionsDao().addTransactions(transactions);
 
                             Balances balances = baseDatabase.balanceModelDao().getBalance(productId);
 
                             balances.setBalance(stockQuantity);
                             baseDatabase.balanceModelDao().addBalance(balances);
-
-
                             return null;
                         }
 
@@ -246,8 +257,6 @@ public class UpdateStockFragment extends android.support.v4.app.Fragment {
 
                         }
                     }.execute();
-
-
                 }
 
             }
