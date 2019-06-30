@@ -9,6 +9,7 @@ import android.util.Log;
 
 import com.google.gson.Gson;
 import com.softmed.stockapp.Database.AppDatabase;
+import com.softmed.stockapp.Dom.entities.Balances;
 import com.softmed.stockapp.Dom.entities.Product;
 import com.softmed.stockapp.Dom.entities.Transactions;
 import com.softmed.stockapp.Utils.ServiceGenerator;
@@ -39,15 +40,15 @@ public class PostOfficeService extends IntentService {
         super("PostOfficeService");
     }
 
-    public static RequestBody getTransactionRequestBody(Object transactions) {
+    public static RequestBody getRequestBody(Object object) {
 
         RequestBody body;
         String datastream = "";
 
         try {
-            datastream = new Gson().toJson(transactions);
+            datastream = new Gson().toJson(object);
 
-            Log.d(TAG, "Transaction Object = " + datastream);
+            Log.d(TAG, "Serialized Object = " + datastream);
 
             body = RequestBody.create(MediaType.parse("application/json"), datastream);
 
@@ -96,46 +97,71 @@ public class PostOfficeService extends IntentService {
                 sess.getUserName(),
                 sess.getUserPass());
 
-        productsService = ServiceGenerator.createService(Endpoints.ProductsService.class,
-                sess.getUserName(),
-                sess.getUserPass());
+
+        final List<Balances> balances = database.balanceModelDao().getUnPostedBalances();
+
+        Call postBalancescall = transactionServices.postTransaction(getRequestBody(balances));
+        postBalancescall.enqueue(new Callback() {
+            @SuppressLint("StaticFieldLeak")
+            @Override
+            public void onResponse(Call call, Response response) {
+                //Store Received Patient Information, TbPatient as well as PatientAppointments
+                if (response.code() == 200 || response.code() == 201) {
+                    Log.d(TAG, "Successful Balance responce " + response.body());
+
+                    new AsyncTask<Void, Void, Void>() {
+                        @Override
+                        protected Void doInBackground(Void... voids) {
+                            for(Balances balance:balances){
+                                balance.setSyncStatus(1);
+                                database.balanceModelDao().addBalance(balance);
+                            }
+                            return null;
+                        }
+
+                        @Override
+                        protected void onPostExecute(Void aVoid) {
+                            super.onPostExecute(aVoid);
+
+                        }
+                    }.execute();
 
 
-//        List<Product> products = database.productsModelDao().getUnpostedProducts();
+
+                } else {
+                    Log.d(TAG, "Balance Responce Call URL " + call.request().url());
+                    Log.d(TAG, "Balance Responce Code " + response.code());
+                }
+            }
+
+            @Override
+            public void onFailure(Call call, Throwable t) {
+                Log.d(TAG, "PostOfficeService Error = " + t.getMessage());
+                Log.d(TAG, "PostOfficeService CALL URL = " + call.request().url());
+                Log.d(TAG, "PostOfficeService CALL Header = " + call.request().header("Authorization"));
+            }
+        });
+
+
+
+//        List<Transactions> transactions = database.transactionsDao().getUnPostedTransactions();
 //
-//        for (final Product product : products) {
+//        for (final Transactions transaction : transactions) {
 //
-//            Call call = productsService.postProducts(getProductRequestBody(product));
+//            Call call = transactionServices.postTransaction(getRequestBody(transaction));
 //            call.enqueue(new Callback() {
 //                @SuppressLint("StaticFieldLeak")
 //                @Override
 //                public void onResponse(Call call, Response response) {
 //                    //Store Received Patient Information, TbPatient as well as PatientAppointments
 //                    if (response.code() == 200 || response.code() == 201) {
-//                        Log.d(TAG, "Successful Product responce " + response.body());
-//
-//                        final int tempProductId = product.getId();
-//                        product.setStatus(1);
-//                        JSONObject jsonObject = null;
-//                        try {
-//                            jsonObject = new JSONObject(response.body().toString());
-//                            product.setId(jsonObject.getInt("id"));
-//                        } catch (JSONException e) {
-//                            e.printStackTrace();
-//                        }
-//
+//                        Log.d(TAG, "Successful Transaction responce " + response.body());
+//                        transaction.setSyncStatus(1);
 //
 //                        new AsyncTask<Void, Void, Void>() {
 //                            @Override
 //                            protected Void doInBackground(Void... voids) {
-//                                database.productsModelDao().addProduct(product);
-//
-//                                List<Transactions> transactions = database.transactionsDao().getTransactionsByProductId(tempProductId);
-//                                for (Transactions transaction : transactions) {
-//                                    transaction.setProduct_id(product.getId());
-//                                    database.transactionsDao().addTransactions(transaction);
-//                                }
-//
+//                                database.transactionsDao().addTransactions(transaction);
 //                                return null;
 //                            }
 //
@@ -146,8 +172,8 @@ public class PostOfficeService extends IntentService {
 //                            }
 //                        }.execute();
 //                    } else {
-//                        Log.d(TAG, "Product Response Call URL " + call.request().url());
-//                        Log.d(TAG, "Product Response Code " + response.code());
+//                        Log.d(TAG, "Transaction Responce Call URL " + call.request().url());
+//                        Log.d(TAG, "Transaction Responce Code " + response.code());
 //                    }
 //                }
 //
@@ -159,48 +185,6 @@ public class PostOfficeService extends IntentService {
 //                }
 //            });
 //        }
-
-        List<Transactions> transactions = database.transactionsDao().getUnPostedTransactions();
-
-        for (final Transactions transaction : transactions) {
-
-            Call call = transactionServices.postTransaction(getTransactionRequestBody(transaction));
-            call.enqueue(new Callback() {
-                @SuppressLint("StaticFieldLeak")
-                @Override
-                public void onResponse(Call call, Response response) {
-                    //Store Received Patient Information, TbPatient as well as PatientAppointments
-                    if (response.code() == 200 || response.code() == 201) {
-                        Log.d(TAG, "Successful Transaction responce " + response.body());
-                        transaction.setSyncStatus(1);
-
-                        new AsyncTask<Void, Void, Void>() {
-                            @Override
-                            protected Void doInBackground(Void... voids) {
-                                database.transactionsDao().addTransactions(transaction);
-                                return null;
-                            }
-
-                            @Override
-                            protected void onPostExecute(Void aVoid) {
-                                super.onPostExecute(aVoid);
-
-                            }
-                        }.execute();
-                    } else {
-                        Log.d(TAG, "Transaction Responce Call URL " + call.request().url());
-                        Log.d(TAG, "Transaction Responce Code " + response.code());
-                    }
-                }
-
-                @Override
-                public void onFailure(Call call, Throwable t) {
-                    Log.d(TAG, "PostOfficeService Error = " + t.getMessage());
-                    Log.d(TAG, "PostOfficeService CALL URL = " + call.request().url());
-                    Log.d(TAG, "PostOfficeService CALL Header = " + call.request().header("Authorization"));
-                }
-            });
-        }
 
 
         // Release the wake lock provided by the WakefulBroadcastReceiver.

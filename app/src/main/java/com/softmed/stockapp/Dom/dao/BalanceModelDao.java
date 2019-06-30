@@ -9,6 +9,7 @@ import android.arch.persistence.room.Query;
 import com.softmed.stockapp.Dom.entities.Balances;
 import com.softmed.stockapp.Dom.entities.Category;
 import com.softmed.stockapp.Dom.entities.ProductBalance;
+import com.softmed.stockapp.Dom.entities.Transactions;
 
 import java.util.List;
 
@@ -61,6 +62,9 @@ public interface BalanceModelDao {
 
     @Query("select * from Balances")
     List<Balances> getAllBalances();
+
+    @Query("select * from Balances WHERE syncStatus = 0")
+    List<Balances> getUnPostedBalances();
 
 
     @Insert(onConflict = REPLACE)
