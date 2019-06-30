@@ -8,10 +8,13 @@ import android.support.v4.content.WakefulBroadcastReceiver;
 import android.util.Log;
 
 import com.google.gson.Gson;
+import com.softmed.stockapp.Activities.LoginActivity;
 import com.softmed.stockapp.Database.AppDatabase;
 import com.softmed.stockapp.Dom.entities.Balances;
 import com.softmed.stockapp.Dom.entities.Product;
+import com.softmed.stockapp.Dom.entities.ProductReportingSchedule;
 import com.softmed.stockapp.Dom.entities.Transactions;
+import com.softmed.stockapp.R;
 import com.softmed.stockapp.Utils.ServiceGenerator;
 import com.softmed.stockapp.Utils.SessionManager;
 import com.softmed.stockapp.api.Endpoints;
@@ -34,7 +37,6 @@ public class PostOfficeService extends IntentService {
     AppDatabase database;
     SessionManager sess;
     Endpoints.TransactionServices transactionServices;
-    Endpoints.ProductsService productsService;
 
     public PostOfficeService() {
         super("PostOfficeService");
@@ -49,27 +51,6 @@ public class PostOfficeService extends IntentService {
             datastream = new Gson().toJson(object);
 
             Log.d(TAG, "Serialized Object = " + datastream);
-
-            body = RequestBody.create(MediaType.parse("application/json"), datastream);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            body = RequestBody.create(MediaType.parse("application/json"), datastream);
-        }
-
-        return body;
-
-    }
-
-    public static RequestBody getProductRequestBody(Product product) {
-
-        RequestBody body;
-        String datastream = "";
-
-        try {
-            datastream = new Gson().toJson(product);
-
-            Log.d(TAG, "Product Object = " + datastream);
 
             body = RequestBody.create(MediaType.parse("application/json"), datastream);
 
@@ -100,7 +81,9 @@ public class PostOfficeService extends IntentService {
 
         final List<Balances> balances = database.balanceModelDao().getUnPostedBalances();
 
-        Call postBalancescall = transactionServices.postTransaction(getRequestBody(balances));
+        Log.d(TAG," unposted balances = "+new Gson().toJson(balances));
+
+        Call postBalancescall = transactionServices.postBalances(getRequestBody(balances));
         postBalancescall.enqueue(new Callback() {
             @SuppressLint("StaticFieldLeak")
             @Override
@@ -144,48 +127,77 @@ public class PostOfficeService extends IntentService {
 
 
 
-//        List<Transactions> transactions = database.transactionsDao().getUnPostedTransactions();
-//
-//        for (final Transactions transaction : transactions) {
-//
-//            Call call = transactionServices.postTransaction(getRequestBody(transaction));
-//            call.enqueue(new Callback() {
-//                @SuppressLint("StaticFieldLeak")
-//                @Override
-//                public void onResponse(Call call, Response response) {
-//                    //Store Received Patient Information, TbPatient as well as PatientAppointments
-//                    if (response.code() == 200 || response.code() == 201) {
-//                        Log.d(TAG, "Successful Transaction responce " + response.body());
-//                        transaction.setSyncStatus(1);
-//
-//                        new AsyncTask<Void, Void, Void>() {
-//                            @Override
-//                            protected Void doInBackground(Void... voids) {
-//                                database.transactionsDao().addTransactions(transaction);
-//                                return null;
-//                            }
-//
-//                            @Override
-//                            protected void onPostExecute(Void aVoid) {
-//                                super.onPostExecute(aVoid);
-//
-//                            }
-//                        }.execute();
-//                    } else {
-//                        Log.d(TAG, "Transaction Responce Call URL " + call.request().url());
-//                        Log.d(TAG, "Transaction Responce Code " + response.code());
-//                    }
-//                }
-//
-//                @Override
-//                public void onFailure(Call call, Throwable t) {
-//                    Log.d(TAG, "PostOfficeService Error = " + t.getMessage());
-//                    Log.d(TAG, "PostOfficeService CALL URL = " + call.request().url());
-//                    Log.d(TAG, "PostOfficeService CALL Header = " + call.request().header("Authorization"));
-//                }
-//            });
-//        }
+        List<Transactions> transactions = database.transactionsDao().getUnPostedTransactions();
+        for (final Transactions transaction : transactions) {
+            Call call = transactionServices.postTransaction(getRequestBody(transaction));
+            call.enqueue(new Callback() {
+                @SuppressLint("StaticFieldLeak")
+                @Override
+                public void onResponse(Call call, Response response) {
+                    //Store Received Patient Information, TbPatient as well as PatientAppointments
+                    if (response.code() == 200 || response.code() == 201) {
+                        Log.d(TAG, "Successful Transaction responce " + response.body());
+                        transaction.setSyncStatus(1);
 
+                        new AsyncTask<Void, Void, Void>() {
+                            @Override
+                            protected Void doInBackground(Void... voids) {
+                                database.transactionsDao().addTransactions(transaction);
+                                return null;
+                            }
+
+                            @Override
+                            protected void onPostExecute(Void aVoid) {
+                                super.onPostExecute(aVoid);
+
+                            }
+                        }.execute();
+                    } else {
+                        Log.d(TAG, "Transaction Responce Call URL " + call.request().url());
+                        Log.d(TAG, "Transaction Responce Code " + response.code());
+                    }
+                }
+
+                @Override
+                public void onFailure(Call call, Throwable t) {
+                    Log.d(TAG, "PostOfficeService Error = " + t.getMessage());
+                    Log.d(TAG, "PostOfficeService CALL URL = " + call.request().url());
+                    Log.d(TAG, "PostOfficeService CALL Header = " + call.request().header("Authorization"));
+                }
+            });
+        }
+
+        Call<List<ProductReportingSchedule>> call = transactionServices.getSchedule();
+        call.enqueue(new Callback<List<ProductReportingSchedule>>() {
+
+            @SuppressLint("StaticFieldLeak")
+            @Override
+            public void onResponse(Call<List<ProductReportingSchedule>> call, final Response<List<ProductReportingSchedule>> response) {
+                Log.d(TAG, "Received schedules"+response.body() + "");
+                new AsyncTask<Void, Void, Void>() {
+                    @Override
+                    protected Void doInBackground(Void... voids) {
+                        if (response.body() != null) {
+                            for(ProductReportingSchedule reportingSchedule: response.body()) {
+                                database.productReportingScheduleModelDao().addProductSchedule(reportingSchedule);
+                            }
+                        }
+                        return null;
+                    }
+
+                    @Override
+                    protected void onPostExecute(Void aVoid) {
+                        super.onPostExecute(aVoid);
+                    }
+                }.execute();
+            }
+
+            @Override
+            public void onFailure(Call<List<ProductReportingSchedule>> call, Throwable t) {
+                Log.e("", "An error encountered!");
+                Log.d("ScheduleCheck", "failed with " + t.getMessage() + " " + t.toString());
+            }
+        });
 
         // Release the wake lock provided by the WakefulBroadcastReceiver.
         WakefulBroadcastReceiver.completeWakefulIntent(intent);

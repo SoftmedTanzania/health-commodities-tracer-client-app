@@ -64,7 +64,11 @@ public class Endpoints {
         Call<List<TransactionType>> getTransactionTypes();
 
         @POST("transactions")
-        Call<Transactions> postTransaction(@Body RequestBody e);
+        Call<List<Balances>> postTransaction(@Body RequestBody e);
+
+
+        @POST("api_health_commodity_mapping")
+        Call<Transactions> postBalances(@Body RequestBody e);
     }
 
     public interface NotificationServices {
