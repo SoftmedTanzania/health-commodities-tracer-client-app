@@ -7,7 +7,7 @@ import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.Query;
 
 import com.softmed.stockapp.Dom.entities.Product;
-import com.softmed.stockapp.Dom.entities.ProductList;
+import com.softmed.stockapp.Dom.dto.ProductList;
 
 import java.util.List;
 
@@ -38,6 +38,14 @@ public interface ProductsModelDao {
             "INNER JOIN Balances ON Product.id = Balances.productId " +
             "WHERE Balances.balance=0 ")
     List<ProductList> getUninitializedProducts();
+
+    @Query("select Product.id,Category.name || ' - ' || Product.name AS name ,Unit.name as unit,Balances.balance  FROM Product " +
+            "INNER JOIN Category ON Product.category_id = Category.id " +
+            "INNER JOIN Unit ON Product.unit_id = Unit.id " +
+            "INNER JOIN Balances ON Product.id = Balances.productId " +
+            "INNER JOIN ProductReportingSchedule ON Product.id = ProductReportingSchedule.productId " +
+            "WHERE ProductReportingSchedule.scheduledDate >= :today ")
+    List<ProductList> getUnreportedProductStocks(long today);
 
 
     @Query("select Product.id,Product.category_id,Product.description,Category.name || ' - ' || Product.name AS name ,Product.unit_id,Product.status,track_number_of_patients,track_wastage,track_quantity_expired FROM Product " +

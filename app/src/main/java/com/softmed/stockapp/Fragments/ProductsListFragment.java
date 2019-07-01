@@ -18,13 +18,11 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 
 import com.softmed.stockapp.R;
-import com.softmed.stockapp.Activities.AddProductActivity;
-import com.softmed.stockapp.Activities.CreateProductActivity;
 import com.softmed.stockapp.Activities.DetailActivity;
 import com.softmed.stockapp.Adapters.ProductAdapter;
 import com.softmed.stockapp.Database.AppDatabase;
 import com.softmed.stockapp.Dom.entities.Balances;
-import com.softmed.stockapp.Dom.entities.ProductList;
+import com.softmed.stockapp.Dom.dto.ProductList;
 import com.softmed.stockapp.Dom.entities.Transactions;
 import com.softmed.stockapp.Utils.DividerItemDecoration;
 import com.softmed.stockapp.Utils.SessionManager;
@@ -33,7 +31,6 @@ import com.softmed.stockapp.viewmodels.ProductsViewModel;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
-import java.util.UUID;
 
 import static com.softmed.stockapp.Utils.Calendars.toBeginningOfTheDay;
 

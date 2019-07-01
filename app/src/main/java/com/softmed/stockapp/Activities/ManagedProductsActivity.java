@@ -9,7 +9,6 @@ import android.support.design.widget.CollapsingToolbarLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.content.res.ResourcesCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
@@ -24,7 +23,7 @@ import com.softmed.stockapp.Dom.dto.CategoryProducts;
 import com.softmed.stockapp.Dom.entities.Balances;
 import com.softmed.stockapp.Dom.entities.Category;
 import com.softmed.stockapp.Dom.entities.Product;
-import com.softmed.stockapp.Dom.entities.ProductReportingSchedule;
+import com.softmed.stockapp.Dom.responces.ProductReportingScheduleResponse;
 import com.softmed.stockapp.R;
 import com.softmed.stockapp.Services.PostOfficeService;
 import com.softmed.stockapp.Utils.ServiceGenerator;
@@ -40,7 +39,7 @@ import retrofit2.Response;
 
 import static android.os.AsyncTask.THREAD_POOL_EXECUTOR;
 
-public class ManagedProductsActivity extends AppCompatActivity {
+public class ManagedProductsActivity extends BaseActivity {
 
     private static final String TAG = ManagedProductsActivity.class.getSimpleName();
     private AppDatabase baseDatabase;
@@ -48,6 +47,7 @@ public class ManagedProductsActivity extends AppCompatActivity {
     private List<Product> managedProductIds = new ArrayList<>();
     private List<Balances> currentBalances = new ArrayList<>();
     private SessionManager session;
+    private Endpoints.TransactionServices transactionServices;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -59,6 +59,10 @@ public class ManagedProductsActivity extends AppCompatActivity {
 
         // Session Manager
         session = new SessionManager(getApplicationContext());
+
+        transactionServices = ServiceGenerator.createService(Endpoints.TransactionServices.class,
+                session.getUserName(),
+                session.getUserPass());
 
         Typeface rosarioRegular = ResourcesCompat.getFont(this, R.font.rosario_regular);
         Typeface robotoRegular = ResourcesCompat.getFont(this, R.font.roboto_regular);
@@ -73,14 +77,8 @@ public class ManagedProductsActivity extends AppCompatActivity {
             @SuppressLint("StaticFieldLeak")
             @Override
             public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+                Snackbar.make(view, "Saving the managed products", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
-
-
-                final Endpoints.TransactionServices transactionServices = ServiceGenerator.createService(Endpoints.TransactionServices.class,
-                        session.getUserName(),
-                        session.getUserPass());
-
                 final List<Balances> newMappings = new ArrayList<>();
                 for (Product product : managedProductIds) {
                     boolean productAlreadyMapped = false;
@@ -106,7 +104,7 @@ public class ManagedProductsActivity extends AppCompatActivity {
                 new AsyncTask<Void, Void, Void>() {
                     @Override
                     protected Void doInBackground(Void... voids) {
-                        for(Balances balance:newMappings){
+                        for (Balances balance : newMappings) {
                             balance.setSyncStatus(1);
                             baseDatabase.balanceModelDao().addBalance(balance);
                         }
@@ -120,70 +118,37 @@ public class ManagedProductsActivity extends AppCompatActivity {
                     }
                 }.execute();
 
+                if (newMappings.size() > 0) {
 
-                Call postBalanceCall = transactionServices.postBalances(PostOfficeService.getRequestBody(newMappings));
-                postBalanceCall.enqueue(new Callback() {
-                    @SuppressLint("StaticFieldLeak")
-                    @Override
-                    public void onResponse(Call call, Response response) {
-                        //Store Received Patient Information, TbPatient as well as PatientAppointments
-                        if (response.code() == 200 || response.code() == 201) {
-                            Log.d(TAG, "Successful saved product mappings responses " + response.body());
+                    Log.d(TAG, "sending product mappings responses ");
+                    Call postBalanceCall = transactionServices.postBalances(PostOfficeService.getRequestBody(newMappings));
+                    postBalanceCall.enqueue(new Callback() {
+                        @SuppressLint("StaticFieldLeak")
+                        @Override
+                        public void onResponse(Call call, Response response) {
+                            //Store Received Patient Information, TbPatient as well as PatientAppointments
+                            if (response.code() == 200 || response.code() == 201) {
+                                Log.d(TAG, "Successful saved product mappings responses " + response.body());
+                                getReportingSchedules();
 
-                            transactionServices.getSchedule().enqueue(new Callback<List<ProductReportingSchedule>>() {
-                                @Override
-                                public void onResponse(Call<List<ProductReportingSchedule>> call, final Response<List<ProductReportingSchedule>> response) {
 
-                                    if (response.body() != null) {
-                                        new AsyncTask<Void, Void, Void>() {
-                                            @Override
-                                            protected Void doInBackground(Void... voids) {
-                                                for (ProductReportingSchedule reportingSchedule : response.body()) {
-                                                    baseDatabase.productReportingScheduleModelDao().addProductSchedule(reportingSchedule);
-                                                }
-
-                                                return null;
-                                            }
-
-                                            @Override
-                                            protected void onPostExecute(Void aVoid) {
-                                                super.onPostExecute(aVoid);
-
-                                                SessionManager session = new SessionManager(getApplicationContext());
-                                                session.setIsFirstLogin(false);
-                                                //Call HomeActivity to log in user
-                                                Intent intent = new Intent(ManagedProductsActivity.this, MainActivity.class);
-                                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                                                intent.putExtra("reportInitialStock", true);
-                                                startActivity(intent);
-                                                ManagedProductsActivity.this.finish();
-
-                                            }
-                                        }.execute();
-                                    }else{
-                                        Log.d(TAG, "Error obtaining product reporting schedule " + call.request().url());
-                                    }
-                                }
-
-                                @Override
-                                public void onFailure(Call<List<ProductReportingSchedule>> call, Throwable t) {
-                                    t.printStackTrace();
-                                }
-                            });
-                        } else {
-                            Log.d(TAG, "Balance Responce Call URL " + call.request().url());
-                            Log.d(TAG, "Balance Responce Code " + response.code());
+                            } else {
+                                Log.d(TAG, "Product mapping Response Call URL " + call.request().url());
+                                Log.d(TAG, "Product mapping Response Code " + response.code());
+                            }
                         }
-                    }
 
-                    @Override
-                    public void onFailure(Call call, Throwable t) {
-                        t.printStackTrace();
-                        Log.d(TAG, "PostOfficeService Error = " + t.getMessage());
-                        Log.d(TAG, "PostOfficeService CALL URL = " + call.request().url());
-                        Log.d(TAG, "PostOfficeService CALL Header = " + call.request().header("Authorization"));
-                    }
-                });
+                        @Override
+                        public void onFailure(Call call, Throwable t) {
+                            t.printStackTrace();
+                            Log.d(TAG, "Error = " + t.getMessage());
+                            Log.d(TAG, "CALL URL = " + call.request().url());
+                            Log.d(TAG, "CALL Header = " + call.request().header("Authorization"));
+                        }
+                    });
+                } else {
+                    getReportingSchedules();
+                }
 
             }
         });
@@ -195,6 +160,52 @@ public class ManagedProductsActivity extends AppCompatActivity {
 
     private void getCategories() {
         new getProductsAsyncTask().executeOnExecutor(THREAD_POOL_EXECUTOR);
+    }
+
+    private void getReportingSchedules() {
+        Log.d(TAG, "Calling product schedules ");
+        transactionServices.getSchedule().enqueue(new Callback<List<ProductReportingScheduleResponse>>() {
+            @SuppressLint("StaticFieldLeak")
+            @Override
+            public void onResponse(Call<List<ProductReportingScheduleResponse>> call, final Response<List<ProductReportingScheduleResponse>> response) {
+                Log.d(TAG, "Received schedule = " + response.body());
+
+                if (response.body() != null) {
+                    new AsyncTask<Void, Void, Void>() {
+                        @Override
+                        protected Void doInBackground(Void... voids) {
+                            for (ProductReportingScheduleResponse reportingSchedule : response.body()) {
+                                baseDatabase.productReportingScheduleModelDao().addProductSchedule(getProductReportingSchedule(reportingSchedule));
+                            }
+
+                            return null;
+                        }
+
+                        @Override
+                        protected void onPostExecute(Void aVoid) {
+                            super.onPostExecute(aVoid);
+
+                            SessionManager session = new SessionManager(getApplicationContext());
+                            session.setIsFirstLogin(false);
+                            //Call HomeActivity to log in user
+                            Intent intent = new Intent(ManagedProductsActivity.this, MainActivity.class);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                            intent.putExtra("reportInitialStock", true);
+                            startActivity(intent);
+                            ManagedProductsActivity.this.finish();
+
+                        }
+                    }.execute();
+                } else {
+                    Log.d(TAG, "Error obtaining product reporting schedule " + call.request().url());
+                }
+            }
+
+            @Override
+            public void onFailure(Call<List<ProductReportingScheduleResponse>> call, Throwable t) {
+                t.printStackTrace();
+            }
+        });
     }
 
     @SuppressLint("StaticFieldLeak")

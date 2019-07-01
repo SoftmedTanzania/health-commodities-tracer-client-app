@@ -6,7 +6,7 @@ import android.arch.lifecycle.LiveData;
 
 import com.softmed.stockapp.Database.AppDatabase;
 import com.softmed.stockapp.Dom.entities.ProductBalance;
-import com.softmed.stockapp.Dom.entities.ProductList;
+import com.softmed.stockapp.Dom.dto.ProductList;
 
 import java.util.List;
 

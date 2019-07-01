@@ -27,7 +27,7 @@ import android.widget.TextView;
 import com.softmed.stockapp.Database.AppDatabase;
 import com.softmed.stockapp.Dom.entities.Product;
 import com.softmed.stockapp.Dom.entities.ProductBalance;
-import com.softmed.stockapp.Dom.entities.ProductList;
+import com.softmed.stockapp.Dom.dto.ProductList;
 import com.softmed.stockapp.Dom.entities.Transactions;
 import com.softmed.stockapp.Fragments.AddTransactionDialogue;
 import com.softmed.stockapp.Fragments.ConfirmationDialogFragment;

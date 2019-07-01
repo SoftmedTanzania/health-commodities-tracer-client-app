@@ -6,7 +6,7 @@ import android.arch.lifecycle.LiveData;
 import android.os.AsyncTask;
 
 import com.softmed.stockapp.Database.AppDatabase;
-import com.softmed.stockapp.Dom.entities.TransactionSummary;
+import com.softmed.stockapp.Dom.dto.TransactionSummary;
 import com.softmed.stockapp.Dom.entities.Transactions;
 
 import java.util.List;

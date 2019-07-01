@@ -1,4 +1,4 @@
-package com.softmed.stockapp.Dom.entities;
+package com.softmed.stockapp.Dom.dto;
 
 import com.google.gson.annotations.SerializedName;
 

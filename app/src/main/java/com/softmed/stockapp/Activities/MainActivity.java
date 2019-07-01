@@ -25,11 +25,10 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
-import com.google.gson.Gson;
 import com.pixelcan.inkpageindicator.InkPageIndicator;
 import com.softmed.stockapp.Database.AppDatabase;
 import com.softmed.stockapp.Dom.entities.Product;
-import com.softmed.stockapp.Dom.entities.ProductList;
+import com.softmed.stockapp.Dom.dto.ProductList;
 import com.softmed.stockapp.Fragments.DashboardFragment;
 import com.softmed.stockapp.Fragments.ProductsListFragment;
 import com.softmed.stockapp.Fragments.UpdateStockFragment;
@@ -44,7 +43,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import tarek360.animated.icons.AnimatedIconView;
-import tarek360.animated.icons.IconFactory;
 import tarek360.animated.icons.drawables.NotificationAlert;
 
 import static android.app.AlarmManager.INTERVAL_FIFTEEN_MINUTES;
@@ -273,25 +271,6 @@ public class MainActivity extends AppCompatActivity {
         inventoryIcon.setColorFilter(this.getResources().getColor(R.color.white));
         Glide.with(this).load(R.drawable.ic_content_paste_white_24dp).into(inventoryIcon);
         tabLayout.getTabAt(1).setCustomView(myInventory);
-
-
-        try {
-
-            View orderView = getLayoutInflater().inflate(R.layout.custom_tab, null);
-            TextView orderTitle = orderView.findViewById(R.id.title_text);
-            orderTitle.setText("Orders");
-            ImageView orderIcon = orderView.findViewById(R.id.icon);
-            orderIcon.setColorFilter(this.getResources().getColor(R.color.white));
-            Glide.with(this).load(R.drawable.ic_local_shipping_white_24dp).into(orderIcon);
-            try {
-                tabLayout.getTabAt(2).setCustomView(orderView);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
 
     }
 

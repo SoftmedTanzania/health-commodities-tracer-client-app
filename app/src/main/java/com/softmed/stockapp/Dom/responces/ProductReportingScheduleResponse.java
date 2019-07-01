@@ -1,4 +1,4 @@
-package com.softmed.stockapp.Dom.entities;
+package com.softmed.stockapp.Dom.responces;
 
 import android.arch.persistence.room.Entity;
 import android.arch.persistence.room.PrimaryKey;
@@ -12,11 +12,8 @@ import java.io.Serializable;
 import java.util.Date;
 
 
-@Entity
-public class ProductReportingSchedule implements Serializable {
+public class ProductReportingScheduleResponse{
 
-    @PrimaryKey(autoGenerate = false)
-    @NonNull
     @SerializedName("id")
     private int id;
 
@@ -26,20 +23,17 @@ public class ProductReportingSchedule implements Serializable {
     @SerializedName("health_facility")
     private int facilityId;
 
-    @SerializedName("scheduledDate")
-    @TypeConverters(DateConverter.class)
-    private Date scheduledDate;
+    @SerializedName("scheduled_date")
+    private String scheduledDate;
 
     @SerializedName("status")
     private String status;
 
-
-    @NonNull
     public int getId() {
         return id;
     }
 
-    public void setId(@NonNull int id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -59,11 +53,11 @@ public class ProductReportingSchedule implements Serializable {
         this.facilityId = facilityId;
     }
 
-    public Date getScheduledDate() {
+    public String getScheduledDate() {
         return scheduledDate;
     }
 
-    public void setScheduledDate(Date scheduledDate) {
+    public void setScheduledDate(String scheduledDate) {
         this.scheduledDate = scheduledDate;
     }
 

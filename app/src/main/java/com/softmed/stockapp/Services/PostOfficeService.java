@@ -14,6 +14,7 @@ import com.softmed.stockapp.Dom.entities.Balances;
 import com.softmed.stockapp.Dom.entities.Product;
 import com.softmed.stockapp.Dom.entities.ProductReportingSchedule;
 import com.softmed.stockapp.Dom.entities.Transactions;
+import com.softmed.stockapp.Dom.responces.ProductReportingScheduleResponse;
 import com.softmed.stockapp.R;
 import com.softmed.stockapp.Utils.ServiceGenerator;
 import com.softmed.stockapp.Utils.SessionManager;
@@ -167,19 +168,19 @@ public class PostOfficeService extends IntentService {
             });
         }
 
-        Call<List<ProductReportingSchedule>> call = transactionServices.getSchedule();
-        call.enqueue(new Callback<List<ProductReportingSchedule>>() {
+        Call<List<ProductReportingScheduleResponse>> call = transactionServices.getSchedule();
+        call.enqueue(new Callback<List<ProductReportingScheduleResponse>>() {
 
             @SuppressLint("StaticFieldLeak")
             @Override
-            public void onResponse(Call<List<ProductReportingSchedule>> call, final Response<List<ProductReportingSchedule>> response) {
+            public void onResponse(Call<List<ProductReportingScheduleResponse>> call, final Response<List<ProductReportingScheduleResponse>> response) {
                 Log.d(TAG, "Received schedules"+response.body() + "");
                 new AsyncTask<Void, Void, Void>() {
                     @Override
                     protected Void doInBackground(Void... voids) {
                         if (response.body() != null) {
-                            for(ProductReportingSchedule reportingSchedule: response.body()) {
-                                database.productReportingScheduleModelDao().addProductSchedule(reportingSchedule);
+                            for(ProductReportingScheduleResponse reportingSchedule: response.body()) {
+                                database.productReportingScheduleModelDao().addProductSchedule(LoginActivity.getProductReportingSchedule(reportingSchedule));
                             }
                         }
                         return null;
@@ -193,7 +194,7 @@ public class PostOfficeService extends IntentService {
             }
 
             @Override
-            public void onFailure(Call<List<ProductReportingSchedule>> call, Throwable t) {
+            public void onFailure(Call<List<ProductReportingScheduleResponse>> call, Throwable t) {
                 Log.e("", "An error encountered!");
                 Log.d("ScheduleCheck", "failed with " + t.getMessage() + " " + t.toString());
             }

@@ -7,6 +7,7 @@ import com.softmed.stockapp.Dom.entities.TransactionType;
 import com.softmed.stockapp.Dom.entities.Transactions;
 import com.softmed.stockapp.Dom.responces.CategoriesResponse;
 import com.softmed.stockapp.Dom.responces.LoginResponse;
+import com.softmed.stockapp.Dom.responces.ProductReportingScheduleResponse;
 import com.softmed.stockapp.Dom.responces.ProductsPostResponse;
 import com.softmed.stockapp.Dom.responces.UnitsResponse;
 
@@ -58,7 +59,7 @@ public class Endpoints {
         Call<List<Balances>> getBalances(@Url String url);
 
         @GET("api_posting_schedule")
-        Call<List<ProductReportingSchedule>> getSchedule();
+        Call<List<ProductReportingScheduleResponse>> getSchedule();
 
         @GET("transactiontypes")
         Call<List<TransactionType>> getTransactionTypes();
@@ -67,8 +68,8 @@ public class Endpoints {
         Call<List<Balances>> postTransaction(@Body RequestBody e);
 
 
-        @POST("api_health_commodity_mapping")
-        Call<Transactions> postBalances(@Body RequestBody e);
+        @POST("api_health_commodity_mapping/")
+        Call<List<Balances>> postBalances(@Body RequestBody e);
     }
 
     public interface NotificationServices {

@@ -7,11 +7,16 @@ import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+
+import com.softmed.stockapp.Dom.entities.ProductReportingSchedule;
+import com.softmed.stockapp.Dom.responces.ProductReportingScheduleResponse;
 import com.softmed.stockapp.api.Endpoints;
 import com.softmed.stockapp.Database.AppDatabase;
 import com.softmed.stockapp.Utils.SessionManager;
 
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.Locale;
 
 import retrofit2.Retrofit;
@@ -21,6 +26,7 @@ import retrofit2.Retrofit;
  */
 
 public class BaseActivity extends AppCompatActivity {
+    private static final String TAG = BaseActivity.class.getSimpleName();
 
     public static Typeface  Avenir_Light;
 
@@ -66,6 +72,26 @@ public class BaseActivity extends AppCompatActivity {
         return localeString;
     }
 
+    public static ProductReportingSchedule getProductReportingSchedule(ProductReportingScheduleResponse productReportingScheduleResponse){
+        ProductReportingSchedule reportingSchedule = new ProductReportingSchedule();
+        reportingSchedule.setId(productReportingScheduleResponse.getId());
+        reportingSchedule.setFacilityId(productReportingScheduleResponse.getFacilityId());
+        reportingSchedule.setProductId(productReportingScheduleResponse.getProductId());
+        reportingSchedule.setStatus(productReportingScheduleResponse.getStatus());
+
+
+        Date scheduledDate= null;
+        try {
+            Log.d(TAG,"received schedule = "+productReportingScheduleResponse.getScheduledDate());
+            scheduledDate = new SimpleDateFormat("yyyy-MM-dd").parse(productReportingScheduleResponse.getScheduledDate());
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+
+        reportingSchedule.setScheduledDate(scheduledDate);
+
+        return reportingSchedule;
+    }
 
 
 }

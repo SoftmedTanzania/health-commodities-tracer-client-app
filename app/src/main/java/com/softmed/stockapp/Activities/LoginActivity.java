@@ -33,6 +33,7 @@ import com.softmed.stockapp.Dom.entities.Transactions;
 import com.softmed.stockapp.Dom.entities.UsersInfo;
 import com.softmed.stockapp.Dom.responces.CategoriesResponse;
 import com.softmed.stockapp.Dom.responces.LoginResponse;
+import com.softmed.stockapp.Dom.responces.ProductReportingScheduleResponse;
 import com.softmed.stockapp.Dom.responces.UnitsResponse;
 import com.softmed.stockapp.R;
 import com.softmed.stockapp.Utils.Config;
@@ -446,19 +447,19 @@ public class LoginActivity extends BaseActivity {
         loginMessages.setTextColor(getResources().getColor(R.color.amber_a700));
         Log.d(TAG,"loading schedule");
         if (session.isLoggedIn()) {
-            Call<List<ProductReportingSchedule>> call = transactionServices.getSchedule();
-            call.enqueue(new Callback<List<ProductReportingSchedule>>() {
+            Call<List<ProductReportingScheduleResponse>> call = transactionServices.getSchedule();
+            call.enqueue(new Callback<List<ProductReportingScheduleResponse>>() {
 
                 @Override
-                public void onResponse(Call<List<ProductReportingSchedule>> call, Response<List<ProductReportingSchedule>> response) {
+                public void onResponse(Call<List<ProductReportingScheduleResponse>> call, Response<List<ProductReportingScheduleResponse>> response) {
                     //Here will handle the responce from the server
-                    Log.d(TAG,"Schedule Check = "+response.body() + "");
+                    Log.d(TAG,"Schedule Check = "+new Gson().toJson(response.body()));
                     addSchedule task = new addSchedule(response.body());
                     task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                 }
 
                 @Override
-                public void onFailure(Call<List<ProductReportingSchedule>> call, Throwable t) {
+                public void onFailure(Call<List<ProductReportingScheduleResponse>> call, Throwable t) {
                     //Error!
                     //createDummyReferralData();
                     Log.e(TAG, "An error encountered!");
@@ -690,9 +691,9 @@ public class LoginActivity extends BaseActivity {
 
     class addSchedule extends AsyncTask<Void, Void, Void> {
 
-        List<ProductReportingSchedule> results;
+        List<ProductReportingScheduleResponse> results;
 
-        addSchedule(List<ProductReportingSchedule> responces) {
+        addSchedule(List<ProductReportingScheduleResponse> responces) {
             this.results = responces;
         }
 
@@ -707,9 +708,9 @@ public class LoginActivity extends BaseActivity {
 
             Log.d("InitialSync", "Referal Response size : " + results.size());
 
-            for (ProductReportingSchedule schedule : results) {
-                baseDatabase.productReportingScheduleModelDao().addProductSchedule(schedule);
-                Log.d("InitialSync", "Schedule  : " + schedule.getScheduled_date());
+            for (ProductReportingScheduleResponse schedule : results) {
+                baseDatabase.productReportingScheduleModelDao().addProductSchedule(getProductReportingSchedule(schedule));
+                Log.d("InitialSync", "Schedule  : " + schedule.getScheduledDate());
             }
 
             return null;
