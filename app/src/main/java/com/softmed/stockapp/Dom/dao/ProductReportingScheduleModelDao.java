@@ -24,6 +24,10 @@ public interface ProductReportingScheduleModelDao {
     @Query("select * from ProductReportingSchedule WHERE productId = :productId and status=0 ")
     List<ProductReportingSchedule> getProductReportingScheduleByProductId(int productId);
 
+
+    @Query("select * from ProductReportingSchedule WHERE id = :id ")
+    ProductReportingSchedule getProductReportingScheduleById(int id);
+
     @Query("select * from ProductReportingSchedule WHERE status = 0")
     List<ProductReportingSchedule> getAllProductReportingSchedule();
 

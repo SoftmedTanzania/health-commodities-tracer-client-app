@@ -27,6 +27,7 @@ import android.widget.TextView;
 import com.bumptech.glide.Glide;
 import com.pixelcan.inkpageindicator.InkPageIndicator;
 import com.softmed.stockapp.Database.AppDatabase;
+import com.softmed.stockapp.Dom.dto.ProducToBeReportedtList;
 import com.softmed.stockapp.Dom.entities.Product;
 import com.softmed.stockapp.Dom.dto.ProductList;
 import com.softmed.stockapp.Fragments.DashboardFragment;
@@ -40,6 +41,7 @@ import com.softmed.stockapp.Utils.ZoomOutPageTransformer;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import tarek360.animated.icons.AnimatedIconView;
@@ -173,15 +175,15 @@ public class MainActivity extends AppCompatActivity {
             MainActivity.this.startActivity(i);
             finish();
         }else if(initializeStock){
-            new AsyncTask<Void, Void, List<ProductList>>() {
+            new AsyncTask<Void, Void, List<ProducToBeReportedtList>>() {
 
                 @Override
-                protected List<ProductList> doInBackground(Void... voids) {
+                protected List<ProducToBeReportedtList> doInBackground(Void... voids) {
                     return baseDatabase.productsModelDao().getUninitializedProducts();
                 }
 
                 @Override
-                protected void onPostExecute(List<ProductList> productLists) {
+                protected void onPostExecute(List<ProducToBeReportedtList> productLists) {
                     super.onPostExecute(productLists);
                     Log.d(TAG, "products list size = " + productLists.size());
 
@@ -205,15 +207,15 @@ public class MainActivity extends AppCompatActivity {
 
         }else{
 
-            new AsyncTask<Void, Void, List<ProductList>>() {
+            new AsyncTask<Void, Void, List<ProducToBeReportedtList>>() {
 
                 @Override
-                protected List<ProductList> doInBackground(Void... voids) {
-                    return baseDatabase.productsModelDao().getUninitializedProducts();
+                protected List<ProducToBeReportedtList> doInBackground(Void... voids) {
+                    return baseDatabase.productsModelDao().getUnreportedProductStocks(Calendar.getInstance().getTimeInMillis());
                 }
 
                 @Override
-                protected void onPostExecute(List<ProductList> productLists) {
+                protected void onPostExecute(List<ProducToBeReportedtList> productLists) {
                     super.onPostExecute(productLists);
                     Log.d(TAG, "products list size = " + productLists.size());
 
@@ -300,9 +302,9 @@ public class MainActivity extends AppCompatActivity {
     }
 
     public static class DotIndicatorPagerAdapter extends FragmentPagerAdapter {
-        private List<ProductList> productLists;
+        private List<ProducToBeReportedtList> productLists;
 
-        DotIndicatorPagerAdapter(FragmentManager fm, List<ProductList> productLists) {
+        DotIndicatorPagerAdapter(FragmentManager fm, List<ProducToBeReportedtList> productLists) {
             super(fm);
             this.productLists = productLists;
         }
@@ -314,13 +316,8 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public Fragment getItem(int position) {
-            ProductList productList = productLists.get(position);
-
-            Product product = new Product();
-            product.setId(productList.getId());
-            product.setName(productList.getName());
-
-            return UpdateStockFragment.newInstance(product);
+            ProducToBeReportedtList productList = productLists.get(position);
+            return UpdateStockFragment.newInstance(productList);
         }
     }
 

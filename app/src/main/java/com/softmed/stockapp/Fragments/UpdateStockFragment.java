@@ -5,7 +5,6 @@ import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.design.widget.TextInputLayout;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,16 +15,20 @@ import android.widget.TextView;
 
 import com.softmed.stockapp.Activities.MainActivity;
 import com.softmed.stockapp.Database.AppDatabase;
+import com.softmed.stockapp.Dom.dto.ProducToBeReportedtList;
 import com.softmed.stockapp.Dom.entities.Balances;
 import com.softmed.stockapp.Dom.entities.Product;
+import com.softmed.stockapp.Dom.entities.ProductReportingSchedule;
 import com.softmed.stockapp.Dom.entities.TransactionType;
 import com.softmed.stockapp.Dom.entities.Transactions;
 import com.softmed.stockapp.Dom.entities.Unit;
 import com.softmed.stockapp.R;
 import com.softmed.stockapp.Utils.SessionManager;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -43,9 +46,10 @@ public class UpdateStockFragment extends android.support.v4.app.Fragment {
     private View dialogueLayout;
     private MaterialSpinner stockAdjustmentReasonSpinner, availabilityOfClientsOnRegimeSpinner;
     private List<TransactionType> transactionTypes;
-    private TextInputLayout stockAdjustmentQuantity, numberOfClientsOnRegimeInputLayout,wastageInputLayout,quantityExpiredInputLayout,stockOutDaysInputLayout;
+    private TextInputLayout stockAdjustmentQuantity, numberOfClientsOnRegimeInputLayout, wastageInputLayout, quantityExpiredInputLayout, stockOutDaysInputLayout;
     private int productId;
-    private String productName;
+    private String productName, scheduledDate;
+    private int scheduledId;
     private boolean hasClients = false;
     private int stockQuantity;
     private Product product;
@@ -57,13 +61,15 @@ public class UpdateStockFragment extends android.support.v4.app.Fragment {
     }
 
 
-    public static UpdateStockFragment newInstance(Product product) {
+    public static UpdateStockFragment newInstance(ProducToBeReportedtList product) {
         UpdateStockFragment f = new UpdateStockFragment();
 
         // Supply num input as an argument.
         Bundle args = new Bundle();
         args.putInt("productId", product.getId());
         args.putString("productName", product.getName());
+        args.putString("scheduledDate", product.getScheduledDate());
+        args.putInt("scheduledId", product.getScheduleId());
         f.setArguments(args);
         return f;
     }
@@ -77,6 +83,8 @@ public class UpdateStockFragment extends android.support.v4.app.Fragment {
         activity.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         productId = getArguments().getInt("productId");
         productName = getArguments().getString("productName");
+        scheduledDate = getArguments().getString("scheduledDate");
+        scheduledId = getArguments().getInt("scheduledId");
         session = new SessionManager(getActivity());
     }
 
@@ -95,13 +103,21 @@ public class UpdateStockFragment extends android.support.v4.app.Fragment {
         TextView productTitle = dialogueLayout.findViewById(R.id.product_name);
         productTitle.setText(productName);
 
+        TextView scheduledDateTextView = dialogueLayout.findViewById(R.id.date);
+
+        Date d = new Date();
+        d.setTime(Long.parseLong(scheduledDate));
+        SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+
+        scheduledDateTextView.setText("Stock Status for "+dateFormat.format(d));
+
         stockAdjustmentQuantity = dialogueLayout.findViewById(R.id.stock_adjustment_quantity);
         numberOfClientsOnRegimeInputLayout = dialogueLayout.findViewById(R.id.number_of_clients_on_regime);
         quantityExpiredInputLayout = dialogueLayout.findViewById(R.id.quantity_expired);
         stockOutDaysInputLayout = dialogueLayout.findViewById(R.id.stock_out_days);
         wastageInputLayout = dialogueLayout.findViewById(R.id.wastage);
 
-        new AsyncTask<Void,Void,Void>(){
+        new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... voids) {
                 product = baseDatabase.productsModelDao().getProductByName(productId);
@@ -113,17 +129,17 @@ public class UpdateStockFragment extends android.support.v4.app.Fragment {
             protected void onPostExecute(Void aVoid) {
                 super.onPostExecute(aVoid);
 
-                stockAdjustmentQuantity.setHint("Stock On Hand in ("+unit.getName()+")");
+                stockAdjustmentQuantity.setHint("Stock On Hand in (" + unit.getName() + ")");
 
-                if(product.isTrack_wastage()){
+                if (product.isTrack_wastage()) {
                     wastageInputLayout.setVisibility(View.VISIBLE);
                 }
 
-                if(product.isTrack_quantity_expired()){
+                if (product.isTrack_quantity_expired()) {
                     quantityExpiredInputLayout.setVisibility(View.VISIBLE);
                 }
 
-                if(product.isTrack_number_of_patients()){
+                if (product.isTrack_number_of_patients()) {
                     numberOfClientsOnRegimeInputLayout.setVisibility(View.VISIBLE);
                 }
 
@@ -146,12 +162,12 @@ public class UpdateStockFragment extends android.support.v4.app.Fragment {
                     if (availabilityOfClientsOnRegime[i].equalsIgnoreCase("yes")) {
                         hasClients = true;
 
-                        if(product.isTrack_number_of_patients()) {
+                        if (product.isTrack_number_of_patients()) {
                             numberOfClientsOnRegimeInputLayout.setVisibility(View.VISIBLE);
                         }
                     } else {
                         hasClients = false;
-                        if(product.isTrack_number_of_patients()) {
+                        if (product.isTrack_number_of_patients()) {
                             numberOfClientsOnRegimeInputLayout.setVisibility(View.GONE);
                         }
                     }
@@ -215,6 +231,7 @@ public class UpdateStockFragment extends android.support.v4.app.Fragment {
                             transactions.setProduct_id(productId);
                             transactions.setUser_id(Integer.valueOf(session.getUserUUID()));
                             transactions.setTransactiontype_id(1);
+                            transactions.setScheduleId(scheduledId);
                             transactions.setAmount(stockQuantity);
                             transactions.setHasClients(hasClients);
                             transactions.setSyncStatus(0);
@@ -243,9 +260,12 @@ public class UpdateStockFragment extends android.support.v4.app.Fragment {
                             baseDatabase.transactionsDao().addTransactions(transactions);
 
                             Balances balances = baseDatabase.balanceModelDao().getBalance(productId);
-
                             balances.setBalance(stockQuantity);
                             baseDatabase.balanceModelDao().addBalance(balances);
+
+                            ProductReportingSchedule reportingSchedule = baseDatabase.productReportingScheduleModelDao().getProductReportingScheduleById(scheduledId);
+                            reportingSchedule.setStatus("reported");
+                            baseDatabase.productReportingScheduleModelDao().addProductSchedule(reportingSchedule);
                             return null;
                         }
 
@@ -265,8 +285,8 @@ public class UpdateStockFragment extends android.support.v4.app.Fragment {
         return dialogueLayout;
     }
 
-    public boolean checkInputs(){
-        if(stockAdjustmentQuantity.getEditText().getText().toString().equals("")){
+    public boolean checkInputs() {
+        if (stockAdjustmentQuantity.getEditText().getText().toString().equals("")) {
             stockAdjustmentQuantity.getEditText().setError("Please fill the stock on hand quantity");
             return false;
         } else if (numberOfClientsOnRegimeInputLayout.getEditText().getText().toString().equals("") && product.isTrack_number_of_patients() && hasClients) {

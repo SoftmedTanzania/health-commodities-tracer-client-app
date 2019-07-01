@@ -7,20 +7,17 @@ import java.io.Serializable;
 
 public class ProducToBeReportedtList implements Serializable {
 
-    @SerializedName("name")
     private String name;
 
-    @SerializedName("unit")
     private String unit;
 
-    @SerializedName("id")
     private int id;
 
-    @SerializedName("balance")
     private int balance;
 
-    @SerializedName("scheduledDate")
     private String scheduledDate;
+
+    private int scheduleId;
 
     public String getName() {
         return name;
@@ -60,5 +57,13 @@ public class ProducToBeReportedtList implements Serializable {
 
     public void setScheduledDate(String scheduledDate) {
         this.scheduledDate = scheduledDate;
+    }
+
+    public int getScheduleId() {
+        return scheduleId;
+    }
+
+    public void setScheduleId(int scheduleId) {
+        this.scheduleId = scheduleId;
     }
 }
