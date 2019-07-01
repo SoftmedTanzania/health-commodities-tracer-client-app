@@ -65,6 +65,7 @@ public class MainActivity extends AppCompatActivity {
     private InkPageIndicator inkPageIndicator;
     private AnimatedIconView arrowUp,reportingAlert,alarmCounterIcon;
     private SlidingUpPanelLayout slidingUpPanelLayout;
+    private  NotificationAlert notificationAlert,notificationAlert1;
 
     public static int convertDip2Pixels(Context context, int dip) {
         return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dip, context.getResources().getDisplayMetrics());
@@ -87,21 +88,8 @@ public class MainActivity extends AppCompatActivity {
         arrowUp = findViewById(R.id.animated_arrow_up);
         arrowUp.setAnimatedIcon(new VerticalArrow());
 
-
         reportingAlert = findViewById(R.id.alarm_counter);
         alarmCounterIcon = findViewById(R.id.alarm_counter_icon);
-
-
-        NotificationAlert notificationAlert = new NotificationAlert();
-        notificationAlert.setNotificationCount(3);
-
-        NotificationAlert notificationAlert2 = new NotificationAlert();
-        notificationAlert2.setNotificationCount(3);
-        reportingAlert.setAnimatedIcon(notificationAlert);
-        alarmCounterIcon.setAnimatedIcon(notificationAlert2);
-        alarmCounterIcon.startAnimation();
-
-
 
         slidingUpPanelLayout = findViewById(R.id.sliding_layout);
         slidingUpPanelLayout.addPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
@@ -169,32 +157,11 @@ public class MainActivity extends AppCompatActivity {
         updateStockViewPager = findViewById(R.id.view_pager);
         updateStockViewPager.setOffscreenPageLimit(20);
 
-
-        new AsyncTask<Void, Void, List<ProductList>>() {
-
-            @Override
-            protected List<ProductList> doInBackground(Void... voids) {
-                return baseDatabase.productsModelDao().getAvailableProductsCheck();
-            }
-
-            @Override
-            protected void onPostExecute(List<ProductList> productLists) {
-                super.onPostExecute(productLists);
-                Log.d(TAG, "products list size = " + productLists.size());
-
-                managedProductsCount = productLists.size();
-                DotIndicatorPagerAdapter adapter = new DotIndicatorPagerAdapter(getSupportFragmentManager(), productLists);
-                updateStockViewPager.setAdapter(adapter);
-                inkPageIndicator.setViewPager(viewPager);
-            }
-        }.execute();
-
-
         updateStockViewPager.setPageTransformer(true, new ZoomOutPageTransformer());
 
         scheduleAlarm();
 
-        boolean initializeStock = getIntent().getBooleanExtra("reportStock",false);
+        final boolean initializeStock = getIntent().getBooleanExtra("reportInitialStock",false);
 
         Log.d(TAG, "isFirstLogin = " + session.getIsFirstLogin());
         SessionManager sessionManager = new SessionManager(this);
@@ -208,7 +175,67 @@ public class MainActivity extends AppCompatActivity {
             MainActivity.this.startActivity(i);
             finish();
         }else if(initializeStock){
-            slidingUpPanelLayout.setPanelState(EXPANDED);
+            new AsyncTask<Void, Void, List<ProductList>>() {
+
+                @Override
+                protected List<ProductList> doInBackground(Void... voids) {
+                    return baseDatabase.productsModelDao().getUninitializedProducts();
+                }
+
+                @Override
+                protected void onPostExecute(List<ProductList> productLists) {
+                    super.onPostExecute(productLists);
+                    Log.d(TAG, "products list size = " + productLists.size());
+
+                    managedProductsCount = productLists.size();
+                    DotIndicatorPagerAdapter adapter = new DotIndicatorPagerAdapter(getSupportFragmentManager(), productLists);
+                    updateStockViewPager.setAdapter(adapter);
+                    inkPageIndicator.setViewPager(viewPager);
+
+                    notificationAlert = new NotificationAlert();
+                    notificationAlert.setNotificationCount(managedProductsCount);
+
+                    notificationAlert1 = new NotificationAlert();
+                    notificationAlert1.setNotificationCount(managedProductsCount);
+                    reportingAlert.setAnimatedIcon(notificationAlert);
+                    alarmCounterIcon.setAnimatedIcon(notificationAlert1);
+                    alarmCounterIcon.startAnimation();
+
+                    slidingUpPanelLayout.setPanelState(EXPANDED);
+                }
+            }.execute();
+
+        }else{
+
+            new AsyncTask<Void, Void, List<ProductList>>() {
+
+                @Override
+                protected List<ProductList> doInBackground(Void... voids) {
+                    return baseDatabase.productsModelDao().getUninitializedProducts();
+                }
+
+                @Override
+                protected void onPostExecute(List<ProductList> productLists) {
+                    super.onPostExecute(productLists);
+                    Log.d(TAG, "products list size = " + productLists.size());
+
+                    managedProductsCount = productLists.size();
+                    DotIndicatorPagerAdapter adapter = new DotIndicatorPagerAdapter(getSupportFragmentManager(), productLists);
+                    updateStockViewPager.setAdapter(adapter);
+                    inkPageIndicator.setViewPager(viewPager);
+
+                    notificationAlert = new NotificationAlert();
+                    notificationAlert.setNotificationCount(managedProductsCount);
+
+                    notificationAlert1 = new NotificationAlert();
+                    notificationAlert1.setNotificationCount(managedProductsCount);
+                    reportingAlert.setAnimatedIcon(notificationAlert);
+                    alarmCounterIcon.setAnimatedIcon(notificationAlert1);
+                    alarmCounterIcon.startAnimation();
+
+                }
+            }.execute();
+
         }
     }
 

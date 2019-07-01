@@ -36,8 +36,8 @@ public interface ProductsModelDao {
             "INNER JOIN Category ON Product.category_id = Category.id " +
             "INNER JOIN Unit ON Product.unit_id = Unit.id " +
             "INNER JOIN Balances ON Product.id = Balances.productId " +
-            " ")
-    List<ProductList> getAvailableProductsCheck();
+            "WHERE Balances.balance=0 ")
+    List<ProductList> getUninitializedProducts();
 
 
     @Query("select Product.id,Product.category_id,Product.description,Category.name || ' - ' || Product.name AS name ,Product.unit_id,Product.status,track_number_of_patients,track_wastage,track_quantity_expired FROM Product " +

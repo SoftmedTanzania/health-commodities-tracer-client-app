@@ -442,8 +442,9 @@ public class LoginActivity extends BaseActivity {
     }
 
     private void callReportingSchedule() {
-        loginMessages.setText(getResources().getString(R.string.loading_categories));
+        loginMessages.setText(getResources().getString(R.string.loading_schedule));
         loginMessages.setTextColor(getResources().getColor(R.color.amber_a700));
+        Log.d(TAG,"loading schedule");
         if (session.isLoggedIn()) {
             Call<List<ProductReportingSchedule>> call = transactionServices.getSchedule();
             call.enqueue(new Callback<List<ProductReportingSchedule>>() {
@@ -451,7 +452,7 @@ public class LoginActivity extends BaseActivity {
                 @Override
                 public void onResponse(Call<List<ProductReportingSchedule>> call, Response<List<ProductReportingSchedule>> response) {
                     //Here will handle the responce from the server
-                    Log.d("Schedule Check", response.body() + "");
+                    Log.d(TAG,"Schedule Check = "+response.body() + "");
                     addSchedule task = new addSchedule(response.body());
                     task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                 }
@@ -460,8 +461,8 @@ public class LoginActivity extends BaseActivity {
                 public void onFailure(Call<List<ProductReportingSchedule>> call, Throwable t) {
                     //Error!
                     //createDummyReferralData();
-                    Log.e("", "An error encountered!");
-                    Log.d("ScheduleCheck", "failed with " + t.getMessage() + " " + t.toString());
+                    Log.e(TAG, "An error encountered!");
+                    Log.d(TAG,"ScheduleCheck failed with " + t.getMessage() + " " + t.toString());
 
 
                     loginMessages.setText(getResources().getString(R.string.error_loading_categories));

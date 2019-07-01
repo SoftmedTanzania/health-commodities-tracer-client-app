@@ -24,11 +24,19 @@ import com.softmed.stockapp.Dom.dto.CategoryProducts;
 import com.softmed.stockapp.Dom.entities.Balances;
 import com.softmed.stockapp.Dom.entities.Category;
 import com.softmed.stockapp.Dom.entities.Product;
+import com.softmed.stockapp.Dom.entities.ProductReportingSchedule;
 import com.softmed.stockapp.R;
+import com.softmed.stockapp.Services.PostOfficeService;
+import com.softmed.stockapp.Utils.ServiceGenerator;
 import com.softmed.stockapp.Utils.SessionManager;
+import com.softmed.stockapp.api.Endpoints;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 import static android.os.AsyncTask.THREAD_POOL_EXECUTOR;
 
@@ -68,32 +76,40 @@ public class ManagedProductsActivity extends AppCompatActivity {
                 Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
 
+
+                final Endpoints.TransactionServices transactionServices = ServiceGenerator.createService(Endpoints.TransactionServices.class,
+                        session.getUserName(),
+                        session.getUserPass());
+
+                final List<Balances> newMappings = new ArrayList<>();
+                for (Product product : managedProductIds) {
+                    boolean productAlreadyMapped = false;
+                    for (Balances b : currentBalances) {
+                        if (b.getProductId() == product.getId()) {
+                            productAlreadyMapped = true;
+                        }
+                    }
+                    if (!productAlreadyMapped) {
+                        Balances balance = new Balances();
+
+                        balance.setProductId(product.getId());
+                        balance.setBalance(0);
+                        balance.setUserId(Integer.parseInt(session.getUserUUID()));
+                        balance.setHealthFacilityId(session.getFacilityId());
+                        balance.setSyncStatus(0);
+
+                        newMappings.add(balance);
+
+                    }
+                }
+
                 new AsyncTask<Void, Void, Void>() {
                     @Override
                     protected Void doInBackground(Void... voids) {
-                        Log.d(TAG, "currentBalances = " + new Gson().toJson(baseDatabase.balanceModelDao().getBalances()));
-                        for (Product product : managedProductIds) {
-                            boolean productAlreadyMapped = false;
-                            for (Balances b : currentBalances) {
-                                if (b.getProductId() == product.getId()) {
-                                    productAlreadyMapped = true;
-                                }
-                            }
-
-                            if (!productAlreadyMapped) {
-                                Log.d(TAG, "Adding balance = " + product.getName());
-                                Balances balance = new Balances();
-
-                                balance.setProductId(product.getId());
-                                balance.setBalance(0);
-                                balance.setUserId(Integer.parseInt(session.getUserUUID()));
-                                balance.setHealthFacilityId(session.getFacilityId());
-                                balance.setSyncStatus(0);
-                                Log.d(TAG, "Saving balance = " + new Gson().toJson(balance));
-                                baseDatabase.balanceModelDao().addBalance(balance);
-                            }
+                        for(Balances balance:newMappings){
+                            balance.setSyncStatus(1);
+                            baseDatabase.balanceModelDao().addBalance(balance);
                         }
-
                         return null;
                     }
 
@@ -101,16 +117,73 @@ public class ManagedProductsActivity extends AppCompatActivity {
                     protected void onPostExecute(Void aVoid) {
                         super.onPostExecute(aVoid);
 
-                        SessionManager session = new SessionManager(getApplicationContext());
-                        session.setIsFirstLogin(false);
-                        //Call HomeActivity to log in user
-                        Intent intent = new Intent(ManagedProductsActivity.this, MainActivity.class);
-                        intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                        intent.putExtra("reportStock",true);
-                        startActivity(intent);
-                        ManagedProductsActivity.this.finish();
                     }
                 }.execute();
+
+
+                Call postBalanceCall = transactionServices.postBalances(PostOfficeService.getRequestBody(newMappings));
+                postBalanceCall.enqueue(new Callback() {
+                    @SuppressLint("StaticFieldLeak")
+                    @Override
+                    public void onResponse(Call call, Response response) {
+                        //Store Received Patient Information, TbPatient as well as PatientAppointments
+                        if (response.code() == 200 || response.code() == 201) {
+                            Log.d(TAG, "Successful saved product mappings responses " + response.body());
+
+                            transactionServices.getSchedule().enqueue(new Callback<List<ProductReportingSchedule>>() {
+                                @Override
+                                public void onResponse(Call<List<ProductReportingSchedule>> call, final Response<List<ProductReportingSchedule>> response) {
+
+                                    if (response.body() != null) {
+                                        new AsyncTask<Void, Void, Void>() {
+                                            @Override
+                                            protected Void doInBackground(Void... voids) {
+                                                for (ProductReportingSchedule reportingSchedule : response.body()) {
+                                                    baseDatabase.productReportingScheduleModelDao().addProductSchedule(reportingSchedule);
+                                                }
+
+                                                return null;
+                                            }
+
+                                            @Override
+                                            protected void onPostExecute(Void aVoid) {
+                                                super.onPostExecute(aVoid);
+
+                                                SessionManager session = new SessionManager(getApplicationContext());
+                                                session.setIsFirstLogin(false);
+                                                //Call HomeActivity to log in user
+                                                Intent intent = new Intent(ManagedProductsActivity.this, MainActivity.class);
+                                                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                                                intent.putExtra("reportInitialStock", true);
+                                                startActivity(intent);
+                                                ManagedProductsActivity.this.finish();
+
+                                            }
+                                        }.execute();
+                                    }else{
+                                        Log.d(TAG, "Error obtaining product reporting schedule " + call.request().url());
+                                    }
+                                }
+
+                                @Override
+                                public void onFailure(Call<List<ProductReportingSchedule>> call, Throwable t) {
+                                    t.printStackTrace();
+                                }
+                            });
+                        } else {
+                            Log.d(TAG, "Balance Responce Call URL " + call.request().url());
+                            Log.d(TAG, "Balance Responce Code " + response.code());
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Call call, Throwable t) {
+                        t.printStackTrace();
+                        Log.d(TAG, "PostOfficeService Error = " + t.getMessage());
+                        Log.d(TAG, "PostOfficeService CALL URL = " + call.request().url());
+                        Log.d(TAG, "PostOfficeService CALL Header = " + call.request().header("Authorization"));
+                    }
+                });
 
             }
         });

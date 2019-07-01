@@ -102,7 +102,6 @@ public class UpdateStockFragment extends android.support.v4.app.Fragment {
         wastageInputLayout = dialogueLayout.findViewById(R.id.wastage);
 
         new AsyncTask<Void,Void,Void>(){
-
             @Override
             protected Void doInBackground(Void... voids) {
                 product = baseDatabase.productsModelDao().getProductByName(productId);
