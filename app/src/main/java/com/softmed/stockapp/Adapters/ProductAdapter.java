@@ -22,8 +22,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
     private Context mContext;
     private List<ProductList> mProducts;
     private OnItemClickListener mOnItemClickListener;
-    private OnItemSaleListener mOnItemSaleListener;
-    private OnItemDeleteListener mOnItemDeleteListener;
+    private OnProductReportStockListener mOnProductReportStockListener;
 
     public ProductAdapter(Context context, List<ProductList> products) {
         mContext = context;
@@ -35,12 +34,8 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         mOnItemClickListener = listener;
     }
 
-    public void setOnItemSaleListener(OnItemSaleListener listener) {
-        mOnItemSaleListener = listener;
-    }
-
-    public void setOnItemDeleteListener(OnItemDeleteListener listener) {
-        mOnItemDeleteListener = listener;
+    public void setOnProductReportStockListener(OnProductReportStockListener listener) {
+        mOnProductReportStockListener = listener;
     }
 
     public void refreshData(List<ProductList> products) {
@@ -110,12 +105,8 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
                         int position = holder.getAdapterPosition();
                         switch (item.getItemId()) {
                             case R.id.action_sale:
-                                // Track a sale for this product. Let MainActivity do this job.
-                                mOnItemSaleListener.onItemSale(position);
-                                return true;
-                            case R.id.action_delete:
                                 // Delete this product. Let MainActivity do this job.
-                                mOnItemDeleteListener.onItemDelete(product, position);
+                                mOnProductReportStockListener.onReportStock(product, position);
                                 return true;
                             default:
                                 return false;
@@ -146,12 +137,8 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
         void onItemClick(ProductList product);
     }
 
-    public interface OnItemSaleListener {
-        void onItemSale(int position);
-    }
-
-    public interface OnItemDeleteListener {
-        void onItemDelete(ProductList product, int position);
+    public interface OnProductReportStockListener {
+        void onReportStock(ProductList product, int position);
     }
 
     static class ViewHolder extends RecyclerView.ViewHolder {

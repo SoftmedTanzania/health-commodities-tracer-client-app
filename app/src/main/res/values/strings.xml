@@ -7,7 +7,7 @@
     <string name="title_action_bar_edit_product">Edit Product</string>
     <string name="title_action_create_order">Create Order</string>
     <string name="title_action_empty_products">Empty Products</string>
-    <string name="title_action_sale">Sale</string>
+    <string name="title_action_report_Product_stock">Report Product Stock</string>
     <string name="title_action_delete">Delete</string>
     <string name="title_action_done">Done</string>
     <string name="title_action_edit">Edit</string>
