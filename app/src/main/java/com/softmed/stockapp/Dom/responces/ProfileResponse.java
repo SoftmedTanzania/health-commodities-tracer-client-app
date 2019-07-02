@@ -20,7 +20,7 @@ public class ProfileResponse implements Serializable{
     @SerializedName("birth_date")
     private String birthDate;
 
-    @SerializedName("health_facility")
+    @SerializedName("location")
     private int healthFacility;
 
 

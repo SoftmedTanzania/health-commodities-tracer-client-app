@@ -127,6 +127,8 @@ public class ManagedProductsActivity extends BaseActivity {
                         @Override
                         public void onResponse(Call call, Response response) {
                             //Store Received Patient Information, TbPatient as well as PatientAppointments
+
+                            Log.d(TAG,"responce received = "+response.body());
                             if (response.code() == 200 || response.code() == 201) {
                                 Log.d(TAG, "Successful saved product mappings responses " + response.body());
                                 getReportingSchedules();

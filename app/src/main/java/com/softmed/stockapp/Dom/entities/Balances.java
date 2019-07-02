@@ -16,7 +16,7 @@ public class Balances implements Serializable {
     @SerializedName("user_created")
     private int userId;
 
-    @SerializedName("health_facility")
+    @SerializedName("location")
     private int healthFacilityId;
 
     @SerializedName("health_commodity")

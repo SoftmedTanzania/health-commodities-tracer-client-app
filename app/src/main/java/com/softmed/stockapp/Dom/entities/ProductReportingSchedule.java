@@ -23,7 +23,7 @@ public class ProductReportingSchedule implements Serializable {
     @SerializedName("health_commodity")
     private int productId;
 
-    @SerializedName("health_facility")
+    @SerializedName("location")
     private int facilityId;
 
     @SerializedName("scheduledDate")

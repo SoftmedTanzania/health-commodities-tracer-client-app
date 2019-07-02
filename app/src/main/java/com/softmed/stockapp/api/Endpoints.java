@@ -69,7 +69,7 @@ public class Endpoints {
 
 
         @POST("api_health_commodity_mapping/")
-        Call<List<Balances>> postBalances(@Body RequestBody e);
+        Call<String> postBalances(@Body RequestBody e);
     }
 
     public interface NotificationServices {
