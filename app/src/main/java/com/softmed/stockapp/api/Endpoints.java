@@ -14,6 +14,7 @@ import com.softmed.stockapp.Dom.responces.UnitsResponse;
 import java.util.List;
 
 import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
@@ -69,7 +70,7 @@ public class Endpoints {
 
 
         @POST("api_health_commodity_mapping/")
-        Call<String> postBalances(@Body RequestBody e);
+        Call<List<ProductReportingScheduleResponse>> postBalances(@Body RequestBody e);
     }
 
     public interface NotificationServices {

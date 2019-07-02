@@ -121,17 +121,42 @@ public class ManagedProductsActivity extends BaseActivity {
                 if (newMappings.size() > 0) {
 
                     Log.d(TAG, "sending product mappings responses ");
-                    Call postBalanceCall = transactionServices.postBalances(PostOfficeService.getRequestBody(newMappings));
-                    postBalanceCall.enqueue(new Callback() {
-                        @SuppressLint("StaticFieldLeak")
+                    Call<List<ProductReportingScheduleResponse>> postBalanceCall = transactionServices.postBalances(PostOfficeService.getRequestBody(newMappings));
+                    postBalanceCall.enqueue(new Callback<List<ProductReportingScheduleResponse>>() {
                         @Override
-                        public void onResponse(Call call, Response response) {
-                            //Store Received Patient Information, TbPatient as well as PatientAppointments
-
+                        public void onResponse(Call<List<ProductReportingScheduleResponse>> call, final Response<List<ProductReportingScheduleResponse>> response) {
                             Log.d(TAG,"responce received = "+response.body());
                             if (response.code() == 200 || response.code() == 201) {
                                 Log.d(TAG, "Successful saved product mappings responses " + response.body());
-                                getReportingSchedules();
+                                if (response.body() != null) {
+                                    new AsyncTask<Void, Void, Void>() {
+                                        @Override
+                                        protected Void doInBackground(Void... voids) {
+                                            for (ProductReportingScheduleResponse reportingSchedule : response.body()) {
+                                                baseDatabase.productReportingScheduleModelDao().addProductSchedule(getProductReportingSchedule(reportingSchedule));
+                                            }
+
+                                            return null;
+                                        }
+
+                                        @Override
+                                        protected void onPostExecute(Void aVoid) {
+                                            super.onPostExecute(aVoid);
+
+                                            SessionManager session = new SessionManager(getApplicationContext());
+                                            session.setIsFirstLogin(false);
+                                            //Call HomeActivity to log in user
+                                            Intent intent = new Intent(ManagedProductsActivity.this, MainActivity.class);
+                                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                                            intent.putExtra("reportInitialStock", true);
+                                            startActivity(intent);
+                                            ManagedProductsActivity.this.finish();
+
+                                        }
+                                    }.execute();
+                                } else {
+                                    Log.d(TAG, "Error obtaining product reporting schedule " + call.request().url());
+                                }
 
 
                             } else {
@@ -141,7 +166,7 @@ public class ManagedProductsActivity extends BaseActivity {
                         }
 
                         @Override
-                        public void onFailure(Call call, Throwable t) {
+                        public void onFailure(Call<List<ProductReportingScheduleResponse>> call, Throwable t) {
                             t.printStackTrace();
                             Log.d(TAG, "Error = " + t.getMessage());
                             Log.d(TAG, "CALL URL = " + call.request().url());
@@ -172,35 +197,7 @@ public class ManagedProductsActivity extends BaseActivity {
             public void onResponse(Call<List<ProductReportingScheduleResponse>> call, final Response<List<ProductReportingScheduleResponse>> response) {
                 Log.d(TAG, "Received schedule = " + response.body());
 
-                if (response.body() != null) {
-                    new AsyncTask<Void, Void, Void>() {
-                        @Override
-                        protected Void doInBackground(Void... voids) {
-                            for (ProductReportingScheduleResponse reportingSchedule : response.body()) {
-                                baseDatabase.productReportingScheduleModelDao().addProductSchedule(getProductReportingSchedule(reportingSchedule));
-                            }
 
-                            return null;
-                        }
-
-                        @Override
-                        protected void onPostExecute(Void aVoid) {
-                            super.onPostExecute(aVoid);
-
-                            SessionManager session = new SessionManager(getApplicationContext());
-                            session.setIsFirstLogin(false);
-                            //Call HomeActivity to log in user
-                            Intent intent = new Intent(ManagedProductsActivity.this, MainActivity.class);
-                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                            intent.putExtra("reportInitialStock", true);
-                            startActivity(intent);
-                            ManagedProductsActivity.this.finish();
-
-                        }
-                    }.execute();
-                } else {
-                    Log.d(TAG, "Error obtaining product reporting schedule " + call.request().url());
-                }
             }
 
             @Override

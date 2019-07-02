@@ -45,9 +45,6 @@ public interface ProductReportingScheduleModelDao {
     @Query("select * from ProductReportingSchedule WHERE status = 0")
     List<ProductReportingSchedule> getAllProductReportingSchedule();
 
-    @Query("UPDATE ProductReportingSchedule SET status = 'pending' ")
-    void temp();
-
     @Insert(onConflict = REPLACE)
     void addProductSchedule(ProductReportingSchedule productReportingSchedule);
 

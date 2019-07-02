@@ -63,13 +63,6 @@ public class ProductsListFragment extends Fragment implements
                              Bundle savedInstanceState) {
         View v =  inflater.inflate(R.layout.fragment_products_list, container, false);
 
-        v.findViewById(R.id.add_product).setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                navigateToCreateActivity();
-            }
-        });
-
         mRecyclerView = v.findViewById(R.id.recycler_view);
         mEmptyView = v.findViewById(R.id.empty_view);
 
@@ -198,23 +191,6 @@ public class ProductsListFragment extends Fragment implements
         dialogFragment.show(getActivity().getSupportFragmentManager(), CONFIRMATION_DIALOG_TAG);
     }
 
-    /**
-     * Method that gets invoked when the user presses the 'Add Product' button or the FAB.
-     * This will navigate to AddProductActivity to let user add a new product to the database.
-     * @param - 'Add Product' button or the floating action button.
-     */
-    public void navigateToCreateActivity() {
-        SessionManager session = new SessionManager(getContext());
-
-//        Log.d(TAG,"USER LEVEL ID = "+session.getUserLevel());
-//        if(session.getUserLevel()==2){
-//            Intent intent = new Intent(getActivity(), CreateProductActivity.class);
-//            startActivity(intent);
-//        }else {
-//            Intent intent = new Intent(getActivity(), AddProductActivity.class);
-//            startActivity(intent);
-//        }
-    }
 
     /**
      * Method to toggle the recycler view or the empty view visibility based on the adapter data.

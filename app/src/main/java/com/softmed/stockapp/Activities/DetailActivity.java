@@ -2,19 +2,11 @@ package com.softmed.stockapp.Activities;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
-import androidx.core.app.ActivityCompat;
-import androidx.appcompat.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -25,13 +17,21 @@ import android.widget.ImageView;
 import android.widget.TableLayout;
 import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.app.ActivityCompat;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
+
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.softmed.stockapp.Database.AppDatabase;
 import com.softmed.stockapp.Dom.dto.ProductList;
 import com.softmed.stockapp.Dom.entities.Product;
 import com.softmed.stockapp.Dom.entities.ProductBalance;
 import com.softmed.stockapp.Dom.entities.Transactions;
 import com.softmed.stockapp.Fragments.AddTransactionDialogue;
-import com.softmed.stockapp.Fragments.ConfirmationDialogFragment;
 import com.softmed.stockapp.R;
 import com.softmed.stockapp.Utils.LoadProductPhotoAsync;
 import com.softmed.stockapp.Utils.PhotoHelper;
@@ -64,11 +64,9 @@ public class DetailActivity extends AppCompatActivity {
      * Id to identify a contacts permission request.
      */
     private static final int REQUEST_EXTERNAL_STORAGE_AND_CAMERA = 1;
-    /**
-     * Permissions required to read and write contacts. Used by the {@link AddProductActivity}.
-     */
+
     private static String[] PERMISSIONS_EXTERNAL_STORAGE = {Manifest.permission.WRITE_EXTERNAL_STORAGE,
-            Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.CAMERA};
+            Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.CAMERA};
     private ImageView mProductPhotoImageView;
     private TextView mProductQuantityTextView;
     private AppDatabase database;
@@ -79,7 +77,7 @@ public class DetailActivity extends AppCompatActivity {
     private TransactionsListViewModel transactionsListViewModel;
     private ProductsViewModel productsViewModel;
     private TableLayout transactionsTable;
-    private  EasyImage easyImage;
+    private EasyImage easyImage;
     // Session Manager Class
     private SessionManager session;
     private DialogInterface.OnClickListener mOnPositiveClickListener = new DialogInterface.OnClickListener() {
@@ -119,7 +117,7 @@ public class DetailActivity extends AppCompatActivity {
                     Log.i(TAG, "Contact permissions has NOT been granted. Requesting permissions.");
                     setRequestExternalStoragePermissions();
 
-                }else{
+                } else {
                     easyImage.openCameraForImage(DetailActivity.this);
 
                 }
@@ -197,13 +195,13 @@ public class DetailActivity extends AppCompatActivity {
                             public void onChanged(@Nullable List<Transactions> transactions) {
                                 transactionsTable.removeAllViews();
 
-                                if(myProduct.isTrack_number_of_patients()) {
+                                if (myProduct.isTrack_number_of_patients()) {
                                     findViewById(R.id.clients_on_regime_title).setVisibility(View.VISIBLE);
                                 }
-                                if(myProduct.isTrack_number_of_patients()) {
+                                if (myProduct.isTrack_number_of_patients()) {
                                     findViewById(R.id.wastage_title).setVisibility(View.VISIBLE);
                                 }
-                                if(myProduct.isTrack_number_of_patients()) {
+                                if (myProduct.isTrack_number_of_patients()) {
                                     findViewById(R.id.expired_stock_title).setVisibility(View.VISIBLE);
                                 }
 
@@ -240,19 +238,19 @@ public class DetailActivity extends AppCompatActivity {
                                     ((TextView) v.findViewById(R.id.date)).setText(dateFormatted);
 
 
-                                    if(myProduct.isTrack_number_of_patients()) {
+                                    if (myProduct.isTrack_number_of_patients()) {
                                         v.findViewById(R.id.number_of_clients_on_regime).setVisibility(View.VISIBLE);
                                         ((TextView) v.findViewById(R.id.number_of_clients_on_regime)).setText(String.valueOf(transactions1.getClientsOnRegime()));
                                     }
                                     ((TextView) v.findViewById(R.id.quantity)).setText(String.valueOf(transactions1.getAmount()));
                                     ((TextView) v.findViewById(R.id.stock_out_days)).setText(String.valueOf(transactions1.getStockOutDays()));
 
-                                    if(myProduct.isTrack_number_of_patients()) {
+                                    if (myProduct.isTrack_number_of_patients()) {
                                         v.findViewById(R.id.wastage).setVisibility(View.VISIBLE);
                                         ((TextView) v.findViewById(R.id.wastage)).setText(String.valueOf(transactions1.getWastage()));
                                     }
 
-                                    if(myProduct.isTrack_number_of_patients()) {
+                                    if (myProduct.isTrack_number_of_patients()) {
                                         v.findViewById(R.id.expired_stock).setVisibility(View.VISIBLE);
                                         ((TextView) v.findViewById(R.id.expired_stock)).setText(String.valueOf(transactions1.getQuantityExpired()));
                                     }
@@ -284,21 +282,6 @@ public class DetailActivity extends AppCompatActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.action_edit:
-                // Navigate to AddProductActivity and pass the current product object as an argument.
-                Intent intent = new Intent(this, AddProductActivity.class);
-                intent.putExtra(INTENT_EXTRA_PRODUCT, mProduct);
-                startActivity(intent);
-                break;
-            case R.id.action_delete:
-                // Show a confirmation dialog before deleting the product from the database.
-                ConfirmationDialogFragment dialogFragment = ConfirmationDialogFragment.newInstance(
-                        R.string.title_dialog_confirm_delete, R.string.message_dialog_confirm_delete);
-                dialogFragment.setOnPositiveClickListener(mOnPositiveClickListener);
-                dialogFragment.show(getSupportFragmentManager(), CONFIRMATION_DIALOG_TAG);
-                break;
-        }
         return super.onOptionsItemSelected(item);
     }
 
@@ -392,6 +375,7 @@ public class DetailActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         // Check the request code to determine which intent was dispatched.
+        super.onActivityResult(requestCode, resultCode, data);
         if (requestCode == REQUEST_CODE_CHOOSE_PHOTO) {
             if (resultCode == RESULT_OK && data != null) {
                 // Choose photo successful. Delete previously captured photo file if there's any.

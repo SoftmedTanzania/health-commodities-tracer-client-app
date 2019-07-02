@@ -94,6 +94,12 @@ public class MainActivity extends AppCompatActivity {
         reportingAlert = findViewById(R.id.alarm_counter);
         alarmCounterIcon = findViewById(R.id.alarm_counter_icon);
 
+        notificationAlert = new NotificationAlert();
+        notificationAlert1 = new NotificationAlert();
+
+        reportingAlert.setAnimatedIcon(notificationAlert);
+        alarmCounterIcon.setAnimatedIcon(notificationAlert1);
+
         slidingUpPanelLayout = findViewById(R.id.sliding_layout);
         slidingUpPanelLayout.addPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
             private SlidingUpPanelLayout.PanelState prevState = COLLAPSED;
@@ -201,11 +207,11 @@ public class MainActivity extends AppCompatActivity {
         } else if (session.getIsFirstLogin()) {
             Intent i = new Intent(MainActivity.this, ManagedProductsActivity.class);
             i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
-            i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             MainActivity.this.startActivity(i);
             finish();
         } else if (initializeStock) {
             updateStockViewpager();
+            slidingUpPanelLayout.setPanelState(EXPANDED);
 
         } else {
             updateStockViewpager();

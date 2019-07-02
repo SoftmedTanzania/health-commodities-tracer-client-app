@@ -15,7 +15,7 @@ public class ProductReportingScheduleResponse{
     @SerializedName("health_commodity")
     private int productId;
 
-    @SerializedName("health_facility")
+    @SerializedName("location")
     private int facilityId;
 
     @SerializedName("scheduled_date")

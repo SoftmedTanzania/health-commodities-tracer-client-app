@@ -47,10 +47,6 @@
         </provider>
 
         <activity
-            android:name=".Activities.CreateProductActivity"
-            android:label="@string/title_activity_create_order"
-            android:theme="@style/AppTheme" />
-        <activity
             android:name=".Activities.LoginActivity"
             android:configChanges="locale"
             android:windowSoftInputMode="stateHidden" />
