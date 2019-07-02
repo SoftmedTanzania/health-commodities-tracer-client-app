@@ -32,6 +32,7 @@ import com.softmed.stockapp.Dom.entities.Product;
 import com.softmed.stockapp.Dom.dto.ProductList;
 import com.softmed.stockapp.Fragments.DashboardFragment;
 import com.softmed.stockapp.Fragments.ProductsListFragment;
+import com.softmed.stockapp.Fragments.UpcomingReportingScheduleFragment;
 import com.softmed.stockapp.Fragments.UpdateStockFragment;
 import com.softmed.stockapp.R;
 import com.softmed.stockapp.Utils.AlarmReceiver;
@@ -66,6 +67,7 @@ public class MainActivity extends AppCompatActivity {
     private AnimatedIconView arrowUp,reportingAlert,alarmCounterIcon;
     private SlidingUpPanelLayout slidingUpPanelLayout;
     private  NotificationAlert notificationAlert,notificationAlert1;
+    private AppDatabase baseDatabase;
 
     public static int convertDip2Pixels(Context context, int dip) {
         return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dip, context.getResources().getDisplayMetrics());
@@ -81,7 +83,7 @@ public class MainActivity extends AppCompatActivity {
         // Session Manager
         session = new SessionManager(getApplicationContext());
 
-        final AppDatabase baseDatabase = AppDatabase.getDatabase(this);
+        baseDatabase = AppDatabase.getDatabase(this);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
@@ -175,68 +177,43 @@ public class MainActivity extends AppCompatActivity {
             MainActivity.this.startActivity(i);
             finish();
         }else if(initializeStock){
-            new AsyncTask<Void, Void, List<ProducToBeReportedtList>>() {
-
-                @Override
-                protected List<ProducToBeReportedtList> doInBackground(Void... voids) {
-                    return baseDatabase.productsModelDao().getUninitializedProducts();
-                }
-
-                @Override
-                protected void onPostExecute(List<ProducToBeReportedtList> productLists) {
-                    super.onPostExecute(productLists);
-                    Log.d(TAG, "products list size = " + productLists.size());
-
-                    managedProductsCount = productLists.size();
-                    DotIndicatorPagerAdapter adapter = new DotIndicatorPagerAdapter(getSupportFragmentManager(), productLists);
-                    updateStockViewPager.setAdapter(adapter);
-                    inkPageIndicator.setViewPager(viewPager);
-
-                    notificationAlert = new NotificationAlert();
-                    notificationAlert.setNotificationCount(managedProductsCount);
-
-                    notificationAlert1 = new NotificationAlert();
-                    notificationAlert1.setNotificationCount(managedProductsCount);
-                    reportingAlert.setAnimatedIcon(notificationAlert);
-                    alarmCounterIcon.setAnimatedIcon(notificationAlert1);
-                    alarmCounterIcon.startAnimation();
-
-                    slidingUpPanelLayout.setPanelState(EXPANDED);
-                }
-            }.execute();
+            updateStockViewpager();
 
         }else{
-
-            new AsyncTask<Void, Void, List<ProducToBeReportedtList>>() {
-
-                @Override
-                protected List<ProducToBeReportedtList> doInBackground(Void... voids) {
-                    return baseDatabase.productsModelDao().getUnreportedProductStocks(Calendar.getInstance().getTimeInMillis());
-                }
-
-                @Override
-                protected void onPostExecute(List<ProducToBeReportedtList> productLists) {
-                    super.onPostExecute(productLists);
-                    Log.d(TAG, "products list size = " + productLists.size());
-
-                    managedProductsCount = productLists.size();
-                    DotIndicatorPagerAdapter adapter = new DotIndicatorPagerAdapter(getSupportFragmentManager(), productLists);
-                    updateStockViewPager.setAdapter(adapter);
-                    inkPageIndicator.setViewPager(viewPager);
-
-                    notificationAlert = new NotificationAlert();
-                    notificationAlert.setNotificationCount(managedProductsCount);
-
-                    notificationAlert1 = new NotificationAlert();
-                    notificationAlert1.setNotificationCount(managedProductsCount);
-                    reportingAlert.setAnimatedIcon(notificationAlert);
-                    alarmCounterIcon.setAnimatedIcon(notificationAlert1);
-                    alarmCounterIcon.startAnimation();
-
-                }
-            }.execute();
-
+            updateStockViewpager();
         }
+    }
+
+    @SuppressLint("StaticFieldLeak")
+    public void updateStockViewpager(){
+        new AsyncTask<Void, Void, List<ProducToBeReportedtList>>() {
+
+            @Override
+            protected List<ProducToBeReportedtList> doInBackground(Void... voids) {
+                return baseDatabase.productsModelDao().getUnreportedProductStocks(Calendar.getInstance().getTimeInMillis());
+            }
+
+            @Override
+            protected void onPostExecute(List<ProducToBeReportedtList> productLists) {
+                super.onPostExecute(productLists);
+                Log.d(TAG, "products list size = " + productLists.size());
+
+                managedProductsCount = productLists.size();
+                DotIndicatorPagerAdapter adapter = new DotIndicatorPagerAdapter(getSupportFragmentManager(), productLists);
+                updateStockViewPager.setAdapter(adapter);
+                inkPageIndicator.setViewPager(viewPager);
+
+                notificationAlert = new NotificationAlert();
+                notificationAlert.setNotificationCount(managedProductsCount);
+
+                notificationAlert1 = new NotificationAlert();
+                notificationAlert1.setNotificationCount(managedProductsCount);
+                reportingAlert.setAnimatedIcon(notificationAlert);
+                alarmCounterIcon.setAnimatedIcon(notificationAlert1);
+                alarmCounterIcon.startAnimation();
+
+            }
+        }.execute();
     }
 
     @Override
@@ -298,6 +275,7 @@ public class MainActivity extends AppCompatActivity {
             updateStockViewPager.setCurrentItem(nextItem, true);
         } else {
             slidingUpPanelLayout.setPanelState(COLLAPSED);
+            updateStockViewpager();
         }
     }
 
@@ -311,13 +289,18 @@ public class MainActivity extends AppCompatActivity {
 
         @Override
         public int getCount() {
-            return productLists.size();
+            return (productLists.size()+1);
         }
 
         @Override
         public Fragment getItem(int position) {
-            ProducToBeReportedtList productList = productLists.get(position);
-            return UpdateStockFragment.newInstance(productList);
+
+            if(position == productLists.size()){
+                return new UpcomingReportingScheduleFragment();
+            }else {
+                ProducToBeReportedtList productList = productLists.get(position);
+                return UpdateStockFragment.newInstance(productList);
+            }
         }
     }
 

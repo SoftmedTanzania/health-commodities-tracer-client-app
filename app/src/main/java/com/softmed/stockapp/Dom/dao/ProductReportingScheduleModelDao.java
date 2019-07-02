@@ -21,6 +21,18 @@ public interface ProductReportingScheduleModelDao {
     LiveData<List<ProductReportingSchedule>> getMissedProductReportings(int productId);
 
 
+    @Query("select DISTINCT  ProductReportingSchedule.scheduledDate " +
+            "FROM ProductReportingSchedule " +
+            "INNER JOIN Product ON ProductReportingSchedule.productId = Product.id " +
+            "WHERE ProductReportingSchedule.scheduledDate > :today")
+    LiveData<List<Long>> getUpcomingReportingsDates(Long today);
+
+    @Query("select Product.name " +
+            "FROM ProductReportingSchedule " +
+            "INNER JOIN Product ON ProductReportingSchedule.productId = Product.id " +
+            "WHERE ProductReportingSchedule.scheduledDate = :time")
+    List<String> getUpcomingReportingsProductsByDate(Long time);
+
     @Query("select * from ProductReportingSchedule WHERE productId = :productId and status=0 ")
     List<ProductReportingSchedule> getProductReportingScheduleByProductId(int productId);
 
