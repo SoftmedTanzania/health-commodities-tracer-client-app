@@ -53,7 +53,7 @@
             app_ms:ms_arrowColor="@color/black"
             app_ms:ms_arrowSize="12dp"
             app_ms:ms_alignLabels="false"
-            app_ms:ms_floatingLabelColor="@color/color_secondary"/>
+            app_ms:ms_floatingLabelColor="@color/color_primary"/>
     </LinearLayout>
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/stock_adjustment_quantity"
@@ -93,7 +93,7 @@
         app_ms:ms_arrowColor="@color/black"
         app_ms:ms_arrowSize="12dp"
         app_ms:ms_alignLabels="false"
-        app_ms:ms_floatingLabelColor="@color/color_secondary"/>
+        app_ms:ms_floatingLabelColor="@color/color_primary"/>
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/number_of_clients_on_regime"
         android:layout_width="match_parent"

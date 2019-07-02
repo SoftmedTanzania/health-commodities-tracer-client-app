@@ -81,7 +81,7 @@
                     app_ms:ms_enableErrorLabel="false"
                     app_ms:ms_enableFloatingLabel="true"
                     app_ms:ms_errorColor="@color/color_error"
-                    app_ms:ms_floatingLabelColor="@color/white"
+                    app_ms:ms_floatingLabelColor="@color/color_primary"
                     app_ms:ms_floatingLabelText="Category"
                     app_ms:ms_highlightColor="@color/secondary_text"
                     app_ms:ms_hint="Adjustment Reason"
