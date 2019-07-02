@@ -1,8 +1,10 @@
 package com.softmed.stockapp.Fragments;
 
+import androidx.core.content.res.ResourcesCompat;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
@@ -71,6 +73,8 @@ public class DashboardFragment extends Fragment {
 
         productBalancesList = rowview.findViewById(R.id.product_balances_list);
 
+        Typeface muliTypeface = ResourcesCompat.getFont(getActivity(), R.font.muli);
+
         //Pie chart configurations
         mChart1 = rowview.findViewById(R.id.chart1);
         mChart1.setUsePercentValues(true);
@@ -78,7 +82,6 @@ public class DashboardFragment extends Fragment {
         mChart1.setExtraOffsets(5, 10, 5, 5);
 
         mChart1.setDragDecelerationFrictionCoef(0.95f);
-
         mChart1.setCenterText("Inventory Summary");
 
         mChart1.setDrawHoleEnabled(true);
@@ -107,6 +110,8 @@ public class DashboardFragment extends Fragment {
         l.setXEntrySpace(7f);
         l.setYEntrySpace(0f);
         l.setYOffset(7f);
+
+        l.setTypeface(muliTypeface);
 
         // entry label styling
         mChart1.setEntryLabelColor(Color.BLACK);
@@ -173,6 +178,7 @@ public class DashboardFragment extends Fragment {
         l2.setFormSize(9f);
         l2.setTextSize(11f);
         l2.setXEntrySpace(4f);
+        l2.setTypeface(muliTypeface);
         // l.setExtra(ColorTemplate.VORDIPLOM_COLORS, new String[] { "abc",
         // "def", "ghj", "ikl", "mno" });
         // l.setCustom(ColorTemplate.VORDIPLOM_COLORS, new String[] { "abc",

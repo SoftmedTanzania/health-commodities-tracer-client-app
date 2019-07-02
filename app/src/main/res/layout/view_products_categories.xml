@@ -10,14 +10,15 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textColor="@color/color_primary"
-        android:textSize="24sp"
+        android:fontFamily="@font/muli_bold"
+        android:textSize="18sp"
         android:textStyle="bold" />
 
     <View
         android:layout_width="60dp"
-        android:layout_height="8dp"
+        android:layout_height="4dp"
         android:layout_marginTop="8dp"
-        android:background="@color/card_separator" />
+        android:background="@color/color_secondary_variant" />
     <LinearLayout
         android:id="@+id/products"
         android:layout_width="match_parent"
