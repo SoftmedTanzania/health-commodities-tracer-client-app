@@ -4,7 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.design.widget.TextInputLayout;
+import com.google.android.material.textfield.TextInputLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -14,15 +14,22 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Toast;
 
+import androidx.fragment.app.DialogFragment;
+
 import com.softmed.stockapp.Database.AppDatabase;
 import com.softmed.stockapp.Dom.entities.Balances;
 import com.softmed.stockapp.Dom.entities.Product;
+import com.softmed.stockapp.Dom.entities.ProductReportingSchedule;
 import com.softmed.stockapp.Dom.entities.Transactions;
 import com.softmed.stockapp.Dom.entities.Unit;
 import com.softmed.stockapp.R;
 import com.softmed.stockapp.Utils.SessionManager;
 
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.List;
+import java.util.UUID;
 
 import fr.ganfra.materialspinner.MaterialSpinner;
 
@@ -32,16 +39,19 @@ import static com.softmed.stockapp.Utils.Calendars.toBeginningOfTheDay;
 /**
  * Dialog allowing users to select a date.
  */
-public class AddTransactionDialogue extends android.support.v4.app.DialogFragment {
+public class AddTransactionDialogue extends DialogFragment {
     private static final String TAG = AddTransactionDialogue.class.getSimpleName();
     public static AppDatabase baseDatabase;
     private View dialogueLayout;
     private TextInputLayout stockAdjustmentQuantity, numberOfClientsOnRegimeInputLayout,wastageInputLayout,quantityExpiredInputLayout,stockOutDaysInputLayout;
-    private MaterialSpinner  availabilityOfClientsOnRegimeSpinner;
+    private MaterialSpinner  availabilityOfClientsOnRegimeSpinner,reportingPeriod;
+    private List<ProductReportingSchedule> productReportingSchedules;
     private int productId, numberOfClientsOnRegime;
-    private boolean hasClients = false;
+    private Boolean hasClients = null;
     private Product product;
     private Unit unit;
+    private int reportingScheduleId = 0;
+    private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
 
     // Session Manager Class
     private SessionManager session;
@@ -90,6 +100,8 @@ public class AddTransactionDialogue extends android.support.v4.app.DialogFragmen
         quantityExpiredInputLayout = dialogueLayout.findViewById(R.id.quantity_expired);
         stockOutDaysInputLayout = dialogueLayout.findViewById(R.id.stock_out_days);
         wastageInputLayout = dialogueLayout.findViewById(R.id.wastage);
+        reportingPeriod = dialogueLayout.findViewById(R.id.reporting_period);
+        availabilityOfClientsOnRegimeSpinner = dialogueLayout.findViewById(R.id.do_you_have_any_clients_on_regime);
 
         new AsyncTask<Void,Void,Void>(){
 
@@ -97,6 +109,7 @@ public class AddTransactionDialogue extends android.support.v4.app.DialogFragmen
             protected Void doInBackground(Void... voids) {
                 product = baseDatabase.productsModelDao().getProductByName(productId);
                 unit = baseDatabase.unitsDao().getUnit(product.getUnit_id());
+                productReportingSchedules =  baseDatabase.productReportingScheduleModelDao().getMissedProductReportings(productId,Calendar.getInstance().getTimeInMillis());
                 return null;
             }
 
@@ -117,11 +130,38 @@ public class AddTransactionDialogue extends android.support.v4.app.DialogFragmen
                     numberOfClientsOnRegimeInputLayout.setVisibility(View.VISIBLE);
                 }
 
+                List<String> reportingDate = new ArrayList<>();
+                for(ProductReportingSchedule productReportingSchedules:productReportingSchedules){
+                    reportingDate.add(simpleDateFormat.format(productReportingSchedules.getScheduledDate()));
+                }
+
+                ArrayAdapter<String> spinAdapter = new ArrayAdapter<String>(getActivity(), R.layout.simple_spinner_item_black, reportingDate);
+                spinAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item_black);
+                reportingPeriod.setAdapter(spinAdapter);
+
             }
         }.execute();
 
 
-        availabilityOfClientsOnRegimeSpinner = dialogueLayout.findViewById(R.id.do_you_have_any_clients_on_regime);
+
+        reportingPeriod.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                try {
+                    reportingScheduleId = productReportingSchedules.get(i).getId();
+                }catch (Exception e){
+                    e.printStackTrace();
+                    reportingScheduleId = 0;
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+
+            }
+        });
+
+
         final String[] availabilityOfClientsOnRegime = {"Yes", "No"};
         ArrayAdapter<String> spinAdapter = new ArrayAdapter<String>(getActivity(), R.layout.simple_spinner_item_black, availabilityOfClientsOnRegime);
         spinAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item_black);
@@ -132,7 +172,7 @@ public class AddTransactionDialogue extends android.support.v4.app.DialogFragmen
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 try {
-                    if (availabilityOfClientsOnRegime[i].equalsIgnoreCase("yes")) {
+                    if (availabilityOfClientsOnRegime[i].equalsIgnoreCase("yes") && product.isTrack_number_of_patients() ) {
                         hasClients = true;
                         numberOfClientsOnRegimeInputLayout.setVisibility(View.VISIBLE);
                     } else {
@@ -141,6 +181,7 @@ public class AddTransactionDialogue extends android.support.v4.app.DialogFragmen
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
+                    hasClients=null;
                 }
             }
 
@@ -153,22 +194,34 @@ public class AddTransactionDialogue extends android.support.v4.app.DialogFragmen
         dialogueLayout.findViewById(R.id.add_transaction).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-
-
-                if (!stockAdjustmentQuantity.getEditText().getText().toString().equals("") &&
-                        (!hasClients || !numberOfClientsOnRegimeInputLayout.getEditText().getText().toString().equals(""))) {
-
+                if (checkInputs()) {
                     new AsyncTask<Void, Void, Void>() {
                         @Override
                         protected Void doInBackground(Void... voids) {
                             Transactions transactions = new Transactions();
+
+                            transactions.setId(UUID.randomUUID().toString());
                             transactions.setProduct_id(productId);
                             transactions.setUser_id(Integer.valueOf(session.getUserUUID()));
                             transactions.setTransactiontype_id(1);
+                            transactions.setScheduleId(reportingScheduleId);
                             transactions.setAmount(Integer.valueOf(stockAdjustmentQuantity.getEditText().getText().toString()));
 
-                            if (hasClients)
+                            transactions.setStockOutDays(Integer.parseInt(stockOutDaysInputLayout.getEditText().getText().toString()));
+
+                            if (hasClients && product.isTrack_number_of_patients()) {
                                 transactions.setClientsOnRegime(numberOfClientsOnRegimeInputLayout.getEditText().getText().toString());
+                            }
+
+                            if (product.isTrack_quantity_expired()) {
+                                transactions.setClientsOnRegime(quantityExpiredInputLayout.getEditText().getText().toString());
+                            }
+
+                            if (product.isTrack_wastage()) {
+                                transactions.setWastage(wastageInputLayout.getEditText().getText().toString());
+                            }
+
+                            transactions.setStatus_id(1);
 
                             transactions.setStatus_id(1);
 
@@ -181,13 +234,6 @@ public class AddTransactionDialogue extends android.support.v4.app.DialogFragmen
                             Balances balances = baseDatabase.balanceModelDao().getBalance(productId);
 
                             balances.setBalance(Integer.valueOf(stockAdjustmentQuantity.getEditText().getText().toString()));
-//                            balances.setNumberOfClientsOnRegime(Integer.valueOf(numberOfClientsOnRegimeInputLayout.getEditText().getText().toString()));
-
-//                            if (stockAdjustmentReasonId == 1) {
-//                                balances.setBalance(balances.getBalance() + Integer.valueOf(stockAdjustmentQuantity.getEditText().getText().toString()));
-//                            } else if (stockAdjustmentReasonId == 2) {
-//                                balances.setBalance(balances.getBalance() - Integer.valueOf(stockAdjustmentQuantity.getEditText().getText().toString()));
-//                            }
 
                             baseDatabase.balanceModelDao().addBalance(balances);
 
@@ -223,7 +269,13 @@ public class AddTransactionDialogue extends android.support.v4.app.DialogFragmen
         if(stockAdjustmentQuantity.getEditText().getText().toString().equals("")){
             stockAdjustmentQuantity.getEditText().setError("Please fill the stock on hand quantity");
             return false;
-        } else if (numberOfClientsOnRegimeInputLayout.getEditText().getText().toString().equals("") && product.isTrack_number_of_patients() && hasClients) {
+        } else if(reportingScheduleId==0){
+            reportingPeriod.setError("Please select the reporting period");
+            return false;
+        } else if(hasClients==null){
+            availabilityOfClientsOnRegimeSpinner.setError("Please select this");
+            return false;
+        }else if (numberOfClientsOnRegimeInputLayout.getEditText().getText().toString().equals("") && product.isTrack_number_of_patients() && hasClients) {
             numberOfClientsOnRegimeInputLayout.getEditText().setError("Please fill the number of clients on regime");
             return false;
         } else if (stockOutDaysInputLayout.getEditText().getText().toString().equals("")) {

@@ -1,6 +1,6 @@
 package com.softmed.stockapp.Activities;
 
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 
 import com.softmed.stockapp.R;

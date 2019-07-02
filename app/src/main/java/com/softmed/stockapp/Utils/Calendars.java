@@ -1,6 +1,6 @@
 package com.softmed.stockapp.Utils;
 
-import android.support.v4.util.Preconditions;
+import androidx.core.util.Preconditions;
 
 import java.util.Calendar;
 import java.util.Date;

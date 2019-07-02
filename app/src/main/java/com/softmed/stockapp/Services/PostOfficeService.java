@@ -4,24 +4,18 @@ import android.annotation.SuppressLint;
 import android.app.IntentService;
 import android.content.Intent;
 import android.os.AsyncTask;
-import android.support.v4.content.WakefulBroadcastReceiver;
+import androidx.legacy.content.WakefulBroadcastReceiver;
 import android.util.Log;
 
 import com.google.gson.Gson;
 import com.softmed.stockapp.Activities.LoginActivity;
 import com.softmed.stockapp.Database.AppDatabase;
 import com.softmed.stockapp.Dom.entities.Balances;
-import com.softmed.stockapp.Dom.entities.Product;
-import com.softmed.stockapp.Dom.entities.ProductReportingSchedule;
 import com.softmed.stockapp.Dom.entities.Transactions;
 import com.softmed.stockapp.Dom.responces.ProductReportingScheduleResponse;
-import com.softmed.stockapp.R;
 import com.softmed.stockapp.Utils.ServiceGenerator;
 import com.softmed.stockapp.Utils.SessionManager;
 import com.softmed.stockapp.api.Endpoints;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.util.List;
 

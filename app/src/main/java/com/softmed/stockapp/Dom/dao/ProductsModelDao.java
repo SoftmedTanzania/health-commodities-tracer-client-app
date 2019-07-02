@@ -1,10 +1,10 @@
 package com.softmed.stockapp.Dom.dao;
 
-import android.arch.lifecycle.LiveData;
-import android.arch.persistence.room.Dao;
-import android.arch.persistence.room.Delete;
-import android.arch.persistence.room.Insert;
-import android.arch.persistence.room.Query;
+import androidx.lifecycle.LiveData;
+import androidx.room.Dao;
+import androidx.room.Delete;
+import androidx.room.Insert;
+import androidx.room.Query;
 
 import com.softmed.stockapp.Dom.dto.ProducToBeReportedtList;
 import com.softmed.stockapp.Dom.entities.Product;
@@ -12,7 +12,7 @@ import com.softmed.stockapp.Dom.dto.ProductList;
 
 import java.util.List;
 
-import static android.arch.persistence.room.OnConflictStrategy.REPLACE;
+import static androidx.room.OnConflictStrategy.REPLACE;
 
 
 @Dao

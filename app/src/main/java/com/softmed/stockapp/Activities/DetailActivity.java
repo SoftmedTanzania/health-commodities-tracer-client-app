@@ -2,18 +2,19 @@ package com.softmed.stockapp.Activities;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.arch.lifecycle.Observer;
-import android.arch.lifecycle.ViewModelProviders;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AppCompatActivity;
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
+import androidx.core.app.ActivityCompat;
+import androidx.appcompat.app.AppCompatActivity;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -43,6 +44,12 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
+import pl.aprilapps.easyphotopicker.ChooserType;
+import pl.aprilapps.easyphotopicker.DefaultCallback;
+import pl.aprilapps.easyphotopicker.EasyImage;
+import pl.aprilapps.easyphotopicker.MediaFile;
+import pl.aprilapps.easyphotopicker.MediaSource;
+
 /**
  * Created by Coze on 2016-08-08.
  */
@@ -56,12 +63,12 @@ public class DetailActivity extends AppCompatActivity {
     /**
      * Id to identify a contacts permission request.
      */
-    private static final int REQUEST_EXTERNAL_STORAGE = 1;
+    private static final int REQUEST_EXTERNAL_STORAGE_AND_CAMERA = 1;
     /**
      * Permissions required to read and write contacts. Used by the {@link AddProductActivity}.
      */
     private static String[] PERMISSIONS_EXTERNAL_STORAGE = {Manifest.permission.WRITE_EXTERNAL_STORAGE,
-            Manifest.permission.READ_EXTERNAL_STORAGE};
+            Manifest.permission.READ_EXTERNAL_STORAGE,Manifest.permission.CAMERA};
     private ImageView mProductPhotoImageView;
     private TextView mProductQuantityTextView;
     private AppDatabase database;
@@ -72,6 +79,7 @@ public class DetailActivity extends AppCompatActivity {
     private TransactionsListViewModel transactionsListViewModel;
     private ProductsViewModel productsViewModel;
     private TableLayout transactionsTable;
+    private  EasyImage easyImage;
     // Session Manager Class
     private SessionManager session;
     private DialogInterface.OnClickListener mOnPositiveClickListener = new DialogInterface.OnClickListener() {
@@ -92,7 +100,33 @@ public class DetailActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_detail);
 
+        easyImage = new EasyImage.Builder(DetailActivity.this)
+                .setChooserTitle("Pick media").setChooserType(ChooserType.CAMERA_AND_GALLERY)
+                .setCopyImagesToPublicGalleryFolder(false)
+                .setFolderName("EasyImage sample")
+                .allowMultiple(false)
+                .build();
+
         mProductPhotoImageView = findViewById(R.id.product_photo_image_view);
+        mProductPhotoImageView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (ActivityCompat.checkSelfPermission(DetailActivity.this, Manifest.permission.READ_EXTERNAL_STORAGE)
+                        != PackageManager.PERMISSION_GRANTED
+                        || ActivityCompat.checkSelfPermission(DetailActivity.this, Manifest.permission.WRITE_EXTERNAL_STORAGE)
+                        != PackageManager.PERMISSION_GRANTED) {
+                    // Contacts permissions have not been granted.
+                    Log.i(TAG, "Contact permissions has NOT been granted. Requesting permissions.");
+                    setRequestExternalStoragePermissions();
+
+                }else{
+                    easyImage.openCameraForImage(DetailActivity.this);
+
+                }
+            }
+        });
+
+
         mProductQuantityTextView = findViewById(R.id.product_quantity_text_view);
         transactionsTable = findViewById(R.id.transactions_table);
 
@@ -240,7 +274,6 @@ public class DetailActivity extends AppCompatActivity {
             }
         });
 
-
     }
 
     @Override
@@ -336,12 +369,9 @@ public class DetailActivity extends AppCompatActivity {
         // BEGIN_INCLUDE(contacts_permission_request)
         if (ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.READ_EXTERNAL_STORAGE) || ActivityCompat.shouldShowRequestPermissionRationale(this, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
 
-            // Provide an additional rationale to the user if the permission was not granted
-            // and the user would benefit from additional context for the use of the permission.
-            // For example, if the request has been denied previously.
-            Log.i(TAG, "Displaying contacts permission rationale to provide additional context.");
 
-            // Display a SnackBar with an explanation and a button to trigger the request.
+            Log.i(TAG, "Displaying camera permission rationale to provide additional context.");
+
             Snackbar.make(findViewById(R.id.content), R.string.permission_external_storage,
                     Snackbar.LENGTH_INDEFINITE)
                     .setAction(R.string.ok, new View.OnClickListener() {
@@ -349,15 +379,14 @@ public class DetailActivity extends AppCompatActivity {
                         public void onClick(View view) {
                             ActivityCompat
                                     .requestPermissions(DetailActivity.this, PERMISSIONS_EXTERNAL_STORAGE,
-                                            REQUEST_EXTERNAL_STORAGE);
+                                            REQUEST_EXTERNAL_STORAGE_AND_CAMERA);
                         }
                     })
                     .show();
         } else {
             // Contact permissions have not been granted yet. Request them directly.
-            ActivityCompat.requestPermissions(this, PERMISSIONS_EXTERNAL_STORAGE, REQUEST_EXTERNAL_STORAGE);
+            ActivityCompat.requestPermissions(this, PERMISSIONS_EXTERNAL_STORAGE, REQUEST_EXTERNAL_STORAGE_AND_CAMERA);
         }
-        // END_INCLUDE(contacts_permission_request)
     }
 
     @Override
@@ -373,5 +402,25 @@ public class DetailActivity extends AppCompatActivity {
                 showImage(mProductPhotoImageView, photoPath);
             }
         }
+
+        easyImage.handleActivityResult(requestCode, resultCode, data, this, new DefaultCallback() {
+            @Override
+            public void onMediaFilesPicked(MediaFile[] imageFiles, MediaSource source) {
+                String photoPath = imageFiles[0].getFile().getAbsolutePath();
+                mProductPhotoImageView.setTag(photoPath);
+                showImage(mProductPhotoImageView, photoPath);
+            }
+
+            @Override
+            public void onImagePickerError(@NonNull Throwable error, @NonNull MediaSource source) {
+                //Some error handling
+                error.printStackTrace();
+            }
+
+            @Override
+            public void onCanceled(@NonNull MediaSource source) {
+                //Not necessary to remove any files manually anymore
+            }
+        });
     }
 }

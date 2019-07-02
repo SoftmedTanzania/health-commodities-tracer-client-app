@@ -30,11 +30,10 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content">
+
         <fr.ganfra.materialspinner.MaterialSpinner
-            android:id="@+id/stock_adjustment_reason"
-            android:layout_width="0dp"
-            android:layout_weight="4"
-            android:visibility="gone"
+            android:id="@+id/reporting_period"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_marginBottom="4dp"
@@ -43,10 +42,10 @@
             app_ms:ms_hintTextSize="14sp"
             app_ms:ms_alwaysShowFloatingLabel="true"
             app_ms:ms_multiline="true"
-            app_ms:ms_hint="Adjustment Reason"
+            app_ms:ms_hint="Reporting Period"
             app_ms:ms_enableFloatingLabel="true"
-            app_ms:ms_enableErrorLabel="false"
-            app_ms:ms_floatingLabelText="Category"
+            app_ms:ms_enableErrorLabel="true"
+            app_ms:ms_floatingLabelText="Reporting Period"
             app_ms:ms_baseColor="@color/card_grid_tex"
             app_ms:ms_highlightColor="@color/card_grid_text"
             app_ms:ms_errorColor="@color/red_500"
@@ -54,22 +53,22 @@
             app_ms:ms_arrowColor="@color/black"
             app_ms:ms_arrowSize="12dp"
             app_ms:ms_alignLabels="false"
-            app_ms:ms_floatingLabelColor="@color/white"/>
+            app_ms:ms_floatingLabelColor="@color/accent"/>
     </LinearLayout>
-    <android.support.design.widget.TextInputLayout
+    <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/stock_adjustment_quantity"
         android:layout_width="match_parent"
         android:layout_marginTop="8dp"
         android:layout_gravity="bottom"
         android:layout_height="wrap_content">
 
-        <android.support.design.widget.TextInputEditText
+        <com.google.android.material.textfield.TextInputEditText
             style="@style/ProductDetailsTextInputEditText"
             android:hint="Stock On Hand"
             android:textSize="14sp"
             android:inputType="numberDecimal"/>
 
-    </android.support.design.widget.TextInputLayout>
+    </com.google.android.material.textfield.TextInputLayout>
     <fr.ganfra.materialspinner.MaterialSpinner
         android:id="@+id/do_you_have_any_clients_on_regime"
         android:layout_width="match_parent"
@@ -83,7 +82,7 @@
         app_ms:ms_multiline="true"
         app_ms:ms_hint="Do you have clients on Regime?"
         app_ms:ms_enableFloatingLabel="true"
-        app_ms:ms_enableErrorLabel="false"
+        app_ms:ms_enableErrorLabel="true"
         app_ms:ms_floatingLabelText="Do you have clients on Regime?"
         app_ms:ms_baseColor="@color/card_grid_tex"
         app_ms:ms_highlightColor="@color/card_grid_text"
@@ -93,7 +92,7 @@
         app_ms:ms_arrowSize="12dp"
         app_ms:ms_alignLabels="false"
         app_ms:ms_floatingLabelColor="@color/accent"/>
-    <android.support.design.widget.TextInputLayout
+    <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/number_of_clients_on_regime"
         android:layout_width="match_parent"
         android:layout_gravity="bottom"
@@ -101,30 +100,30 @@
         android:visibility="gone"
         android:layout_height="wrap_content">
 
-        <android.support.design.widget.TextInputEditText
+        <com.google.android.material.textfield.TextInputEditText
             style="@style/ProductDetailsTextInputEditText"
             android:textSize="14sp"
             android:hint="@string/edit_text_number_of_clients_on_regime"
             android:inputType="numberDecimal"/>
 
-    </android.support.design.widget.TextInputLayout>
+    </com.google.android.material.textfield.TextInputLayout>
 
-    <android.support.design.widget.TextInputLayout
+    <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/stock_out_days"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
         android:layout_marginTop="8dp">
 
-        <android.support.design.widget.TextInputEditText
+        <com.google.android.material.textfield.TextInputEditText
             style="@style/ProductDetailsTextInputEditText"
             android:hint="Stockout Days"
             android:inputType="numberDecimal"
             android:textSize="14sp" />
 
-    </android.support.design.widget.TextInputLayout>
+    </com.google.android.material.textfield.TextInputLayout>
 
-    <android.support.design.widget.TextInputLayout
+    <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/wastage"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -132,15 +131,15 @@
         android:visibility="gone"
         android:layout_marginTop="8dp">
 
-        <android.support.design.widget.TextInputEditText
+        <com.google.android.material.textfield.TextInputEditText
             style="@style/ProductDetailsTextInputEditText"
             android:hint="@string/edit_text_wastage"
             android:inputType="numberDecimal"
             android:textSize="14sp" />
 
-    </android.support.design.widget.TextInputLayout>
+    </com.google.android.material.textfield.TextInputLayout>
 
-    <android.support.design.widget.TextInputLayout
+    <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/quantity_expired"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -148,13 +147,13 @@
         android:visibility="gone"
         android:layout_marginTop="8dp">
 
-        <android.support.design.widget.TextInputEditText
+        <com.google.android.material.textfield.TextInputEditText
             style="@style/ProductDetailsTextInputEditText"
             android:hint="@string/edit_text_quantity_expired"
             android:inputType="numberDecimal"
             android:textSize="14sp" />
 
-    </android.support.design.widget.TextInputLayout>
+    </com.google.android.material.textfield.TextInputLayout>
 
     <RelativeLayout
         android:id="@+id/confirmation_layout"
@@ -163,7 +162,7 @@
         android:layout_marginBottom="8dp"
         android:layout_marginTop="16dp"
         android:visibility="visible">
-        <android.support.v7.widget.AppCompatButton
+        <androidx.appcompat.widget.AppCompatButton
             android:id="@+id/add_transaction"
             android:layout_alignParentRight="true"
             android:layout_width="wrap_content"

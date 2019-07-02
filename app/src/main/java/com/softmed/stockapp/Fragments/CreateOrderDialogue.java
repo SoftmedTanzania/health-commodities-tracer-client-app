@@ -6,9 +6,9 @@ import android.app.Activity;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.design.widget.Snackbar;
-import android.support.design.widget.TextInputLayout;
-import android.support.v4.app.ActivityCompat;
+import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.textfield.TextInputLayout;
+import androidx.core.app.ActivityCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,6 +21,8 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import androidx.fragment.app.DialogFragment;
 
 import com.softmed.stockapp.Utils.LoadProductPhotoAsync;
 import com.softmed.stockapp.R;
@@ -47,7 +49,7 @@ import retrofit2.Response;
 /**
  * Dialog allowing users to select a date.
  */
-public class CreateOrderDialogue extends android.support.v4.app.DialogFragment {
+public class CreateOrderDialogue extends DialogFragment {
     private static final String TAG=CreateOrderDialogue.class.getSimpleName();
     private boolean sentSucessfully=false;
     double longitude;

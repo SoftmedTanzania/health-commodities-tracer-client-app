@@ -4,7 +4,7 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import android.support.design.widget.TextInputLayout;
+import com.google.android.material.textfield.TextInputLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +12,8 @@ import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
+
+import androidx.fragment.app.Fragment;
 
 import com.softmed.stockapp.Activities.MainActivity;
 import com.softmed.stockapp.Database.AppDatabase;
@@ -40,7 +42,7 @@ import static com.softmed.stockapp.Utils.Calendars.toBeginningOfTheDay;
 /**
  * Dialog allowing users to select a date.
  */
-public class UpdateStockFragment extends android.support.v4.app.Fragment {
+public class UpdateStockFragment extends Fragment {
     private static final String TAG = UpdateStockFragment.class.getSimpleName();
     public static AppDatabase baseDatabase;
     private View dialogueLayout;
