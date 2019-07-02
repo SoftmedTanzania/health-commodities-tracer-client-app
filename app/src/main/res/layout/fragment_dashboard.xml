@@ -65,7 +65,7 @@
                     android:fontFamily="@font/muli_bold"
                     android:textColor="@color/color_secondary"
                     android:text="Inventory Balances"/>
-                <com.github.mikephil.charting.charts.BarChart
+                <com.github.mikephil.charting.charts.CombinedChart
                     android:id="@+id/chart2"
                     android:layout_below="@id/title2"
                     android:layout_width="match_parent"

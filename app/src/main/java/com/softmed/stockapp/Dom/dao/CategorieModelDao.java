@@ -24,7 +24,7 @@ public interface CategorieModelDao {
     Category getCategoryById(long id);
 
 
-    @Query("select Category.name as name, SUM(Balances.balance) as balance from Category " +
+    @Query("select Category.name as name, SUM(Balances.balance) as balance, Balances.consumptionQuantity from Category " +
             "INNER JOIN Product ON Category.id = Product.category_id  " +
             "INNER JOIN Balances ON Product.id = Balances.productId  " +
             "GROUP BY Category.name")

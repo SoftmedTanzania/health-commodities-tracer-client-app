@@ -1,13 +1,8 @@
 package com.softmed.stockapp.Fragments;
 
-import androidx.core.content.res.ResourcesCompat;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Bundle;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -15,7 +10,13 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import com.github.mikephil.charting.charts.BarChart;
+import androidx.annotation.Nullable;
+import androidx.core.content.res.ResourcesCompat;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
+
+import com.github.mikephil.charting.charts.CombinedChart;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.Legend;
@@ -24,6 +25,10 @@ import com.github.mikephil.charting.components.YAxis;
 import com.github.mikephil.charting.data.BarData;
 import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
+import com.github.mikephil.charting.data.CombinedData;
+import com.github.mikephil.charting.data.Entry;
+import com.github.mikephil.charting.data.LineData;
+import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.data.PieData;
 import com.github.mikephil.charting.data.PieDataSet;
 import com.github.mikephil.charting.data.PieEntry;
@@ -32,10 +37,10 @@ import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.github.mikephil.charting.utils.ColorTemplate;
 import com.github.mikephil.charting.utils.MPPointF;
-import com.softmed.stockapp.R;
 import com.softmed.stockapp.Database.AppDatabase;
 import com.softmed.stockapp.Dom.entities.CategoryBalance;
 import com.softmed.stockapp.Dom.entities.ProductBalance;
+import com.softmed.stockapp.R;
 import com.softmed.stockapp.viewmodels.CategoryBalanceViewModel;
 import com.softmed.stockapp.viewmodels.ProductsViewModel;
 
@@ -47,7 +52,7 @@ import static com.github.mikephil.charting.animation.Easing.EaseInOutQuad;
 public class DashboardFragment extends Fragment {
     private static final String TAG = DashboardFragment.class.getSimpleName();
     private PieChart mChart1;
-    private BarChart mChart2;
+    private CombinedChart mChart2;
     private List<String> categoryNames = new ArrayList<>();
     private List<Integer> sizes = new ArrayList<>();
     private AppDatabase appDatabase;
@@ -118,43 +123,37 @@ public class DashboardFragment extends Fragment {
         mChart1.setEntryLabelTextSize(12f);
 
 
-
-
         //Bar chart configurations
         mChart2 = rowview.findViewById(R.id.chart2);
-        mChart2.setDrawBarShadow(false);
-        mChart2.setDrawValueAboveBar(true);
-        mChart2.setDragDecelerationFrictionCoef(0.95f);
-        mChart2.animateY(1400, EaseInOutQuad);
-
         mChart2.getDescription().setEnabled(false);
-
-        // if more than 60 entries are displayed in the chart, no values will be
-        // drawn
-        mChart2.setMaxVisibleValueCount(60);
-
-        // scaling can now only be done on x- and y-axis separately
-        mChart2.setPinchZoom(false);
-
+        mChart2.setBackgroundColor(Color.WHITE);
         mChart2.setDrawGridBackground(false);
-        // mChart2.setDrawYLabels(false);
+        mChart2.setDrawBarShadow(false);
+        mChart2.setHighlightFullBarEnabled(false);
+        mChart2.setDrawValueAboveBar(true);
+
+
+
 
         ValueFormatter xAxisFormatter = new XAxisValueFormatter();
-
         XAxis xAxis = mChart2.getXAxis();
-//        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setDrawGridLines(false);
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM_INSIDE);
-
         xAxis.setGranularityEnabled(true);
-//        xAxis.setLabelCount(labelCount, false);
-
-
         xAxis.setValueFormatter(xAxisFormatter);
+        xAxis.setAxisMinimum(0f);
         xAxis.setLabelRotationAngle(90f);
 
-        ValueFormatter custom = new MyAxisValueFormatter();
 
+
+
+
+        // draw bars behind lines
+        mChart2.setDrawOrder(new CombinedChart.DrawOrder[]{
+                CombinedChart.DrawOrder.BAR, CombinedChart.DrawOrder.LINE
+        });
+
+        ValueFormatter custom = new MyAxisValueFormatter();
         final YAxis leftAxis = mChart2.getAxisLeft();
         leftAxis.setLabelCount(8, false);
         leftAxis.setValueFormatter(custom);
@@ -164,10 +163,8 @@ public class DashboardFragment extends Fragment {
 
         YAxis rightAxis = mChart2.getAxisRight();
         rightAxis.setDrawGridLines(false);
-        rightAxis.setLabelCount(8, false);
-        rightAxis.setValueFormatter(custom);
-        rightAxis.setSpaceTop(15f);
         rightAxis.setAxisMinimum(0f); // this replaces setStartAtZero(true)
+
 
         Legend l2 = mChart2.getLegend();
         l2.setVerticalAlignment(Legend.LegendVerticalAlignment.BOTTOM);
@@ -179,11 +176,7 @@ public class DashboardFragment extends Fragment {
         l2.setTextSize(11f);
         l2.setXEntrySpace(4f);
         l2.setTypeface(muliTypeface);
-        // l.setExtra(ColorTemplate.VORDIPLOM_COLORS, new String[] { "abc",
-        // "def", "ghj", "ikl", "mno" });
-        // l.setCustom(ColorTemplate.VORDIPLOM_COLORS, new String[] { "abc",
-        // "def", "ghj", "ikl", "mno" });
-
+        l2.setWordWrapEnabled(true);
 
         categoryBalanceViewModel = ViewModelProviders.of(this).get(CategoryBalanceViewModel.class);
         categoryBalanceViewModel.getCategoryBalances().observe(getActivity(), new Observer<List<CategoryBalance>>() {
@@ -200,53 +193,80 @@ public class DashboardFragment extends Fragment {
             public void onChanged(@Nullable List<ProductBalance> productBalances) {
 
                 mProductBalances = productBalances;
-                try{
+                try {
                     productBalancesList.removeAllViews();
                     ArrayList<BarEntry> yVals1 = new ArrayList<BarEntry>();
-                    int i=0;
+                    int i = 1;
 
 
                     final List<Integer> chart2Colors = new ArrayList<>();
+                    ArrayList<Entry> lineEntries = new ArrayList<>();
 
                     for (ProductBalance productBalance : productBalances) {
-                        View v = getLayoutInflater().inflate(R.layout.view_inventory_balance_item,null);
-                        ((TextView)v.findViewById(R.id.sn)).setText(String.valueOf(i+1));
-                        ((TextView) v.findViewById(R.id.product_name)).setText(productBalance.getProductCategory()+" - "+productBalance.getProductName());
+                        Log.d(TAG,"coze = "+productBalance.getProductName()+"  -- "+productBalance.getConsumptionQuantity());
+
+                        View v = getLayoutInflater().inflate(R.layout.view_inventory_balance_item, null);
+                        ((TextView) v.findViewById(R.id.sn)).setText(String.valueOf(i));
+                        ((TextView) v.findViewById(R.id.product_name)).setText(productBalance.getProductCategory() + " - " + productBalance.getProductName());
 
                         String balance = String.valueOf(productBalance.getBalance());
-                        balance+=" "+productBalance.getUnit();
-                        ((TextView)v.findViewById(R.id.balance)).setText(balance);
+                        balance += " " + productBalance.getUnit();
+                        ((TextView) v.findViewById(R.id.balance)).setText(balance);
 
-                        if(productBalance.getBalance()>productBalance.getConsumptionQuantity()){
+                        if (productBalance.getBalance() > productBalance.getConsumptionQuantity()) {
                             chart2Colors.add(Color.rgb(30, 185, 128));
-                        }else{
+                        } else {
                             chart2Colors.add(Color.rgb(176, 0, 32));
                         }
+
+                        lineEntries.add(new Entry(i, productBalance.getConsumptionQuantity()));
 
                         yVals1.add(new BarEntry(i, productBalance.getBalance()));
                         i++;
                         productBalancesList.addView(v);
                     }
 
+                    yVals1.add(new BarEntry(i,0));
+
+                    LineDataSet set = new LineDataSet(lineEntries, "Product Consumption");
+                    set.setColor(Color.rgb(240, 238, 70));
+                    set.setLineWidth(2.5f);
+                    set.setCircleColor(Color.rgb(240, 238, 70));
+                    set.setCircleRadius(5f);
+                    set.setFillColor(Color.rgb(240, 238, 70));
+                    set.setMode(LineDataSet.Mode.CUBIC_BEZIER);
+                    set.setDrawValues(true);
+                    set.setValueTextSize(10f);
+                    set.setValueTextColor(Color.rgb(240, 238, 70));
+
+                    set.setAxisDependency(YAxis.AxisDependency.LEFT);
+                    LineData lineData = new LineData();
+                    lineData.addDataSet(set);
+
+
                     BarDataSet set1 = new BarDataSet(yVals1, "Inventory Balances");
                     set1.setDrawIcons(false);
-
                     set1.setColors(chart2Colors);
 
                     ArrayList<IBarDataSet> dataSets = new ArrayList<IBarDataSet>();
                     dataSets.add(set1);
 
-                    BarData data = new BarData(dataSets);
-                    data.setValueTextSize(10f);
-                    data.setBarWidth(0.9f);
+                    BarData barData = new BarData(dataSets);
+                    barData.setValueTextSize(10f);
+                    barData.setBarWidth(0.9f);
+
+
+                    CombinedData data = new CombinedData();
+                    data.setData(barData);
+                    data.setData(lineData);
+
 
                     mChart2.setData(data);
-
                     mChart2.highlightValues(null);
                     mChart2.invalidate();
 
-                    Log.d(TAG,"Invalidated the graph");
-                }catch (Exception e){
+                    Log.d(TAG, "Invalidated the graph");
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
 
@@ -257,41 +277,15 @@ public class DashboardFragment extends Fragment {
         return rowview;
     }
 
-    class MyAxisValueFormatter extends ValueFormatter
-    {
-
-        public MyAxisValueFormatter() {
-        }
-
-        @Override
-        public String getFormattedValue(float value, AxisBase axis) {
-            int v = (int)value;
-            return v+"";
-        }
-    }
-
-    class XAxisValueFormatter extends ValueFormatter
-    {
-        public XAxisValueFormatter() {
-        }
-
-        @Override
-        public String getFormattedValue(float value) {
-            Log.d(TAG,"chart product name  = "+mProductBalances.get((int)value).getProductName());
-            return mProductBalances.get((int)value).getProductName().replace("PEDIATRIC ARVS FORMULATIONS","");
-        }
-    }
-
     private void setData() {
         ArrayList<PieEntry> entries = new ArrayList<PieEntry>();
-        for (CategoryBalance categoryBalance:categoryBalances) {
+        for (CategoryBalance categoryBalance : categoryBalances) {
             entries.add(new PieEntry((float) (categoryBalance.getBalance()),
                     categoryBalance.getName(),
                     getResources().getDrawable(R.drawable.ic_content_paste_white_24dp)));
         }
 
         PieDataSet dataSet = new PieDataSet(entries, "Category");
-
         dataSet.setDrawIcons(false);
 
         dataSet.setSliceSpace(3f);
@@ -322,12 +316,35 @@ public class DashboardFragment extends Fragment {
         data.setValueFormatter(new PercentFormatter());
         data.setValueTextSize(11f);
         data.setValueTextColor(Color.BLACK);
+
         mChart1.setData(data);
-
-        // undo all highlights
-        mChart1.highlightValues(null);
-
         mChart1.invalidate();
+    }
+
+    class MyAxisValueFormatter extends ValueFormatter {
+
+        public MyAxisValueFormatter() {
+        }
+
+        @Override
+        public String getFormattedValue(float value, AxisBase axis) {
+            int v = (int) value;
+            return v + "";
+        }
+    }
+
+    class XAxisValueFormatter extends ValueFormatter {
+        public XAxisValueFormatter() {
+        }
+
+        @Override
+        public String getFormattedValue(float value) {
+            if(value == mProductBalances.size()+1 || value==0){
+                return "";
+            }else {
+                return mProductBalances.get((int) value-1).getProductName().replace("PEDIATRIC ARVS FORMULATIONS", "");
+            }
+        }
     }
 
 

@@ -12,6 +12,8 @@ public class CategoryBalance implements Serializable {
     @SerializedName("balance")
     private int balance;
 
+    private int consumptionQuantity;
+
     public String getName() {
         return name;
     }
@@ -26,5 +28,13 @@ public class CategoryBalance implements Serializable {
 
     public void setBalance(int balance) {
         this.balance = balance;
+    }
+
+    public int getConsumptionQuantity() {
+        return consumptionQuantity;
+    }
+
+    public void setConsumptionQuantity(int consumptionQuantity) {
+        this.consumptionQuantity = consumptionQuantity;
     }
 }
