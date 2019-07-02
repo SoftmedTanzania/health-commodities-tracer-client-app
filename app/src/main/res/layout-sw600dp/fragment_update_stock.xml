@@ -33,6 +33,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="12-07-2019"
+                android:fontFamily="@font/muli_bold"
                 android:gravity="center_horizontal"
                 android:textColor="@color/color_secondary"
                 android:textSize="24sp"
@@ -52,6 +53,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:text="Add Transaction"
+                android:fontFamily="@font/muli_bold_italic"
                 android:textColor="@color/color_on_secondary"
                 android:textSize="18sp"
                 android:textStyle="bold" />
@@ -99,6 +101,7 @@
                 <com.google.android.material.textfield.TextInputEditText
                     style="@style/ProductDetailsTextInputEditText"
                     android:hint="Stock On Hand"
+                    android:fontFamily="@font/muli_bold_italic"
                     android:inputType="numberDecimal"
                     android:textSize="14sp" />
 
@@ -140,6 +143,7 @@
                 <com.google.android.material.textfield.TextInputEditText
                     style="@style/ProductDetailsTextInputEditText"
                     android:hint="@string/edit_text_number_of_clients_on_regime"
+                    android:fontFamily="@font/muli_bold_italic"
                     android:inputType="numberDecimal"
                     android:textSize="14sp" />
 
@@ -157,6 +161,7 @@
                     style="@style/ProductDetailsTextInputEditText"
                     android:hint="Stockout Days"
                     android:inputType="numberDecimal"
+                    android:fontFamily="@font/muli_bold_italic"
                     android:textSize="14sp" />
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -174,6 +179,7 @@
                     style="@style/ProductDetailsTextInputEditText"
                     android:hint="@string/edit_text_wastage"
                     android:inputType="numberDecimal"
+                    android:fontFamily="@font/muli_bold_italic"
                     android:textSize="14sp" />
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -191,6 +197,7 @@
                 <com.google.android.material.textfield.TextInputEditText
                     style="@style/ProductDetailsTextInputEditText"
                     android:hint="@string/edit_text_quantity_expired"
+                    android:fontFamily="@font/muli_bold_italic"
                     android:inputType="numberDecimal"
                     android:textSize="14sp" />
 

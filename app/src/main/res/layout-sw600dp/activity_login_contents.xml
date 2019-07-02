@@ -2,9 +2,9 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:app_ms="http://schemas.android.com/apk/res-auto"
-    android:orientation="vertical"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:orientation="vertical">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -21,24 +21,24 @@
                 android:layout_weight="1">
 
                 <ImageView
+                    android:id="@+id/background"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:id="@+id/background"
-                    android:scaleType="centerCrop"/>
+                    android:scaleType="centerCrop" />
 
                 <View
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:background="@color/color_primary_variant"
-                    android:alpha="0.9"/>
+                    android:alpha="0.9"
+                    android:background="@color/color_primary_variant" />
 
             </RelativeLayout>
 
             <View
                 android:layout_width="match_parent"
+                android:layout_height="0dp"
                 android:layout_weight="1"
-                android:background="@color/card_separator"
-                android:layout_height="0dp"/>
+                android:background="@color/card_separator" />
 
         </LinearLayout>
 
@@ -46,18 +46,18 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
-            android:layout_marginRight="52dp"
             android:layout_marginTop="16dp"
-            android:orientation="horizontal"
-            android:gravity="center_vertical">
+            android:layout_marginRight="52dp"
+            android:gravity="center_vertical"
+            android:orientation="horizontal">
 
             <ImageView
                 android:layout_width="30dp"
                 android:layout_height="30dp"
-                android:src="@mipmap/ic_language"
-                android:scaleType="centerCrop"
+                android:layout_marginRight="16dp"
                 android:layout_marginBottom="8dp"
-                android:layout_marginRight="16dp"/>
+                android:scaleType="centerCrop"
+                android:src="@mipmap/ic_language" />
 
             <fr.ganfra.materialspinner.MaterialSpinner
                 android:id="@+id/language"
@@ -65,32 +65,32 @@
                 android:layout_height="wrap_content"
                 android:divider="@null"
                 android:textSize="12sp"
-                app_ms:ms_hintTextSize="14sp"
+                app:ms_highlightColor="@color/color_primary"
+                app_ms:ms_alignLabels="false"
                 app_ms:ms_alwaysShowFloatingLabel="true"
-                app_ms:ms_multiline="false"
-                app_ms:ms_hint="@string/language"
-                app_ms:ms_enableFloatingLabel="true"
-                app_ms:ms_enableErrorLabel="false"
-                app_ms:ms_floatingLabelText="@string/language"
                 app_ms:ms_arrowColor="@color/white"
                 app_ms:ms_arrowSize="12dp"
-                app_ms:ms_alignLabels="false"
+                app_ms:ms_enableErrorLabel="false"
+                app_ms:ms_enableFloatingLabel="true"
                 app_ms:ms_floatingLabelColor="@color/white"
-                app:ms_highlightColor="@color/color_primary" />
+                app_ms:ms_floatingLabelText="@string/language"
+                app_ms:ms_hint="@string/language"
+                app_ms:ms_hintTextSize="14sp"
+                app_ms:ms_multiline="false" />
 
         </LinearLayout>
 
         <RelativeLayout
             android:id="@+id/credential_card"
             android:layout_width="450dp"
-            android:layout_margin="64dp"
             android:layout_height="400dp"
             android:layout_centerInParent="true"
+            android:layout_margin="64dp"
             android:background="@color/white"
-            android:paddingBottom="32dp"
             android:paddingLeft="32dp"
+            android:paddingTop="16dp"
             android:paddingRight="32dp"
-            android:paddingTop="16dp">
+            android:paddingBottom="32dp">
 
             <ImageView
                 android:id="@+id/lock_ico"
@@ -104,7 +104,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@id/lock_ico"
-                android:fontFamily="@font/roboto_regular"
+                android:fontFamily="@font/muli"
                 android:text="@string/login"
                 android:textColor="@color/black"
                 android:textSize="16sp" />
@@ -115,7 +115,8 @@
                 android:layout_height="wrap_content"
                 android:layout_below="@id/login_title"
                 android:layout_marginTop="4dp"
-                android:fontFamily="@font/roboto_regular"
+                android:layout_marginBottom="16dp"
+                android:fontFamily="@font/muli_light_italic"
                 android:text="@string/enter_username_and_password"
                 android:textColor="@color/secondary_text"
                 android:textSize="16sp" />
@@ -124,7 +125,7 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@id/login_title">
+                android:layout_below="@id/login_msg">
 
                 <LinearLayout
                     android:layout_width="match_parent"
@@ -133,30 +134,46 @@
                     android:layout_marginTop="32dp"
                     android:orientation="vertical">
 
-                    <EditText
-                        android:id="@+id/user_username_et"
+                    <com.google.android.material.textfield.TextInputLayout
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_marginTop="32dp"
-                        android:fontFamily="@font/roboto_regular"
-                        android:hint="@string/username"
-                        android:textColor="@color/secondary_text"
-                        android:textColorHint="@color/secondary_text"
-                        android:textSize="24sp" />
+                        android:layout_gravity="bottom"
+                        android:layout_marginTop="8dp">
+
+                        <EditText
+                            android:id="@+id/user_username_et"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="32dp"
+                            android:fontFamily="@font/muli"
+                            android:hint="@string/username"
+                            android:textColor="@color/secondary_text"
+                            android:textColorHint="@color/secondary_text"
+                            android:textSize="24sp" />
+                    </com.google.android.material.textfield.TextInputLayout>
 
 
-                    <EditText
-                        android:id="@+id/password_et"
+                    <com.google.android.material.textfield.TextInputLayout
+                        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical"
-                        android:layout_marginTop="16dp"
-                        android:fontFamily="@font/roboto_regular"
-                        android:hint="@string/password"
-                        android:inputType="textPassword"
-                        android:textColor="@color/secondary_text"
-                        android:textColorHint="@color/secondary_text"
-                        android:textSize="24sp" />
+                        android:layout_gravity="bottom"
+                        android:layout_marginTop="8dp">
+
+                        <EditText
+                            android:id="@+id/password_et"
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical"
+                            android:layout_marginTop="16dp"
+                            android:fontFamily="@font/muli"
+                            android:hint="@string/password"
+                            android:inputType="textPassword"
+                            android:textColor="@color/secondary_text"
+                            android:textColorHint="@color/secondary_text"
+                            android:textSize="24sp" />
+                    </com.google.android.material.textfield.TextInputLayout>
 
                     <com.rey.material.widget.ProgressView
                         android:id="@+id/login_progress"
@@ -165,8 +182,8 @@
                         android:layout_alignParentBottom="true"
                         android:layout_centerHorizontal="true"
                         android:layout_gravity="center_horizontal"
-                        android:layout_marginBottom="15dp"
                         android:layout_marginTop="16dp"
+                        android:layout_marginBottom="15dp"
                         app:cpd_strokeColor="@color/color_primary"
                         app:pv_circular="true"
                         app:pv_progressMode="indeterminate"
@@ -178,8 +195,8 @@
                     android:id="@+id/login_button"
                     android:layout_width="match_parent"
                     android:layout_height="50dp"
-                    android:layout_alignParentBottom="true"
                     android:layout_alignParentRight="true"
+                    android:layout_alignParentBottom="true"
                     android:background="@color/secondary_text"
                     android:fontFamily="@font/roboto_regular"
                     android:text="@string/login"
@@ -192,62 +209,62 @@
         </RelativeLayout>
 
         <ImageView
+            android:id="@+id/login_screen_logo"
             android:layout_width="45dp"
             android:layout_height="45dp"
             android:layout_marginLeft="16dp"
             android:layout_marginTop="16dp"
             android:scaleType="centerCrop"
-            android:id="@+id/login_screen_logo"
-            android:src="@mipmap/ic_logo_white"/>
+            android:src="@mipmap/ic_logo_white" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
             android:layout_marginLeft="16dp"
+            android:layout_marginTop="16dp"
             android:layout_toRightOf="@id/login_screen_logo"
-            android:textSize="28sp"
+            android:fontFamily="@font/muli_bold"
             android:text="Health Commodities"
             android:textColor="@color/white"
-            android:textStyle="bold"
-            android:fontFamily="@font/roboto_bold"/>
+            android:textSize="28sp"
+            android:textStyle="bold" />
 
         <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="16dp"
             android:id="@+id/referral_text"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:layout_below="@id/login_screen_logo"
-            android:layout_toRightOf="@id/login_screen_logo"
-            android:textSize="24sp"
-            android:textColor="@color/white"
-            android:fontFamily="@font/roboto_light"
-            android:text="Tracer"/>
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
             android:layout_marginLeft="16dp"
-            android:id="@+id/application_text"
-            android:layout_below="@id/referral_text"
             android:layout_toRightOf="@id/login_screen_logo"
-            android:textSize="24sp"
+            android:fontFamily="@font/muli_light"
+            android:text="Tracer"
             android:textColor="@color/white"
-            android:fontFamily="@font/roboto_light"
-            android:text="Application"/>
+            android:textSize="24sp" />
 
         <TextView
+            android:id="@+id/application_text"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_below="@id/referral_text"
+            android:layout_marginLeft="16dp"
+            android:layout_toRightOf="@id/login_screen_logo"
+            android:fontFamily="@font/muli_extra_light"
+            android:text="Application"
+            android:textColor="@color/white"
+            android:textSize="24sp" />
+
+        <TextView
             android:id="@+id/login_messages"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/credential_card"
+            android:layout_centerHorizontal="true"
             android:layout_marginTop="16dp"
             android:fontFamily="@font/avenir_light"
-            android:textSize="18sp"
             android:gravity="center"
-            android:layout_centerHorizontal="true"
-            android:textColor="@color/black"
             android:text="Logging in"
-            android:layout_below="@id/credential_card"/>
+            android:textColor="@color/black"
+            android:textSize="18sp" />
 
 
     </RelativeLayout>

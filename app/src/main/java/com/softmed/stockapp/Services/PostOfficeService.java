@@ -173,12 +173,16 @@ public class PostOfficeService extends IntentService {
                     protected Void doInBackground(Void... voids) {
                         if (response.body() != null) {
                             for (ProductReportingScheduleResponse reportingSchedule : response.body()) {
-                                if (database.productReportingScheduleModelDao().getProductReportingScheduleById(reportingSchedule.getId()).getStatus().equalsIgnoreCase("posted")) {
-                                    reportingSchedule.setStatus("posted");
+                                try {
+                                    if (database.productReportingScheduleModelDao().getProductReportingScheduleById(reportingSchedule.getId()).getStatus().equalsIgnoreCase("posted")) {
+                                        reportingSchedule.setStatus("posted");
+                                    }
+
+
+                                    database.productReportingScheduleModelDao().addProductSchedule(LoginActivity.getProductReportingSchedule(reportingSchedule));
+                                }catch (Exception e){
+                                    e.printStackTrace();
                                 }
-
-
-                                database.productReportingScheduleModelDao().addProductSchedule(LoginActivity.getProductReportingSchedule(reportingSchedule));
                             }
                         }
                         return null;

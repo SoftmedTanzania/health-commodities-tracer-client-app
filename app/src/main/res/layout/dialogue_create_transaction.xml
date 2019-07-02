@@ -17,7 +17,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="16dp"
         android:text="Add Stock Status"
-        android:textStyle="bold"
+        android:fontFamily="@font/muli_bold"
         android:textColor="@color/color_primary"
         android:textSize="24sp" />
 
@@ -67,6 +67,7 @@
             style="@style/ProductDetailsTextInputEditText"
             android:hint="Stock On Hand"
             android:textSize="14sp"
+            android:fontFamily="@font/muli_bold_italic"
             android:inputType="numberDecimal"/>
 
     </com.google.android.material.textfield.TextInputLayout>
@@ -122,6 +123,7 @@
             android:layout_height="wrap_content"
             style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:hint="Stockout Days"
+            android:fontFamily="@font/muli_bold_italic"
             android:inputType="numberDecimal"
             android:textSize="14sp" />
 
@@ -139,6 +141,7 @@
         <com.google.android.material.textfield.TextInputEditText
             style="@style/ProductDetailsTextInputEditText"
             android:hint="@string/edit_text_wastage"
+            android:fontFamily="@font/muli_bold_italic"
             android:inputType="numberDecimal"
             android:textSize="14sp" />
 
@@ -156,6 +159,7 @@
         <com.google.android.material.textfield.TextInputEditText
             style="@style/ProductDetailsTextInputEditText"
             android:hint="@string/edit_text_quantity_expired"
+            android:fontFamily="@font/muli_bold_italic"
             android:inputType="numberDecimal"
             android:textSize="14sp" />
 
