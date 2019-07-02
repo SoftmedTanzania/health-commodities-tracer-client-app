@@ -14,6 +14,8 @@
         android:layout_weight="0.05"
         android:layout_height="wrap_content"
         android:id="@+id/sn"
+        android:textSize="14sp"
+        android:fontFamily="@font/muli"
         android:text="1"
         android:textStyle="bold"/>
 
@@ -23,6 +25,8 @@
         android:layout_weight="0.2"
         android:layout_height="wrap_content"
         android:id="@+id/product_name"
+        android:textSize="14sp"
+        android:fontFamily="@font/muli"
         android:text="Product"
         android:textStyle="bold"/>
 
@@ -32,6 +36,8 @@
         android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="0.1"
+        android:textSize="14sp"
+        android:fontFamily="@font/muli"
         android:gravity="center_horizontal"
         android:textStyle="bold"
         android:text="50 tones"/>

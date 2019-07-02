@@ -315,7 +315,7 @@ public class LoginActivity extends BaseActivity {
                     Log.d(TAG, "response = " + response.toString());
                     if (response.isSuccessful()) {
                         // user object available
-                        loginMessages.setTextColor(getResources().getColor(R.color.green_a700));
+                        loginMessages.setTextColor(getResources().getColor(R.color.color_primary));
                         loginMessages.setText(getResources().getString(R.string.success));
 
                         Log.d(TAG, "response body = " + new Gson().toJson(response.body()));
@@ -351,7 +351,7 @@ public class LoginActivity extends BaseActivity {
 
                     } else {
                         loginMessages.setText(getResources().getString(R.string.error_logging_in));
-                        loginMessages.setTextColor(getResources().getColor(R.color.red_a700));
+                        loginMessages.setTextColor(getResources().getColor(R.color.color_error));
                         loginProgress.setVisibility(View.GONE);
                         loginButton.setText(getResources().getString(R.string.login));
                     }
@@ -405,7 +405,7 @@ public class LoginActivity extends BaseActivity {
             @Override
             public void onFailure(Call call, Throwable t) {
                 loginMessages.setText(getResources().getString(R.string.device_registration_warning));
-                loginMessages.setTextColor(getResources().getColor(R.color.red_600));
+                loginMessages.setTextColor(getResources().getColor(R.color.color_error));
             }
         });
 
@@ -413,7 +413,7 @@ public class LoginActivity extends BaseActivity {
 
     private void callCategories() {
         loginMessages.setText(getResources().getString(R.string.loading_categories));
-        loginMessages.setTextColor(getResources().getColor(R.color.amber_a700));
+        loginMessages.setTextColor(getResources().getColor(R.color.color_primary));
         if (session.isLoggedIn()) {
             Call<List<CategoriesResponse>> call = categoriesService.getCategories();
             call.enqueue(new Callback<List<CategoriesResponse>>() {
@@ -435,7 +435,7 @@ public class LoginActivity extends BaseActivity {
 
 
                     loginMessages.setText(getResources().getString(R.string.error_loading_categories));
-                    loginMessages.setTextColor(getResources().getColor(R.color.red_500));
+                    loginMessages.setTextColor(getResources().getColor(R.color.color_error));
                 }
             });
         }
@@ -443,7 +443,7 @@ public class LoginActivity extends BaseActivity {
 
     private void callReportingSchedule() {
         loginMessages.setText(getResources().getString(R.string.loading_schedule));
-        loginMessages.setTextColor(getResources().getColor(R.color.amber_a700));
+        loginMessages.setTextColor(getResources().getColor(R.color.color_primary));
         Log.d(TAG,"loading schedule");
         if (session.isLoggedIn()) {
             Call<List<ProductReportingScheduleResponse>> call = transactionServices.getSchedule();
@@ -466,7 +466,7 @@ public class LoginActivity extends BaseActivity {
 
 
                     loginMessages.setText(getResources().getString(R.string.error_loading_categories));
-                    loginMessages.setTextColor(getResources().getColor(R.color.red_500));
+                    loginMessages.setTextColor(getResources().getColor(R.color.color_error));
                 }
             });
         }
@@ -474,7 +474,7 @@ public class LoginActivity extends BaseActivity {
 
     private void callProducts() {
         loginMessages.setText(getResources().getString(R.string.loading_products));
-        loginMessages.setTextColor(getResources().getColor(R.color.amber_a700));
+        loginMessages.setTextColor(getResources().getColor(R.color.color_primary));
         if (session.isLoggedIn()) {
             Call<List<Product>> call = productsServices.getProducts();
             call.enqueue(new Callback<List<Product>>() {
@@ -495,7 +495,7 @@ public class LoginActivity extends BaseActivity {
 
 
                     loginMessages.setText(getResources().getString(R.string.error_loading_products));
-                    loginMessages.setTextColor(getResources().getColor(R.color.red_500));
+                    loginMessages.setTextColor(getResources().getColor(R.color.color_error));
                 }
             });
         }
@@ -503,7 +503,7 @@ public class LoginActivity extends BaseActivity {
 
     private void callUnits() {
         loginMessages.setText(getResources().getString(R.string.loading_units));
-        loginMessages.setTextColor(getResources().getColor(R.color.amber_a700));
+        loginMessages.setTextColor(getResources().getColor(R.color.color_primary));
         if (session.isLoggedIn()) {
             Call<List<UnitsResponse>> call = productsServices.getUnits();
             call.enqueue(new Callback<List<UnitsResponse>>() {
@@ -525,7 +525,7 @@ public class LoginActivity extends BaseActivity {
 
 
                     loginMessages.setText(getResources().getString(R.string.error_loading_products));
-                    loginMessages.setTextColor(getResources().getColor(R.color.red_500));
+                    loginMessages.setTextColor(getResources().getColor(R.color.color_error));
                 }
             });
         }
@@ -533,7 +533,7 @@ public class LoginActivity extends BaseActivity {
 
     private void callTransactions() {
         loginMessages.setText(getResources().getString(R.string.loading_transactions));
-        loginMessages.setTextColor(getResources().getColor(R.color.amber_a700));
+        loginMessages.setTextColor(getResources().getColor(R.color.color_primary));
         if (session.isLoggedIn()) {
 
             Log.d(TAG, "userId Transactions = " + session.getUserUUID());
@@ -559,7 +559,7 @@ public class LoginActivity extends BaseActivity {
                     Log.e("", "An error encountered!");
                     Log.d("TransactionCheck", "failed with " + t.getMessage() + " " + t.toString());
                     loginMessages.setText(getResources().getString(R.string.error_loading_transactions));
-                    loginMessages.setTextColor(getResources().getColor(R.color.red_500));
+                    loginMessages.setTextColor(getResources().getColor(R.color.color_error));
                 }
             });
         }
@@ -567,7 +567,7 @@ public class LoginActivity extends BaseActivity {
 
     private void callBalances() {
         loginMessages.setText(getResources().getString(R.string.loading_transactions));
-        loginMessages.setTextColor(getResources().getColor(R.color.amber_a700));
+        loginMessages.setTextColor(getResources().getColor(R.color.color_primary));
         if (session.isLoggedIn()) {
 
             Log.d(TAG, "userId Balance = " + session.getUserUUID());
@@ -591,7 +591,7 @@ public class LoginActivity extends BaseActivity {
                     Log.e("", "An error encountered!");
                     Log.d("BalanceCheck", "failed with " + t.getMessage() + " " + t.toString());
                     loginMessages.setText(getResources().getString(R.string.error_loading_transactions));
-                    loginMessages.setTextColor(getResources().getColor(R.color.red_500));
+                    loginMessages.setTextColor(getResources().getColor(R.color.color_error));
                 }
             });
         }
@@ -599,7 +599,7 @@ public class LoginActivity extends BaseActivity {
 
     private void callTransactionTypes() {
         loginMessages.setText(getResources().getString(R.string.loading_transactions_types));
-        loginMessages.setTextColor(getResources().getColor(R.color.amber_a700));
+        loginMessages.setTextColor(getResources().getColor(R.color.color_primary));
         if (session.isLoggedIn()) {
             Call<List<TransactionType>> call = transactionServices.getTransactionTypes();
             call.enqueue(new Callback<List<TransactionType>>() {
@@ -618,7 +618,7 @@ public class LoginActivity extends BaseActivity {
                     Log.e("", "An error encountered!");
                     Log.d("TransactionCheck", "failed with " + t.getMessage() + " " + t.toString());
                     loginMessages.setText(getResources().getString(R.string.error_loading_transaction_types));
-                    loginMessages.setTextColor(getResources().getColor(R.color.red_500));
+                    loginMessages.setTextColor(getResources().getColor(R.color.color_error));
                 }
             });
         }
@@ -856,7 +856,7 @@ public class LoginActivity extends BaseActivity {
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
             loginMessages.setText(getResources().getString(R.string.success));
-            loginMessages.setTextColor(getResources().getColor(R.color.green_500));
+            loginMessages.setTextColor(getResources().getColor(R.color.color_primary));
 
             //Call HomeActivity to log in user
             Intent intent = new Intent(LoginActivity.this, MainActivity.class);

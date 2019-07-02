@@ -18,14 +18,14 @@
         android:layout_marginTop="16dp"
         android:text="Add Stock Status"
         android:textStyle="bold"
-        android:textColor="@color/primary"
+        android:textColor="@color/color_primary"
         android:textSize="24sp" />
 
     <View
         android:layout_width="60dp"
         android:layout_height="8dp"
         android:layout_marginTop="8dp"
-        android:background="@color/card_separator" />
+        android:background="@color/color_secondary" />
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -46,17 +46,18 @@
             app_ms:ms_enableFloatingLabel="true"
             app_ms:ms_enableErrorLabel="true"
             app_ms:ms_floatingLabelText="Reporting Period"
-            app_ms:ms_baseColor="@color/card_grid_tex"
-            app_ms:ms_highlightColor="@color/card_grid_text"
-            app_ms:ms_errorColor="@color/red_500"
+            app_ms:ms_baseColor="@color/secondary_text"
+            app_ms:ms_highlightColor="@color/secondary_text"
+            app_ms:ms_errorColor="@color/color_error"
             app_ms:ms_hintColor="#b3b3b3"
             app_ms:ms_arrowColor="@color/black"
             app_ms:ms_arrowSize="12dp"
             app_ms:ms_alignLabels="false"
-            app_ms:ms_floatingLabelColor="@color/accent"/>
+            app_ms:ms_floatingLabelColor="@color/color_secondary"/>
     </LinearLayout>
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/stock_adjustment_quantity"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_marginTop="8dp"
         android:layout_gravity="bottom"
@@ -84,14 +85,14 @@
         app_ms:ms_enableFloatingLabel="true"
         app_ms:ms_enableErrorLabel="true"
         app_ms:ms_floatingLabelText="Do you have clients on Regime?"
-        app_ms:ms_baseColor="@color/card_grid_tex"
-        app_ms:ms_highlightColor="@color/card_grid_text"
-        app_ms:ms_errorColor="@color/red_500"
+        app_ms:ms_baseColor="@color/secondary_text"
+        app_ms:ms_highlightColor="@color/secondary_text"
+        app_ms:ms_errorColor="@color/color_error"
         app_ms:ms_hintColor="#b3b3b3"
         app_ms:ms_arrowColor="@color/black"
         app_ms:ms_arrowSize="12dp"
         app_ms:ms_alignLabels="false"
-        app_ms:ms_floatingLabelColor="@color/accent"/>
+        app_ms:ms_floatingLabelColor="@color/color_secondary"/>
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/number_of_clients_on_regime"
         android:layout_width="match_parent"
@@ -112,11 +113,14 @@
         android:id="@+id/stock_out_days"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_gravity="bottom"
         android:layout_marginTop="8dp">
 
         <com.google.android.material.textfield.TextInputEditText
-            style="@style/ProductDetailsTextInputEditText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
             android:hint="Stockout Days"
             android:inputType="numberDecimal"
             android:textSize="14sp" />
@@ -125,6 +129,7 @@
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/wastage"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
@@ -141,6 +146,7 @@
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/quantity_expired"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom"
@@ -162,7 +168,7 @@
         android:layout_marginBottom="8dp"
         android:layout_marginTop="16dp"
         android:visibility="visible">
-        <androidx.appcompat.widget.AppCompatButton
+        <Button
             android:id="@+id/add_transaction"
             android:layout_alignParentRight="true"
             android:layout_width="wrap_content"
@@ -172,7 +178,6 @@
             android:elevation="4dp"
             android:scaleType="centerInside"
             android:textStyle="bold"
-            android:textColor="@color/accent"
             style="?android:attr/borderlessButtonStyle"
             android:text="Save" />
     </RelativeLayout>

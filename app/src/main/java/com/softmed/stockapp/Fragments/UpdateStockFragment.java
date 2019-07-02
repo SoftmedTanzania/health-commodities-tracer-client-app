@@ -4,8 +4,6 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import com.google.android.material.textfield.TextInputLayout;
-
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +15,7 @@ import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.gson.Gson;
 import com.softmed.stockapp.Activities.MainActivity;
 import com.softmed.stockapp.Database.AppDatabase;
@@ -114,7 +113,7 @@ public class UpdateStockFragment extends Fragment {
         d.setTime(Long.parseLong(scheduledDate));
         SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
 
-        scheduledDateTextView.setText("Stock Status for "+dateFormat.format(d));
+        scheduledDateTextView.setText("STOCK STATUS FOR " + dateFormat.format(d));
 
         stockAdjustmentQuantity = dialogueLayout.findViewById(R.id.stock_adjustment_quantity);
         numberOfClientsOnRegimeInputLayout = dialogueLayout.findViewById(R.id.number_of_clients_on_regime);
@@ -223,9 +222,17 @@ public class UpdateStockFragment extends Fragment {
                     }
 
                     new AsyncTask<Void, Void, Void>() {
+                        private int stockOutDays;
+                        private String noOfClients, QuantityExpired, wastage;
+
                         @Override
                         protected void onPreExecute() {
                             super.onPreExecute();
+                            stockOutDays = Integer.parseInt(stockOutDaysInputLayout.getEditText().getText().toString());
+                            noOfClients = numberOfClientsOnRegimeInputLayout.getEditText().getText().toString();
+                            QuantityExpired = quantityExpiredInputLayout.getEditText().getText().toString();
+                            wastage = wastageInputLayout.getEditText().getText().toString();
+
                         }
 
                         @Override
@@ -241,18 +248,18 @@ public class UpdateStockFragment extends Fragment {
                             transactions.setHasClients(hasClients);
                             transactions.setSyncStatus(0);
                             transactions.setCreated_at(Calendar.getInstance().getTimeInMillis());
-                            transactions.setStockOutDays(Integer.parseInt(stockOutDaysInputLayout.getEditText().getText().toString()));
+                            transactions.setStockOutDays(stockOutDays);
 
                             if (hasClients && product.isTrack_number_of_patients()) {
-                                transactions.setClientsOnRegime(numberOfClientsOnRegimeInputLayout.getEditText().getText().toString());
+                                transactions.setClientsOnRegime(noOfClients);
                             }
 
                             if (product.isTrack_quantity_expired()) {
-                                transactions.setClientsOnRegime(quantityExpiredInputLayout.getEditText().getText().toString());
+                                transactions.setQuantityExpired(QuantityExpired);
                             }
 
                             if (product.isTrack_wastage()) {
-                                transactions.setWastage(wastageInputLayout.getEditText().getText().toString());
+                                transactions.setWastage(wastage);
                             }
 
                             transactions.setStatus_id(1);
@@ -269,13 +276,13 @@ public class UpdateStockFragment extends Fragment {
                             baseDatabase.balanceModelDao().addBalance(balances);
 
                             try {
-                                Log.d(TAG,"Updating product schedule");
+                                Log.d(TAG, "Updating product schedule");
                                 ProductReportingSchedule reportingSchedule = baseDatabase.productReportingScheduleModelDao().getProductReportingScheduleById(scheduledId);
                                 reportingSchedule.setStatus("posted");
                                 baseDatabase.productReportingScheduleModelDao().addProductSchedule(reportingSchedule);
 
-                                Log.d(TAG,"updated product schedule = "+new Gson().toJson(baseDatabase.productReportingScheduleModelDao().getProductReportingScheduleById(scheduledId)));
-                            }catch (Exception e){
+                                Log.d(TAG, "updated product schedule = " + new Gson().toJson(baseDatabase.productReportingScheduleModelDao().getProductReportingScheduleById(scheduledId)));
+                            } catch (Exception e) {
                                 e.printStackTrace();
                             }
                             return null;

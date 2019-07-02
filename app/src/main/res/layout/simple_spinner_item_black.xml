@@ -21,7 +21,7 @@
     android:id="@android:id/text1"
     style="?android:attr/spinnerItemStyle"
     android:background="@color/white"
-    android:textColor="@color/card_grid_tex"
+    android:textColor="@color/secondary_text"
     android:singleLine="true"
     android:gravity="center_vertical"
     android:layout_width="match_parent"

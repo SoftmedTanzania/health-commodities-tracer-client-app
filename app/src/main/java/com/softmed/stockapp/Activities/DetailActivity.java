@@ -180,7 +180,7 @@ public class DetailActivity extends AppCompatActivity {
 
                                             TextView numberOfClientsOnRegime = findViewById(R.id.number_of_clients_on_regime);
 
-                                            Log.d(TAG, "number of clients on regime = " + String.valueOf(transactions.getClientsOnRegime()));
+                                            Log.d(TAG, "number of clients on regime = " + transactions.getClientsOnRegime());
 
                                             numberOfClientsOnRegime.setText(String.format("%s %s", getResources().getString(R.string.string_format_product_clients_on_regime), String.valueOf(transactions.getClientsOnRegime())));
 

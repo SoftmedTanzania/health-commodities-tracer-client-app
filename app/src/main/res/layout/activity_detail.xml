@@ -37,7 +37,7 @@
                 android:layout_marginTop="8dp"
                 android:text="Product Details"
                 android:textStyle="bold"
-                android:textColor="@color/primary"
+                android:textColor="@color/color_primary"
                 android:textSize="16sp" />
 
             <TextView
@@ -53,7 +53,7 @@
             <RelativeLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/card_separator_third">
+                android:background="@color/card_separator">
 
                 <TextView
                     android:id="@+id/stock_on_hand_label"
@@ -69,7 +69,7 @@
                     android:layout_height="5dp"
                     android:layout_below="@id/stock_on_hand_label"
                     android:layout_marginTop="8dp"
-                    android:background="@color/accent" />
+                    android:background="@color/color_secondary" />
             </RelativeLayout>
 
 
@@ -83,7 +83,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:visibility="gone"
-                android:background="@color/card_separator_third">
+                android:background="@color/card_separator">
 
                 <TextView
                     android:id="@+id/number_of_clients_on_regime_label"
@@ -99,7 +99,7 @@
                     android:layout_height="5dp"
                     android:layout_below="@id/number_of_clients_on_regime_label"
                     android:layout_marginTop="8dp"
-                    android:background="@color/accent" />
+                    android:background="@color/color_secondary" />
 
                 <TextView
                     android:layout_below="@id/view"
@@ -112,7 +112,7 @@
                 android:layout_marginTop="8dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:background="@color/card_separator_third">
+                android:background="@color/card_separator">
 
                 <TextView
                     android:id="@+id/initial_information_title"
@@ -121,7 +121,7 @@
                     android:textSize="16sp"
                     android:layout_marginTop="16dp"
                     android:textStyle="bold"
-                    android:textColor="@color/primary"
+                    android:textColor="@color/color_primary"
                     android:text="Reporting History"/>
                 <View
                     android:layout_below="@id/initial_information_title"
@@ -226,7 +226,7 @@
                     android:layout_marginRight="16dp"
                     android:layout_width="match_parent"
                     android:layout_height="1dp"
-                    android:background="@color/card_grid_tex"/>
+                    android:background="@color/secondary_text"/>
 
                 <TableLayout
                     android:background="#f5f5f5"

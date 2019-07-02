@@ -212,9 +212,9 @@ public class DashboardFragment extends Fragment {
                         ((TextView)v.findViewById(R.id.balance)).setText(balance);
 
                         if(productBalance.getBalance()>productBalance.getConsumptionQuantity()){
-                            chart2Colors.add(Color.rgb(0, 255, 0));
+                            chart2Colors.add(Color.rgb(30, 185, 128));
                         }else{
-                            chart2Colors.add(Color.rgb(255, 0, 0));
+                            chart2Colors.add(Color.rgb(176, 0, 32));
                         }
 
                         yVals1.add(new BarEntry(i, productBalance.getBalance()));

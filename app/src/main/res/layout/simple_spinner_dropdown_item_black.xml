@@ -22,7 +22,7 @@
     android:id="@android:id/text1"
     style="?android:attr/spinnerDropDownItemStyle"
     android:background="@color/white"
-    android:textColor="@color/card_grid_text"
+    android:textColor="@color/secondary_text"
     android:text="item"
     android:singleLine="true"
     android:layout_width="match_parent"
