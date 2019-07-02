@@ -55,7 +55,7 @@ public class ManagedProductsActivity extends BaseActivity {
         setContentView(R.layout.activity_managed_products);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        toolbar.setTitle("Choose Products Managed by the Facility");
+        setTitle("Choose Products Managed by the Facility");
 
         // Session Manager
         session = new SessionManager(getApplicationContext());

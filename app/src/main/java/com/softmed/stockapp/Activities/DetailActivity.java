@@ -300,7 +300,10 @@ public class DetailActivity extends AppCompatActivity {
      * be quite long, a separate method is preferable for better readability.
      */
     private void populateViewsWithProductData() {
-        String photoPath = "";//mProduct.getImagePath();
+        String photoPath = "";
+        if( myProduct.getLocal_image_path()!=null) {
+            photoPath = myProduct.getLocal_image_path();
+        }
 
         Log.d(TAG, "product path = " + photoPath);
         mProductPhotoImageView.setTag(photoPath);
@@ -388,9 +391,20 @@ public class DetailActivity extends AppCompatActivity {
         }
 
         easyImage.handleActivityResult(requestCode, resultCode, data, this, new DefaultCallback() {
+            @SuppressLint("StaticFieldLeak")
             @Override
             public void onMediaFilesPicked(MediaFile[] imageFiles, MediaSource source) {
-                String photoPath = imageFiles[0].getFile().getAbsolutePath();
+                final String photoPath = imageFiles[0].getFile().getAbsolutePath();
+
+                new AsyncTask<Void,Void,Void>(){
+
+                    @Override
+                    protected Void doInBackground(Void... voids) {
+                        myProduct.setLocal_image_path(photoPath);
+                        database.productsModelDao().addProduct(myProduct);
+                        return null;
+                    }
+                }.execute();
                 mProductPhotoImageView.setTag(photoPath);
                 showImage(mProductPhotoImageView, photoPath);
             }

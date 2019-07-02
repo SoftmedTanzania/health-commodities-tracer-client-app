@@ -38,6 +38,9 @@ public class Product implements Serializable {
     @SerializedName("track_quantity_expired")
     private boolean track_quantity_expired;
 
+    @SerializedName("local_image_path")
+    private String local_image_path;
+
     @SerializedName("status")
     private int status = 1;
 
@@ -114,5 +117,13 @@ public class Product implements Serializable {
 
     public void setTrack_quantity_expired(boolean track_quantity_expired) {
         this.track_quantity_expired = track_quantity_expired;
+    }
+
+    public String getLocal_image_path() {
+        return local_image_path;
+    }
+
+    public void setLocal_image_path(String local_image_path) {
+        this.local_image_path = local_image_path;
     }
 }

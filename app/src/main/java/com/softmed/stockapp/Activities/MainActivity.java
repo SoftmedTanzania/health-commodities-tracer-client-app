@@ -212,7 +212,27 @@ public class MainActivity extends AppCompatActivity {
             finish();
         } else if (initializeStock) {
             updateStockViewpager();
-            slidingUpPanelLayout.setPanelState(EXPANDED);
+
+            new AsyncTask<Void,Void,Void>(){
+
+                @Override
+                protected Void doInBackground(Void... voids) {
+                    try {
+                        Thread.sleep(800);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    return null;
+                }
+
+                @Override
+                protected void onPostExecute(Void aVoid) {
+                    super.onPostExecute(aVoid);
+                    slidingUpPanelLayout.setPanelState(EXPANDED);
+                }
+            }.execute();
+
+
 
         } else {
             updateStockViewpager();

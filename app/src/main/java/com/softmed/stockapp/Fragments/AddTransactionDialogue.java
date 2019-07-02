@@ -12,6 +12,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.fragment.app.DialogFragment;
@@ -49,6 +50,7 @@ public class AddTransactionDialogue extends DialogFragment {
     private int productId, numberOfClientsOnRegime;
     private Boolean hasClients = null;
     private Product product;
+    private TextView productName;
     private Unit unit;
     private int reportingScheduleId = 0;
     private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
@@ -96,6 +98,7 @@ public class AddTransactionDialogue extends DialogFragment {
         dialogueLayout = inflater.inflate(R.layout.dialogue_create_transaction, container, false);
 
         stockAdjustmentQuantity = dialogueLayout.findViewById(R.id.stock_adjustment_quantity);
+        productName = dialogueLayout.findViewById(R.id.product_name);
         numberOfClientsOnRegimeInputLayout = dialogueLayout.findViewById(R.id.number_of_clients_on_regime);
         quantityExpiredInputLayout = dialogueLayout.findViewById(R.id.quantity_expired);
         stockOutDaysInputLayout = dialogueLayout.findViewById(R.id.stock_out_days);
@@ -117,6 +120,7 @@ public class AddTransactionDialogue extends DialogFragment {
             protected void onPostExecute(Void aVoid) {
                 super.onPostExecute(aVoid);
 
+                productName.setText(product.getName());
                 stockAdjustmentQuantity.setHint("Stock On Hand in ("+unit.getName()+")");
                 if(product.isTrack_wastage()){
                     wastageInputLayout.setVisibility(View.VISIBLE);
