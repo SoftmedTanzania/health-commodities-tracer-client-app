@@ -97,6 +97,8 @@ public class UpcomingReportingScheduleFragment extends Fragment {
                                     linearLayout.addView(productNameTextView);
                                 }
 
+                                scheduleItemView.invalidate();
+
 
                                 Log.d(TAG, "Dates  = " + simpleDateFormat.format(date));
                                 TextView textView = scheduleItemView.findViewById(R.id.scheduled_date);

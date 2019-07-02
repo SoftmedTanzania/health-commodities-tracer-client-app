@@ -4,8 +4,9 @@ import android.annotation.SuppressLint;
 import android.app.IntentService;
 import android.content.Intent;
 import android.os.AsyncTask;
-import androidx.legacy.content.WakefulBroadcastReceiver;
 import android.util.Log;
+
+import androidx.legacy.content.WakefulBroadcastReceiver;
 
 import com.google.gson.Gson;
 import com.softmed.stockapp.Activities.LoginActivity;
@@ -76,7 +77,7 @@ public class PostOfficeService extends IntentService {
 
         final List<Balances> balances = database.balanceModelDao().getUnPostedBalances();
 
-        Log.d(TAG," unposted balances = "+new Gson().toJson(balances));
+        Log.d(TAG, " unposted balances = " + new Gson().toJson(balances));
 
         Call postBalancescall = transactionServices.postBalances(getRequestBody(balances));
         postBalancescall.enqueue(new Callback() {
@@ -90,7 +91,7 @@ public class PostOfficeService extends IntentService {
                     new AsyncTask<Void, Void, Void>() {
                         @Override
                         protected Void doInBackground(Void... voids) {
-                            for(Balances balance:balances){
+                            for (Balances balance : balances) {
                                 balance.setSyncStatus(1);
                                 database.balanceModelDao().addBalance(balance);
                             }
@@ -103,7 +104,6 @@ public class PostOfficeService extends IntentService {
 
                         }
                     }.execute();
-
 
 
                 } else {
@@ -121,46 +121,45 @@ public class PostOfficeService extends IntentService {
         });
 
 
+        final List<Transactions> transactions = database.transactionsDao().getUnPostedTransactions();
 
-        List<Transactions> transactions = database.transactionsDao().getUnPostedTransactions();
-        for (final Transactions transaction : transactions) {
-            Call call = transactionServices.postTransaction(getRequestBody(transaction));
-            call.enqueue(new Callback() {
-                @SuppressLint("StaticFieldLeak")
-                @Override
-                public void onResponse(Call call, Response response) {
-                    //Store Received Patient Information, TbPatient as well as PatientAppointments
-                    if (response.code() == 200 || response.code() == 201) {
-                        Log.d(TAG, "Successful Transaction responce " + response.body());
-                        transaction.setSyncStatus(1);
-
-                        new AsyncTask<Void, Void, Void>() {
-                            @Override
-                            protected Void doInBackground(Void... voids) {
+        Call transactionCall = transactionServices.postTransaction(getRequestBody(transactions));
+        transactionCall.enqueue(new Callback() {
+            @SuppressLint("StaticFieldLeak")
+            @Override
+            public void onResponse(Call call, Response response) {
+                //Store Received Patient Information, TbPatient as well as PatientAppointments
+                if (response.code() == 200 || response.code() == 201) {
+                    Log.d(TAG, "Successful Transaction responce " + response.body());
+                    new AsyncTask<Void, Void, Void>() {
+                        @Override
+                        protected Void doInBackground(Void... voids) {
+                            for (Transactions transaction : transactions) {
+                                transaction.setSyncStatus(1);
                                 database.transactionsDao().addTransactions(transaction);
-                                return null;
                             }
+                            return null;
+                        }
 
-                            @Override
-                            protected void onPostExecute(Void aVoid) {
-                                super.onPostExecute(aVoid);
+                        @Override
+                        protected void onPostExecute(Void aVoid) {
+                            super.onPostExecute(aVoid);
 
-                            }
-                        }.execute();
-                    } else {
-                        Log.d(TAG, "Transaction Responce Call URL " + call.request().url());
-                        Log.d(TAG, "Transaction Responce Code " + response.code());
-                    }
+                        }
+                    }.execute();
+                } else {
+                    Log.d(TAG, "Transaction Responce Call URL " + call.request().url());
+                    Log.d(TAG, "Transaction Responce Code " + response.code());
                 }
+            }
 
-                @Override
-                public void onFailure(Call call, Throwable t) {
-                    Log.d(TAG, "PostOfficeService Error = " + t.getMessage());
-                    Log.d(TAG, "PostOfficeService CALL URL = " + call.request().url());
-                    Log.d(TAG, "PostOfficeService CALL Header = " + call.request().header("Authorization"));
-                }
-            });
-        }
+            @Override
+            public void onFailure(Call call, Throwable t) {
+                Log.d(TAG, "PostOfficeService Error = " + t.getMessage());
+                Log.d(TAG, "PostOfficeService CALL URL = " + call.request().url());
+                Log.d(TAG, "PostOfficeService CALL Header = " + call.request().header("Authorization"));
+            }
+        });
 
         Call<List<ProductReportingScheduleResponse>> call = transactionServices.getSchedule();
         call.enqueue(new Callback<List<ProductReportingScheduleResponse>>() {
@@ -168,13 +167,13 @@ public class PostOfficeService extends IntentService {
             @SuppressLint("StaticFieldLeak")
             @Override
             public void onResponse(Call<List<ProductReportingScheduleResponse>> call, final Response<List<ProductReportingScheduleResponse>> response) {
-                Log.d(TAG, "Received schedules"+response.body() + "");
+                Log.d(TAG, "Received schedules" + response.body() + "");
                 new AsyncTask<Void, Void, Void>() {
                     @Override
                     protected Void doInBackground(Void... voids) {
                         if (response.body() != null) {
-                            for(ProductReportingScheduleResponse reportingSchedule: response.body()) {
-                                if(database.productReportingScheduleModelDao().getProductReportingScheduleById(reportingSchedule.getId()).getStatus().equalsIgnoreCase("posted")){
+                            for (ProductReportingScheduleResponse reportingSchedule : response.body()) {
+                                if (database.productReportingScheduleModelDao().getProductReportingScheduleById(reportingSchedule.getId()).getStatus().equalsIgnoreCase("posted")) {
                                     reportingSchedule.setStatus("posted");
                                 }
 
