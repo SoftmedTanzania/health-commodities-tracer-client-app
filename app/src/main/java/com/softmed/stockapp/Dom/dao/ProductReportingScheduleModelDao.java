@@ -5,6 +5,8 @@ import android.arch.persistence.room.Dao;
 import android.arch.persistence.room.Delete;
 import android.arch.persistence.room.Insert;
 import android.arch.persistence.room.Query;
+import android.arch.persistence.room.Update;
+
 import com.softmed.stockapp.Dom.entities.ProductReportingSchedule;
 
 import java.util.List;
@@ -43,6 +45,8 @@ public interface ProductReportingScheduleModelDao {
     @Query("select * from ProductReportingSchedule WHERE status = 0")
     List<ProductReportingSchedule> getAllProductReportingSchedule();
 
+    @Query("UPDATE ProductReportingSchedule SET status = 'pending' ")
+    void temp();
 
     @Insert(onConflict = REPLACE)
     void addProductSchedule(ProductReportingSchedule productReportingSchedule);

@@ -13,6 +13,7 @@ import android.support.design.widget.TabLayout;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
+import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -21,6 +22,7 @@ import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -28,8 +30,6 @@ import com.bumptech.glide.Glide;
 import com.pixelcan.inkpageindicator.InkPageIndicator;
 import com.softmed.stockapp.Database.AppDatabase;
 import com.softmed.stockapp.Dom.dto.ProducToBeReportedtList;
-import com.softmed.stockapp.Dom.entities.Product;
-import com.softmed.stockapp.Dom.dto.ProductList;
 import com.softmed.stockapp.Fragments.DashboardFragment;
 import com.softmed.stockapp.Fragments.ProductsListFragment;
 import com.softmed.stockapp.Fragments.UpcomingReportingScheduleFragment;
@@ -64,10 +64,11 @@ public class MainActivity extends AppCompatActivity {
     private ViewPager updateStockViewPager;
     private int managedProductsCount;
     private InkPageIndicator inkPageIndicator;
-    private AnimatedIconView arrowUp,reportingAlert,alarmCounterIcon;
+    private AnimatedIconView arrowUp, reportingAlert, alarmCounterIcon;
     private SlidingUpPanelLayout slidingUpPanelLayout;
-    private  NotificationAlert notificationAlert,notificationAlert1;
+    private NotificationAlert notificationAlert, notificationAlert1;
     private AppDatabase baseDatabase;
+    private DotIndicatorPagerAdapter adapter;
 
     public static int convertDip2Pixels(Context context, int dip) {
         return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dip, context.getResources().getDisplayMetrics());
@@ -96,6 +97,7 @@ public class MainActivity extends AppCompatActivity {
         slidingUpPanelLayout = findViewById(R.id.sliding_layout);
         slidingUpPanelLayout.addPanelSlideListener(new SlidingUpPanelLayout.PanelSlideListener() {
             private SlidingUpPanelLayout.PanelState prevState = COLLAPSED;
+
             @Override
             public void onPanelSlide(View panel, float slideOffset) {
 
@@ -103,14 +105,14 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onPanelStateChanged(View panel, SlidingUpPanelLayout.PanelState previousState, SlidingUpPanelLayout.PanelState newState) {
-                if (newState == EXPANDED && prevState==COLLAPSED) {
+                if (newState == EXPANDED && prevState == COLLAPSED) {
                     arrowUp.startAnimation();
 
                     reportingAlert.setVisibility(View.VISIBLE);
                     reportingAlert.startAnimation();
                     alarmCounterIcon.setVisibility(GONE);
                     prevState = EXPANDED;
-                } else if (newState == COLLAPSED && prevState==EXPANDED) {
+                } else if (newState == COLLAPSED && prevState == EXPANDED) {
                     arrowUp.startAnimation();
                     alarmCounterIcon.setVisibility(View.VISIBLE);
                     alarmCounterIcon.startAnimation();
@@ -158,12 +160,38 @@ public class MainActivity extends AppCompatActivity {
 
         updateStockViewPager = findViewById(R.id.view_pager);
         updateStockViewPager.setOffscreenPageLimit(20);
-
         updateStockViewPager.setPageTransformer(true, new ZoomOutPageTransformer());
+        updateStockViewPager.setOnPageChangeListener(new ViewPager.OnPageChangeListener() {
+            @Override
+            public void onPageScrolled(int i, float v, int i1) {
+
+            }
+
+            @Override
+            public void onPageSelected(int i) {
+                if(i==managedProductsCount){
+                    // Check if no view has focus:
+                    View view = MainActivity.this.getCurrentFocus();
+                    if (view != null) {
+                        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                        imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+                    }
+                }
+            }
+
+            @Override
+            public void onPageScrollStateChanged(int i) {
+
+            }
+        });
 
         scheduleAlarm();
 
-        final boolean initializeStock = getIntent().getBooleanExtra("reportInitialStock",false);
+        final boolean initializeStock = getIntent().getBooleanExtra("reportInitialStock", false);
+
+        adapter = new DotIndicatorPagerAdapter(getSupportFragmentManager());
+        updateStockViewPager.setAdapter(adapter);
+        inkPageIndicator.setViewPager(viewPager);
 
         Log.d(TAG, "isFirstLogin = " + session.getIsFirstLogin());
         SessionManager sessionManager = new SessionManager(this);
@@ -176,16 +204,16 @@ public class MainActivity extends AppCompatActivity {
             i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             MainActivity.this.startActivity(i);
             finish();
-        }else if(initializeStock){
+        } else if (initializeStock) {
             updateStockViewpager();
 
-        }else{
+        } else {
             updateStockViewpager();
         }
     }
 
     @SuppressLint("StaticFieldLeak")
-    public void updateStockViewpager(){
+    public void updateStockViewpager() {
         new AsyncTask<Void, Void, List<ProducToBeReportedtList>>() {
 
             @Override
@@ -196,12 +224,18 @@ public class MainActivity extends AppCompatActivity {
             @Override
             protected void onPostExecute(List<ProducToBeReportedtList> productLists) {
                 super.onPostExecute(productLists);
-                Log.d(TAG, "products list size = " + productLists.size());
 
+                adapter.removeAllFragments();
                 managedProductsCount = productLists.size();
-                DotIndicatorPagerAdapter adapter = new DotIndicatorPagerAdapter(getSupportFragmentManager(), productLists);
-                updateStockViewPager.setAdapter(adapter);
-                inkPageIndicator.setViewPager(viewPager);
+
+                for(ProducToBeReportedtList products:productLists){
+                    adapter.addFragment(UpdateStockFragment.newInstance(products));
+                }
+                adapter.addFragment(new UpcomingReportingScheduleFragment());
+
+                adapter.notifyChangeInPosition(50);
+                adapter.notifyDataSetChanged();
+                updateStockViewPager.setCurrentItem(0);
 
                 notificationAlert = new NotificationAlert();
                 notificationAlert.setNotificationCount(managedProductsCount);
@@ -268,40 +302,89 @@ public class MainActivity extends AppCompatActivity {
                 INTERVAL_FIFTEEN_MINUTES, pIntent);
     }
 
+    @SuppressLint("StaticFieldLeak")
     public void moveToNextProduct() {
         int nextItem = updateStockViewPager.getCurrentItem() + 1;
 
-        if (nextItem < managedProductsCount) {
+        if (nextItem <= managedProductsCount) {
             updateStockViewPager.setCurrentItem(nextItem, true);
         } else {
+            Log.d(TAG,"Updating viewpager");
             slidingUpPanelLayout.setPanelState(COLLAPSED);
-            updateStockViewpager();
+            new AsyncTask<Void,Void,Void>(){
+                @Override
+                protected Void doInBackground(Void... voids) {
+                    try {
+                        Thread.sleep(300);
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    return null;
+                }
+
+                @Override
+                protected void onPostExecute(Void aVoid) {
+                    super.onPostExecute(aVoid);
+                    updateStockViewpager();
+                }
+            }.execute();
+
+
         }
     }
 
     public static class DotIndicatorPagerAdapter extends FragmentPagerAdapter {
-        private List<ProducToBeReportedtList> productLists;
-
-        DotIndicatorPagerAdapter(FragmentManager fm, List<ProducToBeReportedtList> productLists) {
+        private List<Fragment> mFragmentList;
+        private long baseId = 0;
+        DotIndicatorPagerAdapter(FragmentManager fm) {
             super(fm);
-            this.productLists = productLists;
+            this.mFragmentList = new ArrayList<>();
+            Log.d(TAG, "initialized adapter");
         }
 
         @Override
         public int getCount() {
-            return (productLists.size()+1);
+            return mFragmentList.size();
         }
 
         @Override
         public Fragment getItem(int position) {
-
-            if(position == productLists.size()){
-                return new UpcomingReportingScheduleFragment();
-            }else {
-                ProducToBeReportedtList productList = productLists.get(position);
-                return UpdateStockFragment.newInstance(productList);
-            }
+            return mFragmentList.get(position);
         }
+
+        void addFragment(Fragment fragment) {
+            mFragmentList.add(fragment);
+        }
+
+        void removeAllFragments() {
+            mFragmentList.clear();
+        }
+
+        //this is called when notifyDataSetChanged() is called
+        @Override
+        public int getItemPosition(Object object) {
+            // refresh all fragments when data set changed
+            return PagerAdapter.POSITION_NONE;
+        }
+
+
+        @Override
+        public long getItemId(int position) {
+            // give an ID different from position when position has been changed
+            return baseId + position;
+        }
+
+        /**
+         * Notify that the position of a fragment has been changed.
+         * Create a new ID for each position to force recreation of the fragment
+         * @param n number of items which have been changed
+         */
+        public void notifyChangeInPosition(int n) {
+            // shift the ID returned by getItemId outside the range of all previous fragments
+            baseId += getCount() + n;
+        }
+
+
     }
 
     class ViewPagerAdapter extends FragmentPagerAdapter {
@@ -338,7 +421,7 @@ public class MainActivity extends AppCompatActivity {
             boolean tabletSize = getResources().getBoolean(R.bool.isTablet);
             if (tabletSize) {
                 return 0.5f;
-            }else{
+            } else {
                 return 1f;
             }
 

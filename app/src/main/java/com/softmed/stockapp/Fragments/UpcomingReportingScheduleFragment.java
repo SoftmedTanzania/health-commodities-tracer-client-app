@@ -3,6 +3,7 @@ package com.softmed.stockapp.Fragments;
 import android.annotation.SuppressLint;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProviders;
+import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
@@ -11,9 +12,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.softmed.stockapp.Activities.MainActivity;
 import com.softmed.stockapp.Database.AppDatabase;
 import com.softmed.stockapp.Dom.dto.ProductScheduleDTO;
 import com.softmed.stockapp.R;
@@ -47,8 +50,15 @@ public class UpcomingReportingScheduleFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         View itemView = inflater.inflate(R.layout.fragment_upcoming_reporting_schedule, container, false);
-        scheduleLayout = itemView.findViewById(R.id.schedule_layouts);
 
+        itemView.findViewById(R.id.finish).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                ((MainActivity) getActivity()).moveToNextProduct();
+            }
+        });
+
+        scheduleLayout = itemView.findViewById(R.id.schedule_layouts);
         productReportingScheduleViewModel = ViewModelProviders.of(getActivity()).get(ProductReportingScheduleViewModel.class);
         productReportingScheduleViewModel.getUpcomingReportingsDates(Calendar.getInstance().getTimeInMillis()).observe(getActivity(), new Observer<List<Long>>() {
             @SuppressLint("StaticFieldLeak")
