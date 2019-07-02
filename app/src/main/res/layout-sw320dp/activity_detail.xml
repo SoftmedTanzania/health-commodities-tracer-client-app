@@ -201,7 +201,35 @@
                         android:layout_weight="0.1"
                         android:gravity="center_horizontal"
                         android:textStyle="bold"
+                        android:id="@+id/stock_out_days_title"
+                        android:text="Stock Out Days" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.1"
+                        android:gravity="center_horizontal"
+                        android:textStyle="bold"
+                        android:id="@+id/clients_on_regime_title"
                         android:text="Clients On Regime" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.1"
+                        android:gravity="center_horizontal"
+                        android:id="@+id/wastage_title"
+                        android:textStyle="bold"
+                        android:text="Wastage" />
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.1"
+                        android:gravity="center_horizontal"
+                        android:textStyle="bold"
+                        android:id="@+id/expired_stock_title"
+                        android:text="Expired Stock" />
 
 
                 </LinearLayout>
