@@ -1,5 +1,7 @@
 package com.softmed.stockapp.api;
 
+import androidx.room.Transaction;
+
 import com.softmed.stockapp.Dom.entities.Balances;
 import com.softmed.stockapp.Dom.entities.Product;
 import com.softmed.stockapp.Dom.entities.ProductReportingSchedule;
@@ -65,8 +67,8 @@ public class Endpoints {
         @GET("transactiontypes")
         Call<List<TransactionType>> getTransactionTypes();
 
-        @POST("transactions")
-        Call<List<Balances>> postTransaction(@Body RequestBody e);
+        @POST("api_health_commodity_transactions/")
+        Call<List<Transactions>> postTransaction(@Body RequestBody e);
 
 
         @POST("api_health_commodity_mapping/")

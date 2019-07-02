@@ -42,7 +42,7 @@ public interface ProductReportingScheduleModelDao {
     @Query("select * from ProductReportingSchedule WHERE id = :id ")
     ProductReportingSchedule getProductReportingScheduleById(int id);
 
-    @Query("select * from ProductReportingSchedule WHERE status = 0")
+    @Query("select * from ProductReportingSchedule")
     List<ProductReportingSchedule> getAllProductReportingSchedule();
 
     @Insert(onConflict = REPLACE)

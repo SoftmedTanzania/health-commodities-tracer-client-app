@@ -5,6 +5,8 @@ import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import com.google.android.material.textfield.TextInputLayout;
+
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +17,7 @@ import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
 
+import com.google.gson.Gson;
 import com.softmed.stockapp.Activities.MainActivity;
 import com.softmed.stockapp.Database.AppDatabase;
 import com.softmed.stockapp.Dom.dto.ProducToBeReportedtList;
@@ -265,9 +268,16 @@ public class UpdateStockFragment extends Fragment {
                             balances.setBalance(stockQuantity);
                             baseDatabase.balanceModelDao().addBalance(balances);
 
-                            ProductReportingSchedule reportingSchedule = baseDatabase.productReportingScheduleModelDao().getProductReportingScheduleById(scheduledId);
-                            reportingSchedule.setStatus("reported");
-                            baseDatabase.productReportingScheduleModelDao().addProductSchedule(reportingSchedule);
+                            try {
+                                Log.d(TAG,"Updating product schedule");
+                                ProductReportingSchedule reportingSchedule = baseDatabase.productReportingScheduleModelDao().getProductReportingScheduleById(scheduledId);
+                                reportingSchedule.setStatus("posted");
+                                baseDatabase.productReportingScheduleModelDao().addProductSchedule(reportingSchedule);
+
+                                Log.d(TAG,"updated product schedule = "+new Gson().toJson(baseDatabase.productReportingScheduleModelDao().getProductReportingScheduleById(scheduledId)));
+                            }catch (Exception e){
+                                e.printStackTrace();
+                            }
                             return null;
                         }
 

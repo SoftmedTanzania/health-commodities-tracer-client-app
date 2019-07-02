@@ -85,7 +85,7 @@ public class PostOfficeService extends IntentService {
             public void onResponse(Call call, Response response) {
                 //Store Received Patient Information, TbPatient as well as PatientAppointments
                 if (response.code() == 200 || response.code() == 201) {
-                    Log.d(TAG, "Successful Balance responce " + response.body());
+                    Log.d(TAG, "Successful Balance responce " + new Gson().toJson(response.body()));
 
                     new AsyncTask<Void, Void, Void>() {
                         @Override
@@ -174,6 +174,11 @@ public class PostOfficeService extends IntentService {
                     protected Void doInBackground(Void... voids) {
                         if (response.body() != null) {
                             for(ProductReportingScheduleResponse reportingSchedule: response.body()) {
+                                if(database.productReportingScheduleModelDao().getProductReportingScheduleById(reportingSchedule.getId()).getStatus().equalsIgnoreCase("posted")){
+                                    reportingSchedule.setStatus("posted");
+                                }
+
+
                                 database.productReportingScheduleModelDao().addProductSchedule(LoginActivity.getProductReportingSchedule(reportingSchedule));
                             }
                         }

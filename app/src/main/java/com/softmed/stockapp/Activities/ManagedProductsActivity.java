@@ -195,8 +195,36 @@ public class ManagedProductsActivity extends BaseActivity {
             @SuppressLint("StaticFieldLeak")
             @Override
             public void onResponse(Call<List<ProductReportingScheduleResponse>> call, final Response<List<ProductReportingScheduleResponse>> response) {
-                Log.d(TAG, "Received schedule = " + response.body());
+                Log.d(TAG, "Received schedule = " +new Gson().toJson(response.body()));
+                if (response.body() != null) {
+                    new AsyncTask<Void, Void, Void>() {
+                        @Override
+                        protected Void doInBackground(Void... voids) {
+                            for (ProductReportingScheduleResponse reportingSchedule : response.body()) {
+                                baseDatabase.productReportingScheduleModelDao().addProductSchedule(getProductReportingSchedule(reportingSchedule));
+                            }
 
+                            return null;
+                        }
+
+                        @Override
+                        protected void onPostExecute(Void aVoid) {
+                            super.onPostExecute(aVoid);
+
+                            SessionManager session = new SessionManager(getApplicationContext());
+                            session.setIsFirstLogin(false);
+                            //Call HomeActivity to log in user
+                            Intent intent = new Intent(ManagedProductsActivity.this, MainActivity.class);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                            intent.putExtra("reportInitialStock", true);
+                            startActivity(intent);
+                            ManagedProductsActivity.this.finish();
+
+                        }
+                    }.execute();
+                } else {
+                    Log.d(TAG, "Error obtaining product reporting schedule " + call.request().url());
+                }
 
             }
 

@@ -27,6 +27,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.bumptech.glide.Glide;
+import com.google.gson.Gson;
 import com.pixelcan.inkpageindicator.InkPageIndicator;
 import com.softmed.stockapp.Database.AppDatabase;
 import com.softmed.stockapp.Dom.dto.ProducToBeReportedtList;
@@ -224,6 +225,8 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             protected List<ProducToBeReportedtList> doInBackground(Void... voids) {
+                Log.d(TAG,"All schedules = "+new Gson().toJson(baseDatabase.productReportingScheduleModelDao().getAllProductReportingSchedule()));
+
                 return baseDatabase.productsModelDao().getUnreportedProductStocks(Calendar.getInstance().getTimeInMillis());
             }
 
