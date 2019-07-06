@@ -34,12 +34,17 @@ public interface TransactionModelDao {
 
 
 
-    @Query("select * from Transactions WHERE product_id = :productId")
-    LiveData<List<Transactions>> getLiveTransactionsByProductId(int productId);
+    @Query("select * from Transactions" +
+            " INNER JOIN ProductReportingSchedule ON ProductReportingSchedule.id = Transactions.scheduleId" +
+            " WHERE product_id = :productId AND ProductReportingSchedule.facilityId = :facilityId")
+    LiveData<List<Transactions>> getLiveTransactionsByProductId(int productId,int facilityId);
 
 
-    @Query("select * from Transactions WHERE product_id = :productId ORDER BY created_at DESC Limit 1")
-    LiveData<Transactions> getLastTransactionByProductId(int productId);
+    @Query("select * from Transactions " +
+            " INNER JOIN ProductReportingSchedule ON ProductReportingSchedule.id = Transactions.scheduleId" +
+            " WHERE product_id = :productId AND ProductReportingSchedule.facilityId = :facilityId " +
+            "ORDER BY created_at DESC Limit 1")
+    LiveData<Transactions> getLastTransactionByProductId(int productId,int facilityId);
 
 
     @Query("select * from Transactions WHERE product_id = :productId")

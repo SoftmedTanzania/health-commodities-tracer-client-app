@@ -157,7 +157,7 @@ public class DetailActivity extends AppCompatActivity {
 
                         transactionsListViewModel = ViewModelProviders.of(DetailActivity.this).get(TransactionsListViewModel.class);
 
-                        transactionsListViewModel.getLastTransactionByProductId(mProduct.getProductId()).observe(DetailActivity.this, new Observer<Transactions>() {
+                        transactionsListViewModel.getLastTransactionByProductId(mProduct.getProductId(),session.getFacilityId()).observe(DetailActivity.this, new Observer<Transactions>() {
                             @Override
                             public void onChanged(@Nullable final Transactions transactions) {
 
@@ -190,7 +190,7 @@ public class DetailActivity extends AppCompatActivity {
                             }
                         });
 
-                        transactionsListViewModel.getTransactionsListByProductId(mProduct.getProductId()).observe(DetailActivity.this, new Observer<List<Transactions>>() {
+                        transactionsListViewModel.getTransactionsListByProductId(mProduct.getProductId(),session.getFacilityId()).observe(DetailActivity.this, new Observer<List<Transactions>>() {
                             @Override
                             public void onChanged(@Nullable List<Transactions> transactions) {
                                 transactionsTable.removeAllViews();

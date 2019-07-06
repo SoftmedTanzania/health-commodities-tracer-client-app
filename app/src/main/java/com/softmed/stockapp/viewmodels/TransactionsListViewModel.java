@@ -31,12 +31,12 @@ public class TransactionsListViewModel extends AndroidViewModel {
         return appDatabase.transactionsDao().getTransactionSummary();
     }
 
-    public LiveData<List<Transactions>> getTransactionsListByProductId(int productId) {
-        return appDatabase.transactionsDao().getLiveTransactionsByProductId(productId);
+    public LiveData<List<Transactions>> getTransactionsListByProductId(int productId, int facilityId) {
+        return appDatabase.transactionsDao().getLiveTransactionsByProductId(productId, facilityId);
     }
 
-    public LiveData<Transactions> getLastTransactionByProductId(int productId) {
-        return appDatabase.transactionsDao().getLastTransactionByProductId(productId);
+    public LiveData<Transactions> getLastTransactionByProductId(int productId,int facilityId) {
+        return appDatabase.transactionsDao().getLastTransactionByProductId(productId,facilityId);
     }
 
     private static class deleteAsyncTask extends AsyncTask<Transactions, Void, Void> {
