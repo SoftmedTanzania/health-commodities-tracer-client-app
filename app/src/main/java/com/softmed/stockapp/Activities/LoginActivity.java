@@ -328,6 +328,7 @@ public class LoginActivity extends BaseActivity {
                             @Override
                             protected Void doInBackground(Void... voids) {
                                 Log.d(TAG, "userInfo : " + userInfo.toString());
+                                userInfo.setUsername(usernameValue);
                                 baseDatabase.userInfoDao().addUserInfo(userInfo);
 //                                baseDatabase.locationsModelDao().addLocation(response.body().getLocationResponses().get(0));
                                 return null;

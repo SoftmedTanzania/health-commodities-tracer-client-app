@@ -33,6 +33,7 @@ import com.pixelcan.inkpageindicator.InkPageIndicator;
 import com.softmed.stockapp.Database.AppDatabase;
 import com.softmed.stockapp.Dom.dto.ProducToBeReportedtList;
 import com.softmed.stockapp.Dom.entities.Location;
+import com.softmed.stockapp.Dom.entities.UsersInfo;
 import com.softmed.stockapp.Fragments.DashboardFragment;
 import com.softmed.stockapp.Fragments.ProductsListFragment;
 import com.softmed.stockapp.Fragments.UpcomingReportingScheduleFragment;
@@ -72,6 +73,8 @@ public class MainActivity extends AppCompatActivity {
     private NotificationAlert notificationAlert, notificationAlert1;
     private AppDatabase baseDatabase;
     private DotIndicatorPagerAdapter adapter;
+    private  List<UsersInfo> usersInfos;
+    private SessionManager sessionManager;
 
     public static int convertDip2Pixels(Context context, int dip) {
         return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dip, context.getResources().getDisplayMetrics());
@@ -223,7 +226,7 @@ public class MainActivity extends AppCompatActivity {
 
 
         Log.d(TAG, "isFirstLogin = " + session.getIsFirstLogin());
-        SessionManager sessionManager = new SessionManager(this);
+        sessionManager = new SessionManager(this);
         if (!sessionManager.isLoggedIn()) {
             sessionManager.checkLogin();
             finish();
@@ -267,13 +270,17 @@ public class MainActivity extends AppCompatActivity {
             @Override
             protected List<ProducToBeReportedtList> doInBackground(Void... voids) {
                 Log.d(TAG, "All schedules = " + new Gson().toJson(baseDatabase.productReportingScheduleModelDao().getAllProductReportingSchedule()));
-
+                usersInfos = baseDatabase.userInfoDao().loggeInUser(session.getUserName());
                 return baseDatabase.productsModelDao().getUnreportedProductStocks(Calendar.getInstance().getTimeInMillis());
             }
 
             @Override
             protected void onPostExecute(List<ProducToBeReportedtList> productLists) {
                 super.onPostExecute(productLists);
+                if(usersInfos.size()==0) {
+                    session.logoutUser();
+                    finish();
+                }
 
                 adapter.removeAllFragments();
                 managedProductsCount = productLists.size();
