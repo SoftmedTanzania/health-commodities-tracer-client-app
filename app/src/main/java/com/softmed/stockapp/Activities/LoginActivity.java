@@ -800,7 +800,7 @@ public class LoginActivity extends BaseActivity {
         protected Void doInBackground(Void... voids) {
             try {
                 for (Transactions mList : results) {
-                    mList.setCreated_at(mList.getCreated_at() * 1000);
+                    mList.setSyncStatus(1);
                     baseDatabase.transactionsDao().addTransactions(mList);
                     Log.d("InitialSync", "Transactions type : " + mList.getTransactiontype_id());
                 }
