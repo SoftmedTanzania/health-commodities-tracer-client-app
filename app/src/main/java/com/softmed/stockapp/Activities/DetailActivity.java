@@ -211,19 +211,6 @@ public class DetailActivity extends AppCompatActivity {
                                     final View v = LayoutInflater.from(DetailActivity.this).inflate(R.layout.view_transaction_item, null);
                                     ((TextView) v.findViewById(R.id.sn)).setText(String.valueOf(i));
 
-                                    new AsyncTask<Void, Void, String>() {
-                                        @Override
-                                        protected String doInBackground(Void... voids) {
-                                            return database.transactionTypeModelDao().getTransactionTypeName(transactions1.getTransactiontype_id());
-                                        }
-
-                                        @Override
-                                        protected void onPostExecute(String name) {
-                                            super.onPostExecute(name);
-                                            ((TextView) v.findViewById(R.id.transaction_type)).setText(name);
-                                        }
-                                    }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-
 
                                     Log.d(TAG, "timestamp Date = " + transactions1.getCreated_at());
 

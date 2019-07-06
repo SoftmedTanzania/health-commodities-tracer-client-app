@@ -5,229 +5,233 @@
     android:fitsSystemWindows="true">
 
 
-
     <androidx.cardview.widget.CardView
-        android:layout_centerInParent="true"
-        app:cardCornerRadius="8dp"
-        android:padding="2dp"
         android:layout_width="500dp"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:layout_margin="64dp"
         android:maxWidth="400dp"
         android:minWidth="200dp"
+        android:padding="2dp"
+        app:cardCornerRadius="8dp"
         app:cardElevation="8dp"
-        android:layout_height="wrap_content"
-        android:layout_margin="64dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent">
 
-        <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-            xmlns:app_ms="http://schemas.android.com/apk/res-auto"
-            android:orientation="vertical"
-            android:padding="16dp"
-            android:id="@+id/add_product_layout"
+        <ScrollView
             android:layout_width="match_parent"
-            android:layout_height="match_parent">
-
-            <TextView
-                android:id="@+id/date"
-                android:layout_marginTop="16dp"
+            android:layout_height="wrap_content">
+            <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                xmlns:app_ms="http://schemas.android.com/apk/res-auto"
+                android:id="@+id/add_product_layout"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="12-07-2019"
-                android:fontFamily="@font/muli_bold"
-                android:gravity="center_horizontal"
-                android:textColor="@color/color_secondary"
-                android:textSize="24sp"
-                android:textStyle="bold" />
+                android:layout_height="match_parent"
+                android:orientation="vertical"
+                android:padding="16dp">
 
-            <View
-                android:layout_width="60dp"
-                android:layout_height="2dp"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="8dp"
-                android:background="@color/color_secondary_variant" />
+                <TextView
+                    android:id="@+id/date"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:fontFamily="@font/muli_bold"
+                    android:gravity="center_horizontal"
+                    android:text="12-07-2019"
+                    android:textColor="@color/color_secondary"
+                    android:textSize="24sp"
+                    android:textStyle="bold" />
 
-
-            <TextView
-                android:id="@+id/product_name"
-                android:layout_marginTop="16dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Add Transaction"
-                android:fontFamily="@font/muli_bold_italic"
-                android:textColor="@color/color_on_secondary"
-                android:textSize="18sp"
-                android:textStyle="bold" />
+                <View
+                    android:layout_width="60dp"
+                    android:layout_height="2dp"
+                    android:layout_gravity="center_horizontal"
+                    android:layout_marginTop="8dp"
+                    android:background="@color/color_secondary_variant" />
 
 
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                <TextView
+                    android:id="@+id/product_name"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:fontFamily="@font/muli_bold_italic"
+                    android:text="Add Transaction"
+                    android:textColor="@color/color_on_secondary"
+                    android:textSize="18sp"
+                    android:textStyle="bold" />
+
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                    <fr.ganfra.materialspinner.MaterialSpinner
+                        android:id="@+id/stock_adjustment_reason"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginBottom="4dp"
+                        android:layout_weight="4"
+                        android:divider="@null"
+                        android:textSize="14sp"
+                        android:visibility="gone"
+                        app_ms:ms_alignLabels="false"
+                        app_ms:ms_alwaysShowFloatingLabel="true"
+                        app_ms:ms_arrowColor="@color/black"
+                        app_ms:ms_arrowSize="12dp"
+                        app_ms:ms_baseColor="@color/secondary_text"
+                        app_ms:ms_enableErrorLabel="false"
+                        app_ms:ms_enableFloatingLabel="true"
+                        app_ms:ms_errorColor="@color/color_error"
+                        app_ms:ms_floatingLabelColor="@color/color_primary"
+                        app_ms:ms_floatingLabelText="Category"
+                        app_ms:ms_highlightColor="@color/secondary_text"
+                        app_ms:ms_hint="Adjustment Reason"
+                        app_ms:ms_hintColor="#b3b3b3"
+                        app_ms:ms_hintTextSize="14sp"
+                        app_ms:ms_multiline="true" />
+                </LinearLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/stock_adjustment_quantity"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    android:layout_marginTop="8dp">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        style="@style/ProductDetailsTextInputEditText"
+                        android:fontFamily="@font/muli_bold_italic"
+                        android:hint="Stock On Hand"
+                        android:inputType="numberDecimal"
+                        android:textSize="14sp" />
+
+                </com.google.android.material.textfield.TextInputLayout>
 
                 <fr.ganfra.materialspinner.MaterialSpinner
-                    android:id="@+id/stock_adjustment_reason"
-                    android:layout_width="0dp"
+                    android:id="@+id/do_you_have_any_clients_on_regime"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
                     android:layout_marginBottom="4dp"
-                    android:layout_weight="4"
                     android:divider="@null"
                     android:textSize="14sp"
-                    android:visibility="gone"
                     app_ms:ms_alignLabels="false"
                     app_ms:ms_alwaysShowFloatingLabel="true"
                     app_ms:ms_arrowColor="@color/black"
                     app_ms:ms_arrowSize="12dp"
-                    app_ms:ms_baseColor="@color/secondary_text"
+                    app_ms:ms_baseColor="@color/color_primary"
                     app_ms:ms_enableErrorLabel="false"
                     app_ms:ms_enableFloatingLabel="true"
                     app_ms:ms_errorColor="@color/color_error"
                     app_ms:ms_floatingLabelColor="@color/color_primary"
-                    app_ms:ms_floatingLabelText="Category"
+                    app_ms:ms_floatingLabelText="Do you have clients on Regime?"
                     app_ms:ms_highlightColor="@color/secondary_text"
-                    app_ms:ms_hint="Adjustment Reason"
+                    app_ms:ms_hint="Do you have clients on Regime?"
                     app_ms:ms_hintColor="#b3b3b3"
                     app_ms:ms_hintTextSize="14sp"
                     app_ms:ms_multiline="true" />
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/number_of_clients_on_regime"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    android:layout_marginTop="8dp"
+                    android:visibility="gone">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        style="@style/ProductDetailsTextInputEditText"
+                        android:fontFamily="@font/muli_bold_italic"
+                        android:hint="@string/edit_text_number_of_clients_on_regime"
+                        android:inputType="numberDecimal"
+                        android:textSize="14sp" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/stock_out_days"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    android:layout_marginTop="8dp">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        style="@style/ProductDetailsTextInputEditText"
+                        android:fontFamily="@font/muli_bold_italic"
+                        android:hint="Stockout Days"
+                        android:inputType="numberDecimal"
+                        android:textSize="14sp" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/wastage"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    android:layout_marginTop="8dp"
+                    android:visibility="gone">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        style="@style/ProductDetailsTextInputEditText"
+                        android:fontFamily="@font/muli_bold_italic"
+                        android:hint="@string/edit_text_wastage"
+                        android:inputType="numberDecimal"
+                        android:textSize="14sp" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+
+                <com.google.android.material.textfield.TextInputLayout
+                    android:id="@+id/quantity_expired"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="bottom"
+                    android:layout_marginTop="8dp"
+                    android:visibility="gone">
+
+                    <com.google.android.material.textfield.TextInputEditText
+                        style="@style/ProductDetailsTextInputEditText"
+                        android:fontFamily="@font/muli_bold_italic"
+                        android:hint="@string/edit_text_quantity_expired"
+                        android:inputType="numberDecimal"
+                        android:textSize="14sp" />
+
+                </com.google.android.material.textfield.TextInputLayout>
+
+                <RelativeLayout
+                    android:id="@+id/confirmation_layout"
+                    android:layout_width="match_parent"
+                    android:layout_height="56dp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="8dp"
+                    android:visibility="visible">
+
+                    <Button
+                        android:id="@+id/add_transaction"
+                        android:layout_width="wrap_content"
+                        android:layout_height="48dp"
+                        android:layout_alignParentRight="true"
+                        android:layout_gravity="center_horizontal"
+                        android:layout_marginRight="2dp"
+                        android:background="@color/color_secondary"
+                        android:elevation="4dp"
+                        android:scaleType="centerInside"
+                        android:text="SAVE"
+                        android:textColor="@color/color_on_primary"
+                        android:textStyle="bold" />
+                </RelativeLayout>
+
+
             </LinearLayout>
+        </ScrollView>
 
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/stock_adjustment_quantity"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
-                android:layout_marginTop="8dp">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    style="@style/ProductDetailsTextInputEditText"
-                    android:hint="Stock On Hand"
-                    android:fontFamily="@font/muli_bold_italic"
-                    android:inputType="numberDecimal"
-                    android:textSize="14sp" />
-
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <fr.ganfra.materialspinner.MaterialSpinner
-                android:id="@+id/do_you_have_any_clients_on_regime"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_marginBottom="4dp"
-                android:divider="@null"
-                android:textSize="14sp"
-                app_ms:ms_alignLabels="false"
-                app_ms:ms_alwaysShowFloatingLabel="true"
-                app_ms:ms_arrowColor="@color/black"
-                app_ms:ms_arrowSize="12dp"
-                app_ms:ms_baseColor="@color/color_primary"
-                app_ms:ms_enableErrorLabel="false"
-                app_ms:ms_enableFloatingLabel="true"
-                app_ms:ms_errorColor="@color/color_error"
-                app_ms:ms_floatingLabelColor="@color/color_primary"
-                app_ms:ms_floatingLabelText="Do you have clients on Regime?"
-                app_ms:ms_highlightColor="@color/secondary_text"
-                app_ms:ms_hint="Do you have clients on Regime?"
-                app_ms:ms_hintColor="#b3b3b3"
-                app_ms:ms_hintTextSize="14sp"
-                app_ms:ms_multiline="true" />
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/number_of_clients_on_regime"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
-                android:visibility="gone"
-                android:layout_marginTop="8dp">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    style="@style/ProductDetailsTextInputEditText"
-                    android:hint="@string/edit_text_number_of_clients_on_regime"
-                    android:fontFamily="@font/muli_bold_italic"
-                    android:inputType="numberDecimal"
-                    android:textSize="14sp" />
-
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/stock_out_days"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:layout_gravity="bottom"
-                android:layout_marginTop="8dp">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    style="@style/ProductDetailsTextInputEditText"
-                    android:hint="Stockout Days"
-                    android:inputType="numberDecimal"
-                    android:fontFamily="@font/muli_bold_italic"
-                    android:textSize="14sp" />
-
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/wastage"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:layout_gravity="bottom"
-                android:visibility="gone"
-                android:layout_marginTop="8dp">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    style="@style/ProductDetailsTextInputEditText"
-                    android:hint="@string/edit_text_wastage"
-                    android:inputType="numberDecimal"
-                    android:fontFamily="@font/muli_bold_italic"
-                    android:textSize="14sp" />
-
-            </com.google.android.material.textfield.TextInputLayout>
-
-
-            <com.google.android.material.textfield.TextInputLayout
-                android:id="@+id/quantity_expired"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
-                android:layout_gravity="bottom"
-                android:visibility="gone"
-                android:layout_marginTop="8dp">
-
-                <com.google.android.material.textfield.TextInputEditText
-                    style="@style/ProductDetailsTextInputEditText"
-                    android:hint="@string/edit_text_quantity_expired"
-                    android:fontFamily="@font/muli_bold_italic"
-                    android:inputType="numberDecimal"
-                    android:textSize="14sp" />
-
-            </com.google.android.material.textfield.TextInputLayout>
-
-            <RelativeLayout
-                android:id="@+id/confirmation_layout"
-                android:layout_width="match_parent"
-                android:layout_height="56dp"
-                android:layout_marginTop="16dp"
-                android:layout_marginBottom="8dp"
-                android:visibility="visible">
-
-                <Button
-                    android:background="@color/color_secondary"
-                    android:id="@+id/add_transaction"
-                    android:layout_width="wrap_content"
-                    android:textColor="@color/color_on_primary"
-                    android:layout_height="48dp"
-                    android:layout_alignParentRight="true"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginRight="2dp"
-                    android:elevation="4dp"
-                    android:scaleType="centerInside"
-                    android:text="SAVE"
-                    android:textStyle="bold" />
-            </RelativeLayout>
-
-
-        </LinearLayout>
 
     </androidx.cardview.widget.CardView>
 </RelativeLayout>

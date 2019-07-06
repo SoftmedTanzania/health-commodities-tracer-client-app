@@ -61,6 +61,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="@dimen/fab_margin"
         app:layout_anchor="@id/app_bar"
+        app:backgroundTint="@color/color_secondary_variant"
         app:layout_anchorGravity="bottom|end"
         app:srcCompat="@drawable/baseline_done_white_48dp" />
 

@@ -130,22 +130,17 @@ public class DashboardFragment extends Fragment {
         mChart2.setDrawGridBackground(false);
         mChart2.setDrawBarShadow(false);
         mChart2.setHighlightFullBarEnabled(false);
-        mChart2.setDrawValueAboveBar(true);
-
-
+        mChart2.setDrawValueAboveBar(false);
 
 
         ValueFormatter xAxisFormatter = new XAxisValueFormatter();
         XAxis xAxis = mChart2.getXAxis();
         xAxis.setDrawGridLines(false);
-        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM_INSIDE);
+        xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
         xAxis.setGranularityEnabled(true);
         xAxis.setValueFormatter(xAxisFormatter);
         xAxis.setAxisMinimum(0f);
-        xAxis.setLabelRotationAngle(90f);
-
-
-
+        xAxis.setLabelRotationAngle(-90f);
 
 
         // draw bars behind lines
@@ -178,6 +173,7 @@ public class DashboardFragment extends Fragment {
         l2.setTypeface(muliTypeface);
         l2.setWordWrapEnabled(true);
 
+
         categoryBalanceViewModel = ViewModelProviders.of(this).get(CategoryBalanceViewModel.class);
         categoryBalanceViewModel.getCategoryBalances().observe(getActivity(), new Observer<List<CategoryBalance>>() {
             @Override
@@ -203,7 +199,7 @@ public class DashboardFragment extends Fragment {
                     ArrayList<Entry> lineEntries = new ArrayList<>();
 
                     for (ProductBalance productBalance : productBalances) {
-                        Log.d(TAG,"coze = "+productBalance.getProductName()+"  -- "+productBalance.getConsumptionQuantity());
+                        Log.d(TAG, "coze = " + productBalance.getProductName() + "  -- " + productBalance.getConsumptionQuantity());
 
                         View v = getLayoutInflater().inflate(R.layout.view_inventory_balance_item, null);
                         ((TextView) v.findViewById(R.id.sn)).setText(String.valueOf(i));
@@ -226,7 +222,7 @@ public class DashboardFragment extends Fragment {
                         productBalancesList.addView(v);
                     }
 
-                    yVals1.add(new BarEntry(i,0));
+                    yVals1.add(new BarEntry(i, 0));
 
                     LineDataSet set = new LineDataSet(lineEntries, "Product Consumption");
                     set.setColor(Color.rgb(240, 238, 70));
@@ -339,10 +335,18 @@ public class DashboardFragment extends Fragment {
 
         @Override
         public String getFormattedValue(float value) {
-            if(value == mProductBalances.size()+1 || value==0){
+            if (value == mProductBalances.size() + 1 || value == 0) {
                 return "";
-            }else {
-                return mProductBalances.get((int) value-1).getProductName().replace("PEDIATRIC ARVS FORMULATIONS", "");
+            } else {
+                if (mProductBalances.get((int) value - 1).getProductName().length() < 25) {
+                    return mProductBalances.get((int) value - 1).getProductName();
+                } else {
+                    try {
+                        return mProductBalances.get((int) value - 1).getProductName().split(" ")[0] + " " + mProductBalances.get((int) value - 1).getProductName().split(" ")[1];
+                    } catch (Exception e) {
+                        return mProductBalances.get((int) value - 1).getProductName();
+                    }
+                }
             }
         }
     }

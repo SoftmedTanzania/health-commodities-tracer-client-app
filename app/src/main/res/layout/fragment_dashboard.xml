@@ -69,7 +69,7 @@
                     android:id="@+id/chart2"
                     android:layout_below="@id/title2"
                     android:layout_width="match_parent"
-                    android:layout_height="400dp" />
+                    android:layout_height="450dp" />
             </RelativeLayout>
             <LinearLayout
                 android:layout_width="match_parent"

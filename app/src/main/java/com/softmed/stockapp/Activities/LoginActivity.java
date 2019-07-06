@@ -26,6 +26,7 @@ import com.rey.material.widget.ProgressView;
 import com.softmed.stockapp.Database.AppDatabase;
 import com.softmed.stockapp.Dom.DomConverter;
 import com.softmed.stockapp.Dom.entities.Balances;
+import com.softmed.stockapp.Dom.entities.Location;
 import com.softmed.stockapp.Dom.entities.Product;
 import com.softmed.stockapp.Dom.entities.TransactionType;
 import com.softmed.stockapp.Dom.entities.Transactions;
@@ -77,6 +78,7 @@ public class LoginActivity extends BaseActivity {
     private Endpoints.TransactionServices transactionServices;
     private Endpoints.ProductsService productsServices;
     private UsersInfo userInfo;
+    private Endpoints.LoginService loginService;
     // Session Manager Class
     private SessionManager session;
 
@@ -293,7 +295,7 @@ public class LoginActivity extends BaseActivity {
             Log.d(TAG, "password : " + passwordValue);
 
             //Use Retrofit to make http request calls
-            Endpoints.LoginService loginService = ServiceGenerator.createService(Endpoints.LoginService.class, usernameValue, passwordValue);
+            loginService = ServiceGenerator.createService(Endpoints.LoginService.class, usernameValue, passwordValue);
 
             Call<LoginResponse> call = loginService.basicLogin(getCredentialsRequestBody(usernameValue, passwordValue));
 
@@ -528,7 +530,7 @@ public class LoginActivity extends BaseActivity {
 
             Log.d(TAG, "userId Transactions = " + session.getUserUUID());
 
-            Call<List<Transactions>> call = transactionServices.getTransactions("users/" + session.getUserUUID() + "/transactions");
+            Call<List<Transactions>> call = transactionServices.getTransactions();
             call.enqueue(new Callback<List<Transactions>>() {
 
                 @Override
@@ -537,7 +539,7 @@ public class LoginActivity extends BaseActivity {
 
                     Log.d(TAG, "TransactionCheck Code = " + response.code());
                     //Here will handle the responce from the server
-                    Log.d("transactionsCheck", response.body() + "");
+                    Log.d("transactionsCheck", new Gson().toJson(response.body()));
 
                     addTransactionsAsyncTask task = new addTransactionsAsyncTask(response.body());
                     task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
@@ -591,19 +593,19 @@ public class LoginActivity extends BaseActivity {
         loginMessages.setText(getResources().getString(R.string.loading_transactions_types));
         loginMessages.setTextColor(getResources().getColor(R.color.color_primary));
         if (session.isLoggedIn()) {
-            Call<List<TransactionType>> call = transactionServices.getTransactionTypes();
-            call.enqueue(new Callback<List<TransactionType>>() {
+            Call<List<Location>> call = loginService.getLocations();
+            call.enqueue(new Callback<List<Location>>() {
                 @Override
-                public void onResponse(Call<List<TransactionType>> call, Response<List<TransactionType>> response) {
+                public void onResponse(Call<List<Location>> call, Response<List<Location>> response) {
                     //Here will handle the responce from the server
-                    Log.d("transactionsCheck", response.body() + "");
+                    Log.d(TAG, "Locations Check = "+new Gson().toJson(response.body()) + "");
 
-                    addTransactionTypeAsyncTask task = new addTransactionTypeAsyncTask(response.body());
+                    addLocationsAsyncTask task = new addLocationsAsyncTask(response.body());
                     task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
                 }
 
                 @Override
-                public void onFailure(Call<List<TransactionType>> call, Throwable t) {
+                public void onFailure(Call<List<Location>> call, Throwable t) {
                     //Error!
                     Log.e("", "An error encountered!");
                     Log.d("TransactionCheck", "failed with " + t.getMessage() + " " + t.toString());
@@ -856,27 +858,25 @@ public class LoginActivity extends BaseActivity {
         }
     }
 
-    class addTransactionTypeAsyncTask extends AsyncTask<Void, Void, Void> {
-
-        List<TransactionType> results;
-
-        addTransactionTypeAsyncTask(List<TransactionType> responces) {
+    class addLocationsAsyncTask extends AsyncTask<Void, Void, Void> {
+        List<Location> results;
+        addLocationsAsyncTask(List<Location> responces) {
             this.results = responces;
         }
 
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            loginMessages.setText("Finalizing Transaction Types..");
+            loginMessages.setText("Finalizing Locations ..");
         }
 
         @Override
         protected Void doInBackground(Void... voids) {
             try {
 
-                for (TransactionType mList : results) {
-                    baseDatabase.transactionTypeModelDao().addTransactionsTypes(mList);
-                    Log.d("InitialSync", "Transactions type : " + mList.getName());
+                for (Location location : results) {
+                    baseDatabase.locationModelDao().addLocation(location);
+                    Log.d(TAG, "Location name : " + location.getName());
                 }
             } catch (Exception e) {
                 e.printStackTrace();

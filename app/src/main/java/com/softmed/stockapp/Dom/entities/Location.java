@@ -16,14 +16,16 @@ public class Location implements Serializable {
     @SerializedName("id")
     private int id;
 
-    @SerializedName("name")
+    @SerializedName("location_name")
     private String name;
 
-    @SerializedName("latitude")
-    private double latitude;
+    @SerializedName("location_type")
+    private String locationType;
 
-    @SerializedName("longitude")
-    private double longitude;
+
+    @SerializedName("parent")
+    private int parentId;
+
 
     public int getId() {
         return id;
@@ -41,20 +43,19 @@ public class Location implements Serializable {
         this.name = name;
     }
 
-
-    public double getLatitude() {
-        return latitude;
+    public String getLocationType() {
+        return locationType;
     }
 
-    public void setLatitude(double latitude) {
-        this.latitude = latitude;
+    public void setLocationType(String locationType) {
+        this.locationType = locationType;
     }
 
-    public double getLongitude() {
-        return longitude;
+    public int getParentId() {
+        return parentId;
     }
 
-    public void setLongitude(double longitude) {
-        this.longitude = longitude;
+    public void setParentId(int parentId) {
+        this.parentId = parentId;
     }
 }

@@ -49,7 +49,6 @@ public class UpdateStockFragment extends Fragment {
     public static AppDatabase baseDatabase;
     private View dialogueLayout;
     private MaterialSpinner stockAdjustmentReasonSpinner, availabilityOfClientsOnRegimeSpinner;
-    private List<TransactionType> transactionTypes;
     private TextInputLayout stockAdjustmentQuantity, numberOfClientsOnRegimeInputLayout, wastageInputLayout, quantityExpiredInputLayout, stockOutDaysInputLayout;
     private int productId;
     private String productName, scheduledDate;
@@ -125,6 +124,8 @@ public class UpdateStockFragment extends Fragment {
             @Override
             protected Void doInBackground(Void... voids) {
                 product = baseDatabase.productsModelDao().getProductByName(productId);
+
+                Log.d(TAG,"Product = "+new Gson().toJson(product));
                 unit = baseDatabase.unitsDao().getUnit(product.getUnit_id());
                 return null;
             }
@@ -185,28 +186,6 @@ public class UpdateStockFragment extends Fragment {
 
             }
         });
-
-        new AsyncTask<Void, Void, Void>() {
-            @Override
-            protected Void doInBackground(Void... voids) {
-                transactionTypes = baseDatabase.transactionTypeModelDao().getTransactionTypes();
-                return null;
-            }
-
-            @Override
-            protected void onPostExecute(Void v) {
-                super.onPostExecute(v);
-                List<String> transactionTypesNames = new ArrayList<>();
-                for (TransactionType tType : transactionTypes) {
-                    transactionTypesNames.add(tType.getName());
-                }
-
-                ArrayAdapter<String> spinAdapter = new ArrayAdapter<String>(getActivity(), R.layout.simple_spinner_item_black, transactionTypesNames);
-                spinAdapter.setDropDownViewResource(R.layout.simple_spinner_dropdown_item_black);
-                stockAdjustmentReasonSpinner.setAdapter(spinAdapter);
-
-            }
-        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
 
         dialogueLayout.findViewById(R.id.add_transaction).setOnClickListener(new View.OnClickListener() {

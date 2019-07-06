@@ -218,7 +218,7 @@ public class MainActivity extends AppCompatActivity {
                 @Override
                 protected Void doInBackground(Void... voids) {
                     try {
-                        Thread.sleep(800);
+                        Thread.sleep(1200);
                     } catch (InterruptedException e) {
                         e.printStackTrace();
                     }

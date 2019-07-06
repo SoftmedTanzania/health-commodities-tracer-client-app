@@ -1,17 +1,17 @@
 package com.softmed.stockapp.Database;
 
+import android.content.Context;
+
 import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
-import android.content.Context;
 
 import com.softmed.stockapp.Dom.dao.BalanceModelDao;
 import com.softmed.stockapp.Dom.dao.CategorieModelDao;
-import com.softmed.stockapp.Dom.dao.LocationsModelDao;
+import com.softmed.stockapp.Dom.dao.LocationModelDao;
 import com.softmed.stockapp.Dom.dao.ProductReportingScheduleModelDao;
 import com.softmed.stockapp.Dom.dao.ProductsModelDao;
 import com.softmed.stockapp.Dom.dao.TransactionModelDao;
-import com.softmed.stockapp.Dom.dao.TransactionTypeModelDao;
 import com.softmed.stockapp.Dom.dao.UnitsModelDao;
 import com.softmed.stockapp.Dom.dao.UserInfoModelDao;
 import com.softmed.stockapp.Dom.entities.Balances;
@@ -39,7 +39,7 @@ import com.softmed.stockapp.Dom.entities.UsersInfo;
                 ProductReportingSchedule.class,
                 Orders.class
         },
-        version = 2, exportSchema = false)
+        version = 3, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
 
     private static AppDatabase INSTANCE;
@@ -60,13 +60,11 @@ public abstract class AppDatabase extends RoomDatabase {
 
     public abstract TransactionModelDao transactionsDao();
 
-    public abstract TransactionTypeModelDao transactionTypeModelDao();
+    public abstract LocationModelDao locationModelDao();
 
     public abstract BalanceModelDao balanceModelDao();
 
     public abstract UserInfoModelDao userInfoDao();
-
-    public abstract LocationsModelDao locationsModelDao();
 
     public abstract ProductReportingScheduleModelDao productReportingScheduleModelDao();
 

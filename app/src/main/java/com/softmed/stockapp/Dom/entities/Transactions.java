@@ -53,7 +53,7 @@ public class Transactions implements Serializable {
     @SerializedName("syncStatus")
     private int syncStatus = 0;
 
-    @SerializedName("transaction_date_time")
+    @SerializedName("trans_date_time")
     private long created_at;
 
     @NonNull

@@ -1,6 +1,5 @@
 package com.softmed.stockapp.Dom.dao;
 
-import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
@@ -8,17 +7,23 @@ import androidx.room.Query;
 import androidx.room.Update;
 
 import com.softmed.stockapp.Dom.entities.Location;
+import com.softmed.stockapp.Dom.entities.TransactionType;
 
 import java.util.List;
 
 import static androidx.room.OnConflictStrategy.REPLACE;
 
-
 @Dao
-public interface LocationsModelDao {
+public interface LocationModelDao {
 
     @Query("select * from Location")
-    LiveData<List<Location>> getLocations();
+    List<Location> getAllLocations();
+
+    @Query("select * from Location WHERE id=:id")
+    List<Location> getLocationById(int id);
+
+    @Query("select *  from Location WHERE parentId=:id")
+    List<Location> getLocationsByParentId(int id);
 
 
     @Insert(onConflict = REPLACE)

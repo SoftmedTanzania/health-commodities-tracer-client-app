@@ -3,6 +3,7 @@ package com.softmed.stockapp.api;
 import androidx.room.Transaction;
 
 import com.softmed.stockapp.Dom.entities.Balances;
+import com.softmed.stockapp.Dom.entities.Location;
 import com.softmed.stockapp.Dom.entities.Product;
 import com.softmed.stockapp.Dom.entities.ProductReportingSchedule;
 import com.softmed.stockapp.Dom.entities.TransactionType;
@@ -32,6 +33,10 @@ public class Endpoints {
         @POST("rest-auth/login/")
         Call<LoginResponse> basicLogin(@Body RequestBody e);
 
+
+        @GET("api_locations/")
+        Call<List<Location>> getLocations();
+
         @GET("users")
         Call<List<LoginResponse>> getAllUsers();
 
@@ -55,8 +60,8 @@ public class Endpoints {
     }
 
     public interface TransactionServices {
-        @GET
-        Call<List<Transactions>> getTransactions(@Url String url);
+        @GET("api_health_commodity_transactions")
+        Call<List<Transactions>> getTransactions();
 
         @GET
         Call<List<Balances>> getBalances(@Url String url);

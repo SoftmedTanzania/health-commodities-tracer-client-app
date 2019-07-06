@@ -130,7 +130,7 @@ public class PostOfficeService extends IntentService {
             public void onResponse(Call call, Response response) {
                 //Store Received Patient Information, TbPatient as well as PatientAppointments
                 if (response.code() == 200 || response.code() == 201) {
-                    Log.d(TAG, "Successful Transaction responce " + response.body());
+                    Log.d(TAG, "Successful Transaction responce " + new Gson().toJson(response.body()));
                     new AsyncTask<Void, Void, Void>() {
                         @Override
                         protected Void doInBackground(Void... voids) {
