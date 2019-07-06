@@ -235,7 +235,7 @@ public class AddTransactionDialogue extends DialogFragment {
                             transactions.setCreated_at(c.getTimeInMillis());
                             baseDatabase.transactionsDao().addTransactions(transactions);
 
-                            Balances balances = baseDatabase.balanceModelDao().getBalance(productId);
+                            Balances balances = baseDatabase.balanceModelDao().getBalance(productId,session.getFacilityId());
 
                             balances.setBalance(Integer.valueOf(stockAdjustmentQuantity.getEditText().getText().toString()));
 

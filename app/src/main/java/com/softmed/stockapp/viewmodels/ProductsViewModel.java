@@ -12,15 +12,11 @@ import java.util.List;
 
 
 public class ProductsViewModel extends AndroidViewModel {
-
-    private final LiveData<List<ProductBalance>> productBalances;
-
     private AppDatabase appDatabase;
 
     public ProductsViewModel(Application application) {
         super(application);
         appDatabase = AppDatabase.getDatabase(this.getApplication());
-        productBalances = appDatabase.balanceModelDao().getBalances();
 
     }
 
@@ -28,12 +24,12 @@ public class ProductsViewModel extends AndroidViewModel {
         return appDatabase.productsModelDao().getAvailableProducts();
     }
 
-    public LiveData<ProductBalance> getProdictById(int productId) {
-        return appDatabase.balanceModelDao().getProductBalanceById(productId);
+    public LiveData<ProductBalance> getProdictById(int productId,int locationId) {
+        return appDatabase.balanceModelDao().getProductBalanceById(productId,locationId);
     }
 
-    public LiveData<List<ProductBalance>> getProductBalances() {
-        return productBalances;
+    public LiveData<List<ProductBalance>> getProductBalances(int locationId) {
+        return appDatabase.balanceModelDao().getBalances(locationId);
     }
 
 }

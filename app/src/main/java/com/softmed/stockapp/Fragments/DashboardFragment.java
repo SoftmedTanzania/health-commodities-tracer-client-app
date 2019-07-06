@@ -41,6 +41,7 @@ import com.softmed.stockapp.Database.AppDatabase;
 import com.softmed.stockapp.Dom.entities.CategoryBalance;
 import com.softmed.stockapp.Dom.entities.ProductBalance;
 import com.softmed.stockapp.R;
+import com.softmed.stockapp.Utils.SessionManager;
 import com.softmed.stockapp.viewmodels.CategoryBalanceViewModel;
 import com.softmed.stockapp.viewmodels.ProductsViewModel;
 
@@ -184,7 +185,7 @@ public class DashboardFragment extends Fragment {
         });
 
         productsViewModel = ViewModelProviders.of(this).get(ProductsViewModel.class);
-        productsViewModel.getProductBalances().observe(getActivity(), new Observer<List<ProductBalance>>() {
+        productsViewModel.getProductBalances(new SessionManager(getActivity()).getFacilityId()).observe(getActivity(), new Observer<List<ProductBalance>>() {
             @Override
             public void onChanged(@Nullable List<ProductBalance> productBalances) {
 

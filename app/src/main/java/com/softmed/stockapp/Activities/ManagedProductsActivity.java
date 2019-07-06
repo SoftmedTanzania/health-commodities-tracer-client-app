@@ -262,7 +262,7 @@ public class ManagedProductsActivity extends BaseActivity {
                 categoryProductsList.add(categoryProducts);
             }
 
-            currentBalances = baseDatabase.balanceModelDao().getAllBalances();
+            currentBalances = baseDatabase.balanceModelDao().getAllBalancesByFacility(session.getFacilityId());
             return categoryProductsList;
         }
 

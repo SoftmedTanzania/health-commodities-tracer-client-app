@@ -29,8 +29,9 @@ public interface BalanceModelDao {
             "FROM Balances " +
             "INNER JOIN Product ON Balances.productId=Product.id " +
             "INNER JOIN Unit ON Product.unit_id=Unit.id " +
-            "INNER JOIN Category ON Product.category_id = category.id  ")
-    LiveData<List<ProductBalance>> getBalances();
+            "INNER JOIN Category ON Product.category_id = category.id " +
+            "WHERE Balances.healthFacilityId = :locationId ")
+    LiveData<List<ProductBalance>> getBalances(int locationId);
 
 
 
@@ -49,17 +50,18 @@ public interface BalanceModelDao {
             "INNER JOIN Product ON Balances.productId=Product.id " +
             "INNER JOIN Category ON Product.category_id = Category.id " +
             "INNER JOIN Unit ON Product.unit_id=Unit.id " +
-            "where Product.id = :id")
-    LiveData<ProductBalance> getProductBalanceById(long id);
+            "WHERE Product.id = :productId AND " +
+            " Balances.healthFacilityId = :locationId")
+    LiveData<ProductBalance> getProductBalanceById(long productId, int locationId);
 
 
 
 
-    @Query("select * from Balances WHERE Balances.productId=:product_id")
-    Balances getBalance(int product_id);
+    @Query("select * from Balances WHERE Balances.healthFacilityId = :locationId AND Balances.productId=:product_id")
+    Balances getBalance(int product_id,int locationId);
 
-    @Query("select * from Balances")
-    List<Balances> getAllBalances();
+    @Query("select * from Balances WHERE healthFacilityId=:facilityId")
+    List<Balances> getAllBalancesByFacility(int facilityId);
 
     @Query("select * from Balances WHERE syncStatus = 0")
     List<Balances> getUnPostedBalances();

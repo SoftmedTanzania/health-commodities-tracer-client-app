@@ -9,14 +9,6 @@ import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import com.google.android.material.tabs.TabLayout;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentPagerAdapter;
-import androidx.viewpager.widget.PagerAdapter;
-import androidx.viewpager.widget.ViewPager;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.appcompat.widget.Toolbar;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Menu;
@@ -26,11 +18,21 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.viewpager.widget.PagerAdapter;
+import androidx.viewpager.widget.ViewPager;
+
 import com.bumptech.glide.Glide;
+import com.google.android.material.tabs.TabLayout;
 import com.google.gson.Gson;
 import com.pixelcan.inkpageindicator.InkPageIndicator;
 import com.softmed.stockapp.Database.AppDatabase;
 import com.softmed.stockapp.Dom.dto.ProducToBeReportedtList;
+import com.softmed.stockapp.Dom.entities.Location;
 import com.softmed.stockapp.Fragments.DashboardFragment;
 import com.softmed.stockapp.Fragments.ProductsListFragment;
 import com.softmed.stockapp.Fragments.UpcomingReportingScheduleFragment;
@@ -176,11 +178,11 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onPageSelected(int i) {
-                if(i==managedProductsCount){
+                if (i == managedProductsCount) {
                     // Check if no view has focus:
                     View view = MainActivity.this.getCurrentFocus();
                     if (view != null) {
-                        InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
                         imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
                     }
                 }
@@ -200,6 +202,26 @@ public class MainActivity extends AppCompatActivity {
         updateStockViewPager.setAdapter(adapter);
         inkPageIndicator.setViewPager(viewPager);
 
+        new AsyncTask<Void, Void, Location>() {
+
+            @Override
+            protected Location doInBackground(Void... voids) {
+                return baseDatabase.locationModelDao().getLocationById(session.getFacilityId());
+            }
+
+            @Override
+            protected void onPostExecute(Location location) {
+                super.onPostExecute(location);
+                try {
+                    Log.d(TAG, "Location Name = " + location.getName());
+                    ((TextView) findViewById(R.id.title)).setText(location.getName());
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+            }
+        }.execute();
+
+
         Log.d(TAG, "isFirstLogin = " + session.getIsFirstLogin());
         SessionManager sessionManager = new SessionManager(this);
         if (!sessionManager.isLoggedIn()) {
@@ -213,7 +235,7 @@ public class MainActivity extends AppCompatActivity {
         } else if (initializeStock) {
             updateStockViewpager();
 
-            new AsyncTask<Void,Void,Void>(){
+            new AsyncTask<Void, Void, Void>() {
 
                 @Override
                 protected Void doInBackground(Void... voids) {
@@ -233,7 +255,6 @@ public class MainActivity extends AppCompatActivity {
             }.execute();
 
 
-
         } else {
             updateStockViewpager();
         }
@@ -245,7 +266,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             protected List<ProducToBeReportedtList> doInBackground(Void... voids) {
-                Log.d(TAG,"All schedules = "+new Gson().toJson(baseDatabase.productReportingScheduleModelDao().getAllProductReportingSchedule()));
+                Log.d(TAG, "All schedules = " + new Gson().toJson(baseDatabase.productReportingScheduleModelDao().getAllProductReportingSchedule()));
 
                 return baseDatabase.productsModelDao().getUnreportedProductStocks(Calendar.getInstance().getTimeInMillis());
             }
@@ -257,7 +278,7 @@ public class MainActivity extends AppCompatActivity {
                 adapter.removeAllFragments();
                 managedProductsCount = productLists.size();
 
-                for(ProducToBeReportedtList products:productLists){
+                for (ProducToBeReportedtList products : productLists) {
                     adapter.addFragment(UpdateStockFragment.newInstance(products));
                 }
                 adapter.addFragment(new UpcomingReportingScheduleFragment());
@@ -338,9 +359,9 @@ public class MainActivity extends AppCompatActivity {
         if (nextItem <= managedProductsCount) {
             updateStockViewPager.setCurrentItem(nextItem, true);
         } else {
-            Log.d(TAG,"Updating viewpager");
+            Log.d(TAG, "Updating viewpager");
             slidingUpPanelLayout.setPanelState(COLLAPSED);
-            new AsyncTask<Void,Void,Void>(){
+            new AsyncTask<Void, Void, Void>() {
                 @Override
                 protected Void doInBackground(Void... voids) {
                     try {
@@ -365,6 +386,7 @@ public class MainActivity extends AppCompatActivity {
     public static class DotIndicatorPagerAdapter extends FragmentPagerAdapter {
         private List<Fragment> mFragmentList;
         private long baseId = 0;
+
         DotIndicatorPagerAdapter(FragmentManager fm) {
             super(fm);
             this.mFragmentList = new ArrayList<>();
@@ -406,6 +428,7 @@ public class MainActivity extends AppCompatActivity {
         /**
          * Notify that the position of a fragment has been changed.
          * Create a new ID for each position to force recreation of the fragment
+         *
          * @param n number of items which have been changed
          */
         public void notifyChangeInPosition(int n) {

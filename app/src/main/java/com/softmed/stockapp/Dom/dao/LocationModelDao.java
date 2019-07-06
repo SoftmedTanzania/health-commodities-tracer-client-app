@@ -20,7 +20,7 @@ public interface LocationModelDao {
     List<Location> getAllLocations();
 
     @Query("select * from Location WHERE id=:id")
-    List<Location> getLocationById(int id);
+    Location getLocationById(int id);
 
     @Query("select *  from Location WHERE parentId=:id")
     List<Location> getLocationsByParentId(int id);

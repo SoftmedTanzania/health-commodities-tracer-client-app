@@ -136,7 +136,7 @@ public class DetailActivity extends AppCompatActivity {
 
         productsViewModel = ViewModelProviders.of(DetailActivity.this).get(ProductsViewModel.class);
 
-        productsViewModel.getProdictById(product.getId()).observe(DetailActivity.this, new Observer<ProductBalance>() {
+        productsViewModel.getProdictById(product.getId(),session.getFacilityId()).observe(DetailActivity.this, new Observer<ProductBalance>() {
             @Override
             public void onChanged(@Nullable final ProductBalance mProd) {
                 mProduct = mProd;
