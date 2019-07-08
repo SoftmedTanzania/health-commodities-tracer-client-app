@@ -230,7 +230,6 @@ public class AddTransactionDialogue extends DialogFragment {
                             transactions.setStatus_id(1);
 
                             Calendar c = Calendar.getInstance();
-                            toBeginningOfTheDay(c);
 
                             transactions.setCreated_at(c.getTimeInMillis());
                             baseDatabase.transactionsDao().addTransactions(transactions);
