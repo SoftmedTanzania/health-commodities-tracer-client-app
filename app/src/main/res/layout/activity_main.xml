@@ -85,7 +85,7 @@
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="?attr/colorPrimary"
+        android:background="@color/color_primary_variant"
         android:fitsSystemWindows="true"
         xmlns:app="http://schemas.android.com/apk/res-auto"
         tools:context="com.tbuonomo.dotsindicatorsample.MainActivity">
@@ -133,12 +133,12 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
-            android:layout_marginBottom="64dp"
+            android:layout_marginBottom="16dp"
             app:ipi_dotDiameter="8dp"
             app:ipi_dotGap="8dp"
             app:ipi_animationDuration="320"
-            app:ipi_pageIndicatorColor="@android:color/darker_gray"
-            app:ipi_currentPageIndicatorColor="@android:color/black"/>
+            app:ipi_pageIndicatorColor="@android:color/white"
+            app:ipi_currentPageIndicatorColor="@color/color_secondary"/>
 
         <androidx.viewpager.widget.ViewPager
             android:layout_below="@id/second_toolbar"
