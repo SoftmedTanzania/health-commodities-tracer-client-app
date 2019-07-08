@@ -37,8 +37,8 @@ public class UsersInfo implements Serializable {
     @SerializedName("username")
     private String username;
 
-    @SerializedName("isDistrictUser")
-    private boolean isDistrictUser;
+    @SerializedName("assigned_location_type")
+    private String assignedLocationType;
 
     @SerializedName("districtId")
     private int districtId;
@@ -108,12 +108,12 @@ public class UsersInfo implements Serializable {
         this.username = username;
     }
 
-    public boolean isDistrictUser() {
-        return isDistrictUser;
+    public String getAssignedLocationType() {
+        return assignedLocationType;
     }
 
-    public void setDistrictUser(boolean districtUser) {
-        isDistrictUser = districtUser;
+    public void setAssignedLocationType(String assignedLocationType) {
+        this.assignedLocationType = assignedLocationType;
     }
 
     public int getDistrictId() {

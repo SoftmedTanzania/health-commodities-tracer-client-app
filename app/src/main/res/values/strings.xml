@@ -66,8 +66,8 @@
     <string name="error_loading_transactions">Error: Loading Transactions…</string>
 
 
-    <string name="loading_transactions_types">Loading Transaction Types…</string>
-    <string name="error_loading_transaction_types">Error: Loading Transaction Types…</string>
+    <string name="loading_locations">Loading Locations ...</string>
+    <string name="error_loading_locations">Error: Loading Locations ...</string>
 
     <string name="loading_data">Loading Data…</string>
     <string name="loging_in">Loging In…</string>
@@ -97,6 +97,7 @@
 
     <string name="language">Language</string>
     <string name="logout">Logout</string>
+    <string name="change_facility">Change Facility</string>
     <string name="clients_label"> Clients</string>
     <string name="title_activity_managed_products">ManagedProductsActivity</string>
     <string name="large_text">

@@ -41,12 +41,12 @@ public interface ProductsModelDao {
             "WHERE Balances.balance=0 ")
     List<ProducToBeReportedtList> getUninitializedProducts();
 
-    @Query("select  Product.id,Product.name AS name ,Unit.name as unit,Balances.balance,ProductReportingSchedule.scheduledDate,ProductReportingSchedule.id as scheduleId  FROM Product " +
+    @Query("select  Product.id,Product.name AS name ,Unit.name as unit,Balances.balance,ProductReportingSchedule.scheduledDate, ProductReportingSchedule.id as scheduleId  FROM Product " +
             "INNER JOIN Category ON Product.category_id = Category.id " +
             "INNER JOIN Unit ON Product.unit_id = Unit.id " +
             "INNER JOIN Balances ON Product.id = Balances.productId " +
             "INNER JOIN ProductReportingSchedule ON Product.id = ProductReportingSchedule.productId " +
-            "WHERE ProductReportingSchedule.scheduledDate <= :today AND ProductReportingSchedule.status='pending' AND Balances.healthFacilityId  = :healthFacilityId")
+            "WHERE ProductReportingSchedule.scheduledDate <= :today AND ProductReportingSchedule.status='pending' AND ProductReportingSchedule.facilityId  = :healthFacilityId group by ProductReportingSchedule.id")
     List<ProducToBeReportedtList> getUnreportedProductStocks(long today, int healthFacilityId);
 
 

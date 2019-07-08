@@ -226,15 +226,14 @@ public class AddTransactionDialogue extends DialogFragment {
                             }
 
                             transactions.setStatus_id(1);
-
                             transactions.setStatus_id(1);
-
                             Calendar c = Calendar.getInstance();
-
                             transactions.setCreated_at(c.getTimeInMillis());
-                            baseDatabase.transactionsDao().addTransactions(transactions);
 
                             Balances balances = baseDatabase.balanceModelDao().getBalance(productId,session.getFacilityId());
+
+                            transactions.setConsumptionQuantity(balances.getConsumptionQuantity());
+                            baseDatabase.transactionsDao().addTransactions(transactions);
 
                             balances.setBalance(Integer.valueOf(stockAdjustmentQuantity.getEditText().getText().toString()));
 

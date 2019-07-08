@@ -242,9 +242,12 @@ public class UpdateStockFragment extends Fragment {
                             }
 
                             transactions.setStatus_id(1);
-                            baseDatabase.transactionsDao().addTransactions(transactions);
 
                             Balances balances = baseDatabase.balanceModelDao().getBalance(productId,session.getFacilityId());
+
+                            transactions.setConsumptionQuantity(balances.getConsumptionQuantity());
+                            baseDatabase.transactionsDao().addTransactions(transactions);
+
                             balances.setBalance(stockQuantity);
                             baseDatabase.balanceModelDao().addBalance(balances);
 

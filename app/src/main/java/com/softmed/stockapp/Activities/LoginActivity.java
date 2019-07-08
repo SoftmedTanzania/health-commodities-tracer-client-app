@@ -239,9 +239,7 @@ public class LoginActivity extends BaseActivity {
             //login locally
             Log.d("LoginActivity", "Inside no network");
             new AsyncTask<Void, Void, Void>() {
-
                 List<UsersInfo> usersInfos = new ArrayList<>();
-
                 @Override
                 protected Void doInBackground(Void... voids) {
                     usersInfos = baseDatabase.userInfoDao().loggeInUser(usernameValue);
@@ -253,7 +251,7 @@ public class LoginActivity extends BaseActivity {
                 protected void onPostExecute(Void aVoid) {
                     super.onPostExecute(aVoid);
 
-                    if (usersInfos.size() > 0) {
+                    if (usersInfos.size() > 0 && (userInfo.getAssignedLocationType().equals("DST") || userInfo.getAssignedLocationType().equals("FCT"))) {
 
                         Log.d("LoginActivity", "Session Found");
 
@@ -265,7 +263,7 @@ public class LoginActivity extends BaseActivity {
                                 loggedInSessions.getUsername(),
                                 userInfo.getId(),
                                 passwordValue,
-                                loggedInSessions.getHealth_facility(),loggedInSessions.isDistrictUser(),loggedInSessions.getDistrictId());
+                                loggedInSessions.getHealth_facility(),loggedInSessions.getAssignedLocationType(),loggedInSessions.getDistrictId());
 
                         //Call HomeActivity to log in user
                         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
@@ -317,7 +315,7 @@ public class LoginActivity extends BaseActivity {
                                 usernameValue,
                                 userInfo.getId(),
                                 passwordValue,
-                                userInfo.getHealth_facility(),false,0);
+                                userInfo.getHealth_facility(),null,0);
 
                         categoriesService = ServiceGenerator.createService(Endpoints.CategoriesService.class, session.getUserName(), session.getUserPass());
                         transactionServices = ServiceGenerator.createService(Endpoints.TransactionServices.class, session.getUserName(), session.getUserPass());
@@ -328,9 +326,8 @@ public class LoginActivity extends BaseActivity {
                             protected Void doInBackground(Void... voids) {
                                 Log.d(TAG, "userInfo : " + userInfo.toString());
                                 userInfo.setUsername(usernameValue);
-                                userInfo.setDistrictUser(false);
+                                userInfo.setAssignedLocationType(null);
                                 baseDatabase.userInfoDao().addUserInfo(userInfo);
-//                                baseDatabase.locationsModelDao().addLocation(response.body().getLocationResponses().get(0));
                                 return null;
                             }
 
@@ -416,7 +413,7 @@ public class LoginActivity extends BaseActivity {
                     //Here will handle the responce from the server
                     Log.d("CategoriesCheck", response.body() + "");
                     addCategoriesAsyncTask task = new addCategoriesAsyncTask(response.body());
-                    task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                    task.execute();
                 }
 
                 @Override
@@ -447,7 +444,7 @@ public class LoginActivity extends BaseActivity {
                     //Here will handle the responce from the server
                     Log.d(TAG,"Schedule Check = "+new Gson().toJson(response.body()));
                     addSchedule task = new addSchedule(response.body());
-                    task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                    task.execute();
                 }
 
                 @Override
@@ -477,7 +474,7 @@ public class LoginActivity extends BaseActivity {
                     Log.d("ProductsCheck", response.body() + "");
 
                     addProductsAsyncTask task = new addProductsAsyncTask(response.body());
-                    task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                    task.execute();
                 }
 
                 @Override
@@ -507,7 +504,7 @@ public class LoginActivity extends BaseActivity {
                     Log.d("ProductsCheck", response.body() + "");
 
                     addUnitsAsyncTask task = new addUnitsAsyncTask(response.body());
-                    task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                    task.execute();
                 }
 
                 @Override
@@ -543,7 +540,7 @@ public class LoginActivity extends BaseActivity {
                     Log.d("transactionsCheck", new Gson().toJson(response.body()));
 
                     addTransactionsAsyncTask task = new addTransactionsAsyncTask(response.body());
-                    task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                    task.execute();
                 }
 
                 @Override
@@ -559,10 +556,16 @@ public class LoginActivity extends BaseActivity {
     }
 
     private void callBalances() {
-        loginMessages.setText(getResources().getString(R.string.loading_transactions));
-        loginMessages.setTextColor(getResources().getColor(R.color.color_primary));
-        if (session.isLoggedIn()) {
 
+        if (!session.getAssignedFacilityType().equals("DST") && !session.getAssignedFacilityType().equals("FCT")) {
+            loginMessages.setText("You are not assigned to any facility or District, Please contact the administrator to obtain these privileges");
+            loginMessages.setTextColor(getResources().getColor(R.color.color_error));
+            loginButton.setText(getResources().getString(R.string.login));
+            session.clearSession();
+        }else if (session.isLoggedIn()) {
+
+            loginMessages.setText(getResources().getString(R.string.loading_transactions));
+            loginMessages.setTextColor(getResources().getColor(R.color.color_primary));
             Log.d(TAG, "userId Balance = " + session.getUserUUID());
 
             Call<List<Balances>> call = transactionServices.getBalances("api_health_commodity_mapping");
@@ -575,7 +578,7 @@ public class LoginActivity extends BaseActivity {
                     Log.d("balancesCheck", new Gson().toJson(response.body()));
 
                     addBalancesAsyncTask task = new addBalancesAsyncTask(response.body());
-                    task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                    task.execute();
                 }
 
                 @Override
@@ -591,8 +594,6 @@ public class LoginActivity extends BaseActivity {
     }
 
     private void callLocations() {
-        loginMessages.setText(getResources().getString(R.string.loading_transactions_types));
-        loginMessages.setTextColor(getResources().getColor(R.color.color_primary));
         if (session.isLoggedIn()) {
             Call<List<Location>> call = loginService.getLocations();
             call.enqueue(new Callback<List<Location>>() {
@@ -602,7 +603,7 @@ public class LoginActivity extends BaseActivity {
                     Log.d(TAG, "Locations Check = "+new Gson().toJson(response.body()) + "");
 
                     addLocationsAsyncTask task = new addLocationsAsyncTask(response.body());
-                    task.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+                    task.execute();
                 }
 
                 @Override
@@ -610,7 +611,7 @@ public class LoginActivity extends BaseActivity {
                     //Error!
                     Log.e("", "An error encountered!");
                     Log.d("TransactionCheck", "failed with " + t.getMessage() + " " + t.toString());
-                    loginMessages.setText(getResources().getString(R.string.error_loading_transaction_types));
+                    loginMessages.setText(getResources().getString(R.string.error_loading_locations));
                     loginMessages.setTextColor(getResources().getColor(R.color.color_error));
                 }
             });
@@ -793,7 +794,6 @@ public class LoginActivity extends BaseActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            loginMessages.setText("Finalizing Transactions..");
         }
 
         @Override
@@ -868,7 +868,6 @@ public class LoginActivity extends BaseActivity {
         @Override
         protected void onPreExecute() {
             super.onPreExecute();
-            loginMessages.setText("Finalizing Locations ..");
         }
 
         @Override
@@ -876,15 +875,17 @@ public class LoginActivity extends BaseActivity {
             try {
 
                 for (Location location : results) {
-                    if(session.getFacilityId()==location.getId() && location.getLocationType().equals("DST")){
+                    if(session.getFacilityId()==location.getId()){
                         Log.d(TAG,"Location type is = "+location.getLocationType());
-                        session.setKeyIsDistrictUser(true);
                         session.setDistrictId(session.getFacilityId());
-
-                        userInfo.setDistrictUser(true);
                         userInfo.setDistrictId(session.getFacilityId());
+
+                        userInfo.setAssignedLocationType(location.getLocationType());
                         baseDatabase.userInfoDao().addUserInfo(userInfo);
+
+                        session.setAssignedFacilityType(location.getLocationType());
                     }
+
                     baseDatabase.locationModelDao().addLocation(location);
                     Log.d(TAG, "Location name : " + location.getName());
                 }
@@ -898,7 +899,19 @@ public class LoginActivity extends BaseActivity {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            callBalances();
+
+            try {
+                if (!session.getAssignedFacilityType().equals("DST") && !session.getAssignedFacilityType().equals("FCT")) {
+                    loginMessages.setText("You are not assigned to any facility or District, Please contact the administrator to obtain these privileges");
+                    loginMessages.setTextColor(getResources().getColor(R.color.color_error));
+                    loginButton.setText(getResources().getString(R.string.login));
+                    session.clearSession();
+                } else {
+                    callBalances();
+                }
+            }catch (Exception e){
+                e.printStackTrace();
+            }
 
 
         }

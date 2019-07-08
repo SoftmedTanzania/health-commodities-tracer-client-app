@@ -236,7 +236,7 @@ public class MainActivity extends AppCompatActivity {
         if (!sessionManager.isLoggedIn()) {
             sessionManager.checkLogin();
             finish();
-        }else if(session.getKeyIsDistrictUser() && districtFacility.equals("")){
+        }else if(session.getAssignedFacilityType().equals("DST") && districtFacility.equals("")){
             Intent i = new Intent(MainActivity.this, SelectFacilityActivity.class);
             i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
             MainActivity.this.startActivity(i);
@@ -289,6 +289,10 @@ public class MainActivity extends AppCompatActivity {
             @Override
             protected void onPostExecute(List<ProducToBeReportedtList> productLists) {
                 super.onPostExecute(productLists);
+
+
+                Log.d(TAG, "Unposted schedules = " + new Gson().toJson(productLists));
+
                 if(usersInfos.size()==0) {
                     session.logoutUser();
                     finish();
@@ -321,7 +325,11 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        getMenuInflater().inflate(R.menu.menu_main, menu);
+        if(session.getAssignedFacilityType().equals("DST")) {
+            getMenuInflater().inflate(R.menu.menu_district, menu);
+        }else{
+            getMenuInflater().inflate(R.menu.menu_main, menu);
+        }
         return super.onCreateOptionsMenu(menu);
     }
 
@@ -329,6 +337,11 @@ public class MainActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.action_logout) {
             session.logoutUser();
+            finish();
+        }else  if (item.getItemId() == R.id.action_change_facility) {
+            Intent i = new Intent(MainActivity.this, SelectFacilityActivity.class);
+            i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+            MainActivity.this.startActivity(i);
             finish();
         }
 

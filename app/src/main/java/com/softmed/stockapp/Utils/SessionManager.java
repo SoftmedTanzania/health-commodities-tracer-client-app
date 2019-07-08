@@ -17,7 +17,7 @@ public class SessionManager {
     private static final String PREF_NAME = "HFRPref";
 
     private static final String IS_LOGIN = "IsLoggedIn";
-    private static final String KEY_IS_DISTRICT_USER = "IsDistrictUser";
+    private static final String KEY_ASSIGNED_LOCATION_TYPE = "AssignedLocationType";
     private static final String KEY_DISTRICT_LOCATION_ID = "DistrictLocationID";
 
     // Shared Preferences
@@ -40,7 +40,7 @@ public class SessionManager {
     /**
      * Create login session
      */
-    public void createLoginSession(String name, int personUUID, String pass, int locationId, boolean isDistrictUser,int districtLocationId) {
+    public void createLoginSession(String name, int personUUID, String pass, int locationId, String assignedLocationType,int districtLocationId) {
         // Storing login value as TRUE
         editor.putBoolean(IS_LOGIN, true);
 
@@ -56,8 +56,8 @@ public class SessionManager {
         //Storing Loation ID
         editor.putInt(KEY_LOCATION_ID, locationId);
 
-        //Storing Loation ID
-        editor.putBoolean(KEY_IS_DISTRICT_USER, isDistrictUser);
+        //Storing Loation Type
+        editor.putString(KEY_ASSIGNED_LOCATION_TYPE, assignedLocationType);
 
         editor.putInt(KEY_DISTRICT_LOCATION_ID, districtLocationId);
 
@@ -104,12 +104,12 @@ public class SessionManager {
         editor.commit();
     }
 
-    public void  setKeyIsDistrictUser(boolean isDistrictUser) {
-        editor.putBoolean(KEY_IS_DISTRICT_USER, isDistrictUser);
+    public void  setAssignedFacilityType(String assignedLocationType) {
+        editor.putString(KEY_ASSIGNED_LOCATION_TYPE, assignedLocationType);
         editor.commit();
     }
-    public  boolean getKeyIsDistrictUser() {
-        return pref.getBoolean(KEY_IS_DISTRICT_USER, false);
+    public  String getAssignedFacilityType() {
+        return pref.getString(KEY_ASSIGNED_LOCATION_TYPE, null);
     }
 
     /**
@@ -154,6 +154,15 @@ public class SessionManager {
 
         // Staring Login Activity
         _context.startActivity(i);
+    }
+
+    /**
+     * Clear session details
+     */
+    public void clearSession() {
+        // Clearing all data from Shared Preferences
+        editor.clear();
+        editor.commit();
     }
 
     /**

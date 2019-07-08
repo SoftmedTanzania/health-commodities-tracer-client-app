@@ -53,6 +53,10 @@ public class Transactions implements Serializable {
     @SerializedName("syncStatus")
     private int syncStatus = 0;
 
+
+    @SerializedName("quantity_consumed")
+    private int consumptionQuantity;
+
     @SerializedName("trans_date_time")
     private long created_at;
 
@@ -167,5 +171,13 @@ public class Transactions implements Serializable {
 
     public void setScheduleId(int scheduleId) {
         this.scheduleId = scheduleId;
+    }
+
+    public int getConsumptionQuantity() {
+        return consumptionQuantity;
+    }
+
+    public void setConsumptionQuantity(int consumptionQuantity) {
+        this.consumptionQuantity = consumptionQuantity;
     }
 }
