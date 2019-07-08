@@ -16,8 +16,8 @@ public class SessionManager {
     // Sharedpref file name
     private static final String PREF_NAME = "HFRPref";
 
-    // All Shared Preferences Keys
     private static final String IS_LOGIN = "IsLoggedIn";
+    private static final String KEY_IS_DISTRICT_USER = "IsDistrictUser";
 
     // Shared Preferences
     private SharedPreferences pref;
@@ -39,7 +39,7 @@ public class SessionManager {
     /**
      * Create login session
      */
-    public void createLoginSession(String name, int personUUID, String pass, int locationId) {
+    public void createLoginSession(String name, int personUUID, String pass, int locationId, boolean isDistrictUser) {
         // Storing login value as TRUE
         editor.putBoolean(IS_LOGIN, true);
 
@@ -55,6 +55,9 @@ public class SessionManager {
         //Storing Loation ID
         editor.putInt(KEY_LOCATION_ID, locationId);
 
+        //Storing Loation ID
+        editor.putBoolean(KEY_IS_DISTRICT_USER, isDistrictUser);
+
         // commit changes
         editor.apply();
     }
@@ -66,7 +69,10 @@ public class SessionManager {
     public int getFacilityId() {
         return pref.getInt(KEY_LOCATION_ID, -1);
     }
-
+    public void  setFacilityId(int facilityId) {
+        editor.putInt(KEY_LOCATION_ID, facilityId);
+        editor.commit();
+    }
     public String getUserName() {
         return pref.getString(KEY_NAME, null);
     }
@@ -84,6 +90,13 @@ public class SessionManager {
         editor.commit();
     }
 
+    public void  setKeyIsDistrictUser(boolean isDistrictUser) {
+        editor.putBoolean(KEY_IS_DISTRICT_USER, isDistrictUser);
+        editor.commit();
+    }
+    public  boolean getKeyIsDistrictUser() {
+        return pref.getBoolean(KEY_IS_DISTRICT_USER, false);
+    }
 
     /**
      * Check login method wil check user login status

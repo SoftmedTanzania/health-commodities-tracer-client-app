@@ -230,6 +230,8 @@ public class MainActivity extends AppCompatActivity {
         if (!sessionManager.isLoggedIn()) {
             sessionManager.checkLogin();
             finish();
+        }else if(session.getKeyIsDistrictUser()){
+
         } else if (session.getIsFirstLogin()) {
             Intent i = new Intent(MainActivity.this, ManagedProductsActivity.class);
             i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);

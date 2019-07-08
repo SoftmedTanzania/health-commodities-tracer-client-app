@@ -37,6 +37,9 @@ public class UsersInfo implements Serializable {
     @SerializedName("username")
     private String username;
 
+    @SerializedName("isDistrictUser")
+    private boolean isDistrictUser;
+
     @NonNull
     public int getId() {
         return id;
@@ -100,5 +103,13 @@ public class UsersInfo implements Serializable {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public boolean isDistrictUser() {
+        return isDistrictUser;
+    }
+
+    public void setDistrictUser(boolean districtUser) {
+        isDistrictUser = districtUser;
     }
 }

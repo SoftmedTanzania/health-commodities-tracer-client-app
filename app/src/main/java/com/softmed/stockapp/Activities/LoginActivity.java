@@ -28,7 +28,6 @@ import com.softmed.stockapp.Dom.DomConverter;
 import com.softmed.stockapp.Dom.entities.Balances;
 import com.softmed.stockapp.Dom.entities.Location;
 import com.softmed.stockapp.Dom.entities.Product;
-import com.softmed.stockapp.Dom.entities.TransactionType;
 import com.softmed.stockapp.Dom.entities.Transactions;
 import com.softmed.stockapp.Dom.entities.UsersInfo;
 import com.softmed.stockapp.Dom.responces.CategoriesResponse;
@@ -266,7 +265,7 @@ public class LoginActivity extends BaseActivity {
                                 loggedInSessions.getUsername(),
                                 userInfo.getId(),
                                 passwordValue,
-                                loggedInSessions.getHealth_facility());
+                                loggedInSessions.getHealth_facility(),loggedInSessions.isDistrictUser());
 
                         //Call HomeActivity to log in user
                         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
@@ -318,7 +317,7 @@ public class LoginActivity extends BaseActivity {
                                 usernameValue,
                                 userInfo.getId(),
                                 passwordValue,
-                                userInfo.getHealth_facility());
+                                userInfo.getHealth_facility(),false);
 
                         categoriesService = ServiceGenerator.createService(Endpoints.CategoriesService.class, session.getUserName(), session.getUserPass());
                         transactionServices = ServiceGenerator.createService(Endpoints.TransactionServices.class, session.getUserName(), session.getUserPass());
@@ -329,6 +328,7 @@ public class LoginActivity extends BaseActivity {
                             protected Void doInBackground(Void... voids) {
                                 Log.d(TAG, "userInfo : " + userInfo.toString());
                                 userInfo.setUsername(usernameValue);
+                                userInfo.setDistrictUser(false);
                                 baseDatabase.userInfoDao().addUserInfo(userInfo);
 //                                baseDatabase.locationsModelDao().addLocation(response.body().getLocationResponses().get(0));
                                 return null;
@@ -590,7 +590,7 @@ public class LoginActivity extends BaseActivity {
         }
     }
 
-    private void callTransactionTypes() {
+    private void callLocations() {
         loginMessages.setText(getResources().getString(R.string.loading_transactions_types));
         loginMessages.setTextColor(getResources().getColor(R.color.color_primary));
         if (session.isLoggedIn()) {
@@ -814,7 +814,7 @@ public class LoginActivity extends BaseActivity {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            callTransactionTypes();
+            callLocations();
         }
     }
 
@@ -876,6 +876,12 @@ public class LoginActivity extends BaseActivity {
             try {
 
                 for (Location location : results) {
+                    if(session.getFacilityId()==location.getId() && location.getLocationType().equals("DST")){
+                        Log.d(TAG,"Location type is = "+location.getLocationType());
+                        session.setKeyIsDistrictUser(true);
+                        userInfo.setDistrictUser(true);
+                        baseDatabase.userInfoDao().addUserInfo(userInfo);
+                    }
                     baseDatabase.locationModelDao().addLocation(location);
                     Log.d(TAG, "Location name : " + location.getName());
                 }

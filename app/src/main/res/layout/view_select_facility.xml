@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app_ms="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <fr.ganfra.materialspinner.MaterialSpinner
+        android:id="@+id/select_health_facility"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:divider="@null"
+        android:textSize="14sp"
+        app_ms:ms_alignLabels="false"
+        app_ms:ms_alwaysShowFloatingLabel="true"
+        app_ms:ms_arrowColor="@color/black"
+        app_ms:ms_arrowSize="12dp"
+        app_ms:ms_baseColor="@color/color_primary"
+        app_ms:ms_enableErrorLabel="false"
+        app_ms:ms_enableFloatingLabel="true"
+        app_ms:ms_errorColor="@color/color_error"
+        app_ms:ms_floatingLabelColor="@color/color_primary"
+        app_ms:ms_floatingLabelText="Select health facility"
+        app_ms:ms_highlightColor="@color/secondary_text"
+        app_ms:ms_hint="Select health facility"
+        app_ms:ms_hintColor="#b3b3b3"
+        app_ms:ms_hintTextSize="14sp"
+        app_ms:ms_multiline="true" />
+</LinearLayout>
