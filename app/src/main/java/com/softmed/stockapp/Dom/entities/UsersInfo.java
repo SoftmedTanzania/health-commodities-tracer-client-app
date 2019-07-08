@@ -40,6 +40,9 @@ public class UsersInfo implements Serializable {
     @SerializedName("isDistrictUser")
     private boolean isDistrictUser;
 
+    @SerializedName("districtId")
+    private int districtId;
+
     @NonNull
     public int getId() {
         return id;
@@ -111,5 +114,13 @@ public class UsersInfo implements Serializable {
 
     public void setDistrictUser(boolean districtUser) {
         isDistrictUser = districtUser;
+    }
+
+    public int getDistrictId() {
+        return districtId;
+    }
+
+    public void setDistrictId(int districtId) {
+        this.districtId = districtId;
     }
 }

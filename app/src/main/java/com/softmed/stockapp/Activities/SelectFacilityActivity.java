@@ -62,7 +62,7 @@ public class SelectFacilityActivity extends BaseActivity {
         setContentView(R.layout.activity_managed_products);
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        setTitle("Choose Products Managed by the Facility");
+        setTitle("Select Health Facility");
 
         // Session Manager
         session = new SessionManager(getApplicationContext());
@@ -88,6 +88,14 @@ public class SelectFacilityActivity extends BaseActivity {
                         .setAction("Action", null).show();
                 session.setFacilityId(selectedLocationId);
 
+                session.setIsFirstLogin(false);
+
+                Intent intent = new Intent(SelectFacilityActivity.this, MainActivity.class);
+                intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                intent.putExtra("districtFacility", "districtFacility");
+                startActivity(intent);
+                SelectFacilityActivity.this.finish();
+
             }
         });
 
@@ -112,7 +120,7 @@ public class SelectFacilityActivity extends BaseActivity {
         protected List<Location> doInBackground(Void... voids) {
 
             List<Location> locations = new ArrayList<>();
-            facilityLocations = baseDatabase.locationModelDao().getLocationsByParentId(session.getFacilityId());
+            facilityLocations = baseDatabase.locationModelDao().getLocationsByParentId(session.getDistrictId());
 
 
             for (Location location : facilityLocations) {
@@ -145,7 +153,11 @@ public class SelectFacilityActivity extends BaseActivity {
             locationSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
                 @Override
                 public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
-                    selectedLocationId = facilityLocations.get(i).getId();
+                    try {
+                        selectedLocationId = facilityLocations.get(i).getId();
+                    }catch (Exception e){
+                        e.printStackTrace();
+                    }
                 }
 
                 @Override

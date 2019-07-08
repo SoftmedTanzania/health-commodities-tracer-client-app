@@ -28,9 +28,9 @@ public interface ProductsModelDao {
     @Query("select Product.id, Product.name AS name ,Unit.name as unit,Balances.balance FROM Product " +
             "INNER JOIN Category ON Product.category_id = Category.id " +
             "INNER JOIN Unit ON Product.unit_id = Unit.id " +
-            "INNER JOIN Balances ON Product.id = Balances.productId " +
+            "INNER JOIN Balances ON Product.id = Balances.productId WHERE Balances.healthFacilityId = :facilityId " +
             " ")
-    LiveData<List<ProductList>> getAvailableProducts();
+    LiveData<List<ProductList>> getAvailableProducts(int facilityId);
 
 
     @Query("select Product.id,Product.name AS name ,Unit.name as unit,Balances.balance,ProductReportingSchedule.id as scheduleId  FROM Product " +
@@ -46,8 +46,8 @@ public interface ProductsModelDao {
             "INNER JOIN Unit ON Product.unit_id = Unit.id " +
             "INNER JOIN Balances ON Product.id = Balances.productId " +
             "INNER JOIN ProductReportingSchedule ON Product.id = ProductReportingSchedule.productId " +
-            "WHERE ProductReportingSchedule.scheduledDate <= :today AND ProductReportingSchedule.status='pending' ")
-    List<ProducToBeReportedtList> getUnreportedProductStocks(long today);
+            "WHERE ProductReportingSchedule.scheduledDate <= :today AND ProductReportingSchedule.status='pending' AND Balances.healthFacilityId  = :healthFacilityId")
+    List<ProducToBeReportedtList> getUnreportedProductStocks(long today, int healthFacilityId);
 
 
     @Query("select Product.id,Product.category_id,Product.description,Category.name || ' - ' || Product.name AS name ,Product.unit_id,Product.status,track_number_of_patients,track_wastage,track_quantity_expired FROM Product " +

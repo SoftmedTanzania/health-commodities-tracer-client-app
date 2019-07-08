@@ -20,8 +20,8 @@ public class ProductsViewModel extends AndroidViewModel {
 
     }
 
-    public LiveData<List<ProductList>> getAvailableProducts() {
-        return appDatabase.productsModelDao().getAvailableProducts();
+    public LiveData<List<ProductList>> getAvailableProducts(int locationId) {
+        return appDatabase.productsModelDao().getAvailableProducts(locationId);
     }
 
     public LiveData<ProductBalance> getProdictById(int productId,int locationId) {

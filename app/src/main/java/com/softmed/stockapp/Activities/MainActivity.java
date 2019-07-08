@@ -75,6 +75,7 @@ public class MainActivity extends AppCompatActivity {
     private DotIndicatorPagerAdapter adapter;
     private  List<UsersInfo> usersInfos;
     private SessionManager sessionManager;
+    private String districtFacility = "";
 
     public static int convertDip2Pixels(Context context, int dip) {
         return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dip, context.getResources().getDisplayMetrics());
@@ -200,6 +201,11 @@ public class MainActivity extends AppCompatActivity {
         scheduleAlarm();
 
         final boolean initializeStock = getIntent().getBooleanExtra("reportInitialStock", false);
+        districtFacility = getIntent().getStringExtra("districtFacility");
+
+        if(districtFacility==null){
+            districtFacility="";
+        }
 
         adapter = new DotIndicatorPagerAdapter(getSupportFragmentManager());
         updateStockViewPager.setAdapter(adapter);
@@ -230,7 +236,11 @@ public class MainActivity extends AppCompatActivity {
         if (!sessionManager.isLoggedIn()) {
             sessionManager.checkLogin();
             finish();
-        }else if(session.getKeyIsDistrictUser()){
+        }else if(session.getKeyIsDistrictUser() && districtFacility.equals("")){
+            Intent i = new Intent(MainActivity.this, SelectFacilityActivity.class);
+            i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+            MainActivity.this.startActivity(i);
+            finish();
 
         } else if (session.getIsFirstLogin()) {
             Intent i = new Intent(MainActivity.this, ManagedProductsActivity.class);
@@ -273,7 +283,7 @@ public class MainActivity extends AppCompatActivity {
             protected List<ProducToBeReportedtList> doInBackground(Void... voids) {
                 Log.d(TAG, "All schedules = " + new Gson().toJson(baseDatabase.productReportingScheduleModelDao().getAllProductReportingSchedule()));
                 usersInfos = baseDatabase.userInfoDao().loggeInUser(session.getUserName());
-                return baseDatabase.productsModelDao().getUnreportedProductStocks(Calendar.getInstance().getTimeInMillis());
+                return baseDatabase.productsModelDao().getUnreportedProductStocks(Calendar.getInstance().getTimeInMillis(),session.getFacilityId());
             }
 
             @Override

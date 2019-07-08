@@ -18,6 +18,7 @@ public class SessionManager {
 
     private static final String IS_LOGIN = "IsLoggedIn";
     private static final String KEY_IS_DISTRICT_USER = "IsDistrictUser";
+    private static final String KEY_DISTRICT_LOCATION_ID = "DistrictLocationID";
 
     // Shared Preferences
     private SharedPreferences pref;
@@ -39,7 +40,7 @@ public class SessionManager {
     /**
      * Create login session
      */
-    public void createLoginSession(String name, int personUUID, String pass, int locationId, boolean isDistrictUser) {
+    public void createLoginSession(String name, int personUUID, String pass, int locationId, boolean isDistrictUser,int districtLocationId) {
         // Storing login value as TRUE
         editor.putBoolean(IS_LOGIN, true);
 
@@ -58,6 +59,8 @@ public class SessionManager {
         //Storing Loation ID
         editor.putBoolean(KEY_IS_DISTRICT_USER, isDistrictUser);
 
+        editor.putInt(KEY_DISTRICT_LOCATION_ID, districtLocationId);
+
         // commit changes
         editor.apply();
     }
@@ -73,6 +76,17 @@ public class SessionManager {
         editor.putInt(KEY_LOCATION_ID, facilityId);
         editor.commit();
     }
+
+
+    public int getDistrictId() {
+        return pref.getInt(KEY_DISTRICT_LOCATION_ID, -1);
+    }
+    public void  setDistrictId(int districtId) {
+        editor.putInt(KEY_DISTRICT_LOCATION_ID, districtId);
+        editor.commit();
+    }
+
+
     public String getUserName() {
         return pref.getString(KEY_NAME, null);
     }

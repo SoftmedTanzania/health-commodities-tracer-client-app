@@ -265,7 +265,7 @@ public class LoginActivity extends BaseActivity {
                                 loggedInSessions.getUsername(),
                                 userInfo.getId(),
                                 passwordValue,
-                                loggedInSessions.getHealth_facility(),loggedInSessions.isDistrictUser());
+                                loggedInSessions.getHealth_facility(),loggedInSessions.isDistrictUser(),loggedInSessions.getDistrictId());
 
                         //Call HomeActivity to log in user
                         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
@@ -317,7 +317,7 @@ public class LoginActivity extends BaseActivity {
                                 usernameValue,
                                 userInfo.getId(),
                                 passwordValue,
-                                userInfo.getHealth_facility(),false);
+                                userInfo.getHealth_facility(),false,0);
 
                         categoriesService = ServiceGenerator.createService(Endpoints.CategoriesService.class, session.getUserName(), session.getUserPass());
                         transactionServices = ServiceGenerator.createService(Endpoints.TransactionServices.class, session.getUserName(), session.getUserPass());
@@ -879,7 +879,10 @@ public class LoginActivity extends BaseActivity {
                     if(session.getFacilityId()==location.getId() && location.getLocationType().equals("DST")){
                         Log.d(TAG,"Location type is = "+location.getLocationType());
                         session.setKeyIsDistrictUser(true);
+                        session.setDistrictId(session.getFacilityId());
+
                         userInfo.setDistrictUser(true);
+                        userInfo.setDistrictId(session.getFacilityId());
                         baseDatabase.userInfoDao().addUserInfo(userInfo);
                     }
                     baseDatabase.locationModelDao().addLocation(location);

@@ -80,7 +80,7 @@ public class ProductsListFragment extends Fragment implements
 
 
         productsViewModel = ViewModelProviders.of(this).get(ProductsViewModel.class);
-        productsViewModel.getAvailableProducts().observe(getActivity(), new Observer<List<ProductList>>() {
+        productsViewModel.getAvailableProducts(session.getFacilityId()).observe(getActivity(), new Observer<List<ProductList>>() {
             @Override
             public void onChanged(@Nullable List<ProductList> productLists) {
                 Log.d(TAG,"products list size = "+productLists.size());
