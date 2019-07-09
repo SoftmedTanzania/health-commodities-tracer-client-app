@@ -1,9 +1,10 @@
-# Agro Dealers App
+# Health Commodity Tracer App
 
-**Platform: Android (Min SDK: 15, Target SDK: 24)**
+**Platform: Android (Min SDK: 15, Target SDK: 28)**
 
 **Features:**
-- Add products to the database by entering the product information in the text fields.
+- Track health facility stock balances
 - Add product image by capturing a photo using the camera or choose from gallery.
 - Simple navigation to allow faster create, read, update, or delete operations.
-- Keep track of product sales and shipment easily in a tap of a button.
+- View various dashboard charts showing facility consuption rates
+- Send and receive in-app messages to higher management and other health facilities
