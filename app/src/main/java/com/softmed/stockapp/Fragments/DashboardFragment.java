@@ -216,9 +216,17 @@ public class DashboardFragment extends Fragment {
                             balance += " " + productBalance.getUnit();
                             ((TextView) v.findViewById(R.id.balance)).setText(balance);
 
-                            if (productBalance.getBalance() > productBalance.getConsumptionQuantity()) {
+                            float stockSeverity = (productBalance.getBalance()*1f)/productBalance.getConsumptionQuantity();
+
+                            Log.d(TAG,"severity value = "+stockSeverity);
+
+                            if (stockSeverity>=6 ) {
+                                chart2Colors.add(Color.rgb(31, 36, 93));
+                            }else if (stockSeverity<6 && stockSeverity>=3) {
                                 chart2Colors.add(Color.rgb(30, 185, 128));
-                            } else {
+                            }else if (stockSeverity<3 && stockSeverity>=0.5) {
+                                chart2Colors.add(Color.rgb(255, 255, 0));
+                            }else {
                                 chart2Colors.add(Color.rgb(176, 0, 32));
                             }
 
