@@ -6,7 +6,7 @@
 
 
 
-    <androidx.cardview.widget.CardView
+    <com.google.android.material.card.MaterialCardView
         android:layout_centerInParent="true"
         app:cardCornerRadius="8dp"
         android:padding="2dp"
@@ -28,33 +28,32 @@
 
             <TextView
                 android:id="@+id/date"
-                android:layout_marginTop="16dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="12-07-2019"
-                android:gravity="center_horizontal"
-                android:textColor="@color/color_secondary"
+                android:layout_marginTop="16dp"
                 android:fontFamily="@font/muli_bold"
+                android:textColor="@color/color_secondary"
                 android:textSize="18sp"
                 android:textStyle="bold" />
 
-            <View
-                android:layout_width="60dp"
-                android:layout_height="2dp"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="8dp"
-                android:background="@color/color_secondary_variant" />
 
             <TextView
                 android:id="@+id/product_name"
-                android:layout_marginTop="16dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:fontFamily="@font/muli"
                 android:text="Add Transaction"
-                android:fontFamily="@font/muli_bold_italic"
                 android:textColor="@color/color_on_secondary"
-                android:textSize="18sp"
+                android:textSize="15sp"
                 android:textStyle="bold" />
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginTop="16dp"
+                android:layout_marginBottom="16dp"
+                android:background="@color/color_primary" />
 
 
 
@@ -213,19 +212,13 @@
                         android:layout_marginTop="8dp"
                         android:visibility="visible">
 
-                        <Button
-                            android:background="@color/color_secondary"
+                        <com.google.android.material.button.MaterialButton
                             android:id="@+id/add_transaction"
+                            style="@style/Widget.MaterialComponents.Button"
                             android:layout_width="wrap_content"
-                            android:textColor="@color/color_on_primary"
-                            android:layout_height="48dp"
+                            android:layout_height="wrap_content"
                             android:layout_alignParentRight="true"
-                            android:layout_gravity="center_horizontal"
-                            android:layout_marginRight="2dp"
-                            android:elevation="4dp"
-                            android:scaleType="centerInside"
-                            android:text="SAVE"
-                            android:textStyle="bold" />
+                            android:text="@string/save"/>
                     </RelativeLayout>
                 </LinearLayout>
 
@@ -237,7 +230,7 @@
 
         </LinearLayout>
 
-    </androidx.cardview.widget.CardView>
+    </com.google.android.material.card.MaterialCardView>
 </RelativeLayout>
 
 

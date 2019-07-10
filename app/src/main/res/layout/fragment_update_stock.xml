@@ -199,17 +199,13 @@
                 android:layout_marginBottom="8dp"
                 android:visibility="visible">
 
-                <androidx.appcompat.widget.AppCompatButton
+                <com.google.android.material.button.MaterialButton
                     android:id="@+id/add_transaction"
+                    style="@style/Widget.MaterialComponents.Button"
                     android:layout_width="wrap_content"
-                    android:layout_height="48dp"
+                    android:layout_height="wrap_content"
                     android:layout_alignParentRight="true"
-                    android:layout_gravity="center_horizontal"
-                    android:layout_marginRight="2dp"
-                    android:elevation="4dp"
-                    android:scaleType="centerInside"
-                    android:text="SAVE"
-                    android:textStyle="bold" />
+                    android:text="@string/save"/>
             </RelativeLayout>
 
 

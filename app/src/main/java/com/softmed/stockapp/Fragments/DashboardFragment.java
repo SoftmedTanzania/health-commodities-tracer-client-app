@@ -225,7 +225,7 @@ public class DashboardFragment extends Fragment {
                             }else if (stockSeverity<6 && stockSeverity>=3) {
                                 chart2Colors.add(Color.rgb(30, 185, 128));
                             }else if (stockSeverity<3 && stockSeverity>=0.5) {
-                                chart2Colors.add(Color.rgb(255, 255, 0));
+                                chart2Colors.add(Color.rgb(220, 220, 70));
                             }else {
                                 chart2Colors.add(Color.rgb(176, 0, 32));
                             }
@@ -240,15 +240,15 @@ public class DashboardFragment extends Fragment {
                         yVals1.add(new BarEntry(i, 0));
 
                         LineDataSet set = new LineDataSet(lineEntries, "Product Consumption");
-                        set.setColor(Color.rgb(240, 238, 70));
+                        set.setColor(Color.rgb(136, 180, 187));
                         set.setLineWidth(2.5f);
-                        set.setCircleColor(Color.rgb(240, 238, 70));
+                        set.setCircleColor(Color.rgb(136, 180, 187));
                         set.setCircleRadius(5f);
-                        set.setFillColor(Color.rgb(240, 238, 70));
+                        set.setFillColor(Color.rgb(136, 180, 187));
                         set.setMode(LineDataSet.Mode.CUBIC_BEZIER);
                         set.setDrawValues(true);
                         set.setValueTextSize(10f);
-                        set.setValueTextColor(Color.rgb(240, 238, 70));
+                        set.setValueTextColor(Color.rgb(136, 180, 187));
 
                         set.setAxisDependency(YAxis.AxisDependency.LEFT);
                         LineData lineData = new LineData();
