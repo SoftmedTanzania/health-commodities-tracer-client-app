@@ -21,7 +21,8 @@
 
     </FrameLayout>
 
-    <androidx.core.widget.NestedScrollView
+    <com.softmed.stockapp.Utils.CustomScrollView
+        android:id="@+id/scrollable"
         android:layout_below="@id/product_photo_container"
         android:layout_width="match_parent"
         android:layout_height="match_parent">
@@ -270,9 +271,9 @@
 
         </LinearLayout>
 
-    </androidx.core.widget.NestedScrollView>
+    </com.softmed.stockapp.Utils.CustomScrollView>
 
-    <com.google.android.material.floatingactionbutton.FloatingActionButton
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:id="@+id/fab"
@@ -281,7 +282,10 @@
         android:layout_marginTop="4dp"
         android:layout_marginBottom="32dp"
         android:layout_height="wrap_content"
-        app:srcCompat="@drawable/ic_add_white_24dp"
+        app:iconTint="@color/white"
+        android:text="Add stock"
+        android:textColor="@color/white"
+        app:icon="@drawable/ic_add_white_24dp"
         />
 
 </RelativeLayout>

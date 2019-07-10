@@ -24,7 +24,7 @@ import androidx.core.app.ActivityCompat;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
-import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.softmed.stockapp.Database.AppDatabase;
 import com.softmed.stockapp.Dom.dto.ProductList;
@@ -33,6 +33,7 @@ import com.softmed.stockapp.Dom.entities.ProductBalance;
 import com.softmed.stockapp.Dom.entities.Transactions;
 import com.softmed.stockapp.Fragments.AddTransactionDialogue;
 import com.softmed.stockapp.R;
+import com.softmed.stockapp.Utils.CustomScrollView;
 import com.softmed.stockapp.Utils.LoadProductPhotoAsync;
 import com.softmed.stockapp.Utils.PhotoHelper;
 import com.softmed.stockapp.Utils.SessionManager;
@@ -72,7 +73,7 @@ public class DetailActivity extends AppCompatActivity {
     private AppDatabase database;
     private ProductBalance mProduct;
     private Product myProduct;
-    private FloatingActionButton floatingActionButton;
+    private ExtendedFloatingActionButton floatingActionButton;
     private String stockAdjustmentReason = "";
     private TransactionsListViewModel transactionsListViewModel;
     private ProductsViewModel productsViewModel;
@@ -251,11 +252,32 @@ public class DetailActivity extends AppCompatActivity {
             }
         });
 
-        findViewById(R.id.fab).setOnClickListener(new View.OnClickListener() {
+        floatingActionButton = findViewById(R.id.fab);
+        floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 AddTransactionDialogue Dialogue = AddTransactionDialogue.newInstance(mProduct.getProductId());
                 Dialogue.show(getSupportFragmentManager(), "Adding Transaction");
+            }
+        });
+
+
+        ((CustomScrollView)findViewById(R.id.scrollable)).setMyScrollChangeListener(new CustomScrollView.OnMyScrollChangeListener() {
+            @Override
+            public void onScrollUp() {
+                //Toast.makeText(getActivity(), "Scrolling up", Toast.LENGTH_SHORT).show();
+                Log.d("scroll","up");
+                floatingActionButton.extend(true);
+
+            }
+
+            @Override
+            public void onScrollDown() {
+                // Toast.makeText(getActivity(), "Scrolling down", Toast.LENGTH_SHORT).show();
+                Log.d("scroll","down");
+
+                floatingActionButton.shrink(true);
+
             }
         });
 
