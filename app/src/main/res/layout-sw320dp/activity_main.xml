@@ -47,10 +47,45 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content" />
 
+                        <RelativeLayout
+                            android:id="@+id/message"
+                            android:layout_alignParentRight="true"
+                            android:layout_marginRight="8dp"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content">
+
+                            <RelativeLayout
+                                android:id="@+id/relative_layout"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content">
+
+                                <ImageView
+                                    android:padding="8dp"
+                                    android:id="@+id/message_icon"
+                                    android:layout_width="48dp"
+                                    android:layout_height="48dp"
+                                    android:tint="@color/white"
+                                    sothree:srcCompat="@drawable/ic_baseline_send_24px"/>
+                            </RelativeLayout>
+
+                            <TextView
+                                android:layout_marginTop="4dp"
+                                android:id="@+id/badge_notification_1"
+                                android:layout_width="24dp"
+                                android:layout_height="24dp"
+                                android:layout_alignRight="@id/relative_layout"
+                                android:background="@drawable/badge_item_count"
+                                android:text="2"
+                                android:textStyle="bold"
+                                android:gravity="center"
+                                android:textColor="#FFF"
+                                android:textSize="12sp" />
+                        </RelativeLayout>
+
                         <tarek360.animated.icons.AnimatedIconView
                             android:id="@+id/alarm_counter_icon"
                             android:layout_width="48dp"
-                            android:layout_alignParentRight="true"
+                            android:layout_toLeftOf="@id/message"
                             android:layout_marginRight="8dp"
                             android:layout_centerVertical="true"
                             android:layout_height="48dp"/>

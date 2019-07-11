@@ -162,9 +162,7 @@
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:background="#f5f5f5"
-                    android:orientation="vertical"
-                    android:paddingLeft="16dp">
+                    android:orientation="vertical">
 
                     <LinearLayout
                         android:id="@+id/linear_title"
@@ -180,6 +178,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="0.05"
                             android:fontFamily="@font/muli"
+                            android:textColor="@color/color_primary_variant"
                             android:text="Sn"
                             android:textStyle="bold" />
 
@@ -190,6 +189,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="0.2"
                             android:fontFamily="@font/muli"
+                            android:textColor="@color/color_primary_variant"
                             android:text="Date"
                             android:textStyle="bold" />
 
@@ -199,6 +199,7 @@
                             android:layout_width="0dp"
                             android:layout_height="wrap_content"
                             android:layout_weight="0.1"
+                            android:textColor="@color/color_primary_variant"
                             android:fontFamily="@font/muli"
                             android:text="Transaction Type"
                             android:textStyle="bold"
@@ -211,6 +212,7 @@
                             android:layout_weight="0.1"
                             android:fontFamily="@font/muli"
                             android:gravity="center_horizontal"
+                            android:textColor="@color/color_primary_variant"
                             android:text="Stock on Hand"
                             android:textStyle="bold" />
 
@@ -220,6 +222,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="0.1"
                             android:fontFamily="@font/muli"
+                            android:textColor="@color/color_primary_variant"
                             android:gravity="center_horizontal"
                             android:text="Stock Out Days"
                             android:textStyle="bold" />
@@ -231,6 +234,7 @@
                             android:layout_weight="0.1"
                             android:fontFamily="@font/muli"
                             android:gravity="center_horizontal"
+                            android:textColor="@color/color_primary_variant"
                             android:text="Clients On Regime"
                             android:textStyle="bold"
                             android:visibility="gone" />
@@ -241,6 +245,7 @@
                             android:layout_height="wrap_content"
                             android:layout_weight="0.1"
                             android:fontFamily="@font/muli"
+                            android:textColor="@color/color_primary_variant"
                             android:gravity="center_horizontal"
                             android:text="Wastage"
                             android:textStyle="bold"
@@ -253,6 +258,7 @@
                             android:layout_weight="0.1"
                             android:fontFamily="@font/muli"
                             android:gravity="center_horizontal"
+                            android:textColor="@color/color_primary_variant"
                             android:text="Expired Stock"
                             android:textStyle="bold"
                             android:visibility="gone" />
@@ -273,8 +279,7 @@
                         <TableLayout
                             android:id="@+id/transactions_table"
                             android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:background="#f5f5f5" />
+                            android:layout_height="wrap_content" />
                     </ScrollView>
 
 

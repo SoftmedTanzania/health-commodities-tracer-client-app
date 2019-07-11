@@ -149,27 +149,28 @@
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:paddingLeft="16dp"
-                android:background="#f5f5f5">
+                android:orientation="vertical">
 
                 <LinearLayout
                     android:layout_marginTop="8dp"
                     android:layout_width="match_parent"
-                    android:layout_height="50dp"
+                    android:layout_height="wrap_content"
+                    android:paddingTop="8dp"
+                    android:paddingBottom="8dp"
                     android:orientation="horizontal"
                     android:gravity="center_vertical"
                     android:id="@+id/linear_title">
 
                     <TextView
-                        android:layout_width="0dp"
-                        android:layout_weight="0.05"
-                        android:layout_height="wrap_content"
                         android:id="@+id/sn_title"
-                        android:textSize="12sp"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="0.05"
                         android:fontFamily="@font/muli"
                         android:text="Sn"
-                        android:textStyle="bold"/>
+                        android:textColor="@color/color_primary_variant"
+                        android:textSize="12sp"
+                        android:textStyle="bold" />
 
 
                     <TextView
@@ -179,6 +180,7 @@
                         android:text="Date"
                         android:fontFamily="@font/muli"
                         android:id="@+id/date"
+                        android:textColor="@color/color_primary_variant"
                         android:textSize="12sp"
                         android:textStyle="bold"/>
 
@@ -190,6 +192,7 @@
                         android:id="@+id/child_names_title"
                         android:visibility="gone"
                         android:fontFamily="@font/muli"
+                        android:textColor="@color/color_primary_variant"
                         android:textSize="12sp"
                         android:text="Transaction Type"
                         android:textStyle="bold"/>
@@ -202,6 +205,7 @@
                         android:gravity="center_horizontal"
                         android:textStyle="bold"
                         android:textSize="12sp"
+                        android:textColor="@color/color_primary_variant"
                         android:fontFamily="@font/muli"
                         android:text="Stock on Hand"/>
 
@@ -212,6 +216,7 @@
                         android:gravity="center_horizontal"
                         android:textStyle="bold"
                         android:fontFamily="@font/muli"
+                        android:textColor="@color/color_primary_variant"
                         android:textSize="12sp"
                         android:id="@+id/stock_out_days_title"
                         android:text="Stock Out Days" />
@@ -222,6 +227,7 @@
                         android:layout_weight="0.1"
                         android:gravity="center_horizontal"
                         android:textStyle="bold"
+                        android:textColor="@color/color_primary_variant"
                         android:textSize="12sp"
                         android:visibility="gone"
                         android:fontFamily="@font/muli"
@@ -236,6 +242,7 @@
                         android:id="@+id/wastage_title"
                         android:visibility="gone"
                         android:fontFamily="@font/muli"
+                        android:textColor="@color/color_primary_variant"
                         android:textSize="12sp"
                         android:textStyle="bold"
                         android:text="Wastage" />
@@ -248,6 +255,7 @@
                         android:textStyle="bold"
                         android:textSize="12sp"
                         android:fontFamily="@font/muli"
+                        android:textColor="@color/color_primary_variant"
                         android:visibility="gone"
                         android:id="@+id/expired_stock_title"
                         android:text="Expired Stock" />
@@ -262,7 +270,6 @@
                     android:background="@color/secondary_text"/>
 
                 <TableLayout
-                    android:background="#f5f5f5"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:id="@+id/transactions_table"/>

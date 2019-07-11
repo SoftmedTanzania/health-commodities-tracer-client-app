@@ -3,14 +3,14 @@ apply plugin: 'kotlin-android-extensions'
 apply plugin: 'kotlin-android'
 
 android {
-    compileSdkVersion 28
+    compileSdkVersion 29
     buildToolsVersion '28.0.3'
 
     defaultConfig {
         vectorDrawables.useSupportLibrary = true
         applicationId "com.softmed.stockapp"
         minSdkVersion 16
-        targetSdkVersion 28
+        targetSdkVersion 29
         versionCode 10
         versionName "0.0.8"
     }
@@ -67,6 +67,7 @@ dependencies {
     implementation "androidx.core:core-ktx:1.0.2"
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.0.0"
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
+    implementation "com.github.stfalcon:chatkit:0.3.3"
 }
 
 repositories {
