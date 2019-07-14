@@ -4,7 +4,7 @@ import android.app.Application;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
-import com.softmed.stockapp.Database.AppDatabase;
+import com.softmed.stockapp.database.AppDatabase;
 
 import java.util.List;
 

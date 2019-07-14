@@ -1,0 +1,74 @@
+<androidx.coordinatorlayout.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <com.google.android.material.appbar.AppBarLayout
+        android:id="@+id/app_bar_layout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <androidx.appcompat.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/toolbar"
+            android:layout_width="fill_parent"
+            android:layout_height="48dp"
+            android:background="@color/color_primary_variant"
+            android:focusableInTouchMode="true"
+            app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
+            app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
+    </com.google.android.material.appbar.AppBarLayout>
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="@color/white"
+        app:layout_behavior="@string/appbar_scrolling_view_behavior">
+
+        <com.stfalcon.chatkit.messages.MessagesList
+            android:id="@+id/messagesList"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_above="@+id/input"
+            app:dateHeaderFormat="dd MMMM yyyy"
+            app:incomingDefaultBubbleColor="@color/color_primary"
+            app:incomingDefaultBubblePressedColor="@color/color_primary"
+            app:incomingDefaultBubbleSelectedColor="@color/gray"
+            app:incomingDefaultImageOverlayPressedColor="@color/black_10"
+            app:incomingDefaultImageOverlaySelectedColor="@color/gray_transparent"
+            app:incomingTextColor="@color/black"
+            app:incomingTextLinkColor="@color/color_primary"
+            app:incomingTextSize="18sp"
+            app:outcomingDefaultBubbleColor="@color/color_primary"
+            app:outcomingDefaultBubblePressedColor="@color/color_primary_variant"
+            app:outcomingDefaultBubbleSelectedColor="@color/gray_dark_transparent"
+            app:outcomingDefaultImageOverlayPressedColor="@color/black_10"
+            app:outcomingDefaultImageOverlaySelectedColor="@color/gray_transparent"
+            app:outcomingTextColor="@color/white"
+            app:outcomingTextLinkColor="@color/brown"
+            app:outcomingTextSize="18sp"
+            app:textAutoLink="all" />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:layout_above="@+id/input"
+            android:layout_marginLeft="16dp"
+            android:layout_marginRight="16dp"
+            android:background="@color/gray_light" />
+
+        <com.stfalcon.chatkit.messages.MessageInput
+            android:id="@+id/input"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            app:attachmentButtonDefaultIconColor="@color/color_primary"
+            app:attachmentButtonDefaultIconPressedColor="@color/color_primary_variant"
+            app:inputButtonDefaultBgColor="@color/color_primary"
+            app:inputButtonDefaultBgPressedColor="@color/color_primary_variant"
+            app:inputHint="@string/hint_enter_a_message"
+            app:showAttachmentButton="true" />
+
+    </RelativeLayout>
+
+
+</androidx.coordinatorlayout.widget.CoordinatorLayout>

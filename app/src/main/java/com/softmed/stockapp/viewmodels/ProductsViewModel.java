@@ -4,9 +4,9 @@ import android.app.Application;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
-import com.softmed.stockapp.Database.AppDatabase;
-import com.softmed.stockapp.Dom.entities.ProductBalance;
-import com.softmed.stockapp.Dom.dto.ProductList;
+import com.softmed.stockapp.database.AppDatabase;
+import com.softmed.stockapp.dom.entities.ProductBalance;
+import com.softmed.stockapp.dom.dto.ProductList;
 
 import java.util.List;
 

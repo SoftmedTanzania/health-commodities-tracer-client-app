@@ -22,7 +22,7 @@
         android:layout_centerHorizontal="true"
         android:layout_height="match_parent"
         android:orientation="vertical"
-        tools:context=".Fragments.UpcomingReportingScheduleFragment">
+        tools:context=".fragments.UpcomingReportingScheduleFragment">
 
         <TextView
             android:layout_marginLeft="16dp"

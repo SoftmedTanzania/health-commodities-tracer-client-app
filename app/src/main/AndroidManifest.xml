@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
     package="com.softmed.stockapp">
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
@@ -18,22 +19,23 @@
         android:label="@string/app_name"
         android:supportsRtl="true"
         android:usesCleartextTraffic="true"
-        android:theme="@style/AppTheme">
-        <activity android:name=".Activities.MainActivity">
+        android:theme="@style/AppTheme"
+        tools:ignore="GoogleAppIndexingWarning">
+        <activity android:name=".activities.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".Activities.SelectFacilityActivity" />
+        <activity android:name=".activities.SelectFacilityActivity" />
         <activity
-            android:name=".Activities.DetailActivity"
+            android:name=".activities.DetailActivity"
             android:label="@string/title_activity_detail"
-            android:parentActivityName=".Activities.MainActivity">
+            android:parentActivityName=".activities.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.softmed.stockapp.Activities.MainActivity" />
+                android:value="com.softmed.stockapp.activities.MainActivity" />
         </activity>
 
         <provider
@@ -47,24 +49,30 @@
         </provider>
 
         <activity
-            android:name=".Activities.LoginActivity"
+            android:name=".activities.LoginActivity"
             android:configChanges="locale"
             android:windowSoftInputMode="stateHidden" />
 
         <service
-            android:name=".Services.PostOfficeService"
+            android:name=".services.PostOfficeService"
             android:exported="false" />
 
         <receiver
-            android:name=".Utils.AlarmReceiver"
+            android:name=".utils.AlarmReceiver"
             android:process=":remote" />
 
-        <activity android:name=".Activities.OrdersList" />
+        <activity android:name=".activities.OrdersList" />
 
         <activity
-            android:name=".Activities.ManagedProductsActivity"
+            android:name=".activities.ManagedProductsActivity"
             android:label="@string/title_activity_managed_products"
             android:theme="@style/AppTheme"/>
+
+        <activity
+            android:name=".activities.MessagesActivity"/>
+        <activity
+            android:name=".activities.MessagesDialogsActivity"/>
+
     </application>
 
 </manifest>

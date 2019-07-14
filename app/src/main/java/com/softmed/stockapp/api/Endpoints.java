@@ -1,23 +1,19 @@
 package com.softmed.stockapp.api;
 
-import androidx.room.Transaction;
-
-import com.softmed.stockapp.Dom.entities.Balances;
-import com.softmed.stockapp.Dom.entities.Location;
-import com.softmed.stockapp.Dom.entities.Product;
-import com.softmed.stockapp.Dom.entities.ProductReportingSchedule;
-import com.softmed.stockapp.Dom.entities.TransactionType;
-import com.softmed.stockapp.Dom.entities.Transactions;
-import com.softmed.stockapp.Dom.responces.CategoriesResponse;
-import com.softmed.stockapp.Dom.responces.LoginResponse;
-import com.softmed.stockapp.Dom.responces.ProductReportingScheduleResponse;
-import com.softmed.stockapp.Dom.responces.ProductsPostResponse;
-import com.softmed.stockapp.Dom.responces.UnitsResponse;
+import com.softmed.stockapp.dom.entities.Balances;
+import com.softmed.stockapp.dom.entities.Location;
+import com.softmed.stockapp.dom.entities.Product;
+import com.softmed.stockapp.dom.entities.TransactionType;
+import com.softmed.stockapp.dom.entities.Transactions;
+import com.softmed.stockapp.dom.responces.CategoriesResponse;
+import com.softmed.stockapp.dom.responces.LoginResponse;
+import com.softmed.stockapp.dom.responces.ProductReportingScheduleResponse;
+import com.softmed.stockapp.dom.responces.ProductsPostResponse;
+import com.softmed.stockapp.dom.responces.UnitsResponse;
 
 import java.util.List;
 
 import okhttp3.RequestBody;
-import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;

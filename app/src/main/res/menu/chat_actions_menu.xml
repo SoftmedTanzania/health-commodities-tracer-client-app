@@ -1,0 +1,18 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+      xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/action_delete"
+        android:icon="@drawable/ic_baseline_delete_forever_24px"
+        android:iconTint="@color/white"
+        android:title="@string/action_delete"
+        app:showAsAction="always"/>
+
+    <item
+        android:id="@+id/action_copy"
+        android:icon="@drawable/ic_outline_file_copy_24px"
+        android:iconTint="@color/white"
+        android:title="@string/action_copy"
+        app:showAsAction="always"/>
+
+</menu>

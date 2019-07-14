@@ -190,5 +190,12 @@
         "when a user tries to pick up one of cards.\n\n"
     </string>
     <string name="save">SAVE</string>
+    <string name="hint_enter_a_message">Type a message…</string>
+    <string name="date_header_today">Today</string>
+    <string name="date_header_yesterday">Yesterday</string>
+    <string name="action_delete">Delete</string>
+    <string name="action_copy">Copy</string>
+    <string name="copied_message">Message copied!</string>
+
 
 </resources>

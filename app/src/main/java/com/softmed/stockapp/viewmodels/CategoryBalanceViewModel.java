@@ -4,8 +4,8 @@ import android.app.Application;
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
-import com.softmed.stockapp.Database.AppDatabase;
-import com.softmed.stockapp.Dom.entities.CategoryBalance;
+import com.softmed.stockapp.database.AppDatabase;
+import com.softmed.stockapp.dom.entities.CategoryBalance;
 
 import java.util.List;
 
