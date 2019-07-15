@@ -63,6 +63,7 @@
     <string name="error_loading_products">Error: Loading Products…</string>
     <string name="loading_units">Loading Units…</string>
     <string name="loading_transactions">Loading Transactions…</string>
+    <string name="loading_users">Loading Users…</string>
     <string name="error_loading_transactions">Error: Loading Transactions…</string>
 
 
@@ -196,6 +197,10 @@
     <string name="action_delete">Delete</string>
     <string name="action_copy">Copy</string>
     <string name="copied_message">Message copied!</string>
+    <string name="msg_token_fmt" translatable="false">InstanceID Token: %s</string>
+    <string name="default_notification_channel_id" translatable="false">fcm_default_channel</string>
+    <string name="fcm_message">FCM Message</string>
+
 
 
 </resources>

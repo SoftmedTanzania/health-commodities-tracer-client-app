@@ -10,6 +10,7 @@ import com.softmed.stockapp.dom.responces.LoginResponse;
 import com.softmed.stockapp.dom.responces.ProductReportingScheduleResponse;
 import com.softmed.stockapp.dom.responces.ProductsPostResponse;
 import com.softmed.stockapp.dom.responces.UnitsResponse;
+import com.softmed.stockapp.dom.responces.UserResponse;
 
 import java.util.List;
 
@@ -33,8 +34,8 @@ public class Endpoints {
         @GET("api_locations/")
         Call<List<Location>> getLocations();
 
-        @GET("users")
-        Call<List<LoginResponse>> getAllUsers();
+        @GET("api_user_profile/")
+        Call<List<UserResponse>> getAllUsers();
 
     }
 
@@ -77,7 +78,7 @@ public class Endpoints {
     }
 
     public interface NotificationServices {
-        @POST("save-push-notification-token")
+        @POST("api_profiles/")
         Call<String> registerDevice(@Body RequestBody u);
     }
 

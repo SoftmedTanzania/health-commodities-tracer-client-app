@@ -1,7 +1,7 @@
 package com.softmed.stockapp.fixtures;
 
 
-import com.softmed.stockapp.dom.model.Dialog;
+import com.softmed.stockapp.dom.model.MessageDialog;
 import com.softmed.stockapp.dom.model.Message;
 import com.softmed.stockapp.dom.model.User;
 
@@ -17,8 +17,8 @@ public final class DialogsFixtures extends FixturesData {
         throw new AssertionError();
     }
 
-    public static ArrayList<Dialog> getDialogs() {
-        ArrayList<Dialog> chats = new ArrayList<>();
+    public static ArrayList<MessageDialog> getDialogs() {
+        ArrayList<MessageDialog> chats = new ArrayList<>();
 
         for (int i = 0; i < 20; i++) {
             Calendar calendar = Calendar.getInstance();
@@ -31,9 +31,9 @@ public final class DialogsFixtures extends FixturesData {
         return chats;
     }
 
-    private static Dialog getDialog(int i, Date lastMessageCreatedAt) {
+    private static MessageDialog getDialog(int i, Date lastMessageCreatedAt) {
         ArrayList<User> users = getUsers();
-        return new Dialog(
+        return new MessageDialog(
                 getRandomId(),
                 users.size() > 1 ? groupChatTitles.get(users.size() - 2) : users.get(0).getName(),
                 users.size() > 1 ? groupChatImages.get(users.size() - 2) : getRandomAvatar(),

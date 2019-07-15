@@ -14,10 +14,12 @@ import com.softmed.stockapp.dom.dao.ProductsModelDao;
 import com.softmed.stockapp.dom.dao.TransactionModelDao;
 import com.softmed.stockapp.dom.dao.UnitsModelDao;
 import com.softmed.stockapp.dom.dao.UserInfoModelDao;
+import com.softmed.stockapp.dom.dao.UsersModelDao;
 import com.softmed.stockapp.dom.entities.Balances;
 import com.softmed.stockapp.dom.entities.Category;
 import com.softmed.stockapp.dom.entities.Location;
-import com.softmed.stockapp.dom.entities.Orders;
+import com.softmed.stockapp.dom.entities.MessageRecipients;
+import com.softmed.stockapp.dom.entities.OtherUsers;
 import com.softmed.stockapp.dom.entities.Product;
 import com.softmed.stockapp.dom.entities.ProductReportingSchedule;
 import com.softmed.stockapp.dom.entities.TransactionType;
@@ -31,13 +33,14 @@ import com.softmed.stockapp.dom.entities.UsersInfo;
                 Category.class,
                 Product.class,
                 UsersInfo.class,
+                OtherUsers.class,
                 Location.class,
                 Unit.class,
                 Transactions.class,
                 TransactionType.class,
                 Balances.class,
                 ProductReportingSchedule.class,
-                Orders.class
+                MessageRecipients.class
         },
         version = 4, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
@@ -66,5 +69,7 @@ public abstract class AppDatabase extends RoomDatabase {
     public abstract UserInfoModelDao userInfoDao();
 
     public abstract ProductReportingScheduleModelDao productReportingScheduleModelDao();
+
+    public abstract UsersModelDao usersModelDao();
 
 }

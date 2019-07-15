@@ -7,7 +7,7 @@ import java.util.ArrayList;
 /*
  * Created by troy379 on 04.04.17.
  */
-public class Dialog implements IDialog<Message> {
+public class MessageDialog implements IDialog<Message> {
 
     private String id;
     private String dialogPhoto;
@@ -17,8 +17,8 @@ public class Dialog implements IDialog<Message> {
 
     private int unreadCount;
 
-    public Dialog(String id, String name, String photo,
-                  ArrayList<User> users, Message lastMessage, int unreadCount) {
+    public MessageDialog(String id, String name, String photo,
+                         ArrayList<User> users, Message lastMessage, int unreadCount) {
 
         this.id = id;
         this.dialogName = name;

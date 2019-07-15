@@ -1,0 +1,40 @@
+{
+  "project_info": {
+    "project_number": "858300606575",
+    "firebase_url": "https://health-commodity-tracer-app.firebaseio.com",
+    "project_id": "health-commodity-tracer-app",
+    "storage_bucket": "health-commodity-tracer-app.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:858300606575:android:919b1bcdcac92203",
+        "android_client_info": {
+          "package_name": "com.softmed.stockapp"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "858300606575-3q7mgqltr29n9l49drhi9nt86ghnvuud.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCnUve2duxDoq_4y-GYxDxFQsPp_IUFWHs"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "858300606575-3q7mgqltr29n9l49drhi9nt86ghnvuud.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -9,6 +9,8 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
+
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import android.util.Log;
 import android.view.View;
@@ -21,12 +23,17 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.iid.FirebaseInstanceId;
+import com.google.firebase.iid.InstanceIdResult;
 import com.google.gson.Gson;
 import com.rey.material.widget.ProgressView;
 import com.softmed.stockapp.database.AppDatabase;
 import com.softmed.stockapp.dom.DomConverter;
 import com.softmed.stockapp.dom.entities.Balances;
 import com.softmed.stockapp.dom.entities.Location;
+import com.softmed.stockapp.dom.entities.OtherUsers;
 import com.softmed.stockapp.dom.entities.Product;
 import com.softmed.stockapp.dom.entities.Transactions;
 import com.softmed.stockapp.dom.entities.UsersInfo;
@@ -35,6 +42,7 @@ import com.softmed.stockapp.dom.responces.LoginResponse;
 import com.softmed.stockapp.dom.responces.ProductReportingScheduleResponse;
 import com.softmed.stockapp.dom.responces.UnitsResponse;
 import com.softmed.stockapp.R;
+import com.softmed.stockapp.dom.responces.UserResponse;
 import com.softmed.stockapp.utils.Config;
 import com.softmed.stockapp.utils.LargeDiagonalCutPathDrawable;
 import com.softmed.stockapp.utils.ServiceGenerator;
@@ -72,7 +80,7 @@ public class LoginActivity extends BaseActivity {
     private RelativeLayout credentialCard;
     private MaterialSpinner languageSpinner;
     private String usernameValue = "", passwordValue = "";
-    private String deviceRegistrationId = "";
+    private String token = "";
     private Endpoints.CategoriesService categoriesService;
     private Endpoints.TransactionServices transactionServices;
     private Endpoints.ProductsService productsServices;
@@ -139,7 +147,7 @@ public class LoginActivity extends BaseActivity {
 
         baseDatabase = AppDatabase.getDatabase(this);
 
-        final String[] status = {"English", "Kiswahili"};
+        final String[] status = {"English"};
         ArrayAdapter<String> spinAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, status);
         spinAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
         justInitializing = true;
@@ -149,14 +157,35 @@ public class LoginActivity extends BaseActivity {
             languageSpinner.setSelection(1, false);
         } else {
             justInitializing = true;
-            languageSpinner.setSelection(2, false);
+//            languageSpinner.setSelection(2, false);
         }
         loginButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 if (getAuthenticationCredentials()) {
                     loginProgress.setVisibility(View.VISIBLE);
-                    loginUser();
+                    FirebaseInstanceId.getInstance().getInstanceId()
+                            .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+                                @Override
+                                public void onComplete(@NonNull Task<InstanceIdResult> task) {
+                                    if (!task.isSuccessful()) {
+                                        Log.w(TAG, "getInstanceId failed", task.getException());
+                                        return;
+                                    }
+
+                                    // Get new Instance ID token
+                                    token = task.getResult().getToken();
+
+                                    // Log and toast
+                                    String msg = getString(R.string.msg_token_fmt, token);
+
+                                    Log.d(TAG, msg);
+                                    loginUser();
+                                }
+                            });
+                    // [END retrieve_current_token]
+
+
                 }
             }
         });
@@ -226,11 +255,6 @@ public class LoginActivity extends BaseActivity {
         }
     }
 
-    private boolean isDeviceRegistered() {
-        SharedPreferences pref = getApplicationContext().getSharedPreferences(Config.SHARED_PREF, 0);
-        deviceRegistrationId = pref.getString("regId", null);
-        return deviceRegistrationId != null && !deviceRegistrationId.isEmpty();
-    }
 
     @SuppressLint("StaticFieldLeak")
     private void loginUser() {
@@ -334,7 +358,7 @@ public class LoginActivity extends BaseActivity {
                             @Override
                             protected void onPostExecute(Void aVoid) {
                                 super.onPostExecute(aVoid);
-                                sendRegistrationToServer(deviceRegistrationId, userInfo.getId() + "");
+                                sendRegistrationToServer(token, userInfo.getId() + "");
                             }
                         }.execute();
 
@@ -362,17 +386,14 @@ public class LoginActivity extends BaseActivity {
 
     private void sendRegistrationToServer(String token, String userUiid) {
         new AddUserData(baseDatabase).execute(userInfo);
-
-        SessionManager sess = new SessionManager(getApplicationContext());
-
         String datastream = "";
         JSONObject object = new JSONObject();
         RequestBody body;
 
         try {
-            object.put("userUiid", userUiid);
-            object.put("googlePushNotificationToken", token);
-            object.put("userType", 1);
+            object.put("user", userUiid);
+            object.put("google_push_notification_token", token);
+            object.put("location", session.getFacilityId());
 
             datastream = object.toString();
             Log.d("FCMService", "data " + datastream);
@@ -545,6 +566,40 @@ public class LoginActivity extends BaseActivity {
 
                 @Override
                 public void onFailure(Call<List<Transactions>> call, Throwable t) {
+                    //Error!
+                    Log.e("", "An error encountered!");
+                    Log.d("TransactionCheck", "failed with " + t.getMessage() + " " + t.toString());
+                    loginMessages.setText(getResources().getString(R.string.error_loading_transactions));
+                    loginMessages.setTextColor(getResources().getColor(R.color.color_error));
+                }
+            });
+        }
+    }
+
+    private void callUsers() {
+        loginMessages.setText(getResources().getString(R.string.loading_users));
+        loginMessages.setTextColor(getResources().getColor(R.color.color_primary));
+        if (session.isLoggedIn()) {
+
+            Log.d(TAG, "userId  = " + session.getUserUUID());
+
+            Call<List<UserResponse>> call = loginService.getAllUsers();
+            call.enqueue(new Callback<List<UserResponse>>() {
+
+                @Override
+                public void onResponse(Call<List<UserResponse>> call, Response<List<UserResponse>> response) {
+
+
+                    Log.d(TAG, "Users Code = " + response.code());
+                    //Here will handle the responce from the server
+                    Log.d("Received Users", new Gson().toJson(response.body()));
+
+                    addUsersAsyncTask task = new addUsersAsyncTask(response.body());
+                    task.execute();
+                }
+
+                @Override
+                public void onFailure(Call<List<UserResponse>> call, Throwable t) {
                     //Error!
                     Log.e("", "An error encountered!");
                     Log.d("TransactionCheck", "failed with " + t.getMessage() + " " + t.toString());
@@ -783,6 +838,50 @@ public class LoginActivity extends BaseActivity {
         }
     }
 
+    class addUsersAsyncTask extends AsyncTask<Void, Void, Void> {
+
+        List<UserResponse> results;
+
+        addUsersAsyncTask(List<UserResponse> responces) {
+            this.results = responces;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            try {
+                for (UserResponse user : results) {
+                    Log.d(TAG, "User Name : " + user.getFirstName());
+
+                    OtherUsers otherUsers = new OtherUsers();
+                    otherUsers.setId(user.getId());
+                    otherUsers.setFirstName(user.getFirstName());
+                    otherUsers.setMiddleName(user.getMiddleName());
+                    otherUsers.setSurname(user.getSurname());
+                    otherUsers.setHealth_facility(user.getProfile().getHealthFacility());
+
+                    baseDatabase.usersModelDao().addUser(otherUsers);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            callLocations();
+        }
+    }
+
+
+
     class addTransactionsAsyncTask extends AsyncTask<Void, Void, Void> {
 
         List<Transactions> results;
@@ -814,9 +913,10 @@ public class LoginActivity extends BaseActivity {
         @Override
         protected void onPostExecute(Void aVoid) {
             super.onPostExecute(aVoid);
-            callLocations();
+            callUsers();
         }
     }
+
 
     class addBalancesAsyncTask extends AsyncTask<Void, Void, Void> {
 

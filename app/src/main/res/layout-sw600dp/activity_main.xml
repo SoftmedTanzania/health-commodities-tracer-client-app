@@ -79,7 +79,7 @@
                                 android:textStyle="bold"
                                 android:gravity="center"
                                 android:textColor="#FFF"
-                                android:textSize="12sp" />
+                                android:textSize="14sp" />
                         </RelativeLayout>
 
                         <tarek360.animated.icons.AnimatedIconView

@@ -8,7 +8,7 @@ import android.widget.ImageView;
 import androidx.appcompat.app.AppCompatActivity;
 
 import com.bumptech.glide.Glide;
-import com.softmed.stockapp.dom.model.Dialog;
+import com.softmed.stockapp.dom.model.MessageDialog;
 import com.softmed.stockapp.R;
 import com.softmed.stockapp.utils.AppUtils;
 import com.softmed.stockapp.fixtures.DialogsFixtures;
@@ -20,10 +20,10 @@ import com.stfalcon.chatkit.utils.DateFormatter;
 import java.util.Date;
 
 public class MessagesDialogsActivity extends AppCompatActivity
-        implements DialogsListAdapter.OnDialogClickListener<Dialog>,
-        DialogsListAdapter.OnDialogLongClickListener<Dialog>,DateFormatter.Formatter {
+        implements DialogsListAdapter.OnDialogClickListener<MessageDialog>,
+        DialogsListAdapter.OnDialogLongClickListener<MessageDialog>,DateFormatter.Formatter {
     protected ImageLoader imageLoader;
-    protected DialogsListAdapter<Dialog> dialogsAdapter;
+    protected DialogsListAdapter<MessageDialog> dialogsAdapter;
 
     public static void open(Context context) {
         context.startActivity(new Intent(context, MessagesDialogsActivity.class));
@@ -48,10 +48,10 @@ public class MessagesDialogsActivity extends AppCompatActivity
     }
 
     @Override
-    public void onDialogLongClick(Dialog dialog) {
+    public void onDialogLongClick(MessageDialog messageDialog) {
         AppUtils.showToast(
                 this,
-                dialog.getDialogName(),
+                messageDialog.getDialogName(),
                 false);
     }
 
@@ -79,7 +79,7 @@ public class MessagesDialogsActivity extends AppCompatActivity
 
 
     @Override
-    public void onDialogClick(Dialog dialog) {
+    public void onDialogClick(MessageDialog messageDialog) {
         MessagesActivity.open(this);
     }
 }
