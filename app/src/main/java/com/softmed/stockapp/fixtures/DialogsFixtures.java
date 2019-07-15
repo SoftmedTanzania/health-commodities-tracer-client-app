@@ -1,8 +1,8 @@
 package com.softmed.stockapp.fixtures;
 
 
+import com.softmed.stockapp.dom.model.IMessageDTO;
 import com.softmed.stockapp.dom.model.MessageDialog;
-import com.softmed.stockapp.dom.model.Message;
 import com.softmed.stockapp.dom.model.User;
 
 import java.util.ArrayList;
@@ -61,8 +61,8 @@ public final class DialogsFixtures extends FixturesData {
                 getRandomBoolean());
     }
 
-    private static Message getMessage(final Date date) {
-        return new Message(
+    private static IMessageDTO getMessage(final Date date) {
+        return new IMessageDTO(
                 getRandomId(),
                 getUser(),
                 getRandomMessage(),

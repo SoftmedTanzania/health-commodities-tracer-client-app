@@ -7,24 +7,24 @@ import java.util.ArrayList;
 /*
  * Created by troy379 on 04.04.17.
  */
-public class MessageDialog implements IDialog<Message> {
+public class MessageDialog implements IDialog<IMessageDTO> {
 
     private String id;
     private String dialogPhoto;
     private String dialogName;
     private ArrayList<User> users;
-    private Message lastMessage;
+    private IMessageDTO lastIMessageDTO;
 
     private int unreadCount;
 
     public MessageDialog(String id, String name, String photo,
-                         ArrayList<User> users, Message lastMessage, int unreadCount) {
+                         ArrayList<User> users, IMessageDTO lastIMessageDTO, int unreadCount) {
 
         this.id = id;
         this.dialogName = name;
         this.dialogPhoto = photo;
         this.users = users;
-        this.lastMessage = lastMessage;
+        this.lastIMessageDTO = lastIMessageDTO;
         this.unreadCount = unreadCount;
     }
 
@@ -49,13 +49,13 @@ public class MessageDialog implements IDialog<Message> {
     }
 
     @Override
-    public Message getLastMessage() {
-        return lastMessage;
+    public IMessageDTO getLastMessage() {
+        return lastIMessageDTO;
     }
 
     @Override
-    public void setLastMessage(Message lastMessage) {
-        this.lastMessage = lastMessage;
+    public void setLastMessage(IMessageDTO lastIMessageDTO) {
+        this.lastIMessageDTO = lastIMessageDTO;
     }
 
     @Override

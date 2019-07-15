@@ -78,6 +78,7 @@ dependencies {
     implementation 'com.google.firebase:firebase-iid:19.0.1'
     implementation 'com.google.firebase:firebase-messaging:19.0.1'
     implementation 'android.arch.work:work-runtime:1.0.1'
+    implementation 'de.hdodenhof:circleimageview:2.2.0'
 }
 
 repositories {

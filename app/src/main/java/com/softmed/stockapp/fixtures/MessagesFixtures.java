@@ -1,7 +1,7 @@
 package com.softmed.stockapp.fixtures;
 
 
-import com.softmed.stockapp.dom.model.Message;
+import com.softmed.stockapp.dom.model.IMessageDTO;
 import com.softmed.stockapp.dom.model.User;
 
 import java.util.ArrayList;
@@ -16,48 +16,48 @@ public final class MessagesFixtures extends FixturesData {
         throw new AssertionError();
     }
 
-    public static Message getImageMessage() {
-        Message message = new Message(getRandomId(), getUser(), null);
-        message.setImage(new Message.Image(getRandomImage()));
-        return message;
+    public static IMessageDTO getImageMessage() {
+        IMessageDTO IMessageDTO = new IMessageDTO(getRandomId(), getUser(), null);
+        IMessageDTO.setImage(new IMessageDTO.Image(getRandomImage()));
+        return IMessageDTO;
     }
 
-    public static Message getVoiceMessage() {
-        Message message = new Message(getRandomId(), getUser(), null);
-        message.setVoice(new Message.Voice("http://example.com", rnd.nextInt(200) + 30));
-        return message;
+    public static IMessageDTO getVoiceMessage() {
+        IMessageDTO IMessageDTO = new IMessageDTO(getRandomId(), getUser(), null);
+        IMessageDTO.setVoice(new IMessageDTO.Voice("http://example.com", rnd.nextInt(200) + 30));
+        return IMessageDTO;
     }
 
-    public static Message getTextMessage() {
+    public static IMessageDTO getTextMessage() {
         return getTextMessage(getRandomMessage());
     }
 
-    public static Message getTextMessage(String text) {
-        return new Message(getRandomId(), getUser(), text);
+    public static IMessageDTO getTextMessage(String text) {
+        return new IMessageDTO(getRandomId(), getUser(), text);
     }
 
-    public static ArrayList<Message> getMessages(Date startDate) {
-        ArrayList<Message> messages = new ArrayList<>();
+    public static ArrayList<IMessageDTO> getMessages(Date startDate) {
+        ArrayList<IMessageDTO> IMessageDTOS = new ArrayList<>();
         for (int i = 0; i < 10/*days count*/; i++) {
             int countPerDay = rnd.nextInt(5) + 1;
 
             for (int j = 0; j < countPerDay; j++) {
-                Message message;
+                IMessageDTO IMessageDTO;
                 if (i % 2 == 0 && j % 3 == 0) {
-                    message = getImageMessage();
+                    IMessageDTO = getImageMessage();
                 } else {
-                    message = getTextMessage();
+                    IMessageDTO = getTextMessage();
                 }
 
                 Calendar calendar = Calendar.getInstance();
                 if (startDate != null) calendar.setTime(startDate);
                 calendar.add(Calendar.DAY_OF_MONTH, -(i * i + 1));
 
-                message.setCreatedAt(calendar.getTime());
-                messages.add(message);
+                IMessageDTO.setCreatedAt(calendar.getTime());
+                IMessageDTOS.add(IMessageDTO);
             }
         }
-        return messages;
+        return IMessageDTOS;
     }
 
     private static User getUser() {

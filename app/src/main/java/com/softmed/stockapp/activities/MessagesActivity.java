@@ -11,7 +11,7 @@ import android.view.MenuItem;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 
-import com.softmed.stockapp.dom.model.Message;
+import com.softmed.stockapp.dom.model.IMessageDTO;
 import com.softmed.stockapp.R;
 import com.softmed.stockapp.utils.AppUtils;
 import com.softmed.stockapp.fixtures.MessagesFixtures;
@@ -37,7 +37,7 @@ public class MessagesActivity extends AppCompatActivity
 
     protected final String senderId = "0";
     protected ImageLoader imageLoader;
-    protected MessagesListAdapter<Message> messagesAdapter;
+    protected MessagesListAdapter<IMessageDTO> messagesAdapter;
 
     private Menu menu;
     private int selectionCount;
@@ -154,25 +154,25 @@ public class MessagesActivity extends AppCompatActivity
         new Handler().postDelayed(new Runnable() { //imitation of internet connection
             @Override
             public void run() {
-                ArrayList<Message> messages = MessagesFixtures.getMessages(lastLoadedDate);
-                lastLoadedDate = messages.get(messages.size() - 1).getCreatedAt();
-                messagesAdapter.addToEnd(messages, false);
+                ArrayList<IMessageDTO> IMessageDTOS = MessagesFixtures.getMessages(lastLoadedDate);
+                lastLoadedDate = IMessageDTOS.get(IMessageDTOS.size() - 1).getCreatedAt();
+                messagesAdapter.addToEnd(IMessageDTOS, false);
             }
         }, 1000);
     }
 
-    private MessagesListAdapter.Formatter<Message> getMessageStringFormatter() {
-        return new MessagesListAdapter.Formatter<Message>() {
+    private MessagesListAdapter.Formatter<IMessageDTO> getMessageStringFormatter() {
+        return new MessagesListAdapter.Formatter<IMessageDTO>() {
             @Override
-            public String format(Message message) {
+            public String format(IMessageDTO IMessageDTO) {
                 String createdAt = new SimpleDateFormat("MMM d, EEE 'at' h:mm a", Locale.getDefault())
-                        .format(message.getCreatedAt());
+                        .format(IMessageDTO.getCreatedAt());
 
-                String text = message.getText();
+                String text = IMessageDTO.getText();
                 if (text == null) text = "[attachment]";
 
                 return String.format(Locale.getDefault(), "%s: %s (%s)",
-                        message.getUser().getName(), text, createdAt);
+                        IMessageDTO.getUser().getName(), text, createdAt);
             }
         };
     }

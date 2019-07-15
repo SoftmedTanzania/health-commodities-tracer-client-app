@@ -1,5 +1,6 @@
 package com.softmed.stockapp.dom.dao;
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
@@ -17,7 +18,10 @@ import static androidx.room.OnConflictStrategy.REPLACE;
 public interface UsersModelDao {
 
     @Query("select * from OtherUsers ")
-    List<OtherUsers> getUsers();
+    LiveData<List<OtherUsers>> getUsers();
+
+    @Query("select * from OtherUsers WHERE id = :id ")
+    OtherUsers getUser(int id);
 
 
     @Insert(onConflict = REPLACE)
