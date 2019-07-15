@@ -196,6 +196,7 @@
     <string name="date_header_yesterday">Yesterday</string>
     <string name="action_delete">Delete</string>
     <string name="action_copy">Copy</string>
+    <string name="action_cancel">Cancel</string>
     <string name="copied_message">Message copied!</string>
     <string name="msg_token_fmt" translatable="false">InstanceID Token: %s</string>
     <string name="default_notification_channel_id" translatable="false">fcm_default_channel</string>
