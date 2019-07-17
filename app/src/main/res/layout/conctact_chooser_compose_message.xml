@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/bottom_sheet"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    app:behavior_hideable="false"
+    app:elevation="2dp"
+    app:behavior_peekHeight="90dp"
+    app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/fab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="@dimen/fab_margin"
+        android:layout_alignParentRight="true"
+        android:text="COMPOSE"
+        app:backgroundTint="@color/color_secondary_variant"
+        app:icon="@drawable/baseline_done_white_48dp"
+        android:layout_alignParentEnd="true"
+        android:layout_marginEnd="@dimen/fab_margin" />
+
+    <LinearLayout
+        android:padding="16dp"
+        android:id="@+id/content"
+        android:layout_marginTop="24dp"
+        android:background="#f7f7f7"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="48dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginBottom="16dp"
+            android:text="Compose"
+            android:textColor="#000000"
+            android:fontFamily="@font/muli_bold"
+            android:textSize="24sp"
+            android:textStyle="bold" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:layout_marginLeft="8dp"
+                android:text="To:"/>
+
+            <com.google.android.material.chip.ChipGroup
+                android:id="@+id/recipients_entry_chip_group"
+                android:layout_width="match_parent"
+                android:layout_margin="16dp"
+                android:layout_height="wrap_content"/>
+        </LinearLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="12dp"
+            android:layout_marginLeft="8dp"
+            android:layout_marginRight="8dp"
+            android:background="#5d5d5d" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/subject_input_layout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="bottom"
+            android:layout_margin="8dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                style="@style/ProductDetailsTextInputEditText"
+                android:fontFamily="@font/muli_bold_italic"
+                android:hint="Subject"
+                android:lines="1"
+                android:textSize="14sp" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/message_text_input_layout"
+            style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            app:counterEnabled="true"
+            app:counterMaxLength="1000"
+            android:layout_gravity="bottom"
+            android:layout_margin="8dp">
+
+            <com.google.android.material.textfield.TextInputEditText
+                style="@style/ProductDetailsTextInputEditText"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/muli_bold_italic"
+                android:hint="Compose Message"
+                android:minLines="10"
+                android:maxLines="15"
+                android:maxLength="1000"
+                android:gravity="top|start"
+                android:inputType="textCapSentences|textNoSuggestions|textMultiLine"
+                android:textSize="14sp" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:layout_marginTop="12dp"
+            android:layout_marginBottom="12dp"
+            android:background="#5d5d5d" />
+
+
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/send_button"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:background="#000"
+            android:text="SEND"
+            android:textColor="#fff" />
+
+    </LinearLayout>
+
+
+
+</RelativeLayout>

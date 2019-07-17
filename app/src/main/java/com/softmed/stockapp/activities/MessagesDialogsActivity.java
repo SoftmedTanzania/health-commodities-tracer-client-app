@@ -20,6 +20,7 @@ import androidx.lifecycle.ViewModelProviders;
 import com.amulyakhare.textdrawable.TextDrawable;
 import com.google.gson.Gson;
 import com.softmed.stockapp.R;
+import com.softmed.stockapp.adapters.DialogsListAdapter;
 import com.softmed.stockapp.database.AppDatabase;
 import com.softmed.stockapp.dom.entities.Message;
 import com.softmed.stockapp.dom.entities.MessageRecipients;
@@ -27,13 +28,11 @@ import com.softmed.stockapp.dom.entities.OtherUsers;
 import com.softmed.stockapp.dom.model.IMessageDTO;
 import com.softmed.stockapp.dom.model.MessageDialog;
 import com.softmed.stockapp.dom.model.User;
-import com.softmed.stockapp.fixtures.DialogsFixtures;
 import com.softmed.stockapp.utils.AppUtils;
 import com.softmed.stockapp.utils.SessionManager;
 import com.softmed.stockapp.viewmodels.MessageListViewModel;
 import com.stfalcon.chatkit.commons.ImageLoader;
 import com.stfalcon.chatkit.dialogs.DialogsList;
-import com.stfalcon.chatkit.dialogs.DialogsListAdapter;
 import com.stfalcon.chatkit.utils.DateFormatter;
 
 import java.util.ArrayList;
@@ -47,7 +46,7 @@ public class MessagesDialogsActivity extends AppCompatActivity
         DialogsListAdapter.OnDialogLongClickListener<MessageDialog>, DateFormatter.Formatter {
     private static final String TAG = MessagesDialogsActivity.class.getSimpleName();
     protected ImageLoader imageLoader;
-    protected DialogsListAdapter<MessageDialog> dialogsAdapter;
+    protected DialogsListAdapter dialogsAdapter;
     private DialogsList dialogsList;
     private AppDatabase baseDatabase;
     private SessionManager session;
@@ -79,16 +78,23 @@ public class MessagesDialogsActivity extends AppCompatActivity
 
                 Log.d(TAG, "Image Text = " + url);
                 Log.d(TAG, "Payload = " + new Gson().toJson(payload));
-                TextDrawable drawable = TextDrawable.builder()
+
+                TextDrawable drawable = null;
+
+                int spValue = 18;
+                if (payload != null)
+                    spValue = Integer.parseInt(payload.toString());
+
+
+                drawable = TextDrawable.builder()
                         .beginConfig()
                         .textColor(Color.WHITE)
                         .useFont(muliBoldTypeface)
-                        .fontSize(32) /* size in px */
+                        .fontSize(AppUtils.spToPx(spValue, MessagesDialogsActivity.this)) /* size in px */
                         .bold()
                         .toUpperCase()
                         .endConfig()
                         .buildRect(url, getResources().getColor(R.color.color_primary));
-
 
 
                 imageView.setImageDrawable(drawable);
@@ -134,15 +140,12 @@ public class MessagesDialogsActivity extends AppCompatActivity
                     @Override
                     protected void onPostExecute(List<MessageDialog> messageDialogs) {
                         super.onPostExecute(messageDialogs);
-
-
-                        dialogsAdapter = new DialogsListAdapter<>(imageLoader);
+                        dialogsAdapter = new DialogsListAdapter(R.layout.item_message_dialog, DialogsListAdapter.DialogViewHolder.class, imageLoader);
                         dialogsAdapter.setItems(messageDialogs);
-//                        dialogsAdapter.setItems(DialogsFixtures.getDialogs());
                         dialogsAdapter.setOnDialogClickListener(MessagesDialogsActivity.this);
                         dialogsAdapter.setOnDialogLongClickListener(MessagesDialogsActivity.this);
                         dialogsAdapter.setDatesFormatter(MessagesDialogsActivity.this);
-                        dialogsList.setAdapter(dialogsAdapter);
+                        dialogsList.setAdapter(dialogsAdapter, false);
 
 
                     }
@@ -181,16 +184,6 @@ public class MessagesDialogsActivity extends AppCompatActivity
         }
     }
 
-    private void initAdapter() {
-        this.dialogsAdapter = new DialogsListAdapter<>(this.imageLoader);
-        this.dialogsAdapter.setItems(DialogsFixtures.getDialogs());
-        this.dialogsAdapter.setOnDialogClickListener(this);
-        this.dialogsAdapter.setOnDialogLongClickListener(this);
-        this.dialogsAdapter.setDatesFormatter(this);
-        dialogsList.setAdapter(this.dialogsAdapter);
-    }
-
-
     private MessageDialog getDialog(Message message) {
 
         Log.d(TAG, "creator id = " + message.getCreatorId());
@@ -214,17 +207,17 @@ public class MessagesDialogsActivity extends AppCompatActivity
 
 
         return new MessageDialog(
-                message.getParentMessageId(),
-                users.size() > 1 ? getGroupNames(users) : users.get(0).getName(),
+                message.getParentMessageId().equals("0") ? message.getId() : message.getParentMessageId(),
+                users.size() > 1 ? message.getSubject() : users.get(0).getName() + " - " + message.getSubject(),
                 users.size() > 1 ? getGroupInitials(users) : getInitials(users.get(0)),
                 users, getLastMessage(message), 0, message.getParentMessageId());
 
 
     }
 
-    private String getGroupNames(ArrayList<User> users ){
+    private String getGroupNames(ArrayList<User> users) {
         String names = "";
-        for(User user:users){
+        for (User user : users) {
             names.concat(user.getName());
             names.concat(" ");
         }
@@ -232,17 +225,16 @@ public class MessagesDialogsActivity extends AppCompatActivity
 
     }
 
-    private String getInitials(User user){
+    private String getInitials(User user) {
         String[] names = user.getName().split(" ");
         return names[0].charAt(0) + "" + names[1].charAt(0);
 
     }
 
 
-
-    private String getGroupInitials(ArrayList<User> users){
-        String names="";
-        for(User user:users){
+    private String getGroupInitials(ArrayList<User> users) {
+        String names = "";
+        for (User user : users) {
             String[] namesArray = user.getName().split(" ");
             names = namesArray[0].charAt(0) + "" + namesArray[1].charAt(0);
         }
@@ -276,6 +268,19 @@ public class MessagesDialogsActivity extends AppCompatActivity
         for (User user : messageDialog.getUsers()) {
             userIds.add(Integer.parseInt(user.getId()));
         }
-        MessagesActivity.open(this, messageDialog.getParentMessageId(), userIds);
+
+        Log.d(TAG, "Message DIalog = " + new Gson().toJson(messageDialog));
+
+        String parentMessageId;
+        if (messageDialog.getParentMessageId().equals("0"))
+            parentMessageId = messageDialog.getId();
+        else
+            parentMessageId = messageDialog.getParentMessageId();
+
+
+        Log.d(TAG, "Parent Message Id = " + parentMessageId);
+        MessagesActivity.open(this, parentMessageId, userIds);
     }
+
+
 }

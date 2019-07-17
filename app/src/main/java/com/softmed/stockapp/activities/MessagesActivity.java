@@ -3,17 +3,20 @@ package com.softmed.stockapp.activities;
 import android.annotation.SuppressLint;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ImageView;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
+import androidx.core.content.res.ResourcesCompat;
 
+import com.amulyakhare.textdrawable.TextDrawable;
 import com.google.gson.Gson;
 import com.softmed.stockapp.R;
 import com.softmed.stockapp.database.AppDatabase;
@@ -25,9 +28,7 @@ import com.softmed.stockapp.dom.model.IMessageDTO;
 import com.softmed.stockapp.dom.model.User;
 import com.softmed.stockapp.fixtures.MessagesFixtures;
 import com.softmed.stockapp.utils.AppUtils;
-import com.softmed.stockapp.utils.Calendars;
 import com.softmed.stockapp.utils.SessionManager;
-import com.softmed.stockapp.viewmodels.MessageListViewModel;
 import com.stfalcon.chatkit.commons.ImageLoader;
 import com.stfalcon.chatkit.messages.MessageInput;
 import com.stfalcon.chatkit.messages.MessagesList;
@@ -57,22 +58,22 @@ public class MessagesActivity extends AppCompatActivity
     private int selectionCount;
     private Date lastLoadedDate;
     private MessagesList messagesList;
-    private  SessionManager sessionManager;
+    private SessionManager sessionManager;
     private ArrayList<Integer> usersIds;
     private AppDatabase appDatabase;
     private User currentUser;
 
-    public static void open(Context context, String parentMessageId,ArrayList<Integer> usersIds) {
+    public static void open(Context context, String parentMessageId, ArrayList<Integer> usersIds) {
         Intent intent = new Intent(context, MessagesActivity.class);
         intent.putExtra("parentMessageId", parentMessageId);
-        intent.putIntegerArrayListExtra("userIds",usersIds);
+        intent.putIntegerArrayListExtra("userIds", usersIds);
         context.startActivity(intent);
     }
 
     @Override
     protected void onStart() {
         super.onStart();
-        messagesAdapter.addToStart(MessagesFixtures.getTextMessage(), true);
+        loadMessages();
     }
 
     @Override
@@ -83,7 +84,30 @@ public class MessagesActivity extends AppCompatActivity
         sessionManager = new SessionManager(this);
         appDatabase = AppDatabase.getDatabase(MessagesActivity.this);
 
+        imageLoader = new ImageLoader() {
+            @Override
+            public void loadImage(ImageView imageView, String url, Object payload) {
+
+                Typeface muliBoldTypeface = ResourcesCompat.getFont(MessagesActivity.this, R.font.muli_bold);
+
+                Log.d(TAG, "Image Text = " + url);
+                Log.d(TAG, "Payload = " + new Gson().toJson(payload));
+                TextDrawable drawable = TextDrawable.builder()
+                        .beginConfig()
+                        .textColor(Color.WHITE)
+                        .useFont(muliBoldTypeface)
+                        .fontSize(32) /* size in px */
+                        .bold()
+                        .toUpperCase()
+                        .endConfig()
+                        .buildRect(url, getResources().getColor(R.color.color_primary));
+                imageView.setImageDrawable(drawable);
+            }
+        };
+
         parentMessageId = getIntent().getStringExtra("parentMessageId");
+        Log.d(TAG, "parent message Id = " + parentMessageId);
+
         usersIds = getIntent().getIntegerArrayListExtra("userIds");
         loadCurrentUser();
 
@@ -101,11 +125,8 @@ public class MessagesActivity extends AppCompatActivity
     @SuppressLint("StaticFieldLeak")
     @Override
     public boolean onSubmit(CharSequence input) {
-
-        Log.d(TAG,"saving new message");
-
-
-        Log.d(TAG,"parent message Id = "+parentMessageId);
+        Log.d(TAG, "saving new message");
+        Log.d(TAG, "parent message Id = " + parentMessageId);
 
         Message newMessage = new Message();
         newMessage.setId(UUID.randomUUID().toString());
@@ -116,22 +137,22 @@ public class MessagesActivity extends AppCompatActivity
         if (parentMessageId == null) {
             newMessage.setParentMessageId("0");
             parentMessageId = newMessage.getId();
-        }else{
+        } else {
             newMessage.setParentMessageId(parentMessageId);
         }
 
         newMessage.setSubject("");
 
 
-        new AsyncTask<Message,Void,Void>(){
+        new AsyncTask<Message, Void, Void>() {
 
             @Override
             protected Void doInBackground(Message... newMessages) {
 
                 appDatabase.messagesModelDao().addMessage(newMessages[0]);
-                Log.d(TAG,"saving new message = "+new Gson().toJson(newMessages[0]));
-                for(Integer userId:usersIds){
-                    if(userId.equals(String.valueOf(sessionManager.getUserUUID())))
+                Log.d(TAG, "saving new message = " + new Gson().toJson(newMessages[0]));
+                for (Integer userId : usersIds) {
+                    if (userId.equals(String.valueOf(sessionManager.getUserUUID())))
                         continue;
                     MessageRecipients messageRecipients = new MessageRecipients();
                     messageRecipients.setId(UUID.randomUUID().toString());
@@ -141,9 +162,8 @@ public class MessagesActivity extends AppCompatActivity
 
                     appDatabase.messageRecipientsModelDao().addRecipient(messageRecipients);
 
-                    Log.d(TAG,"saving new message recipients = "+new Gson().toJson(messageRecipients));
+                    Log.d(TAG, "saving new message recipients = " + new Gson().toJson(messageRecipients));
                 }
-
 
 
                 return null;
@@ -156,7 +176,7 @@ public class MessagesActivity extends AppCompatActivity
         }.execute(newMessage);
 
 
-        IMessageDTO iMessageDTO = new IMessageDTO(newMessage.getId(),currentUser,newMessage.getMessageBody(),new Date(newMessage.getCreateDate()));
+        IMessageDTO iMessageDTO = new IMessageDTO(newMessage.getId(), currentUser, newMessage.getMessageBody(), new Date(newMessage.getCreateDate()));
         messagesAdapter.addToStart(iMessageDTO, true);
         return true;
     }
@@ -219,9 +239,9 @@ public class MessagesActivity extends AppCompatActivity
 
     @Override
     public void onLoadMore(int page, int totalItemsCount) {
-        Log.i("TAG", "onLoadMore: " + page + " " + totalItemsCount);
+        Log.i(TAG, "onLoadMore: " + page + " " + totalItemsCount);
         if (totalItemsCount == 0) {
-            loadMessages();
+//            loadMessages();
         }
     }
 
@@ -232,24 +252,31 @@ public class MessagesActivity extends AppCompatActivity
         menu.findItem(R.id.action_copy).setVisible(count > 0);
     }
 
+    @SuppressLint("StaticFieldLeak")
     protected void loadMessages() {
-        MessageListViewModel messageListViewModel = ViewModelProviders.of(this).get(MessageListViewModel.class);
-        messageListViewModel.getMessagesByThread(parentMessageId).observe(this, new Observer<List<MessageUserDTO>>() {
+        new AsyncTask<Void, Void, List<MessageUserDTO>>() {
             @Override
-            public void onChanged(List<MessageUserDTO> messages) {
-
-
-//                ArrayList<IMessageDTO> IMessageDTOS = MessagesFixtures.getMessages(lastLoadedDate);
-                ArrayList<IMessageDTO> IMessageDTOS = new ArrayList<>();
-                for (MessageUserDTO messageUserDTO : messages) {
-                    IMessageDTOS.add(toIMessageDTO(messageUserDTO));
-                }
-
-                if (IMessageDTOS.size() > 0)
-                    lastLoadedDate = IMessageDTOS.get(IMessageDTOS.size() - 1).getCreatedAt();
-                messagesAdapter.addToEnd(IMessageDTOS, false);
+            protected List<MessageUserDTO> doInBackground(Void... voids) {
+                return appDatabase.messagesModelDao().getMessageByThread(parentMessageId);
             }
-        });
+
+            @Override
+            protected void onPostExecute(List<MessageUserDTO> messages) {
+                super.onPostExecute(messages);
+                if (messages != null) {
+                    ArrayList<IMessageDTO> IMessageDTOS = new ArrayList<>();
+                    for (MessageUserDTO messageUserDTO : messages) {
+                        IMessageDTOS.add(toIMessageDTO(messageUserDTO));
+                    }
+
+                    if (IMessageDTOS.size() > 0)
+                        lastLoadedDate = IMessageDTOS.get(IMessageDTOS.size() - 1).getCreatedAt();
+                    messagesAdapter.addToEnd(IMessageDTOS, false);
+                }
+            }
+        }.execute();
+
+
     }
 
     private MessagesListAdapter.Formatter<IMessageDTO> getMessageStringFormatter() {
@@ -269,18 +296,19 @@ public class MessagesActivity extends AppCompatActivity
     }
 
     public IMessageDTO toIMessageDTO(MessageUserDTO messageUserDTO) {
-        User user = new User(String.valueOf(messageUserDTO.getUserId()), messageUserDTO.getFirstName() + " " + messageUserDTO.getSurname(), null, false);
+        User user = new User(String.valueOf(messageUserDTO.getUserId()), messageUserDTO.getFirstName() + " " + messageUserDTO.getSurname(),
+                messageUserDTO.getFirstName().charAt(0) + "" + messageUserDTO.getSurname().charAt(0), false);
         return new IMessageDTO(String.valueOf(messageUserDTO.getId()), user, messageUserDTO.getMessageBody(), new Date(messageUserDTO.getCreateDate()));
     }
 
     @SuppressLint("StaticFieldLeak")
-    private void loadCurrentUser(){
-        new AsyncTask<Void,Void,List<User>>(){
+    private void loadCurrentUser() {
+        new AsyncTask<Void, Void, List<User>>() {
 
             @Override
             protected List<User> doInBackground(Void... voids) {
                 OtherUsers user = appDatabase.usersModelDao().getUser(Integer.parseInt(sessionManager.getUserUUID()));
-                currentUser = new User(String.valueOf(user.getId()),user.getFirstName()+" "+user.getSurname(),null,false);
+                currentUser = new User(String.valueOf(user.getId()), user.getFirstName() + " " + user.getSurname(), null, false);
                 return null;
             }
 

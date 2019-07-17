@@ -15,6 +15,7 @@ import com.softmed.stockapp.R;
 import com.softmed.stockapp.activities.MessagesActivity;
 import com.softmed.stockapp.database.AppDatabase;
 import com.softmed.stockapp.dom.entities.OtherUsers;
+import com.softmed.stockapp.dom.model.User;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -27,13 +28,18 @@ import java.util.List;
 public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ContactsViewHolder> {
     private List<OtherUsers> contacts;
     private Context context;
+    private final OnItemClickListener listener;
 
-    public ContactAdapter(Context context, List<OtherUsers> contacts) {
+    public ContactAdapter(Context context, List<OtherUsers> contacts,OnItemClickListener listener) {
         this.contacts = contacts;
         this.context = context;
+        this.listener = listener;
 
     }
 
+    public interface OnItemClickListener {
+        void onItemClick(OtherUsers user);
+    }
 
     @NonNull
     @Override
@@ -49,29 +55,10 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.Contacts
         String username = user.getFirstName() + " " + user.getSurname();
         viewHolder.setUsername(username);
         viewHolder.imageViewContactDisplay.setImageResource(R.drawable.facebook_avatar);
+
         viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
-            @SuppressLint("StaticFieldLeak")
-            @Override
-            public void onClick(View view) {
-
-                new AsyncTask<Void,Void,String>(){
-
-                    @Override
-                    protected String doInBackground(Void... voids) {
-                        return AppDatabase.getDatabase(context).messagesModelDao().getParentMessageId(user.getId());
-                    }
-
-                    @Override
-                    protected void onPostExecute(String parentMessageId) {
-                        super.onPostExecute(parentMessageId);
-
-                        ArrayList<Integer> userIds = new ArrayList<>();
-                        userIds.add(user.getId());
-                        MessagesActivity.open(context,parentMessageId,userIds);
-                        ((Activity)context).finish();
-                    }
-                }.execute();
-
+            @Override public void onClick(View v) {
+                listener.onItemClick(user);
             }
         });
 
