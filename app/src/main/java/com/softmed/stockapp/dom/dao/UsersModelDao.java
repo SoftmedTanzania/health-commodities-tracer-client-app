@@ -17,8 +17,8 @@ import static androidx.room.OnConflictStrategy.REPLACE;
 @Dao
 public interface UsersModelDao {
 
-    @Query("select * from OtherUsers ")
-    LiveData<List<OtherUsers>> getUsers();
+    @Query("select * from OtherUsers WHERE id!=:excludingId ")
+    LiveData<List<OtherUsers>> getUsers(int excludingId);
 
     @Query("select * from OtherUsers WHERE id = :id ")
     OtherUsers getUser(int id);

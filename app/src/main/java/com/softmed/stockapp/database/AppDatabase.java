@@ -9,6 +9,7 @@ import androidx.room.RoomDatabase;
 import com.softmed.stockapp.dom.dao.BalanceModelDao;
 import com.softmed.stockapp.dom.dao.CategorieModelDao;
 import com.softmed.stockapp.dom.dao.LocationModelDao;
+import com.softmed.stockapp.dom.dao.MessageRecipientsModelDao;
 import com.softmed.stockapp.dom.dao.MessagesModelDao;
 import com.softmed.stockapp.dom.dao.ProductReportingScheduleModelDao;
 import com.softmed.stockapp.dom.dao.ProductsModelDao;
@@ -76,5 +77,7 @@ public abstract class AppDatabase extends RoomDatabase {
     public abstract UsersModelDao usersModelDao();
 
     public abstract MessagesModelDao messagesModelDao();
+
+    public abstract MessageRecipientsModelDao messageRecipientsModelDao();
 
 }

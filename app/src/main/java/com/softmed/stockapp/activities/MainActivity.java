@@ -335,9 +335,14 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        if(session.getAssignedFacilityType().equals("DST")) {
-            getMenuInflater().inflate(R.menu.menu_district, menu);
-        }else{
+        try {
+            if (session.getAssignedFacilityType().equals("DST")) {
+                getMenuInflater().inflate(R.menu.menu_district, menu);
+            } else {
+                getMenuInflater().inflate(R.menu.menu_main, menu);
+            }
+        }catch (Exception e){
+            e.printStackTrace();
             getMenuInflater().inflate(R.menu.menu_main, menu);
         }
         return super.onCreateOptionsMenu(menu);

@@ -17,6 +17,7 @@ import com.softmed.stockapp.R;
 import com.softmed.stockapp.adapters.ContactAdapter;
 import com.softmed.stockapp.database.AppDatabase;
 import com.softmed.stockapp.dom.entities.OtherUsers;
+import com.softmed.stockapp.utils.SessionManager;
 import com.softmed.stockapp.viewmodels.ContactChooserViewModel;
 
 import java.util.List;
@@ -47,7 +48,8 @@ public class ContactChooserFragment extends Fragment {
 
         AppDatabase db = AppDatabase.getDatabase(getContext());
         mViewModel.setAppDatabase(db);
-        mViewModel.getContacts().observe(getActivity(), new Observer<List<OtherUsers>>() {
+        SessionManager session = new SessionManager(getActivity());
+        mViewModel.getContacts(Integer.parseInt(session.getUserUUID())).observe(getActivity(), new Observer<List<OtherUsers>>() {
             @Override
             public void onChanged(List<OtherUsers> otherUsers) {
                 init(otherUsers);
@@ -57,7 +59,7 @@ public class ContactChooserFragment extends Fragment {
     }
 
     private void init(List<OtherUsers> contacts) {
-        mWhatsappRecycler = (RecyclerView) mRootView.findViewById(R.id.whatsapp_recycler);
+        mWhatsappRecycler = mRootView.findViewById(R.id.whatsapp_recycler);
         mWhatsappRecycler.setLayoutManager(new LinearLayoutManager(getContext()));
         mWhatsappRecycler.setHasFixedSize(true);
 

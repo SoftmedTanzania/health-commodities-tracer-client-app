@@ -57,8 +57,8 @@ public class CustomScrollView extends ScrollView {
     }
 
     public interface OnMyScrollChangeListener {
-        public void onScrollUp();
+        void onScrollUp();
 
-        public void onScrollDown();
+        void onScrollDown();
     }
 }

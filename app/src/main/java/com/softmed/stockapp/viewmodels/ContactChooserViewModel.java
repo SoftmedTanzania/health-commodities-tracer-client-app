@@ -22,7 +22,7 @@ public class ContactChooserViewModel extends ViewModel {
         this.appDatabase = appDatabase;
     }
 
-    public LiveData<List<OtherUsers>> getContacts() {
-        return appDatabase.usersModelDao().getUsers();
+    public LiveData<List<OtherUsers>> getContacts(int excludingId) {
+        return appDatabase.usersModelDao().getUsers(excludingId);
     }
 }

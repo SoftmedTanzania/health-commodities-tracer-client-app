@@ -14,7 +14,7 @@ public class Message implements Serializable {
     @PrimaryKey(autoGenerate = false)
     @NonNull
     @SerializedName("id")
-    private int id;
+    private String id;
 
 
     @SerializedName("creator_id")
@@ -30,13 +30,14 @@ public class Message implements Serializable {
     private long createDate;
 
     @SerializedName("parent_message_id")
-    private int parentMessageId;
+    private String parentMessageId;
 
-    public int getId() {
+    @NonNull
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(@NonNull String id) {
         this.id = id;
     }
 
@@ -72,11 +73,11 @@ public class Message implements Serializable {
         this.createDate = createDate;
     }
 
-    public int getParentMessageId() {
+    public String getParentMessageId() {
         return parentMessageId;
     }
 
-    public void setParentMessageId(int parentMessageId) {
+    public void setParentMessageId(String parentMessageId) {
         this.parentMessageId = parentMessageId;
     }
 }

@@ -7,6 +7,7 @@ import androidx.room.Insert;
 import androidx.room.Query;
 import androidx.room.Update;
 
+import com.softmed.stockapp.dom.dto.MessageUserDTO;
 import com.softmed.stockapp.dom.entities.Message;
 import com.softmed.stockapp.dom.entities.OtherUsers;
 
@@ -18,9 +19,24 @@ import static androidx.room.OnConflictStrategy.REPLACE;
 @Dao
 public interface MessagesModelDao {
 
-    @Query(" select T2.id,T2.createDate,T2.parentMessageId,T2.creatorId,T2.messageBody,T2.subject from (select * from Message WHERE parentMessageId = 0) T1" +
-            " INNER JOIN (select * from Message ORDER BY createDate DESC) T2 ON T2.parentMessageId=T1.id  GROUP BY T1.id")
+    @Query(" SELECT * from Message WHERE parentMessageId = '0' ")
     LiveData<List<Message>> getMessageThreads();
+
+
+    @Query(" select Message.id,Message.creatorId,Message.parentMessageId,Message.subject,Message.messageBody,Message.createDate,OtherUsers.id as userId,OtherUsers.firstName,OtherUsers.health_facility,OtherUsers.middleName,OtherUsers.surname,OtherUsers.username from Message " +
+            "INNER JOIN OtherUsers ON OtherUsers.id = Message.creatorId " +
+            "WHERE parentMessageId =:parentMessageId ORDER BY createDate DESC")
+    LiveData<List<MessageUserDTO>> getMessageByThread(String parentMessageId);
+
+
+    @Query(" SELECT * from Message WHERE parentMessageId = :parentMessageId OR id = :parentMessageId ORDER BY createDate DESC LIMIT 1 ")
+    Message getLatestMessages(String parentMessageId);
+
+
+    @Query( "Select Message.id from Message " +
+            "INNER JOIN MessageRecipients ON MessageRecipients.messageId = Message.id " +
+            "WHERE (Message.creatorId =:userId OR MessageRecipients.recipientId =:userId) AND parentMessageId = 0  ORDER BY createDate ASC LIMIT 1")
+    String getParentMessageId(int userId);
 
 
     @Insert(onConflict = REPLACE)

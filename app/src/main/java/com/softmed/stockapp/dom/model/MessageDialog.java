@@ -12,6 +12,7 @@ public class MessageDialog implements IDialog<IMessageDTO> {
     private String id;
     private String dialogPhoto;
     private String dialogName;
+    private String parentMessageId="";
     private ArrayList<User> users;
     private IMessageDTO lastIMessageDTO;
 
@@ -26,6 +27,18 @@ public class MessageDialog implements IDialog<IMessageDTO> {
         this.users = users;
         this.lastIMessageDTO = lastIMessageDTO;
         this.unreadCount = unreadCount;
+    }
+
+    public MessageDialog(String id, String name, String photo,
+                         ArrayList<User> users, IMessageDTO lastIMessageDTO, int unreadCount,String parentMessageId) {
+
+        this.id = id;
+        this.dialogName = name;
+        this.dialogPhoto = photo;
+        this.users = users;
+        this.lastIMessageDTO = lastIMessageDTO;
+        this.unreadCount = unreadCount;
+        this.parentMessageId = parentMessageId;
     }
 
     @Override
@@ -65,5 +78,17 @@ public class MessageDialog implements IDialog<IMessageDTO> {
 
     public void setUnreadCount(int unreadCount) {
         this.unreadCount = unreadCount;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getParentMessageId() {
+        return parentMessageId;
+    }
+
+    public void setParentMessageId(String parentMessageId) {
+        this.parentMessageId = parentMessageId;
     }
 }

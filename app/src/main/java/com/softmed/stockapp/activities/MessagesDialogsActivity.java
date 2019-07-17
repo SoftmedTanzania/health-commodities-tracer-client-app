@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
@@ -14,15 +15,18 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.bumptech.glide.Glide;
+import com.google.gson.Gson;
 import com.softmed.stockapp.R;
 import com.softmed.stockapp.database.AppDatabase;
 import com.softmed.stockapp.dom.entities.Message;
+import com.softmed.stockapp.dom.entities.MessageRecipients;
 import com.softmed.stockapp.dom.entities.OtherUsers;
 import com.softmed.stockapp.dom.model.IMessageDTO;
 import com.softmed.stockapp.dom.model.MessageDialog;
 import com.softmed.stockapp.dom.model.User;
 import com.softmed.stockapp.fixtures.DialogsFixtures;
 import com.softmed.stockapp.utils.AppUtils;
+import com.softmed.stockapp.utils.SessionManager;
 import com.softmed.stockapp.viewmodels.MessageListViewModel;
 import com.stfalcon.chatkit.commons.ImageLoader;
 import com.stfalcon.chatkit.dialogs.DialogsList;
@@ -30,6 +34,8 @@ import com.stfalcon.chatkit.dialogs.DialogsListAdapter;
 import com.stfalcon.chatkit.utils.DateFormatter;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 
@@ -41,7 +47,7 @@ public class MessagesDialogsActivity extends AppCompatActivity
     protected DialogsListAdapter<MessageDialog> dialogsAdapter;
     private DialogsList dialogsList;
     private AppDatabase baseDatabase;
-
+    private SessionManager session;
     public static void open(Context context) {
         context.startActivity(new Intent(context, MessagesDialogsActivity.class));
     }
@@ -55,6 +61,8 @@ public class MessagesDialogsActivity extends AppCompatActivity
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        session = new SessionManager(this);
+
 
         baseDatabase = AppDatabase.getDatabase(this);
 
@@ -65,22 +73,38 @@ public class MessagesDialogsActivity extends AppCompatActivity
             }
         };
 
-        dialogsList = (DialogsList) findViewById(R.id.dialogsList);
+        dialogsList = findViewById(R.id.dialogsList);
         MessageListViewModel messageListViewModel = ViewModelProviders.of(this).get(MessageListViewModel.class);
-        messageListViewModel.getMessageThreads().observe(MessagesDialogsActivity.this, new Observer<List<Message>>() {
+        messageListViewModel.getParentMessages().observe(MessagesDialogsActivity.this, new Observer<List<Message>>() {
             @SuppressLint("StaticFieldLeak")
             @Override
             public void onChanged(List<Message> messages) {
+
+                Log.d(TAG,"Message Schedules = "+new Gson().toJson(messages));
 
                 new AsyncTask<Void, Void, List<MessageDialog>>() {
 
                     @Override
                     protected List<MessageDialog> doInBackground(Void... voids) {
+                        List<Message> latestMessages = new ArrayList<>();
+                        for (Message message : messages) {
+                            latestMessages.add(baseDatabase.messagesModelDao().getLatestMessages(message.getId()));
+                        }
+
+                        Collections.sort(latestMessages, new Comparator<Message>() {
+                            @Override
+                            public int compare(Message u1, Message u2) {
+                                Date date1 = new Date(u1.getCreateDate());
+                                Date date2 = new Date(u2.getCreateDate());
+                                return date2.compareTo(date1);
+                            }
+                        });
 
                         ArrayList<MessageDialog> chats = new ArrayList<>();
-                        for (Message message : messages) {
+                        for (Message message : latestMessages) {
                             chats.add(getDialog(message));
                         }
+
 
                         return chats;
                     }
@@ -91,7 +115,8 @@ public class MessagesDialogsActivity extends AppCompatActivity
 
 
                         dialogsAdapter = new DialogsListAdapter<>(imageLoader);
-                        dialogsAdapter.setItems(DialogsFixtures.getDialogs());
+                        dialogsAdapter.setItems(messageDialogs);
+//                        dialogsAdapter.setItems(DialogsFixtures.getDialogs());
                         dialogsAdapter.setOnDialogClickListener(MessagesDialogsActivity.this);
                         dialogsAdapter.setOnDialogLongClickListener(MessagesDialogsActivity.this);
                         dialogsAdapter.setDatesFormatter(MessagesDialogsActivity.this);
@@ -145,18 +170,38 @@ public class MessagesDialogsActivity extends AppCompatActivity
 
 
     private MessageDialog getDialog(Message message) {
+
+        Log.d(TAG,"creator id = "+message.getCreatorId());
+
         ArrayList<User> users = new ArrayList<>();
-        users.add(getUser(message.getCreatorId()));
+        if(message.getCreatorId()!=Integer.parseInt(session.getUserUUID())) {
+            users.add(getUser(message.getCreatorId()));
+        }
+
+       List<MessageRecipients> messageRecipients = baseDatabase.messageRecipientsModelDao().getAllMessageRecipientsByMessageId(message.getId());
+
+        for(MessageRecipients messageRecipient:messageRecipients){
+            int recipientId = messageRecipient.getRecipientId();
+
+            Log.d(TAG,"recipient id = "+recipientId);
+
+            if(recipientId!=Integer.parseInt(session.getUserUUID())){
+                users.add(getUser(recipientId));
+            }
+        }
+
+
+
         return new MessageDialog(
-                String.valueOf(message.getParentMessageId()),
+                message.getParentMessageId(),
                 users.get(0).getName(),
                 "",
-                users, getLastMessage(message), 0);
+                users, getLastMessage(message), 0, message.getParentMessageId());
     }
 
     private IMessageDTO getLastMessage(Message message) {
         return new IMessageDTO(
-                String.valueOf(message.getId()),
+                message.getId(),
                 getUser(message.getCreatorId()),
                 message.getMessageBody(),
                 new Date(message.getCreateDate()));
@@ -166,7 +211,7 @@ public class MessagesDialogsActivity extends AppCompatActivity
         OtherUsers otherUsers = baseDatabase.usersModelDao().getUser(userId);
         return new User(
                 String.valueOf(otherUsers.getId()),
-                otherUsers.getFirstName() + " " + otherUsers.getMiddleName() + " " + otherUsers.getSurname(),
+                otherUsers.getFirstName() +  " " + otherUsers.getSurname(),
                 "",
                 false);
     }
@@ -174,6 +219,10 @@ public class MessagesDialogsActivity extends AppCompatActivity
 
     @Override
     public void onDialogClick(MessageDialog messageDialog) {
-        MessagesActivity.open(this);
+        ArrayList<Integer> userIds = new ArrayList<>();
+        for (User user : messageDialog.getUsers()) {
+            userIds.add(Integer.parseInt(user.getId()));
+        }
+        MessagesActivity.open(this, messageDialog.getParentMessageId(), userIds);
     }
 }

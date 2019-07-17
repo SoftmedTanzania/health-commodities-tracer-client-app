@@ -13,23 +13,24 @@ public class MessageRecipients implements Serializable {
     @PrimaryKey(autoGenerate = false)
     @NonNull
     @SerializedName("id")
-    private int id;
+    private String id;
 
 
     @SerializedName("recipient_id")
     private int recipientId;
 
     @SerializedName("message_id")
-    private int messageId;
+    private String messageId;
 
     @SerializedName("is_read")
     private boolean isRead;
 
-    public int getId() {
+    @NonNull
+    public String getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(@NonNull String id) {
         this.id = id;
     }
 
@@ -41,11 +42,11 @@ public class MessageRecipients implements Serializable {
         this.recipientId = recipientId;
     }
 
-    public int getMessageId() {
+    public String getMessageId() {
         return messageId;
     }
 
-    public void setMessageId(int messageId) {
+    public void setMessageId(String messageId) {
         this.messageId = messageId;
     }
 
