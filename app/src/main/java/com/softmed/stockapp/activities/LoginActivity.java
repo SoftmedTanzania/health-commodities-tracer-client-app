@@ -164,6 +164,10 @@ public class LoginActivity extends BaseActivity {
             public void onClick(View view) {
                 if (getAuthenticationCredentials()) {
                     loginProgress.setVisibility(View.VISIBLE);
+
+                    //TODO remove this from here
+                    loginUser();
+
                     FirebaseInstanceId.getInstance().getInstanceId()
                             .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
                                 @Override
