@@ -148,8 +148,12 @@ public class MessagesActivity extends AppCompatActivity
 
             @Override
             protected Void doInBackground(Message... newMessages) {
+                Message parentMessage = appDatabase.messagesModelDao().getMessageById(newMessages[0].getParentMessageId());
 
-                appDatabase.messagesModelDao().addMessage(newMessages[0]);
+                Message messageToBeSaved = newMessages[0];
+                messageToBeSaved.setSubject(parentMessage.getSubject());
+
+                appDatabase.messagesModelDao().addMessage(messageToBeSaved);
                 Log.d(TAG, "saving new message = " + new Gson().toJson(newMessages[0]));
                 for (Integer userId : usersIds) {
                     if (userId.equals(String.valueOf(sessionManager.getUserUUID())))
@@ -280,18 +284,15 @@ public class MessagesActivity extends AppCompatActivity
     }
 
     private MessagesListAdapter.Formatter<IMessageDTO> getMessageStringFormatter() {
-        return new MessagesListAdapter.Formatter<IMessageDTO>() {
-            @Override
-            public String format(IMessageDTO IMessageDTO) {
-                String createdAt = new SimpleDateFormat("MMM d, EEE 'at' h:mm a", Locale.getDefault())
-                        .format(IMessageDTO.getCreatedAt());
+        return IMessageDTO -> {
+            String createdAt = new SimpleDateFormat("MMM d, EEE 'at' h:mm a", Locale.getDefault())
+                    .format(IMessageDTO.getCreatedAt());
 
-                String text = IMessageDTO.getText();
-                if (text == null) text = "[attachment]";
+            String text = IMessageDTO.getText();
+            if (text == null) text = "[attachment]";
 
-                return String.format(Locale.getDefault(), "%s: %s (%s)",
-                        IMessageDTO.getUser().getName(), text, createdAt);
-            }
+            return String.format(Locale.getDefault(), "%s: %s (%s)",
+                    IMessageDTO.getUser().getName(), text, createdAt);
         };
     }
 

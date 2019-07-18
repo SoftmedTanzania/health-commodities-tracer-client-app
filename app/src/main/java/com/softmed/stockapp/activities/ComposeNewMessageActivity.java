@@ -39,8 +39,8 @@ import java.util.Calendar;
 import java.util.List;
 import java.util.UUID;
 
-public class ContactChooserActivity extends AppCompatActivity implements ContactAdapter.OnItemClickListener {
-    private static final String TAG = ContactChooserActivity.class.getSimpleName();
+public class ComposeNewMessageActivity extends AppCompatActivity implements ContactAdapter.OnItemClickListener {
+    private static final String TAG = ComposeNewMessageActivity.class.getSimpleName();
     private RecyclerView contactsRecyclerView;
     private ChipGroup entryChipGroup, recipientsChipGroup;
     private BottomSheetBehavior sheetBehavior;
@@ -49,8 +49,8 @@ public class ContactChooserActivity extends AppCompatActivity implements Contact
     private ArrayList<Integer> userIds;
 
 
-    public static ContactChooserActivity newInstance() {
-        return new ContactChooserActivity();
+    public static ComposeNewMessageActivity newInstance() {
+        return new ComposeNewMessageActivity();
     }
 
     @SuppressLint("StaticFieldLeak")
@@ -58,13 +58,13 @@ public class ContactChooserActivity extends AppCompatActivity implements Contact
     protected void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        setContentView(R.layout.activity_contact_chooser);
+        setContentView(R.layout.activity_compose_new_message);
         entryChipGroup = findViewById(R.id.entry_chip_group);
         recipientsChipGroup = findViewById(R.id.recipients_entry_chip_group);
 
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        setTitle("New Message");
+        setTitle("Choose Recipients");
 
         RelativeLayout bottom_sheet = findViewById(R.id.bottom_sheet);
         sheetBehavior = BottomSheetBehavior.from(bottom_sheet);
@@ -149,7 +149,7 @@ public class ContactChooserActivity extends AppCompatActivity implements Contact
 
                     @Override
                     protected Void doInBackground(Message... newMessages) {
-                        AppDatabase appDatabase = AppDatabase.getDatabase(ContactChooserActivity.this);
+                        AppDatabase appDatabase = AppDatabase.getDatabase(ComposeNewMessageActivity.this);
 
                         appDatabase.messagesModelDao().addMessage(newMessages[0]);
                         Log.d(TAG, "saving new message = " + new Gson().toJson(newMessages[0]));
@@ -174,7 +174,8 @@ public class ContactChooserActivity extends AppCompatActivity implements Contact
                         super.onPostExecute(aVoid);
 
 
-                        MessagesActivity.open(ContactChooserActivity.this, newMessage.getId(), userIds);
+                        MessagesActivity.open(ComposeNewMessageActivity.this, newMessage.getId(), userIds);
+                        finish();
                     }
                 }.execute(newMessage);
             }
@@ -189,7 +190,7 @@ public class ContactChooserActivity extends AppCompatActivity implements Contact
         contactsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         contactsRecyclerView.setHasFixedSize(true);
 
-        ContactAdapter mContactAdapter = new ContactAdapter(this, contacts, ContactChooserActivity.this);
+        ContactAdapter mContactAdapter = new ContactAdapter(this, contacts, ComposeNewMessageActivity.this);
         contactsRecyclerView.setAdapter(mContactAdapter);
     }
 
@@ -223,7 +224,7 @@ public class ContactChooserActivity extends AppCompatActivity implements Contact
         new AsyncTask<Void, Void, String>() {
             @Override
             protected String doInBackground(Void... voids) {
-                return AppDatabase.getDatabase(ContactChooserActivity.this).messagesModelDao().getParentMessageId(user.getId());
+                return AppDatabase.getDatabase(ComposeNewMessageActivity.this).messagesModelDao().getParentMessageId(user.getId());
             }
 
             @Override

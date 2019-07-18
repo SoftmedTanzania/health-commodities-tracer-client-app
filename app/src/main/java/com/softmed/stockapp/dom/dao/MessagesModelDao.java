@@ -23,6 +23,10 @@ public interface MessagesModelDao {
     LiveData<List<Message>> getMessageThreads();
 
 
+    @Query(" SELECT * from Message WHERE id =:messageId ")
+    Message getMessageById(String messageId);
+
+
     @Query(" select Message.id,Message.creatorId,Message.parentMessageId,Message.subject,Message.messageBody,Message.createDate,OtherUsers.id as userId,OtherUsers.firstName,OtherUsers.health_facility,OtherUsers.middleName,OtherUsers.surname,OtherUsers.username from Message " +
             "INNER JOIN OtherUsers ON OtherUsers.id = Message.creatorId " +
             "WHERE parentMessageId =:parentMessageId OR Message.id = :parentMessageId ORDER BY createDate DESC")

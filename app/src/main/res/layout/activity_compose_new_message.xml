@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#ffffff"
-    tools:context=".activities.ContactChooserActivity">
+    tools:context=".activities.ComposeNewMessageActivity">
 
     <com.google.android.material.appbar.AppBarLayout
         android:layout_width="match_parent"
@@ -17,7 +17,7 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
+            android:background="?attr/colorPrimaryVariant"
             app:popupTheme="@style/AppTheme.PopupOverlay" />
 
     </com.google.android.material.appbar.AppBarLayout>
@@ -32,6 +32,7 @@
             android:id="@+id/entry_chip_group"
             android:layout_width="match_parent"
             android:layout_margin="16dp"
+            app:chipSpacingVertical="8dp"
             android:layout_height="wrap_content"/>
 
         <androidx.recyclerview.widget.RecyclerView
@@ -49,3 +50,4 @@
     <include layout="@layout/conctact_chooser_compose_message" />
 
 </androidx.coordinatorlayout.widget.CoordinatorLayout>
+

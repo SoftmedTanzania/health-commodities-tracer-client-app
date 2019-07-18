@@ -22,9 +22,9 @@
                 android:layout_height="match_parent">
                 <TextView
                     android:id="@+id/title"
-                    android:textSize="24sp"
+                    android:textSize="16sp"
                     android:layout_marginLeft="16dp"
-                    android:text="@string/app_name"
+                    android:text="Messages"
                     android:fontFamily="@font/muli_bold"
                     android:textColor="@color/white"
                     android:layout_centerVertical="true"
@@ -32,7 +32,7 @@
                     android:layout_height="wrap_content" />
 
                 <ImageView
-                    android:padding="8dp"
+                    android:padding="12dp"
                     android:id="@+id/message_icon"
                     android:layout_width="48dp"
                     android:layout_height="48dp"

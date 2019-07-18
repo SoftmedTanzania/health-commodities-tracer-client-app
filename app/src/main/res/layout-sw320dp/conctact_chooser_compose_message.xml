@@ -7,7 +7,7 @@
     android:orientation="vertical"
     app:behavior_hideable="false"
     app:elevation="2dp"
-    app:behavior_peekHeight="90dp"
+    app:behavior_peekHeight="64dp"
     app:layout_behavior="com.google.android.material.bottomsheet.BottomSheetBehavior">
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:id="@+id/fab"
@@ -33,7 +33,7 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="48dp"
+            android:layout_marginTop="36dp"
             android:layout_marginLeft="8dp"
             android:layout_marginBottom="16dp"
             android:text="Compose"
@@ -103,8 +103,8 @@
                 android:layout_height="wrap_content"
                 android:fontFamily="@font/muli_bold_italic"
                 android:hint="Compose Message"
-                android:minLines="10"
-                android:maxLines="15"
+                android:minLines="4"
+                android:maxLines="5"
                 android:maxLength="1000"
                 android:gravity="top|start"
                 android:inputType="textCapSentences|textNoSuggestions|textMultiLine"

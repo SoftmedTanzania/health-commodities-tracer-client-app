@@ -18,6 +18,7 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.amulyakhare.textdrawable.TextDrawable;
+import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
 import com.softmed.stockapp.R;
 import com.softmed.stockapp.adapters.DialogsListAdapter;
@@ -73,31 +74,35 @@ public class MessagesDialogsActivity extends AppCompatActivity
             @Override
             public void loadImage(ImageView imageView, String url, Object payload) {
 
-                Typeface muliBoldTypeface = ResourcesCompat.getFont(MessagesDialogsActivity.this, R.font.muli_bold);
+                if (url.equals("group")) {
+                    Glide.with(MessagesDialogsActivity.this).load(R.drawable.ic_round_supervised_user_circle_24px).into(imageView);
+                } else {
+                    Typeface muliBoldTypeface = ResourcesCompat.getFont(MessagesDialogsActivity.this, R.font.muli_bold);
 
 
-                Log.d(TAG, "Image Text = " + url);
-                Log.d(TAG, "Payload = " + new Gson().toJson(payload));
+                    Log.d(TAG, "Image Text = " + url);
+                    Log.d(TAG, "Payload = " + new Gson().toJson(payload));
 
-                TextDrawable drawable = null;
+                    TextDrawable drawable = null;
 
-                int spValue = 18;
-                if (payload != null)
-                    spValue = Integer.parseInt(payload.toString());
-
-
-                drawable = TextDrawable.builder()
-                        .beginConfig()
-                        .textColor(Color.WHITE)
-                        .useFont(muliBoldTypeface)
-                        .fontSize(AppUtils.spToPx(spValue, MessagesDialogsActivity.this)) /* size in px */
-                        .bold()
-                        .toUpperCase()
-                        .endConfig()
-                        .buildRect(url, getResources().getColor(R.color.color_primary));
+                    int spValue = 18;
+                    if (payload != null)
+                        spValue = Integer.parseInt(payload.toString());
 
 
-                imageView.setImageDrawable(drawable);
+                    drawable = TextDrawable.builder()
+                            .beginConfig()
+                            .textColor(Color.WHITE)
+                            .useFont(muliBoldTypeface)
+                            .fontSize(AppUtils.spToPx(spValue, MessagesDialogsActivity.this)) /* size in px */
+                            .bold()
+                            .toUpperCase()
+                            .endConfig()
+                            .buildRect(url, getResources().getColor(R.color.color_primary));
+
+
+                    imageView.setImageDrawable(drawable);
+                }
             }
         };
 
@@ -157,7 +162,7 @@ public class MessagesDialogsActivity extends AppCompatActivity
         findViewById(R.id.message_icon).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                startActivity(new Intent(MessagesDialogsActivity.this, ContactChooserActivity.class));
+                startActivity(new Intent(MessagesDialogsActivity.this, ComposeNewMessageActivity.class));
                 overridePendingTransition(R.anim.slide_up, R.anim.slide_up);
             }
         });
@@ -209,7 +214,7 @@ public class MessagesDialogsActivity extends AppCompatActivity
         return new MessageDialog(
                 message.getParentMessageId().equals("0") ? message.getId() : message.getParentMessageId(),
                 users.size() > 1 ? message.getSubject() : users.get(0).getName() + " - " + message.getSubject(),
-                users.size() > 1 ? getGroupInitials(users) : getInitials(users.get(0)),
+                users.size() > 1 ? "group" : getInitials(users.get(0)),
                 users, getLastMessage(message), 0, message.getParentMessageId());
 
 

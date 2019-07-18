@@ -165,9 +165,6 @@ public class LoginActivity extends BaseActivity {
                 if (getAuthenticationCredentials()) {
                     loginProgress.setVisibility(View.VISIBLE);
 
-                    //TODO remove this from here
-                    loginUser();
-
                     FirebaseInstanceId.getInstance().getInstanceId()
                             .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
                                 @Override
@@ -414,6 +411,9 @@ public class LoginActivity extends BaseActivity {
         call.enqueue(new Callback() {
             @Override
             public void onResponse(Call call, Response response) {
+                Log.d(TAG,"Device Registration : registering the device to the server");
+                Log.d(TAG,"Device Registration : Response code = "+response.code());
+                Log.d(TAG,"Device Registration : Response  = "+response.toString());
                 new AddUserData(baseDatabase).execute(userInfo);
             }
 
