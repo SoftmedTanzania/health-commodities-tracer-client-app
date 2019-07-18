@@ -43,6 +43,15 @@ public interface MessagesModelDao {
     String getParentMessageId(int userId);
 
 
+    @Query(" SELECT * from Message WHERE syncStatus = 0 ")
+    List<Message> getUnpostedMessages();
+
+
+    @Query("UPDATE Message SET id = :newId WHERE id = :oldId")
+    int updateMessageIds(String oldId, String newId);
+
+
+
     @Insert(onConflict = REPLACE)
     void addMessage(Message message);
 

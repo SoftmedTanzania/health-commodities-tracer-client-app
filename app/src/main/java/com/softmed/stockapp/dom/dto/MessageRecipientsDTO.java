@@ -1,21 +1,18 @@
-package com.softmed.stockapp.dom.entities;
-
-import androidx.room.Entity;
-import androidx.room.PrimaryKey;
-import androidx.annotation.NonNull;
+package com.softmed.stockapp.dom.dto;
 
 import com.google.gson.annotations.SerializedName;
+import com.softmed.stockapp.dom.entities.MessageRecipients;
 
-import java.io.Serializable;
+import java.util.List;
 
-@Entity
-public class Message implements Serializable {
-
-    @PrimaryKey(autoGenerate = false)
-    @NonNull
+/**
+ * Created by cozej4 on 2019-07-18.
+ *
+ * @cozej4 https://github.com/cozej4
+ */
+public class MessageRecipientsDTO {
     @SerializedName("id")
     private String id;
-
 
     @SerializedName("creator_id")
     private int creatorId;
@@ -35,14 +32,7 @@ public class Message implements Serializable {
     @SerializedName("sync_status")
     private int syncStatus;
 
-    @NonNull
-    public String getId() {
-        return id;
-    }
-
-    public void setId(@NonNull String id) {
-        this.id = id;
-    }
+    private List<MessageRecipients> messageRecipients;
 
     public int getCreatorId() {
         return creatorId;
@@ -90,5 +80,21 @@ public class Message implements Serializable {
 
     public void setSyncStatus(int syncStatus) {
         this.syncStatus = syncStatus;
+    }
+
+    public List<MessageRecipients> getMessageRecipients() {
+        return messageRecipients;
+    }
+
+    public void setMessageRecipients(List<MessageRecipients> messageRecipients) {
+        this.messageRecipients = messageRecipients;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
     }
 }

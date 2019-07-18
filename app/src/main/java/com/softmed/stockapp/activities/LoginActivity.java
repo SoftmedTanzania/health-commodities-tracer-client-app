@@ -393,8 +393,7 @@ public class LoginActivity extends BaseActivity {
 
         try {
             object.put("user", userUiid);
-            object.put("google_push_notification_token", token);
-            object.put("location", session.getFacilityId());
+            object.put("reg_id", token);
 
             datastream = object.toString();
             Log.d("FCMService", "data " + datastream);

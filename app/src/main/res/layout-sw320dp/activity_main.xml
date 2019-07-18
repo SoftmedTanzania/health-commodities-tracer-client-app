@@ -60,7 +60,7 @@
                                 android:layout_height="wrap_content">
 
                                 <ImageView
-                                    android:padding="8dp"
+                                    android:padding="4dp"
                                     android:id="@+id/message_icon"
                                     android:layout_width="48dp"
                                     android:layout_height="48dp"

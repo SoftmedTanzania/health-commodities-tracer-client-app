@@ -11,13 +11,16 @@ import androidx.legacy.content.WakefulBroadcastReceiver;
 import com.google.gson.Gson;
 import com.softmed.stockapp.activities.LoginActivity;
 import com.softmed.stockapp.database.AppDatabase;
+import com.softmed.stockapp.dom.dto.MessageRecipientsDTO;
 import com.softmed.stockapp.dom.entities.Balances;
+import com.softmed.stockapp.dom.entities.Message;
 import com.softmed.stockapp.dom.entities.Transactions;
 import com.softmed.stockapp.dom.responces.ProductReportingScheduleResponse;
 import com.softmed.stockapp.utils.ServiceGenerator;
 import com.softmed.stockapp.utils.SessionManager;
 import com.softmed.stockapp.api.Endpoints;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import okhttp3.MediaType;
@@ -33,6 +36,7 @@ public class PostOfficeService extends IntentService {
     AppDatabase database;
     SessionManager sess;
     Endpoints.TransactionServices transactionServices;
+    Endpoints.MessagesServices messagesServices;
 
     public PostOfficeService() {
         super("PostOfficeService");
@@ -71,6 +75,10 @@ public class PostOfficeService extends IntentService {
 
 
         transactionServices = ServiceGenerator.createService(Endpoints.TransactionServices.class,
+                sess.getUserName(),
+                sess.getUserPass());
+
+        messagesServices = ServiceGenerator.createService(Endpoints.MessagesServices.class,
                 sess.getUserName(),
                 sess.getUserPass());
 
@@ -201,6 +209,50 @@ public class PostOfficeService extends IntentService {
                 Log.d("ScheduleCheck", "failed with " + t.getMessage() + " " + t.toString());
             }
         });
+
+        final List<Message> unpostedMessages = database.messagesModelDao().getUnpostedMessages();
+        for( Message message:unpostedMessages){
+
+            MessageRecipientsDTO messageRecipientsDTO = new MessageRecipientsDTO();
+
+            messageRecipientsDTO.setId(message.getId());
+            messageRecipientsDTO.setCreateDate(message.getCreateDate());
+            messageRecipientsDTO.setCreatorId(message.getCreatorId());
+            messageRecipientsDTO.setMessageBody(message.getMessageBody());
+            messageRecipientsDTO.setParentMessageId(message.getParentMessageId());
+            messageRecipientsDTO.setSubject(message.getSubject());
+
+            messageRecipientsDTO.setMessageRecipients(database.messageRecipientsModelDao().getAllMessageRecipientsByMessageId(message.getId()));
+
+            Call<Message> callMessages = messagesServices.postMessages(getRequestBody(messageRecipientsDTO));
+            callMessages.enqueue(new Callback<Message>() {
+                @SuppressLint("StaticFieldLeak")
+                @Override
+                public void onResponse(Call<Message> call, Response<Message> response) {
+
+                    new AsyncTask<Void, Void, Void>() {
+                        @Override
+                        protected Void doInBackground(Void... voids) {
+                            if (response.body() != null) {
+                                database.messagesModelDao().updateMessageIds(message.getId(), response.body().getId());
+                                database.messageRecipientsModelDao().updateMessageRecipientsIds(message.getId(), response.body().getId());
+                            }
+                            return null;
+                        }
+                    }.execute();
+                }
+
+                @Override
+                public void onFailure(Call<Message> call, Throwable t) {
+
+                }
+            });
+
+        }
+
+
+
+
 
         // Release the wake lock provided by the WakefulBroadcastReceiver.
         WakefulBroadcastReceiver.completeWakefulIntent(intent);

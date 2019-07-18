@@ -98,7 +98,7 @@ public class MessagesDialogsActivity extends AppCompatActivity
                             .bold()
                             .toUpperCase()
                             .endConfig()
-                            .buildRect(url, getResources().getColor(R.color.color_primary));
+                            .buildRound(url, getResources().getColor(R.color.color_primary));
 
 
                     imageView.setImageDrawable(drawable);

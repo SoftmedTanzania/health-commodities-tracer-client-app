@@ -32,6 +32,9 @@ public interface MessageRecipientsModelDao {
     @Update
     void updateRecipient(MessageRecipients messageRecipients);
 
+    @Query("UPDATE MessageRecipients SET messageId = :newId WHERE messageId = :oldId")
+    int updateMessageRecipientsIds(String oldId, String newId);
+
     @Delete
     void deleteRecipient(MessageRecipients messageRecipients);
 

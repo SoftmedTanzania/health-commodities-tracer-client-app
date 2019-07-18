@@ -2,6 +2,8 @@ package com.softmed.stockapp.api;
 
 import com.softmed.stockapp.dom.entities.Balances;
 import com.softmed.stockapp.dom.entities.Location;
+import com.softmed.stockapp.dom.entities.Message;
+import com.softmed.stockapp.dom.entities.MessageRecipients;
 import com.softmed.stockapp.dom.entities.Product;
 import com.softmed.stockapp.dom.entities.TransactionType;
 import com.softmed.stockapp.dom.entities.Transactions;
@@ -76,6 +78,18 @@ public class Endpoints {
 
         @POST("api_health_commodity_mapping/")
         Call<List<ProductReportingScheduleResponse>> postBalances(@Body RequestBody e);
+    }
+
+    public interface MessagesServices {
+        @GET("api_messages")
+        Call<List<Message>> getMessages();
+
+        @GET("api_message_recipients")
+        Call<List<MessageRecipients>> getMessageRecipients();
+
+
+        @POST("api_sent_messages/")
+        Call<Message> postMessages(@Body RequestBody e);
     }
 
     public interface NotificationServices {

@@ -219,7 +219,7 @@ public class MainActivity extends AppCompatActivity {
 
         adapter = new DotIndicatorPagerAdapter(getSupportFragmentManager());
         updateStockViewPager.setAdapter(adapter);
-        inkPageIndicator.setViewPager(updateStockViewPager);
+//        inkPageIndicator.setViewPager(updateStockViewPager);
 
         new AsyncTask<Void, Void, Location>() {
 
