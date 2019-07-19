@@ -67,7 +67,6 @@ public class MessagesDialogsActivity extends AppCompatActivity
 
         session = new SessionManager(this);
 
-
         baseDatabase = AppDatabase.getDatabase(this);
 
         imageLoader = new ImageLoader() {
@@ -78,10 +77,6 @@ public class MessagesDialogsActivity extends AppCompatActivity
                     Glide.with(MessagesDialogsActivity.this).load(R.drawable.ic_round_supervised_user_circle_24px).into(imageView);
                 } else {
                     Typeface muliBoldTypeface = ResourcesCompat.getFont(MessagesDialogsActivity.this, R.font.muli_bold);
-
-
-                    Log.d(TAG, "Image Text = " + url);
-                    Log.d(TAG, "Payload = " + new Gson().toJson(payload));
 
                     TextDrawable drawable = null;
 
