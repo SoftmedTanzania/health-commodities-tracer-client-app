@@ -54,7 +54,7 @@ public class SendMessageRecipientWorker extends Worker {
 
         MessageRecipients messageRecipients = database.messageRecipientsModelDao().getMessageRecipientsByMessageIdAndRecipientId(messageId, Integer.parseInt(sess.getUserUUID()));
 
-        Call<MessageRecipients> messageCall = messagesServices.postMessageRecipient(getRequestBody(messageRecipients));
+        Call<MessageRecipients> messageCall = messagesServices.updateMessageReadStatus(getRequestBody(messageRecipients));
 
         Response<MessageRecipients> response = null;
         try {

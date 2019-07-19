@@ -92,8 +92,8 @@ public class Endpoints {
         @POST("api_sent_messages/")
         Call<MessageRecipientsDTO> postMessages(@Body RequestBody e);
 
-        @POST("api_update_message_recipients/")
-        Call<MessageRecipients> postMessageRecipient(@Body RequestBody e);
+        @POST("update_read_message_status")
+        Call<MessageRecipients> updateMessageReadStatus(@Body RequestBody e);
     }
 
     public interface NotificationServices {
