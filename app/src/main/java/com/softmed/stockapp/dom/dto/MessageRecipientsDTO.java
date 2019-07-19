@@ -14,7 +14,7 @@ public class MessageRecipientsDTO {
     @SerializedName("id")
     private String id;
 
-    @SerializedName("creator_id")
+    @SerializedName("creator")
     private int creatorId;
 
     @SerializedName("subject")
@@ -23,7 +23,7 @@ public class MessageRecipientsDTO {
     @SerializedName("message_body")
     private String messageBody;
 
-    @SerializedName("create_date")
+    @SerializedName("message_date_time")
     private long createDate;
 
     @SerializedName("parent_message_id")

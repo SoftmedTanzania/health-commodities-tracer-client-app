@@ -16,7 +16,7 @@ public class MessageRecipients implements Serializable {
     private String id;
 
 
-    @SerializedName("recipient_id")
+    @SerializedName("recipient")
     private int recipientId;
 
     @SerializedName("message_id")

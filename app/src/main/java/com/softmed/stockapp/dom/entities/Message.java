@@ -16,8 +16,7 @@ public class Message implements Serializable {
     @SerializedName("id")
     private String id;
 
-
-    @SerializedName("creator_id")
+    @SerializedName("creator")
     private int creatorId;
 
     @SerializedName("subject")
@@ -26,7 +25,7 @@ public class Message implements Serializable {
     @SerializedName("message_body")
     private String messageBody;
 
-    @SerializedName("create_date")
+    @SerializedName("message_date_time")
     private long createDate;
 
     @SerializedName("parent_message_id")
@@ -34,6 +33,11 @@ public class Message implements Serializable {
 
     @SerializedName("sync_status")
     private int syncStatus;
+
+    //used to update message list when id is updated while the message is open in foreground
+    @SerializedName("uuid")
+    private String uuid;
+
 
     @NonNull
     public String getId() {
@@ -90,5 +94,13 @@ public class Message implements Serializable {
 
     public void setSyncStatus(int syncStatus) {
         this.syncStatus = syncStatus;
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 }

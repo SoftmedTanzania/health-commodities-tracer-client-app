@@ -28,4 +28,7 @@ public class MessageListViewModel extends AndroidViewModel {
     public LiveData<List<Message>> getParentMessages() {
         return appDatabase.messagesModelDao().getMessageThreads();
     }
+    public LiveData<List<MessageUserDTO>> getMessageByThread(String parentMessageId) {
+        return appDatabase.messagesModelDao().getMessageByThread(parentMessageId);
+    }
 }

@@ -14,6 +14,9 @@ public class MessageUserDTO implements Serializable {
     @SerializedName("id")
     private String id;
 
+    @SerializedName("uuid")
+    private String uuid;
+
     @SerializedName("creator_id")
     private int creatorId;
 
@@ -141,5 +144,13 @@ public class MessageUserDTO implements Serializable {
 
     public void setUsername(String username) {
         this.username = username;
+    }
+
+    public String getUuid() {
+        return uuid;
+    }
+
+    public void setUuid(String uuid) {
+        this.uuid = uuid;
     }
 }

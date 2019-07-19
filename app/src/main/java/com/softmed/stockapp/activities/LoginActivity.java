@@ -35,6 +35,8 @@ import com.softmed.stockapp.database.AppDatabase;
 import com.softmed.stockapp.dom.DomConverter;
 import com.softmed.stockapp.dom.entities.Balances;
 import com.softmed.stockapp.dom.entities.Location;
+import com.softmed.stockapp.dom.entities.Message;
+import com.softmed.stockapp.dom.entities.MessageRecipients;
 import com.softmed.stockapp.dom.entities.OtherUsers;
 import com.softmed.stockapp.dom.entities.Product;
 import com.softmed.stockapp.dom.entities.Transactions;
@@ -85,6 +87,8 @@ public class LoginActivity extends BaseActivity {
     private Endpoints.ProductsService productsServices;
     private UsersInfo userInfo;
     private Endpoints.LoginService loginService;
+    private Endpoints.MessagesServices messagesServices;
+
     // Session Manager Class
     private SessionManager session;
 
@@ -345,6 +349,7 @@ public class LoginActivity extends BaseActivity {
                         categoriesService = ServiceGenerator.createService(Endpoints.CategoriesService.class, session.getUserName(), session.getUserPass());
                         transactionServices = ServiceGenerator.createService(Endpoints.TransactionServices.class, session.getUserName(), session.getUserPass());
                         productsServices = ServiceGenerator.createService(Endpoints.ProductsService.class, session.getUserName(), session.getUserPass());
+                        messagesServices = ServiceGenerator.createService(Endpoints.MessagesServices.class, session.getUserName(), session.getUserPass());
 
                         new AsyncTask<Void, Void, Void>() {
                             @Override
@@ -670,6 +675,56 @@ public class LoginActivity extends BaseActivity {
                     Log.e("", "An error encountered!");
                     Log.d("TransactionCheck", "failed with " + t.getMessage() + " " + t.toString());
                     loginMessages.setText(getResources().getString(R.string.error_loading_locations));
+                    loginMessages.setTextColor(getResources().getColor(R.color.color_error));
+                }
+            });
+        }
+    }
+
+    private void callMessages() {
+        if (session.isLoggedIn()) {
+            Call<List<Message>> call = messagesServices.getMessages();
+            call.enqueue(new Callback<List<Message>>() {
+                @Override
+                public void onResponse(Call<List<Message>> call, Response<List<Message>> response) {
+                    //Here will handle the responce from the server
+                    Log.d(TAG, "Message Check = " + new Gson().toJson(response.body()) + "");
+
+                    addMessagesAsyncTask task = new addMessagesAsyncTask(response.body());
+                    task.execute();
+                }
+
+                @Override
+                public void onFailure(Call<List<Message>> call, Throwable t) {
+                    //Error!
+                    Log.e("", "An error encountered!");
+                    Log.d("TransactionCheck", "failed with " + t.getMessage() + " " + t.toString());
+                    loginMessages.setText("Error loading messages");
+                    loginMessages.setTextColor(getResources().getColor(R.color.color_error));
+                }
+            });
+        }
+    }
+
+    private void callMessageRecipients() {
+        if (session.isLoggedIn()) {
+            Call<List<MessageRecipients>> call = messagesServices.getMessageRecipients();
+            call.enqueue(new Callback<List<MessageRecipients>>() {
+                @Override
+                public void onResponse(Call<List<MessageRecipients>> call, Response<List<MessageRecipients>> response) {
+                    //Here will handle the responce from the server
+                    Log.d(TAG, "Message Recipients Check = " + new Gson().toJson(response.body()) + "");
+
+                    addMessageRecipientsAsyncTask task = new addMessageRecipientsAsyncTask(response.body());
+                    task.execute();
+                }
+
+                @Override
+                public void onFailure(Call<List<MessageRecipients>> call, Throwable t) {
+                    //Error!
+                    Log.e("", "An error encountered!");
+                    Log.d("TransactionCheck", "failed with " + t.getMessage() + " " + t.toString());
+                    loginMessages.setText("Error loading message recipients");
                     loginMessages.setTextColor(getResources().getColor(R.color.color_error));
                 }
             });
@@ -1010,13 +1065,87 @@ public class LoginActivity extends BaseActivity {
                     loginButton.setText(getResources().getString(R.string.login));
                     session.clearSession();
                 } else {
-                    callBalances();
+                    callMessages();
                 }
             } catch (Exception e) {
                 e.printStackTrace();
             }
 
 
+        }
+    }
+
+    class addMessagesAsyncTask extends AsyncTask<Void, Void, Void> {
+        List<Message> results;
+
+        addMessagesAsyncTask(List<Message> responces) {
+            this.results = responces;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            loginMessages.setText("Loading Messages..");
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            try {
+
+                for (Message message : results) {
+                    message.setUuid(message.getId());
+                    baseDatabase.messagesModelDao().addMessage(message);
+                    Log.d(TAG, "Message Subject : " + message.getSubject());
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            callMessageRecipients();
+
+
+        }
+    }
+
+    class addMessageRecipientsAsyncTask extends AsyncTask<Void, Void, Void> {
+        List<MessageRecipients> results;
+
+        addMessageRecipientsAsyncTask(List<MessageRecipients> responces) {
+            this.results = responces;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            loginMessages.setText("Loading Message Recipients..");
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+            try {
+
+                for (MessageRecipients recipient : results) {
+
+                    Log.d(TAG, "Message Recipient : " + recipient.getRecipientId());
+                    baseDatabase.messageRecipientsModelDao().addRecipient(recipient);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            callBalances();
         }
     }
 
