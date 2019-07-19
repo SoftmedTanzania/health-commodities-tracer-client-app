@@ -11,8 +11,6 @@ import androidx.work.WorkerParameters;
 import com.google.gson.Gson;
 import com.softmed.stockapp.api.Endpoints;
 import com.softmed.stockapp.database.AppDatabase;
-import com.softmed.stockapp.dom.dto.MessageRecipientsDTO;
-import com.softmed.stockapp.dom.entities.Message;
 import com.softmed.stockapp.dom.entities.MessageRecipients;
 import com.softmed.stockapp.utils.ServiceGenerator;
 import com.softmed.stockapp.utils.SessionManager;
@@ -54,8 +52,7 @@ public class SendMessageRecipientWorker extends Worker {
         AppDatabase database = AppDatabase.getDatabase(this.getApplicationContext());
 
 
-        MessageRecipients messageRecipients = database.messageRecipientsModelDao().getMessageRecipientsByMessageIdAndRecipientId(messageId,Integer.parseInt(sess.getUserUUID()));
-
+        MessageRecipients messageRecipients = database.messageRecipientsModelDao().getMessageRecipientsByMessageIdAndRecipientId(messageId, Integer.parseInt(sess.getUserUUID()));
 
         Call<MessageRecipients> messageCall = messagesServices.postMessageRecipient(getRequestBody(messageRecipients));
 
@@ -71,7 +68,7 @@ public class SendMessageRecipientWorker extends Worker {
 
                 MessageRecipients messageRecipient = response.body();
 
-                Log.d(TAG,"Saved message Recipient = "+new Gson().toJson(messageRecipient));
+                Log.d(TAG, "Saved message Recipient = " + new Gson().toJson(messageRecipient));
 
                 return Result.success();
 

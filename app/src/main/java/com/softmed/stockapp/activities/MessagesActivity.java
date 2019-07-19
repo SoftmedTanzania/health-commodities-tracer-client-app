@@ -37,6 +37,7 @@ import com.softmed.stockapp.fixtures.MessagesFixtures;
 import com.softmed.stockapp.utils.AppUtils;
 import com.softmed.stockapp.utils.SessionManager;
 import com.softmed.stockapp.viewmodels.MessageListViewModel;
+import com.softmed.stockapp.workers.SendMessageRecipientWorker;
 import com.softmed.stockapp.workers.SendMessagesWorker;
 import com.stfalcon.chatkit.commons.ImageLoader;
 import com.stfalcon.chatkit.messages.MessageInput;
@@ -348,7 +349,7 @@ public class MessagesActivity extends AppCompatActivity
                                         .setRequiredNetworkType(NetworkType.CONNECTED)
                                         .build();
 
-                                OneTimeWorkRequest sendMessage = new OneTimeWorkRequest.Builder(SendMessagesWorker.class)
+                                OneTimeWorkRequest sendMessage = new OneTimeWorkRequest.Builder(SendMessageRecipientWorker.class)
                                         .setConstraints(networkConstraints)
                                         .setInputData(
                                                 new Data.Builder()
