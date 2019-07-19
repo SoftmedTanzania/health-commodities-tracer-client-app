@@ -26,6 +26,9 @@ public interface MessageRecipientsModelDao {
     @Query("SELECT * FROM MessageRecipients WHERE messageId = :messageId")
     List<MessageRecipients> getAllMessageRecipientsByMessageId(String messageId);
 
+    @Query("SELECT * FROM MessageRecipients WHERE messageId = :messageId AND recipientId =:recipientId ")
+    MessageRecipients getMessageRecipientsByMessageIdAndRecipientId(String messageId, int recipientId);
+
     @Query("SELECT COUNT(*) FROM MessageRecipients WHERE " +
             "isRead = :isRead AND " +
             "recipientId = :userId AND " +
@@ -43,6 +46,9 @@ public interface MessageRecipientsModelDao {
 
     @Query("UPDATE MessageRecipients SET id = :newId WHERE messageId = :oldId")
     int updateIds(String oldId, String newId);
+
+    @Query("UPDATE MessageRecipients SET isRead = :isRead WHERE messageId = :messageId AND recipientId =:userId ")
+    int updateIsReadStatus(boolean isRead, String messageId,int userId);
 
     @Delete
     void deleteRecipient(MessageRecipients messageRecipients);

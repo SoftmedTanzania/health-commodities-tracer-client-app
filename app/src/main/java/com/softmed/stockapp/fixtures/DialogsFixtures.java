@@ -3,7 +3,7 @@ package com.softmed.stockapp.fixtures;
 
 import com.softmed.stockapp.dom.model.IMessageDTO;
 import com.softmed.stockapp.dom.model.MessageDialog;
-import com.softmed.stockapp.dom.model.MessageUserDTO;
+import com.softmed.stockapp.dom.model.IMessageUser;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -32,29 +32,29 @@ public final class DialogsFixtures extends FixturesData {
     }
 
     private static MessageDialog getDialog(int i, Date lastMessageCreatedAt) {
-        ArrayList<MessageUserDTO> messageUserDTOS = getUsers();
+        ArrayList<IMessageUser> IMessageUsers = getUsers();
         return new MessageDialog(
                 getRandomId(),
-                messageUserDTOS.size() > 1 ? groupChatTitles.get(messageUserDTOS.size() - 2) : messageUserDTOS.get(0).getName(),
-                messageUserDTOS.size() > 1 ? groupChatImages.get(messageUserDTOS.size() - 2) : getRandomAvatar(),
-                messageUserDTOS,
+                IMessageUsers.size() > 1 ? groupChatTitles.get(IMessageUsers.size() - 2) : IMessageUsers.get(0).getName(),
+                IMessageUsers.size() > 1 ? groupChatImages.get(IMessageUsers.size() - 2) : getRandomAvatar(),
+                IMessageUsers,
                 getMessage(lastMessageCreatedAt),
                 i < 3 ? 3 - i : 0);
     }
 
-    private static ArrayList<MessageUserDTO> getUsers() {
-        ArrayList<MessageUserDTO> messageUserDTOS = new ArrayList<>();
+    private static ArrayList<IMessageUser> getUsers() {
+        ArrayList<IMessageUser> IMessageUsers = new ArrayList<>();
         int usersCount = 1 + rnd.nextInt(4);
 
         for (int i = 0; i < usersCount; i++) {
-            messageUserDTOS.add(getUser());
+            IMessageUsers.add(getUser());
         }
 
-        return messageUserDTOS;
+        return IMessageUsers;
     }
 
-    private static MessageUserDTO getUser() {
-        return new MessageUserDTO(
+    private static IMessageUser getUser() {
+        return new IMessageUser(
                 getRandomId(),
                 getRandomName(),
                 getRandomAvatar(),

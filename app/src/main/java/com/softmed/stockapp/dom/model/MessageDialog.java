@@ -13,29 +13,29 @@ public class MessageDialog implements IDialog<IMessageDTO> {
     private String dialogPhoto;
     private String dialogName;
     private String parentMessageId="";
-    private ArrayList<MessageUserDTO> messageUserDTOS;
+    private ArrayList<IMessageUser> IMessageUsers;
     private IMessageDTO lastIMessageDTO;
 
     private int unreadCount;
 
     public MessageDialog(String id, String name, String photo,
-                         ArrayList<MessageUserDTO> messageUserDTOS, IMessageDTO lastIMessageDTO, int unreadCount) {
+                         ArrayList<IMessageUser> IMessageUsers, IMessageDTO lastIMessageDTO, int unreadCount) {
 
         this.id = id;
         this.dialogName = name;
         this.dialogPhoto = photo;
-        this.messageUserDTOS = messageUserDTOS;
+        this.IMessageUsers = IMessageUsers;
         this.lastIMessageDTO = lastIMessageDTO;
         this.unreadCount = unreadCount;
     }
 
     public MessageDialog(String id, String name, String photo,
-                         ArrayList<MessageUserDTO> messageUserDTOS, IMessageDTO lastIMessageDTO, int unreadCount, String parentMessageId) {
+                         ArrayList<IMessageUser> IMessageUsers, IMessageDTO lastIMessageDTO, int unreadCount, String parentMessageId) {
 
         this.id = id;
         this.dialogName = name;
         this.dialogPhoto = photo;
-        this.messageUserDTOS = messageUserDTOS;
+        this.IMessageUsers = IMessageUsers;
         this.lastIMessageDTO = lastIMessageDTO;
         this.unreadCount = unreadCount;
         this.parentMessageId = parentMessageId;
@@ -57,8 +57,8 @@ public class MessageDialog implements IDialog<IMessageDTO> {
     }
 
     @Override
-    public ArrayList<MessageUserDTO> getUsers() {
-        return messageUserDTOS;
+    public ArrayList<IMessageUser> getUsers() {
+        return IMessageUsers;
     }
 
     @Override

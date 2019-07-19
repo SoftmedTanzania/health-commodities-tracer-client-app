@@ -27,11 +27,12 @@ import com.amulyakhare.textdrawable.TextDrawable;
 import com.google.gson.Gson;
 import com.softmed.stockapp.R;
 import com.softmed.stockapp.database.AppDatabase;
+import com.softmed.stockapp.dom.dto.MessageUserDTO;
 import com.softmed.stockapp.dom.entities.Message;
 import com.softmed.stockapp.dom.entities.MessageRecipients;
 import com.softmed.stockapp.dom.entities.OtherUsers;
 import com.softmed.stockapp.dom.model.IMessageDTO;
-import com.softmed.stockapp.dom.model.MessageUserDTO;
+import com.softmed.stockapp.dom.model.IMessageUser;
 import com.softmed.stockapp.fixtures.MessagesFixtures;
 import com.softmed.stockapp.utils.AppUtils;
 import com.softmed.stockapp.utils.SessionManager;
@@ -69,7 +70,7 @@ public class MessagesActivity extends AppCompatActivity
     private SessionManager sessionManager;
     private ArrayList<Integer> usersIds;
     private AppDatabase appDatabase;
-    private MessageUserDTO currentMessageUserDTO;
+    private IMessageUser currentIMessageUser;
     private boolean isFIrstLoad = true;
 
     public static void open(Context context, String parentMessageId, ArrayList<Integer> usersIds) {
@@ -221,7 +222,7 @@ public class MessagesActivity extends AppCompatActivity
         }.execute(newMessage);
 
 
-        IMessageDTO iMessageDTO = new IMessageDTO(newMessage.getId(), currentMessageUserDTO, newMessage.getMessageBody(), new Date(newMessage.getCreateDate()));
+        IMessageDTO iMessageDTO = new IMessageDTO(newMessage.getId(), currentIMessageUser, newMessage.getMessageBody(), new Date(newMessage.getCreateDate()));
         messagesAdapter.addToStart(iMessageDTO, true);
         return true;
     }
@@ -302,12 +303,11 @@ public class MessagesActivity extends AppCompatActivity
         MessageListViewModel messageListViewModel = ViewModelProviders.of(this).get(MessageListViewModel.class);
         messageListViewModel.getMessageByThread(parentMessageId).observe(MessagesActivity.this, new Observer<List<com.softmed.stockapp.dom.dto.MessageUserDTO>>() {
             @Override
-            public void onChanged(List<com.softmed.stockapp.dom.dto.MessageUserDTO> messageUserDTOS) {
+            public void onChanged(List<MessageUserDTO> messageUserDTOS) {
                 if (messageUserDTOS != null) {
                     ArrayList<IMessageDTO> IMessageDTOS = new ArrayList<>();
-                    for (com.softmed.stockapp.dom.dto.MessageUserDTO messageUserDTO : messageUserDTOS) {
+                    for (MessageUserDTO messageUserDTO : messageUserDTOS) {
                         IMessageDTOS.add(toIMessageDTO(messageUserDTO));
-
                         if (!isFIrstLoad)
                             messagesAdapter.update(toIMessageDTO(messageUserDTO));
                     }
@@ -317,8 +317,51 @@ public class MessagesActivity extends AppCompatActivity
 
                     if (isFIrstLoad)
                         messagesAdapter.addToEnd(IMessageDTOS, false);
-
                     isFIrstLoad = false;
+
+
+
+                    new AsyncTask<Void,Void,List<String>>(){
+                        @Override
+                        protected List<String> doInBackground(Void... voids) {
+
+                            List<String> updatedMessageId = new ArrayList<>();
+                            for(MessageUserDTO messageUserDTO:messageUserDTOS){
+                                int updateCount = appDatabase.messageRecipientsModelDao().updateIsReadStatus(true,messageUserDTO.getId(),Integer.parseInt(sessionManager.getUserUUID()));
+                                Log.d(TAG,"Updated is read count = "+updateCount);
+
+                                if(updateCount>0){
+                                    updatedMessageId.add(messageUserDTO.getId());
+                                }
+                            }
+                            return updatedMessageId;
+                        }
+
+                        @Override
+                        protected void onPostExecute(List<String> messageIds) {
+                            super.onPostExecute(messageIds);
+
+
+                            for(String messageId:messageIds) {
+
+                                Constraints networkConstraints = new Constraints.Builder()
+                                        .setRequiredNetworkType(NetworkType.CONNECTED)
+                                        .build();
+
+                                OneTimeWorkRequest sendMessage = new OneTimeWorkRequest.Builder(SendMessagesWorker.class)
+                                        .setConstraints(networkConstraints)
+                                        .setInputData(
+                                                new Data.Builder()
+                                                        .putString("messageId", messageId)
+                                                        .build()
+                                        )
+                                        .build();
+
+                                WorkManager.getInstance().enqueue(sendMessage);
+                            }
+
+                        }
+                    }.execute();
                 }
             }
         });
@@ -338,24 +381,24 @@ public class MessagesActivity extends AppCompatActivity
     }
 
     public IMessageDTO toIMessageDTO(com.softmed.stockapp.dom.dto.MessageUserDTO messageUserDTO) {
-        MessageUserDTO user = new MessageUserDTO(String.valueOf(messageUserDTO.getUserId()), messageUserDTO.getFirstName() + " " + messageUserDTO.getSurname(),
+        IMessageUser user = new IMessageUser(String.valueOf(messageUserDTO.getUserId()), messageUserDTO.getFirstName() + " " + messageUserDTO.getSurname(),
                 messageUserDTO.getFirstName().charAt(0) + "" + messageUserDTO.getSurname().charAt(0), false);
         return new IMessageDTO(String.valueOf(messageUserDTO.getUuid()), user, messageUserDTO.getMessageBody(), new Date(messageUserDTO.getCreateDate()));
     }
 
     @SuppressLint("StaticFieldLeak")
     private void loadCurrentUser() {
-        new AsyncTask<Void, Void, List<MessageUserDTO>>() {
+        new AsyncTask<Void, Void, List<IMessageUser>>() {
             @Override
-            protected List<MessageUserDTO> doInBackground(Void... voids) {
+            protected List<IMessageUser> doInBackground(Void... voids) {
                 OtherUsers user = appDatabase.usersModelDao().getUser(Integer.parseInt(sessionManager.getUserUUID()));
-                currentMessageUserDTO = new MessageUserDTO(String.valueOf(user.getId()), user.getFirstName() + " " + user.getSurname(), null, false);
+                currentIMessageUser = new IMessageUser(String.valueOf(user.getId()), user.getFirstName() + " " + user.getSurname(), null, false);
                 return null;
             }
 
             @Override
-            protected void onPostExecute(List<MessageUserDTO> messageUserDTOS) {
-                super.onPostExecute(messageUserDTOS);
+            protected void onPostExecute(List<IMessageUser> IMessageUsers) {
+                super.onPostExecute(IMessageUsers);
             }
         }.execute();
     }

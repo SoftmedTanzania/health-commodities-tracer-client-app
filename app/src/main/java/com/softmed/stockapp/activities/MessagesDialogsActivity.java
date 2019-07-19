@@ -28,7 +28,7 @@ import com.softmed.stockapp.dom.entities.MessageRecipients;
 import com.softmed.stockapp.dom.entities.OtherUsers;
 import com.softmed.stockapp.dom.model.IMessageDTO;
 import com.softmed.stockapp.dom.model.MessageDialog;
-import com.softmed.stockapp.dom.model.MessageUserDTO;
+import com.softmed.stockapp.dom.model.IMessageUser;
 import com.softmed.stockapp.utils.AppUtils;
 import com.softmed.stockapp.utils.SessionManager;
 import com.softmed.stockapp.viewmodels.MessageListViewModel;
@@ -195,9 +195,9 @@ public class MessagesDialogsActivity extends AppCompatActivity
 
         Log.d(TAG, "creator id = " + message.getCreatorId());
 
-        ArrayList<MessageUserDTO> messageUserDTOS = new ArrayList<>();
+        ArrayList<IMessageUser> IMessageUsers = new ArrayList<>();
         if (message.getCreatorId() != Integer.parseInt(session.getUserUUID())) {
-            messageUserDTOS.add(getUser(message.getCreatorId()));
+            IMessageUsers.add(getUser(message.getCreatorId()));
         }
 
         List<MessageRecipients> messageRecipients = baseDatabase.messageRecipientsModelDao().getAllMessageRecipientsByMessageId(message.getId());
@@ -208,23 +208,23 @@ public class MessagesDialogsActivity extends AppCompatActivity
             Log.d(TAG, "recipient id = " + recipientId);
 
             if (recipientId != Integer.parseInt(session.getUserUUID())) {
-                messageUserDTOS.add(getUser(recipientId));
+                IMessageUsers.add(getUser(recipientId));
             }
         }
 
 
         return new MessageDialog(
                 message.getParentMessageId().equals("0") ? message.getId() : message.getParentMessageId(),
-                messageUserDTOS.size() > 1 ? message.getSubject() : messageUserDTOS.get(0).getName() + " - " + message.getSubject(),
-                messageUserDTOS.size() > 1 ? "group" : getInitials(messageUserDTOS.get(0)),
-                messageUserDTOS, getLastMessage(message), message.getSyncStatus(), message.getParentMessageId());
+                IMessageUsers.size() > 1 ? message.getSubject() : IMessageUsers.get(0).getName() + " - " + message.getSubject(),
+                IMessageUsers.size() > 1 ? "group" : getInitials(IMessageUsers.get(0)),
+                IMessageUsers, getLastMessage(message), message.getSyncStatus(), message.getParentMessageId());
 
 
     }
 
 
-    private String getInitials(MessageUserDTO messageUserDTO) {
-        String[] names = messageUserDTO.getName().split(" ");
+    private String getInitials(IMessageUser IMessageUser) {
+        String[] names = IMessageUser.getName().split(" ");
         return names[0].charAt(0) + "" + names[1].charAt(0);
 
     }
@@ -238,9 +238,9 @@ public class MessagesDialogsActivity extends AppCompatActivity
                 new Date(message.getCreateDate()));
     }
 
-    private MessageUserDTO getUser(int userId) {
+    private IMessageUser getUser(int userId) {
         OtherUsers otherUsers = baseDatabase.usersModelDao().getUser(userId);
-        return new MessageUserDTO(
+        return new IMessageUser(
                 String.valueOf(otherUsers.getId()),
                 otherUsers.getFirstName() + " " + otherUsers.getSurname(),
                 otherUsers.getFirstName().charAt(0) + "" + otherUsers.getSurname().charAt(0),
@@ -251,8 +251,8 @@ public class MessagesDialogsActivity extends AppCompatActivity
     @Override
     public void onDialogClick(MessageDialog messageDialog) {
         ArrayList<Integer> userIds = new ArrayList<>();
-        for (MessageUserDTO messageUserDTO : messageDialog.getUsers()) {
-            userIds.add(Integer.parseInt(messageUserDTO.getId()));
+        for (IMessageUser IMessageUser : messageDialog.getUsers()) {
+            userIds.add(Integer.parseInt(IMessageUser.getId()));
         }
 
         Log.d(TAG, "Message DIalog = " + new Gson().toJson(messageDialog));
