@@ -220,31 +220,10 @@ public class MessagesDialogsActivity extends AppCompatActivity
 
     }
 
-    private String getGroupNames(ArrayList<MessageUserDTO> messageUserDTOS) {
-        String names = "";
-        for (MessageUserDTO messageUserDTO : messageUserDTOS) {
-            names.concat(messageUserDTO.getName());
-            names.concat(" ");
-        }
-        return names;
-
-    }
 
     private String getInitials(MessageUserDTO messageUserDTO) {
         String[] names = messageUserDTO.getName().split(" ");
         return names[0].charAt(0) + "" + names[1].charAt(0);
-
-    }
-
-
-    private String getGroupInitials(ArrayList<MessageUserDTO> messageUserDTOS) {
-        String names = "";
-        for (MessageUserDTO messageUserDTO : messageUserDTOS) {
-            String[] namesArray = messageUserDTO.getName().split(" ");
-            names = namesArray[0].charAt(0) + "" + namesArray[1].charAt(0);
-        }
-
-        return names;
 
     }
 
