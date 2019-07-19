@@ -38,7 +38,7 @@ import com.softmed.stockapp.fragments.ProductsListFragment;
 import com.softmed.stockapp.fragments.UpcomingReportingScheduleFragment;
 import com.softmed.stockapp.fragments.UpdateStockFragment;
 import com.softmed.stockapp.utils.SessionManager;
-import com.softmed.stockapp.utils.VerticalArrow;
+import com.softmed.stockapp.customViews.VerticalArrow;
 import com.softmed.stockapp.utils.ZoomOutPageTransformer;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 

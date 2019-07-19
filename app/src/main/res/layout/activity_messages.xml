@@ -50,7 +50,7 @@
             app:textAutoLink="all" />
 
 
-        <com.softmed.stockapp.utils.MessageInput
+        <com.softmed.stockapp.customViews.MessageInput
             android:id="@+id/input"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

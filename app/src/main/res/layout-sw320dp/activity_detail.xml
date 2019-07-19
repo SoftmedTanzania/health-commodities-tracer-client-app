@@ -21,7 +21,7 @@
 
     </FrameLayout>
 
-    <com.softmed.stockapp.utils.CustomScrollView
+    <com.softmed.stockapp.customViews.CustomScrollView
         android:id="@+id/scrollable"
         android:layout_below="@id/product_photo_container"
         android:layout_width="match_parent"
@@ -278,7 +278,7 @@
 
         </LinearLayout>
 
-    </com.softmed.stockapp.utils.CustomScrollView>
+    </com.softmed.stockapp.customViews.CustomScrollView>
 
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:layout_alignParentBottom="true"

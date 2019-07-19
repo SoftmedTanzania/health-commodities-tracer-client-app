@@ -36,7 +36,7 @@ import com.softmed.stockapp.dom.model.IMessageDTO;
 import com.softmed.stockapp.dom.model.IMessageUser;
 import com.softmed.stockapp.fixtures.MessagesFixtures;
 import com.softmed.stockapp.utils.AppUtils;
-import com.softmed.stockapp.utils.MessageInput;
+import com.softmed.stockapp.customViews.MessageInput;
 import com.softmed.stockapp.utils.SessionManager;
 import com.softmed.stockapp.viewmodels.MessageListViewModel;
 import com.softmed.stockapp.workers.SendMessageRecipientWorker;

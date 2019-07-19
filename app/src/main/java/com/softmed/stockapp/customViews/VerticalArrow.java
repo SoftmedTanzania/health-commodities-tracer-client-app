@@ -1,4 +1,4 @@
-package com.softmed.stockapp.utils;
+package com.softmed.stockapp.customViews;
 
 import android.animation.ObjectAnimator;
 import android.graphics.Canvas;

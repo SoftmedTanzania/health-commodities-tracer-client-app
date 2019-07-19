@@ -33,7 +33,7 @@ import com.softmed.stockapp.dom.entities.Product;
 import com.softmed.stockapp.dom.entities.ProductBalance;
 import com.softmed.stockapp.dom.entities.Transactions;
 import com.softmed.stockapp.fragments.AddTransactionDialogue;
-import com.softmed.stockapp.utils.CustomScrollView;
+import com.softmed.stockapp.customViews.CustomScrollView;
 import com.softmed.stockapp.utils.LoadProductPhotoAsync;
 import com.softmed.stockapp.utils.PhotoHelper;
 import com.softmed.stockapp.utils.SessionManager;
