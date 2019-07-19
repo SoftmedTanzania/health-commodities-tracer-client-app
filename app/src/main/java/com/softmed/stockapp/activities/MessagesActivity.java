@@ -36,12 +36,12 @@ import com.softmed.stockapp.dom.model.IMessageDTO;
 import com.softmed.stockapp.dom.model.IMessageUser;
 import com.softmed.stockapp.fixtures.MessagesFixtures;
 import com.softmed.stockapp.utils.AppUtils;
+import com.softmed.stockapp.utils.MessageInput;
 import com.softmed.stockapp.utils.SessionManager;
 import com.softmed.stockapp.viewmodels.MessageListViewModel;
 import com.softmed.stockapp.workers.SendMessageRecipientWorker;
 import com.softmed.stockapp.workers.SendMessagesWorker;
 import com.stfalcon.chatkit.commons.ImageLoader;
-import com.stfalcon.chatkit.messages.MessageInput;
 import com.stfalcon.chatkit.messages.MessagesList;
 import com.stfalcon.chatkit.utils.DateFormatter;
 

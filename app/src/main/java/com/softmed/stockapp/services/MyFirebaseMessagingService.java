@@ -260,8 +260,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         try {
             object.put("user", session.getUserUUID());
-            object.put("google_push_notification_token", token);
-            object.put("location", session.getFacilityId());
+            object.put("reg_id", token);
 
             datastream = object.toString();
             Log.d("FCMService", "data " + datastream);

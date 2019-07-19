@@ -48,4 +48,7 @@
     <color name="brown">#4e342e</color>
 
 
+    <color name="color_secondary_dark">#FF8A65</color>
+    <color name="color_secondary_light">#FFCCBC</color>
+
 </resources>

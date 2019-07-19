@@ -21,7 +21,7 @@
     <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:background="@color/white"
+        android:background="#ededed"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
         <com.stfalcon.chatkit.messages.MessagesList
@@ -29,9 +29,10 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_above="@+id/input"
+            app:dateHeaderTextColor="@color/color_primary"
             app:dateHeaderFormat="dd MMMM yyyy"
-            app:incomingDefaultBubbleColor="@color/color_primary"
-            app:incomingDefaultBubblePressedColor="@color/color_primary"
+            app:incomingDefaultBubbleColor="@color/color_secondary_light"
+            app:incomingDefaultBubblePressedColor="@color/color_secondary_dark"
             app:incomingDefaultBubbleSelectedColor="@color/gray"
             app:incomingDefaultImageOverlayPressedColor="@color/black_10"
             app:incomingDefaultImageOverlaySelectedColor="@color/gray_transparent"
@@ -48,18 +49,12 @@
             app:outcomingTextSize="18sp"
             app:textAutoLink="all" />
 
-        <View
-            android:layout_width="match_parent"
-            android:layout_height="1dp"
-            android:layout_above="@+id/input"
-            android:layout_marginLeft="16dp"
-            android:layout_marginRight="16dp"
-            android:background="@color/gray_light" />
 
-        <com.stfalcon.chatkit.messages.MessageInput
+        <com.softmed.stockapp.utils.MessageInput
             android:id="@+id/input"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:layout_margin="8dp"
             android:layout_alignParentBottom="true"
             app:attachmentButtonDefaultIconColor="@color/color_primary"
             app:attachmentButtonDefaultIconPressedColor="@color/color_primary_variant"
