@@ -56,7 +56,7 @@ public class SendMessageRecipientWorker extends Worker {
 
         Call messageCall = messagesServices.updateMessageReadStatus(getRequestBody(messageRecipients));
 
-        Response response = null;
+        Response<String> response = null;
         try {
             response = messageCall.execute();
         } catch (IOException e) {
@@ -73,7 +73,7 @@ public class SendMessageRecipientWorker extends Worker {
 
             } else {
                 Log.d(TAG, "Updating Message Recipient Failed with code " + response.code());
-                return Result.retry();
+                return Result.failure();
             }
         } else {
             return Result.failure();

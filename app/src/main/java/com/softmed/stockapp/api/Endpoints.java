@@ -93,7 +93,7 @@ public class Endpoints {
         Call<MessageRecipientsDTO> postMessages(@Body RequestBody e);
 
         @PUT("update_read_message_status")
-        Call<MessageRecipients> updateMessageReadStatus(@Body RequestBody e);
+        Call<String> updateMessageReadStatus(@Body RequestBody e);
     }
 
     public interface NotificationServices {

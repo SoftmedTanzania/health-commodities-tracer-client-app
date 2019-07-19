@@ -24,22 +24,33 @@ import android.content.Intent;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Build;
+import android.util.Log;
+
 import androidx.core.app.NotificationCompat;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 
-import android.util.Log;
-
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.softmed.stockapp.R;
 import com.softmed.stockapp.activities.MainActivity;
 import com.softmed.stockapp.api.Endpoints;
+import com.softmed.stockapp.database.AppDatabase;
+import com.softmed.stockapp.dom.dto.MessageRecipientsDTO;
+import com.softmed.stockapp.dom.entities.Message;
+import com.softmed.stockapp.dom.entities.MessageRecipients;
 import com.softmed.stockapp.utils.ServiceGenerator;
 import com.softmed.stockapp.utils.SessionManager;
 import com.softmed.stockapp.workers.NotificationWorker;
 
 import org.json.JSONObject;
+
+import java.lang.reflect.Type;
+import java.util.List;
+import java.util.concurrent.Executor;
+import java.util.concurrent.Executors;
 
 import okhttp3.MediaType;
 import okhttp3.RequestBody;
@@ -51,12 +62,12 @@ import retrofit2.Response;
 /**
  * NOTE: There can only be one service in each app that receives FCM messages. If multiple
  * are declared in the Manifest then the first one will be chosen.
- *
+ * <p>
  * In order to make this Java sample functional, you must remove the following from the Kotlin messaging
  * service in the AndroidManifest.xml:
- *
+ * <p>
  * <intent-filter>
- *   <action android:name="com.google.firebase.MESSAGING_EVENT" />
+ * <action android:name="com.google.firebase.MESSAGING_EVENT" />
  * </intent-filter>
  */
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
@@ -91,23 +102,48 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         // Not getting messages here? See why this may be: https://goo.gl/39bRNJ
         Log.d(TAG, "From: " + remoteMessage.getFrom());
 
+        // Check if message contains a notification payload.
+        if (remoteMessage.getNotification() != null) {
+            Log.d(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
+        }
+
         // Check if message contains a data payload.
         if (remoteMessage.getData().size() > 0) {
             Log.d(TAG, "Message data payload: " + remoteMessage.getData());
 
-            if (/* Check if data needs to be processed by long running job */ true) {
-                // For long-running tasks (10 seconds or more) use WorkManager.
-                scheduleJob();
-            } else {
-                // Handle message within 10 seconds
-                handleNow();
+            try {
+
+                Gson gson = new Gson();
+                String jsonString = gson.toJson(remoteMessage.getData());
+
+                JSONObject data = new JSONObject(jsonString);
+
+                Log.d(TAG,"DATA OBJECT = "+data.toString());
+                JSONObject json =new JSONObject(data.getString("msg"));
+
+                String notificationBody = json.getString("type");
+                switch (notificationBody) {
+                    case "NEW_MESSAGE": {
+                        MessageRecipientsDTO messageRecipientsDTO = new Gson().fromJson(json.getString("data"), MessageRecipientsDTO.class);
+
+                        Log.d(TAG,"GENERATED MessageRecipientsDTO = "+new Gson().toJson(messageRecipientsDTO));
+                        saveNewMessage(messageRecipientsDTO);
+                        sendNotification("New Message");
+                    }
+                    break;
+
+                    case "UPDATE_READ_STATUS": {
+                        Type listType = new TypeToken<List<MessageRecipients>>() {
+                        }.getType();
+                        List<MessageRecipients> messageRecipients = new Gson().fromJson(json.getString("data"), listType);
+                        saveMessageRecipients(messageRecipients);
+                    }
+                    break;
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
 
-        }
-
-        // Check if message contains a notification payload.
-        if (remoteMessage.getNotification() != null) {
-            Log.d(TAG, "Message Notification Body: " + remoteMessage.getNotification().getBody());
         }
 
         // Also if you intend on generating your own notifications as a result of a received FCM
@@ -152,9 +188,52 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         Log.d(TAG, "Short lived task is done.");
     }
 
+    private void saveNewMessage(MessageRecipientsDTO messageRecipientsDTO) {
+
+        Executor executor = Executors.newFixedThreadPool(2);
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                AppDatabase appDatabase = AppDatabase.getDatabase(getApplicationContext());
+
+                Message m = new Message();
+                m.setId(messageRecipientsDTO.getId());
+                m.setUuid(messageRecipientsDTO.getId());
+                m.setSubject(messageRecipientsDTO.getSubject());
+                m.setMessageBody(messageRecipientsDTO.getMessageBody());
+                m.setCreatorId(messageRecipientsDTO.getCreatorId());
+                m.setCreateDate(messageRecipientsDTO.getCreateDate());
+                m.setParentMessageId(messageRecipientsDTO.getParentMessageId());
+                m.setSyncStatus(1);
+                appDatabase.messagesModelDao().addMessage(m);
+
+                for (MessageRecipients messageRecipient : messageRecipientsDTO.getMessageRecipients()) {
+                    appDatabase.messageRecipientsModelDao().addRecipient(messageRecipient);
+                }
+            }
+        });
+
+    }
+
+    private void saveMessageRecipients(List<MessageRecipients> recipientsList) {
+
+        Executor executor = Executors.newFixedThreadPool(2);
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                AppDatabase appDatabase = AppDatabase.getDatabase(getApplicationContext());
+                for (MessageRecipients messageRecipient : recipientsList) {
+                    appDatabase.messageRecipientsModelDao().addRecipient(messageRecipient);
+                }
+            }
+        });
+
+    }
+
+
     /**
      * Persist token to third-party servers.
-     *
+     * <p>
      * Modify this method to associate the user's FCM InstanceID token with any server-side account
      * maintained by your application.
      *
@@ -188,7 +267,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         call.enqueue(new Callback() {
             @Override
             public void onResponse(Call call, Response response) {
-                Log.d(TAG,"Response code = "+response.code());
+                Log.d(TAG, "Response code = " + response.code());
             }
 
             @Override

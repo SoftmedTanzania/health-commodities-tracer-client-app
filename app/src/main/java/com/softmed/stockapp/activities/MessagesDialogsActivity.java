@@ -123,6 +123,7 @@ public class MessagesDialogsActivity extends AppCompatActivity
                             //More elegant solutions can be implemented later on
                             m.setSyncStatus(unreadCount);
 
+
                             latestMessages.add(m);
                         }
 
@@ -217,7 +218,10 @@ public class MessagesDialogsActivity extends AppCompatActivity
                 message.getParentMessageId().equals("0") ? message.getId() : message.getParentMessageId(),
                 IMessageUsers.size() > 1 ? message.getSubject() : IMessageUsers.get(0).getName() + " - " + message.getSubject(),
                 IMessageUsers.size() > 1 ? "group" : getInitials(IMessageUsers.get(0)),
-                IMessageUsers, getLastMessage(message), message.getSyncStatus(), message.getParentMessageId());
+                IMessageUsers,
+                getLastMessage(message),
+                message.getSyncStatus(),
+                message.getParentMessageId());
 
 
     }
@@ -231,6 +235,12 @@ public class MessagesDialogsActivity extends AppCompatActivity
 
 
     private IMessageDTO getLastMessage(Message message) {
+
+        Log.d(TAG,"create date timestamp = "+message.getCreateDate());
+
+        Date d = new Date(message.getCreateDate());
+        Log.d(TAG,"created date = "+d.toString());
+
         return new IMessageDTO(
                 message.getId(),
                 getUser(message.getCreatorId()),

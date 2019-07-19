@@ -26,6 +26,7 @@ import androidx.work.WorkManager;
 import com.amulyakhare.textdrawable.TextDrawable;
 import com.google.gson.Gson;
 import com.softmed.stockapp.R;
+import com.softmed.stockapp.adapters.MessagesListAdapter;
 import com.softmed.stockapp.database.AppDatabase;
 import com.softmed.stockapp.dom.dto.MessageUserDTO;
 import com.softmed.stockapp.dom.entities.Message;
@@ -42,7 +43,6 @@ import com.softmed.stockapp.workers.SendMessagesWorker;
 import com.stfalcon.chatkit.commons.ImageLoader;
 import com.stfalcon.chatkit.messages.MessageInput;
 import com.stfalcon.chatkit.messages.MessagesList;
-import com.stfalcon.chatkit.messages.MessagesListAdapter;
 import com.stfalcon.chatkit.utils.DateFormatter;
 
 import java.text.SimpleDateFormat;
@@ -309,8 +309,13 @@ public class MessagesActivity extends AppCompatActivity
                     ArrayList<IMessageDTO> IMessageDTOS = new ArrayList<>();
                     for (MessageUserDTO messageUserDTO : messageUserDTOS) {
                         IMessageDTOS.add(toIMessageDTO(messageUserDTO));
-                        if (!isFIrstLoad)
-                            messagesAdapter.update(toIMessageDTO(messageUserDTO));
+                        if (!isFIrstLoad) {
+                            if (messagesAdapter.getMessagePositionById(messageUserDTO.getId()) == -1) {
+                                messagesAdapter.addToStart(toIMessageDTO(messageUserDTO), true);
+                            } else {
+                                messagesAdapter.update(toIMessageDTO(messageUserDTO));
+                            }
+                        }
                     }
 
                     if (IMessageDTOS.size() > 0)
@@ -321,17 +326,16 @@ public class MessagesActivity extends AppCompatActivity
                     isFIrstLoad = false;
 
 
-
-                    new AsyncTask<Void,Void,List<String>>(){
+                    new AsyncTask<Void, Void, List<String>>() {
                         @Override
                         protected List<String> doInBackground(Void... voids) {
 
                             List<String> updatedMessageId = new ArrayList<>();
-                            for(MessageUserDTO messageUserDTO:messageUserDTOS){
-                                int updateCount = appDatabase.messageRecipientsModelDao().updateIsReadStatus(true,messageUserDTO.getId(),Integer.parseInt(sessionManager.getUserUUID()));
-                                Log.d(TAG,"Updated is read count = "+updateCount);
+                            for (MessageUserDTO messageUserDTO : messageUserDTOS) {
+                                int updateCount = appDatabase.messageRecipientsModelDao().updateIsReadStatus(true, messageUserDTO.getId(), Integer.parseInt(sessionManager.getUserUUID()));
+                                Log.d(TAG, "Updated is read count = " + updateCount);
 
-                                if(updateCount>0){
+                                if (updateCount > 0) {
                                     updatedMessageId.add(messageUserDTO.getId());
                                 }
                             }
@@ -342,8 +346,8 @@ public class MessagesActivity extends AppCompatActivity
                         protected void onPostExecute(List<String> messageIds) {
                             super.onPostExecute(messageIds);
 
-
-                            for(String messageId:messageIds) {
+                            Log.d(TAG, "message Ids to be update = " + new Gson().toJson(messageIds));
+                            for (String messageId : messageIds) {
 
                                 Constraints networkConstraints = new Constraints.Builder()
                                         .setRequiredNetworkType(NetworkType.CONNECTED)
