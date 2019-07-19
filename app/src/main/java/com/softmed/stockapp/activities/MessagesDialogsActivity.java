@@ -116,7 +116,14 @@ public class MessagesDialogsActivity extends AppCompatActivity
                     protected List<MessageDialog> doInBackground(Void... voids) {
                         List<Message> latestMessages = new ArrayList<>();
                         for (Message message : messages) {
-                            latestMessages.add(baseDatabase.messagesModelDao().getLatestMessages(message.getId()));
+
+                            Message m = baseDatabase.messagesModelDao().getLatestMessages(message.getId());
+                            int unreadCount = baseDatabase.messageRecipientsModelDao().getUnreadMessageCountByParentMessageId(message.getId(),false,Integer.parseInt(session.getUserUUID()));
+                            //Temporally using this field of unsync status cz its not needed at this point to store unread message count
+                            //More elegant solutions can be implemented later on
+                            m.setSyncStatus(unreadCount);
+
+                            latestMessages.add(m);
                         }
 
                         Collections.sort(latestMessages, new Comparator<Message>() {
@@ -210,7 +217,7 @@ public class MessagesDialogsActivity extends AppCompatActivity
                 message.getParentMessageId().equals("0") ? message.getId() : message.getParentMessageId(),
                 messageUserDTOS.size() > 1 ? message.getSubject() : messageUserDTOS.get(0).getName() + " - " + message.getSubject(),
                 messageUserDTOS.size() > 1 ? "group" : getInitials(messageUserDTOS.get(0)),
-                messageUserDTOS, getLastMessage(message), 0, message.getParentMessageId());
+                messageUserDTOS, getLastMessage(message), message.getSyncStatus(), message.getParentMessageId());
 
 
     }
