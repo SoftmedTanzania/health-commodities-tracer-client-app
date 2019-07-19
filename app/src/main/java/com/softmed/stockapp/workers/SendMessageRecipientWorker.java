@@ -54,9 +54,9 @@ public class SendMessageRecipientWorker extends Worker {
 
         MessageRecipients messageRecipients = database.messageRecipientsModelDao().getMessageRecipientsByMessageIdAndRecipientId(messageId, Integer.parseInt(sess.getUserUUID()));
 
-        Call<MessageRecipients> messageCall = messagesServices.updateMessageReadStatus(getRequestBody(messageRecipients));
+        Call messageCall = messagesServices.updateMessageReadStatus(getRequestBody(messageRecipients));
 
-        Response<MessageRecipients> response = null;
+        Response response = null;
         try {
             response = messageCall.execute();
         } catch (IOException e) {
@@ -66,9 +66,8 @@ public class SendMessageRecipientWorker extends Worker {
         if (response != null) {
             if (response.code() == 200 || response.code() == 201) {
 
-                MessageRecipients messageRecipient = response.body();
 
-                Log.d(TAG, "Saved message Recipient = " + new Gson().toJson(messageRecipient));
+                Log.d(TAG, "Saved message Recipient = " + new Gson().toJson(response.body()));
 
                 return Result.success();
 

@@ -92,7 +92,7 @@ public class Endpoints {
         @POST("api_sent_messages/")
         Call<MessageRecipientsDTO> postMessages(@Body RequestBody e);
 
-        @POST("update_read_message_status")
+        @PUT("update_read_message_status")
         Call<MessageRecipients> updateMessageReadStatus(@Body RequestBody e);
     }
 
