@@ -202,7 +202,17 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 m.setSubject(messageRecipientsDTO.getSubject());
                 m.setMessageBody(messageRecipientsDTO.getMessageBody());
                 m.setCreatorId(messageRecipientsDTO.getCreatorId());
-                m.setCreateDate(messageRecipientsDTO.getCreateDate());
+
+
+                //checking if the timestamp is in seconds or milliseconds.
+                //android supports milliseconds timestamps
+                int length = String.valueOf(messageRecipientsDTO.getCreateDate()).length();
+
+                if(length==10){
+                    messageRecipientsDTO.setCreateDate(messageRecipientsDTO.getCreateDate()*1000);
+                }
+
+                m.setCreateDate(messageRecipientsDTO.getCreateDate()*1000);
                 m.setParentMessageId(messageRecipientsDTO.getParentMessageId());
                 m.setSyncStatus(1);
                 appDatabase.messagesModelDao().addMessage(m);

@@ -1094,6 +1094,16 @@ public class LoginActivity extends BaseActivity {
 
                 for (Message message : results) {
                     message.setUuid(message.getId());
+
+
+                    //checking if the timestamp is in seconds or milliseconds.
+                    //android supports milliseconds timestamps
+                    int length = String.valueOf(message.getCreateDate()).length();
+
+                    if(length==10){
+                        message.setCreateDate(message.getCreateDate()*1000);
+                    }
+
                     baseDatabase.messagesModelDao().addMessage(message);
                     Log.d(TAG, "Message Subject : " + message.getSubject());
                 }
