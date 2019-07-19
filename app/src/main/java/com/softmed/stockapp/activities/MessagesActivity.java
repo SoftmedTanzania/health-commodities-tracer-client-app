@@ -75,6 +75,7 @@ public class MessagesActivity extends AppCompatActivity
         loadMessages();
     }
 
+    @SuppressLint("StaticFieldLeak")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -82,6 +83,10 @@ public class MessagesActivity extends AppCompatActivity
 
         sessionManager = new SessionManager(this);
         appDatabase = AppDatabase.getDatabase(MessagesActivity.this);
+
+
+        Toolbar toolbar = findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
 
         imageLoader = new ImageLoader() {
             @Override
@@ -107,11 +112,21 @@ public class MessagesActivity extends AppCompatActivity
         parentMessageId = getIntent().getStringExtra("parentMessageId");
         Log.d(TAG, "parent message Id = " + parentMessageId);
 
+        new AsyncTask<Void,Void,String>(){
+            @Override
+            protected String doInBackground(Void... voids) {
+                return appDatabase.messagesModelDao().getMessageById(parentMessageId).getSubject();
+            }
+
+            @Override
+            protected void onPostExecute(String s) {
+                super.onPostExecute(s);
+                setTitle(s);
+            }
+        }.execute();
+
         usersIds = getIntent().getIntegerArrayListExtra("userIds");
         loadCurrentUser();
-
-        Toolbar toolbar = findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
 
         messagesList = findViewById(R.id.messagesList);
         initAdapter();
