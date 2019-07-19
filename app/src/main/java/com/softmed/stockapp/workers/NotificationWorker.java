@@ -1,17 +1,17 @@
-package com.softmed.stockapp.services;
+package com.softmed.stockapp.workers;
 
 import android.content.Context;
-import androidx.annotation.NonNull;
 import android.util.Log;
 
+import androidx.annotation.NonNull;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
-public class MyWorker extends Worker {
+public class NotificationWorker extends Worker {
 
-    private static final String TAG = "MyWorker";
+    private static final String TAG = "SendBalancesWorker";
 
-    public MyWorker(@NonNull Context appContext, @NonNull WorkerParameters workerParams) {
+    public NotificationWorker(@NonNull Context appContext, @NonNull WorkerParameters workerParams) {
         super(appContext, workerParams);
     }
 

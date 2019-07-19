@@ -37,10 +37,10 @@ import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.github.mikephil.charting.utils.ColorTemplate;
 import com.github.mikephil.charting.utils.MPPointF;
+import com.softmed.stockapp.R;
 import com.softmed.stockapp.database.AppDatabase;
 import com.softmed.stockapp.dom.entities.CategoryBalance;
 import com.softmed.stockapp.dom.entities.ProductBalance;
-import com.softmed.stockapp.R;
 import com.softmed.stockapp.utils.SessionManager;
 import com.softmed.stockapp.viewmodels.CategoryBalanceViewModel;
 import com.softmed.stockapp.viewmodels.ProductsViewModel;
@@ -182,7 +182,7 @@ public class DashboardFragment extends Fragment {
                 DashboardFragment.this.categoryBalances = categoryBalances;
                 try {
                     setData();
-                }catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
@@ -216,17 +216,17 @@ public class DashboardFragment extends Fragment {
                             balance += " " + productBalance.getUnit();
                             ((TextView) v.findViewById(R.id.balance)).setText(balance);
 
-                            float stockSeverity = (productBalance.getBalance()*1f)/productBalance.getConsumptionQuantity();
+                            float stockSeverity = (productBalance.getBalance() * 1f) / productBalance.getConsumptionQuantity();
 
-                            Log.d(TAG,"severity value = "+stockSeverity);
+                            Log.d(TAG, "severity value = " + stockSeverity);
 
-                            if (stockSeverity>=6 ) {
+                            if (stockSeverity >= 6) {
                                 chart2Colors.add(Color.rgb(31, 36, 93));
-                            }else if (stockSeverity<6 && stockSeverity>=3) {
+                            } else if (stockSeverity < 6 && stockSeverity >= 3) {
                                 chart2Colors.add(Color.rgb(30, 185, 128));
-                            }else if (stockSeverity<3 && stockSeverity>=0.5) {
+                            } else if (stockSeverity < 3 && stockSeverity >= 0.5) {
                                 chart2Colors.add(Color.rgb(220, 220, 70));
-                            }else {
+                            } else {
                                 chart2Colors.add(Color.rgb(176, 0, 32));
                             }
 

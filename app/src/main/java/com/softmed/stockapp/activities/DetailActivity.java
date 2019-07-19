@@ -26,13 +26,13 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
+import com.softmed.stockapp.R;
 import com.softmed.stockapp.database.AppDatabase;
 import com.softmed.stockapp.dom.dto.ProductList;
 import com.softmed.stockapp.dom.entities.Product;
 import com.softmed.stockapp.dom.entities.ProductBalance;
 import com.softmed.stockapp.dom.entities.Transactions;
 import com.softmed.stockapp.fragments.AddTransactionDialogue;
-import com.softmed.stockapp.R;
 import com.softmed.stockapp.utils.CustomScrollView;
 import com.softmed.stockapp.utils.LoadProductPhotoAsync;
 import com.softmed.stockapp.utils.PhotoHelper;
@@ -137,7 +137,7 @@ public class DetailActivity extends AppCompatActivity {
 
         productsViewModel = ViewModelProviders.of(DetailActivity.this).get(ProductsViewModel.class);
 
-        productsViewModel.getProdictById(product.getId(),session.getFacilityId()).observe(DetailActivity.this, new Observer<ProductBalance>() {
+        productsViewModel.getProdictById(product.getId(), session.getFacilityId()).observe(DetailActivity.this, new Observer<ProductBalance>() {
             @Override
             public void onChanged(@Nullable final ProductBalance mProd) {
                 mProduct = mProd;
@@ -158,7 +158,7 @@ public class DetailActivity extends AppCompatActivity {
 
                         transactionsListViewModel = ViewModelProviders.of(DetailActivity.this).get(TransactionsListViewModel.class);
 
-                        transactionsListViewModel.getLastTransactionByProductId(mProduct.getProductId(),session.getFacilityId()).observe(DetailActivity.this, new Observer<Transactions>() {
+                        transactionsListViewModel.getLastTransactionByProductId(mProduct.getProductId(), session.getFacilityId()).observe(DetailActivity.this, new Observer<Transactions>() {
                             @Override
                             public void onChanged(@Nullable final Transactions transactions) {
 
@@ -191,7 +191,7 @@ public class DetailActivity extends AppCompatActivity {
                             }
                         });
 
-                        transactionsListViewModel.getTransactionsListByProductId(mProduct.getProductId(),session.getFacilityId()).observe(DetailActivity.this, new Observer<List<Transactions>>() {
+                        transactionsListViewModel.getTransactionsListByProductId(mProduct.getProductId(), session.getFacilityId()).observe(DetailActivity.this, new Observer<List<Transactions>>() {
                             @Override
                             public void onChanged(@Nullable List<Transactions> transactions) {
                                 transactionsTable.removeAllViews();
@@ -262,11 +262,11 @@ public class DetailActivity extends AppCompatActivity {
         });
 
 
-        ((CustomScrollView)findViewById(R.id.scrollable)).setMyScrollChangeListener(new CustomScrollView.OnMyScrollChangeListener() {
+        ((CustomScrollView) findViewById(R.id.scrollable)).setMyScrollChangeListener(new CustomScrollView.OnMyScrollChangeListener() {
             @Override
             public void onScrollUp() {
                 //Toast.makeText(getActivity(), "Scrolling up", Toast.LENGTH_SHORT).show();
-                Log.d("scroll","up");
+                Log.d("scroll", "up");
                 floatingActionButton.extend(true);
 
             }
@@ -274,7 +274,7 @@ public class DetailActivity extends AppCompatActivity {
             @Override
             public void onScrollDown() {
                 // Toast.makeText(getActivity(), "Scrolling down", Toast.LENGTH_SHORT).show();
-                Log.d("scroll","down");
+                Log.d("scroll", "down");
 
                 floatingActionButton.shrink(true);
 
@@ -310,7 +310,7 @@ public class DetailActivity extends AppCompatActivity {
      */
     private void populateViewsWithProductData() {
         String photoPath = "";
-        if( myProduct.getLocal_image_path()!=null) {
+        if (myProduct.getLocal_image_path() != null) {
             photoPath = myProduct.getLocal_image_path();
         }
 
@@ -405,7 +405,7 @@ public class DetailActivity extends AppCompatActivity {
             public void onMediaFilesPicked(MediaFile[] imageFiles, MediaSource source) {
                 final String photoPath = imageFiles[0].getFile().getAbsolutePath();
 
-                new AsyncTask<Void,Void,Void>(){
+                new AsyncTask<Void, Void, Void>() {
 
                     @Override
                     protected Void doInBackground(Void... voids) {

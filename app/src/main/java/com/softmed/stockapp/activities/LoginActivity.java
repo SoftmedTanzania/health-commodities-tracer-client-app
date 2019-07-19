@@ -9,9 +9,6 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
-
-import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -23,12 +20,17 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
+
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.iid.FirebaseInstanceId;
 import com.google.firebase.iid.InstanceIdResult;
 import com.google.gson.Gson;
 import com.rey.material.widget.ProgressView;
+import com.softmed.stockapp.R;
+import com.softmed.stockapp.api.Endpoints;
 import com.softmed.stockapp.database.AppDatabase;
 import com.softmed.stockapp.dom.DomConverter;
 import com.softmed.stockapp.dom.entities.Balances;
@@ -41,13 +43,10 @@ import com.softmed.stockapp.dom.responces.CategoriesResponse;
 import com.softmed.stockapp.dom.responces.LoginResponse;
 import com.softmed.stockapp.dom.responces.ProductReportingScheduleResponse;
 import com.softmed.stockapp.dom.responces.UnitsResponse;
-import com.softmed.stockapp.R;
 import com.softmed.stockapp.dom.responces.UserResponse;
-import com.softmed.stockapp.utils.Config;
 import com.softmed.stockapp.utils.LargeDiagonalCutPathDrawable;
 import com.softmed.stockapp.utils.ServiceGenerator;
 import com.softmed.stockapp.utils.SessionManager;
-import com.softmed.stockapp.api.Endpoints;
 
 import org.json.JSONObject;
 
@@ -265,6 +264,7 @@ public class LoginActivity extends BaseActivity {
             Log.d("LoginActivity", "Inside no network");
             new AsyncTask<Void, Void, Void>() {
                 List<UsersInfo> usersInfos = new ArrayList<>();
+
                 @Override
                 protected Void doInBackground(Void... voids) {
                     usersInfos = baseDatabase.userInfoDao().loggeInUser(usernameValue);
@@ -288,7 +288,7 @@ public class LoginActivity extends BaseActivity {
                                 loggedInSessions.getUsername(),
                                 userInfo.getId(),
                                 passwordValue,
-                                loggedInSessions.getHealth_facility(),loggedInSessions.getAssignedLocationType(),loggedInSessions.getDistrictId());
+                                loggedInSessions.getHealth_facility(), loggedInSessions.getAssignedLocationType(), loggedInSessions.getDistrictId());
 
                         //Call HomeActivity to log in user
                         Intent intent = new Intent(LoginActivity.this, MainActivity.class);
@@ -340,7 +340,7 @@ public class LoginActivity extends BaseActivity {
                                 usernameValue,
                                 userInfo.getId(),
                                 passwordValue,
-                                userInfo.getHealth_facility(),null,0);
+                                userInfo.getHealth_facility(), null, 0);
 
                         categoriesService = ServiceGenerator.createService(Endpoints.CategoriesService.class, session.getUserName(), session.getUserPass());
                         transactionServices = ServiceGenerator.createService(Endpoints.TransactionServices.class, session.getUserName(), session.getUserPass());
@@ -410,9 +410,9 @@ public class LoginActivity extends BaseActivity {
         call.enqueue(new Callback() {
             @Override
             public void onResponse(Call call, Response response) {
-                Log.d(TAG,"Device Registration : registering the device to the server");
-                Log.d(TAG,"Device Registration : Response code = "+response.code());
-                Log.d(TAG,"Device Registration : Response  = "+response.toString());
+                Log.d(TAG, "Device Registration : registering the device to the server");
+                Log.d(TAG, "Device Registration : Response code = " + response.code());
+                Log.d(TAG, "Device Registration : Response  = " + response.toString());
                 new AddUserData(baseDatabase).execute(userInfo);
             }
 
@@ -458,7 +458,7 @@ public class LoginActivity extends BaseActivity {
     private void callReportingSchedule() {
         loginMessages.setText(getResources().getString(R.string.loading_schedule));
         loginMessages.setTextColor(getResources().getColor(R.color.color_primary));
-        Log.d(TAG,"loading schedule");
+        Log.d(TAG, "loading schedule");
         if (session.isLoggedIn()) {
             Call<List<ProductReportingScheduleResponse>> call = transactionServices.getSchedule();
             call.enqueue(new Callback<List<ProductReportingScheduleResponse>>() {
@@ -466,7 +466,7 @@ public class LoginActivity extends BaseActivity {
                 @Override
                 public void onResponse(Call<List<ProductReportingScheduleResponse>> call, Response<List<ProductReportingScheduleResponse>> response) {
                     //Here will handle the responce from the server
-                    Log.d(TAG,"Schedule Check = "+new Gson().toJson(response.body()));
+                    Log.d(TAG, "Schedule Check = " + new Gson().toJson(response.body()));
                     addSchedule task = new addSchedule(response.body());
                     task.execute();
                 }
@@ -476,7 +476,7 @@ public class LoginActivity extends BaseActivity {
                     //Error!
                     //createDummyReferralData();
                     Log.e(TAG, "An error encountered!");
-                    Log.d(TAG,"ScheduleCheck failed with " + t.getMessage() + " " + t.toString());
+                    Log.d(TAG, "ScheduleCheck failed with " + t.getMessage() + " " + t.toString());
 
 
                     loginMessages.setText(getResources().getString(R.string.error_loading_categories));
@@ -620,7 +620,7 @@ public class LoginActivity extends BaseActivity {
             loginMessages.setTextColor(getResources().getColor(R.color.color_error));
             loginButton.setText(getResources().getString(R.string.login));
             session.clearSession();
-        }else if (session.isLoggedIn()) {
+        } else if (session.isLoggedIn()) {
 
             loginMessages.setText(getResources().getString(R.string.loading_transactions));
             loginMessages.setTextColor(getResources().getColor(R.color.color_primary));
@@ -658,7 +658,7 @@ public class LoginActivity extends BaseActivity {
                 @Override
                 public void onResponse(Call<List<Location>> call, Response<List<Location>> response) {
                     //Here will handle the responce from the server
-                    Log.d(TAG, "Locations Check = "+new Gson().toJson(response.body()) + "");
+                    Log.d(TAG, "Locations Check = " + new Gson().toJson(response.body()) + "");
 
                     addLocationsAsyncTask task = new addLocationsAsyncTask(response.body());
                     task.execute();
@@ -884,7 +884,6 @@ public class LoginActivity extends BaseActivity {
     }
 
 
-
     class addTransactionsAsyncTask extends AsyncTask<Void, Void, Void> {
 
         List<Transactions> results;
@@ -940,7 +939,7 @@ public class LoginActivity extends BaseActivity {
 
             for (Balances balance : results) {
                 balance.setSyncStatus(1);
-                if(balance.getConsumptionQuantity()==0)
+                if (balance.getConsumptionQuantity() == 0)
                     balance.setConsumptionQuantity(100);
                 baseDatabase.balanceModelDao().addBalance(balance);
             }
@@ -964,6 +963,7 @@ public class LoginActivity extends BaseActivity {
 
     class addLocationsAsyncTask extends AsyncTask<Void, Void, Void> {
         List<Location> results;
+
         addLocationsAsyncTask(List<Location> responces) {
             this.results = responces;
         }
@@ -978,8 +978,8 @@ public class LoginActivity extends BaseActivity {
             try {
 
                 for (Location location : results) {
-                    if(session.getFacilityId()==location.getId()){
-                        Log.d(TAG,"Location type is = "+location.getLocationType());
+                    if (session.getFacilityId() == location.getId()) {
+                        Log.d(TAG, "Location type is = " + location.getLocationType());
                         session.setDistrictId(session.getFacilityId());
                         userInfo.setDistrictId(session.getFacilityId());
 
@@ -1012,7 +1012,7 @@ public class LoginActivity extends BaseActivity {
                 } else {
                     callBalances();
                 }
-            }catch (Exception e){
+            } catch (Exception e) {
                 e.printStackTrace();
             }
 

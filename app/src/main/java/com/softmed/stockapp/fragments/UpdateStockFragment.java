@@ -14,9 +14,15 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import androidx.fragment.app.Fragment;
+import androidx.work.Constraints;
+import androidx.work.Data;
+import androidx.work.NetworkType;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkManager;
 
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.gson.Gson;
+import com.softmed.stockapp.R;
 import com.softmed.stockapp.activities.MainActivity;
 import com.softmed.stockapp.database.AppDatabase;
 import com.softmed.stockapp.dom.dto.ProducToBeReportedtList;
@@ -25,8 +31,9 @@ import com.softmed.stockapp.dom.entities.Product;
 import com.softmed.stockapp.dom.entities.ProductReportingSchedule;
 import com.softmed.stockapp.dom.entities.Transactions;
 import com.softmed.stockapp.dom.entities.Unit;
-import com.softmed.stockapp.R;
 import com.softmed.stockapp.utils.SessionManager;
+import com.softmed.stockapp.workers.GetSchedulesWorker;
+import com.softmed.stockapp.workers.SendTransactionsWorker;
 
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
@@ -120,7 +127,7 @@ public class UpdateStockFragment extends Fragment {
             protected Void doInBackground(Void... voids) {
                 product = baseDatabase.productsModelDao().getProductByName(productId);
 
-                Log.d(TAG,"Product = "+new Gson().toJson(product));
+                Log.d(TAG, "Product = " + new Gson().toJson(product));
                 unit = baseDatabase.unitsDao().getUnit(product.getUnit_id());
                 return null;
             }
@@ -195,7 +202,7 @@ public class UpdateStockFragment extends Fragment {
                         e.printStackTrace();
                     }
 
-                    new AsyncTask<Void, Void, Void>() {
+                    new AsyncTask<Void, Void, String>() {
                         private int stockOutDays;
                         private String noOfClients, QuantityExpired, wastage;
 
@@ -210,7 +217,7 @@ public class UpdateStockFragment extends Fragment {
                         }
 
                         @Override
-                        protected Void doInBackground(Void... voids) {
+                        protected String doInBackground(Void... voids) {
                             Transactions transactions = new Transactions();
 
                             transactions.setId(UUID.randomUUID().toString());
@@ -238,8 +245,7 @@ public class UpdateStockFragment extends Fragment {
 
                             transactions.setStatus_id(1);
 
-                            Balances balances = baseDatabase.balanceModelDao().getBalance(productId,session.getFacilityId());
-
+                            Balances balances = baseDatabase.balanceModelDao().getBalance(productId, session.getFacilityId());
                             transactions.setConsumptionQuantity(balances.getConsumptionQuantity());
                             baseDatabase.transactionsDao().addTransactions(transactions);
 
@@ -251,17 +257,47 @@ public class UpdateStockFragment extends Fragment {
                                 ProductReportingSchedule reportingSchedule = baseDatabase.productReportingScheduleModelDao().getProductReportingScheduleById(scheduledId);
                                 reportingSchedule.setStatus("posted");
                                 baseDatabase.productReportingScheduleModelDao().addProductSchedule(reportingSchedule);
-
                                 Log.d(TAG, "updated product schedule = " + new Gson().toJson(baseDatabase.productReportingScheduleModelDao().getProductReportingScheduleById(scheduledId)));
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
-                            return null;
+                            return transactions.getId();
                         }
 
                         @Override
-                        protected void onPostExecute(Void v) {
-                            super.onPostExecute(v);
+                        protected void onPostExecute(String transactionId) {
+                            super.onPostExecute(transactionId);
+
+
+                            // Create a Constraints object that defines when the task should run
+                            Constraints networkConstraints = new Constraints.Builder()
+                                    .setRequiredNetworkType(NetworkType.CONNECTED)
+                                    .build();
+
+
+                            OneTimeWorkRequest sendTransactionWorker = new OneTimeWorkRequest.Builder(SendTransactionsWorker.class)
+                                    .setConstraints(networkConstraints)
+                                    .setInputData(
+                                            new Data.Builder()
+                                                    .putString("transactionId", transactionId)
+                                                    .build()
+                                    )
+                                    .build();
+
+                            OneTimeWorkRequest getPostingSchedule = new OneTimeWorkRequest.Builder(GetSchedulesWorker.class)
+                                    .setConstraints(networkConstraints)
+                                    .build();
+
+
+                            WorkManager.getInstance()
+                                    .beginWith(sendTransactionWorker)
+                                    // Note: WorkManager.beginWith() returns a
+                                    // WorkContinuation object; the following calls are
+                                    // to WorkContinuation methods
+                                    .then(getPostingSchedule)
+                                    .enqueue();
+
+
                             ((MainActivity) getActivity()).moveToNextProduct();
 
                         }

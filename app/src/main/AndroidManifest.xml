@@ -53,15 +53,6 @@
             android:name=".activities.LoginActivity"
             android:configChanges="locale"
             android:windowSoftInputMode="stateHidden" />
-
-        <service
-            android:name=".services.PostOfficeService"
-            android:exported="false" />
-
-        <receiver
-            android:name=".utils.AlarmReceiver"
-            android:process=":remote" />
-
         <activity android:name=".activities.OrdersList" />
         <activity
             android:name=".activities.ManagedProductsActivity"

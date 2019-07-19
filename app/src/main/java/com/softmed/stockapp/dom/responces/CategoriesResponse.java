@@ -40,5 +40,4 @@ public class CategoriesResponse implements Serializable {
         this.description = description;
     }
 
-
 }

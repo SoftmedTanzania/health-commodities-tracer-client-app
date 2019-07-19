@@ -2,8 +2,6 @@ package com.softmed.stockapp.activities;
 
 
 import android.annotation.SuppressLint;
-import android.app.AlarmManager;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
@@ -30,6 +28,7 @@ import com.bumptech.glide.Glide;
 import com.google.android.material.tabs.TabLayout;
 import com.google.gson.Gson;
 import com.pixelcan.inkpageindicator.InkPageIndicator;
+import com.softmed.stockapp.R;
 import com.softmed.stockapp.database.AppDatabase;
 import com.softmed.stockapp.dom.dto.ProducToBeReportedtList;
 import com.softmed.stockapp.dom.entities.Location;
@@ -38,8 +37,6 @@ import com.softmed.stockapp.fragments.DashboardFragment;
 import com.softmed.stockapp.fragments.ProductsListFragment;
 import com.softmed.stockapp.fragments.UpcomingReportingScheduleFragment;
 import com.softmed.stockapp.fragments.UpdateStockFragment;
-import com.softmed.stockapp.R;
-import com.softmed.stockapp.utils.AlarmReceiver;
 import com.softmed.stockapp.utils.SessionManager;
 import com.softmed.stockapp.utils.VerticalArrow;
 import com.softmed.stockapp.utils.ZoomOutPageTransformer;
@@ -52,7 +49,6 @@ import java.util.List;
 import tarek360.animated.icons.AnimatedIconView;
 import tarek360.animated.icons.drawables.NotificationAlert;
 
-import static android.app.AlarmManager.INTERVAL_FIFTEEN_MINUTES;
 import static android.view.View.GONE;
 import static com.sothree.slidinguppanel.SlidingUpPanelLayout.PanelState.COLLAPSED;
 import static com.sothree.slidinguppanel.SlidingUpPanelLayout.PanelState.EXPANDED;
@@ -73,7 +69,7 @@ public class MainActivity extends AppCompatActivity {
     private NotificationAlert notificationAlert, notificationAlert1;
     private AppDatabase baseDatabase;
     private DotIndicatorPagerAdapter adapter;
-    private  List<UsersInfo> usersInfos;
+    private List<UsersInfo> usersInfos;
     private SessionManager sessionManager;
     private String districtFacility = "";
 
@@ -152,7 +148,6 @@ public class MainActivity extends AppCompatActivity {
         });
 
 
-
         viewPager = findViewById(R.id.viewPager);
         ViewPagerAdapter viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager());
 
@@ -208,18 +203,16 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        scheduleAlarm();
-
         final boolean initializeStock = getIntent().getBooleanExtra("reportInitialStock", false);
         districtFacility = getIntent().getStringExtra("districtFacility");
 
-        if(districtFacility==null){
-            districtFacility="";
+        if (districtFacility == null) {
+            districtFacility = "";
         }
 
         adapter = new DotIndicatorPagerAdapter(getSupportFragmentManager());
         updateStockViewPager.setAdapter(adapter);
-//        inkPageIndicator.setViewPager(updateStockViewPager);
+//      inkPageIndicator.setViewPager(updateStockViewPager);
 
         new AsyncTask<Void, Void, Location>() {
 
@@ -234,7 +227,7 @@ public class MainActivity extends AppCompatActivity {
                 try {
                     Log.d(TAG, "Location Name = " + location.getName());
                     ((TextView) findViewById(R.id.title)).setText(location.getName());
-                }catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                 }
             }
@@ -246,7 +239,7 @@ public class MainActivity extends AppCompatActivity {
         if (!sessionManager.isLoggedIn()) {
             sessionManager.checkLogin();
             finish();
-        }else if(session.getAssignedFacilityType().equals("DST") && districtFacility.equals("")){
+        } else if (session.getAssignedFacilityType().equals("DST") && districtFacility.equals("")) {
             Intent i = new Intent(MainActivity.this, SelectFacilityActivity.class);
             i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
             MainActivity.this.startActivity(i);
@@ -293,7 +286,7 @@ public class MainActivity extends AppCompatActivity {
             protected List<ProducToBeReportedtList> doInBackground(Void... voids) {
                 Log.d(TAG, "All schedules = " + new Gson().toJson(baseDatabase.productReportingScheduleModelDao().getAllProductReportingSchedule()));
                 usersInfos = baseDatabase.userInfoDao().loggeInUser(session.getUserName());
-                return baseDatabase.productsModelDao().getUnreportedProductStocks(Calendar.getInstance().getTimeInMillis(),session.getFacilityId());
+                return baseDatabase.productsModelDao().getUnreportedProductStocks(Calendar.getInstance().getTimeInMillis(), session.getFacilityId());
             }
 
             @Override
@@ -303,7 +296,7 @@ public class MainActivity extends AppCompatActivity {
 
                 Log.d(TAG, "Unposted schedules = " + new Gson().toJson(productLists));
 
-                if(usersInfos.size()==0) {
+                if (usersInfos.size() == 0) {
                     session.logoutUser();
                     finish();
                 }
@@ -341,7 +334,7 @@ public class MainActivity extends AppCompatActivity {
             } else {
                 getMenuInflater().inflate(R.menu.menu_main, menu);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
             getMenuInflater().inflate(R.menu.menu_main, menu);
         }
@@ -353,7 +346,7 @@ public class MainActivity extends AppCompatActivity {
         if (item.getItemId() == R.id.action_logout) {
             session.logoutUser();
             finish();
-        }else  if (item.getItemId() == R.id.action_change_facility) {
+        } else if (item.getItemId() == R.id.action_change_facility) {
             Intent i = new Intent(MainActivity.this, SelectFacilityActivity.class);
             i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
             MainActivity.this.startActivity(i);
@@ -384,20 +377,6 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-    public void scheduleAlarm() {
-        // Construct an intent that will execute the AlarmReceiver
-        Intent intent = new Intent(getApplicationContext(), AlarmReceiver.class);
-        // Create a PendingIntent to be triggered when the alarm goes off
-        final PendingIntent pIntent = PendingIntent.getBroadcast(this, AlarmReceiver.REQUEST_CODE,
-                intent, PendingIntent.FLAG_UPDATE_CURRENT);
-        // Setup periodic alarm every every half hour from this point onwards
-        long firstMillis = System.currentTimeMillis(); // alarm is set right away
-        AlarmManager alarm = (AlarmManager) this.getSystemService(Context.ALARM_SERVICE);
-        // First parameter is the type: ELAPSED_REALTIME, ELAPSED_REALTIME_WAKEUP, RTC_WAKEUP
-        // Interval can be INTERVAL_FIFTEEN_MINUTES, INTERVAL_HALF_HOUR, INTERVAL_HOUR, INTERVAL_DAY
-        alarm.setInexactRepeating(AlarmManager.RTC_WAKEUP, firstMillis,
-                INTERVAL_FIFTEEN_MINUTES, pIntent);
-    }
 
     @SuppressLint("StaticFieldLeak")
     public void moveToNextProduct() {

@@ -5,11 +5,6 @@ import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import com.google.android.material.appbar.CollapsingToolbarLayout;
-import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
-import com.google.android.material.snackbar.Snackbar;
-import androidx.core.content.res.ResourcesCompat;
-import androidx.appcompat.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
@@ -17,18 +12,29 @@ import android.widget.CompoundButton;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import androidx.appcompat.widget.Toolbar;
+import androidx.core.content.res.ResourcesCompat;
+import androidx.work.Constraints;
+import androidx.work.NetworkType;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkManager;
+
+import com.google.android.material.appbar.CollapsingToolbarLayout;
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
+import com.google.android.material.snackbar.Snackbar;
 import com.google.gson.Gson;
+import com.softmed.stockapp.R;
+import com.softmed.stockapp.api.Endpoints;
 import com.softmed.stockapp.database.AppDatabase;
 import com.softmed.stockapp.dom.dto.CategoryProducts;
 import com.softmed.stockapp.dom.entities.Balances;
 import com.softmed.stockapp.dom.entities.Category;
 import com.softmed.stockapp.dom.entities.Product;
 import com.softmed.stockapp.dom.responces.ProductReportingScheduleResponse;
-import com.softmed.stockapp.R;
-import com.softmed.stockapp.services.PostOfficeService;
 import com.softmed.stockapp.utils.ServiceGenerator;
 import com.softmed.stockapp.utils.SessionManager;
-import com.softmed.stockapp.api.Endpoints;
+import com.softmed.stockapp.workers.GetSchedulesWorker;
+import com.softmed.stockapp.workers.SendBalancesWorker;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -115,68 +121,45 @@ public class ManagedProductsActivity extends BaseActivity {
                     protected void onPostExecute(Void aVoid) {
                         super.onPostExecute(aVoid);
 
+                        if (newMappings.size() > 0) {
+                            Log.d(TAG, "sending product mappings responses ");
+                            // Create a Constraints object that defines when the task should run
+                            Constraints networkConstraints = new Constraints.Builder()
+                                    .setRequiredNetworkType(NetworkType.CONNECTED)
+                                    .build();
+
+                            OneTimeWorkRequest sendBalancesWork = new OneTimeWorkRequest.Builder(SendBalancesWorker.class)
+                                    .setConstraints(networkConstraints)
+                                    .build();
+
+
+                            OneTimeWorkRequest getPostingSchedule = new OneTimeWorkRequest.Builder(GetSchedulesWorker.class)
+                                    .setConstraints(networkConstraints)
+                                    .build();
+
+
+                            WorkManager.getInstance()
+                                    .beginWith(sendBalancesWork)
+                                    // Note: WorkManager.beginWith() returns a
+                                    // WorkContinuation object; the following calls are
+                                    // to WorkContinuation methods
+                                    .then(getPostingSchedule)
+                                    .enqueue();
+
+                            SessionManager session = new SessionManager(getApplicationContext());
+                            session.setIsFirstLogin(false);
+
+                            Intent intent = new Intent(ManagedProductsActivity.this, MainActivity.class);
+                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
+                            intent.putExtra("reportInitialStock", true);
+                            startActivity(intent);
+                            ManagedProductsActivity.this.finish();
+
+                        } else {
+                            getReportingSchedules();
+                        }
                     }
                 }.execute();
-
-                if (newMappings.size() > 0) {
-
-                    Log.d(TAG, "sending product mappings responses ");
-                    Call<List<ProductReportingScheduleResponse>> postBalanceCall = transactionServices.postBalances(PostOfficeService.getRequestBody(newMappings));
-                    postBalanceCall.enqueue(new Callback<List<ProductReportingScheduleResponse>>() {
-                        @Override
-                        public void onResponse(Call<List<ProductReportingScheduleResponse>> call, final Response<List<ProductReportingScheduleResponse>> response) {
-                            Log.d(TAG,"responce received = "+response.body());
-                            if (response.code() == 200 || response.code() == 201) {
-                                Log.d(TAG, "Successful saved product mappings responses " + response.body());
-                                if (response.body() != null) {
-                                    new AsyncTask<Void, Void, Void>() {
-                                        @Override
-                                        protected Void doInBackground(Void... voids) {
-                                            for (ProductReportingScheduleResponse reportingSchedule : response.body()) {
-                                                baseDatabase.productReportingScheduleModelDao().addProductSchedule(getProductReportingSchedule(reportingSchedule));
-                                            }
-
-                                            return null;
-                                        }
-
-                                        @Override
-                                        protected void onPostExecute(Void aVoid) {
-                                            super.onPostExecute(aVoid);
-
-                                            SessionManager session = new SessionManager(getApplicationContext());
-                                            session.setIsFirstLogin(false);
-                                            //Call HomeActivity to log in user
-                                            Intent intent = new Intent(ManagedProductsActivity.this, MainActivity.class);
-                                            intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
-                                            intent.putExtra("reportInitialStock", true);
-                                            startActivity(intent);
-                                            ManagedProductsActivity.this.finish();
-
-                                        }
-                                    }.execute();
-                                } else {
-                                    Log.d(TAG, "Error obtaining product reporting schedule " + call.request().url());
-                                }
-
-
-                            } else {
-                                Log.d(TAG, "Product mapping Response Call URL " + call.request().url());
-                                Log.d(TAG, "Product mapping Response Code " + response.code());
-                            }
-                        }
-
-                        @Override
-                        public void onFailure(Call<List<ProductReportingScheduleResponse>> call, Throwable t) {
-                            t.printStackTrace();
-                            Log.d(TAG, "Error = " + t.getMessage());
-                            Log.d(TAG, "CALL URL = " + call.request().url());
-                            Log.d(TAG, "CALL Header = " + call.request().header("Authorization"));
-                        }
-                    });
-                } else {
-                    getReportingSchedules();
-                }
-
             }
         });
 
@@ -195,7 +178,7 @@ public class ManagedProductsActivity extends BaseActivity {
             @SuppressLint("StaticFieldLeak")
             @Override
             public void onResponse(Call<List<ProductReportingScheduleResponse>> call, final Response<List<ProductReportingScheduleResponse>> response) {
-                Log.d(TAG, "Received schedule = " +new Gson().toJson(response.body()));
+                Log.d(TAG, "Received schedule = " + new Gson().toJson(response.body()));
                 if (response.body() != null) {
                     new AsyncTask<Void, Void, Void>() {
                         @Override
@@ -203,7 +186,6 @@ public class ManagedProductsActivity extends BaseActivity {
                             for (ProductReportingScheduleResponse reportingSchedule : response.body()) {
                                 baseDatabase.productReportingScheduleModelDao().addProductSchedule(getProductReportingSchedule(reportingSchedule));
                             }
-
                             return null;
                         }
 

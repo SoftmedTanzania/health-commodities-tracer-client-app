@@ -33,11 +33,11 @@ import android.util.Log;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 import com.softmed.stockapp.R;
-import com.softmed.stockapp.activities.LoginActivity;
 import com.softmed.stockapp.activities.MainActivity;
 import com.softmed.stockapp.api.Endpoints;
 import com.softmed.stockapp.utils.ServiceGenerator;
 import com.softmed.stockapp.utils.SessionManager;
+import com.softmed.stockapp.workers.NotificationWorker;
 
 import org.json.JSONObject;
 
@@ -139,7 +139,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
      */
     private void scheduleJob() {
         // [START dispatch_job]
-        OneTimeWorkRequest work = new OneTimeWorkRequest.Builder(MyWorker.class)
+        OneTimeWorkRequest work = new OneTimeWorkRequest.Builder(NotificationWorker.class)
                 .build();
         WorkManager.getInstance().beginWith(work).enqueue();
         // [END dispatch_job]

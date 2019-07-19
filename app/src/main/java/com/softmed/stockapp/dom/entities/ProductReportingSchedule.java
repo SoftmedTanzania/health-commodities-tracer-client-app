@@ -1,9 +1,9 @@
 package com.softmed.stockapp.dom.entities;
 
+import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
 import androidx.room.TypeConverters;
-import androidx.annotation.NonNull;
 
 import com.google.gson.annotations.SerializedName;
 import com.softmed.stockapp.utils.DateConverter;

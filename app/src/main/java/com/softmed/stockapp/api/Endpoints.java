@@ -1,5 +1,6 @@
 package com.softmed.stockapp.api;
 
+import com.softmed.stockapp.dom.dto.MessageRecipientsDTO;
 import com.softmed.stockapp.dom.entities.Balances;
 import com.softmed.stockapp.dom.entities.Location;
 import com.softmed.stockapp.dom.entities.Message;
@@ -89,7 +90,7 @@ public class Endpoints {
 
 
         @POST("api_sent_messages/")
-        Call<Message> postMessages(@Body RequestBody e);
+        Call<MessageRecipientsDTO> postMessages(@Body RequestBody e);
     }
 
     public interface NotificationServices {

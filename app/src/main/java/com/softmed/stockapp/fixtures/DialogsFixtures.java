@@ -3,7 +3,7 @@ package com.softmed.stockapp.fixtures;
 
 import com.softmed.stockapp.dom.model.IMessageDTO;
 import com.softmed.stockapp.dom.model.MessageDialog;
-import com.softmed.stockapp.dom.model.User;
+import com.softmed.stockapp.dom.model.MessageUserDTO;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -32,29 +32,29 @@ public final class DialogsFixtures extends FixturesData {
     }
 
     private static MessageDialog getDialog(int i, Date lastMessageCreatedAt) {
-        ArrayList<User> users = getUsers();
+        ArrayList<MessageUserDTO> messageUserDTOS = getUsers();
         return new MessageDialog(
                 getRandomId(),
-                users.size() > 1 ? groupChatTitles.get(users.size() - 2) : users.get(0).getName(),
-                users.size() > 1 ? groupChatImages.get(users.size() - 2) : getRandomAvatar(),
-                users,
+                messageUserDTOS.size() > 1 ? groupChatTitles.get(messageUserDTOS.size() - 2) : messageUserDTOS.get(0).getName(),
+                messageUserDTOS.size() > 1 ? groupChatImages.get(messageUserDTOS.size() - 2) : getRandomAvatar(),
+                messageUserDTOS,
                 getMessage(lastMessageCreatedAt),
                 i < 3 ? 3 - i : 0);
     }
 
-    private static ArrayList<User> getUsers() {
-        ArrayList<User> users = new ArrayList<>();
+    private static ArrayList<MessageUserDTO> getUsers() {
+        ArrayList<MessageUserDTO> messageUserDTOS = new ArrayList<>();
         int usersCount = 1 + rnd.nextInt(4);
 
         for (int i = 0; i < usersCount; i++) {
-            users.add(getUser());
+            messageUserDTOS.add(getUser());
         }
 
-        return users;
+        return messageUserDTOS;
     }
 
-    private static User getUser() {
-        return new User(
+    private static MessageUserDTO getUser() {
+        return new MessageUserDTO(
                 getRandomId(),
                 getRandomName(),
                 getRandomAvatar(),

@@ -4,7 +4,6 @@ import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.os.AsyncTask;
 import android.os.Bundle;
-import com.google.android.material.textfield.TextInputLayout;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,15 +15,23 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.fragment.app.DialogFragment;
+import androidx.work.Constraints;
+import androidx.work.Data;
+import androidx.work.NetworkType;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkManager;
 
+import com.google.android.material.textfield.TextInputLayout;
+import com.softmed.stockapp.R;
 import com.softmed.stockapp.database.AppDatabase;
 import com.softmed.stockapp.dom.entities.Balances;
 import com.softmed.stockapp.dom.entities.Product;
 import com.softmed.stockapp.dom.entities.ProductReportingSchedule;
 import com.softmed.stockapp.dom.entities.Transactions;
 import com.softmed.stockapp.dom.entities.Unit;
-import com.softmed.stockapp.R;
 import com.softmed.stockapp.utils.SessionManager;
+import com.softmed.stockapp.workers.GetSchedulesWorker;
+import com.softmed.stockapp.workers.SendTransactionsWorker;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -42,8 +49,8 @@ public class AddTransactionDialogue extends DialogFragment {
     private static final String TAG = AddTransactionDialogue.class.getSimpleName();
     public static AppDatabase baseDatabase;
     private View dialogueLayout;
-    private TextInputLayout stockAdjustmentQuantity, numberOfClientsOnRegimeInputLayout,wastageInputLayout,quantityExpiredInputLayout,stockOutDaysInputLayout;
-    private MaterialSpinner  availabilityOfClientsOnRegimeSpinner,reportingPeriod;
+    private TextInputLayout stockAdjustmentQuantity, numberOfClientsOnRegimeInputLayout, wastageInputLayout, quantityExpiredInputLayout, stockOutDaysInputLayout;
+    private MaterialSpinner availabilityOfClientsOnRegimeSpinner, reportingPeriod;
     private List<ProductReportingSchedule> productReportingSchedules;
     private int productId, numberOfClientsOnRegime;
     private Boolean hasClients = null;
@@ -104,13 +111,13 @@ public class AddTransactionDialogue extends DialogFragment {
         reportingPeriod = dialogueLayout.findViewById(R.id.reporting_period);
         availabilityOfClientsOnRegimeSpinner = dialogueLayout.findViewById(R.id.do_you_have_any_clients_on_regime);
 
-        new AsyncTask<Void,Void,Void>(){
+        new AsyncTask<Void, Void, Void>() {
 
             @Override
             protected Void doInBackground(Void... voids) {
                 product = baseDatabase.productsModelDao().getProductByName(productId);
                 unit = baseDatabase.unitsDao().getUnit(product.getUnit_id());
-                productReportingSchedules =  baseDatabase.productReportingScheduleModelDao().getMissedProductReportings(productId,Calendar.getInstance().getTimeInMillis());
+                productReportingSchedules = baseDatabase.productReportingScheduleModelDao().getMissedProductReportings(productId, Calendar.getInstance().getTimeInMillis());
                 return null;
             }
 
@@ -119,21 +126,21 @@ public class AddTransactionDialogue extends DialogFragment {
                 super.onPostExecute(aVoid);
 
                 productName.setText(product.getName());
-                stockAdjustmentQuantity.setHint("Stock On Hand in ("+unit.getName()+")");
-                if(product.isTrack_wastage()){
+                stockAdjustmentQuantity.setHint("Stock On Hand in (" + unit.getName() + ")");
+                if (product.isTrack_wastage()) {
                     wastageInputLayout.setVisibility(View.VISIBLE);
                 }
 
-                if(product.isTrack_quantity_expired()){
+                if (product.isTrack_quantity_expired()) {
                     quantityExpiredInputLayout.setVisibility(View.VISIBLE);
                 }
 
-                if(product.isTrack_number_of_patients()){
+                if (product.isTrack_number_of_patients()) {
                     numberOfClientsOnRegimeInputLayout.setVisibility(View.VISIBLE);
                 }
 
                 List<String> reportingDate = new ArrayList<>();
-                for(ProductReportingSchedule productReportingSchedules:productReportingSchedules){
+                for (ProductReportingSchedule productReportingSchedules : productReportingSchedules) {
                     reportingDate.add(simpleDateFormat.format(productReportingSchedules.getScheduledDate()));
                 }
 
@@ -145,13 +152,12 @@ public class AddTransactionDialogue extends DialogFragment {
         }.execute();
 
 
-
         reportingPeriod.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 try {
                     reportingScheduleId = productReportingSchedules.get(i).getId();
-                }catch (Exception e){
+                } catch (Exception e) {
                     e.printStackTrace();
                     reportingScheduleId = 0;
                 }
@@ -174,7 +180,7 @@ public class AddTransactionDialogue extends DialogFragment {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 try {
-                    if (availabilityOfClientsOnRegime[i].equalsIgnoreCase("yes") && product.isTrack_number_of_patients() ) {
+                    if (availabilityOfClientsOnRegime[i].equalsIgnoreCase("yes") && product.isTrack_number_of_patients()) {
                         hasClients = true;
                         numberOfClientsOnRegimeInputLayout.setVisibility(View.VISIBLE);
                     } else {
@@ -183,7 +189,7 @@ public class AddTransactionDialogue extends DialogFragment {
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
-                    hasClients=null;
+                    hasClients = null;
                 }
             }
 
@@ -197,9 +203,23 @@ public class AddTransactionDialogue extends DialogFragment {
             @Override
             public void onClick(View view) {
                 if (checkInputs()) {
-                    new AsyncTask<Void, Void, Void>() {
+                    new AsyncTask<Void, Void, String>() {
+
+                        private String stockQuantity, numberOfClientsOnRegime, quantityExpired, wastage, stockOutDays;
+
                         @Override
-                        protected Void doInBackground(Void... voids) {
+                        protected void onPreExecute() {
+                            super.onPreExecute();
+                            stockQuantity = stockAdjustmentQuantity.getEditText().getText().toString();
+                            stockOutDays = stockOutDaysInputLayout.getEditText().getText().toString();
+                            numberOfClientsOnRegime = numberOfClientsOnRegimeInputLayout.getEditText().getText().toString();
+                            quantityExpired = quantityExpiredInputLayout.getEditText().getText().toString();
+                            wastage = wastageInputLayout.getEditText().getText().toString();
+
+                        }
+
+                        @Override
+                        protected String doInBackground(Void... voids) {
                             Transactions transactions = new Transactions();
 
                             transactions.setId(UUID.randomUUID().toString());
@@ -207,20 +227,20 @@ public class AddTransactionDialogue extends DialogFragment {
                             transactions.setUser_id(Integer.valueOf(session.getUserUUID()));
                             transactions.setTransactiontype_id(1);
                             transactions.setScheduleId(reportingScheduleId);
-                            transactions.setAmount(Integer.valueOf(stockAdjustmentQuantity.getEditText().getText().toString()));
+                            transactions.setAmount(Integer.valueOf(stockQuantity));
 
-                            transactions.setStockOutDays(Integer.parseInt(stockOutDaysInputLayout.getEditText().getText().toString()));
+                            transactions.setStockOutDays(Integer.parseInt(stockOutDays));
 
                             if (hasClients && product.isTrack_number_of_patients()) {
-                                transactions.setClientsOnRegime(numberOfClientsOnRegimeInputLayout.getEditText().getText().toString());
+                                transactions.setClientsOnRegime(numberOfClientsOnRegime);
                             }
 
                             if (product.isTrack_quantity_expired()) {
-                                transactions.setClientsOnRegime(quantityExpiredInputLayout.getEditText().getText().toString());
+                                transactions.setClientsOnRegime(quantityExpired);
                             }
 
                             if (product.isTrack_wastage()) {
-                                transactions.setWastage(wastageInputLayout.getEditText().getText().toString());
+                                transactions.setWastage(wastage);
                             }
 
                             transactions.setStatus_id(1);
@@ -228,33 +248,63 @@ public class AddTransactionDialogue extends DialogFragment {
                             Calendar c = Calendar.getInstance();
                             transactions.setCreated_at(c.getTimeInMillis());
 
-                            Balances balances = baseDatabase.balanceModelDao().getBalance(productId,session.getFacilityId());
+                            Balances balances = baseDatabase.balanceModelDao().getBalance(productId, session.getFacilityId());
 
                             transactions.setConsumptionQuantity(balances.getConsumptionQuantity());
                             baseDatabase.transactionsDao().addTransactions(transactions);
 
-                            balances.setBalance(Integer.valueOf(stockAdjustmentQuantity.getEditText().getText().toString()));
+                            balances.setBalance(Integer.valueOf(stockQuantity));
 
                             baseDatabase.balanceModelDao().addBalance(balances);
 
 
-                            return null;
+                            return transactions.getId();
                         }
 
                         @Override
-                        protected void onPostExecute(Void v) {
-                            super.onPostExecute(v);
+                        protected void onPostExecute(String transactionId) {
+                            super.onPostExecute(transactionId);
                             stockAdjustmentQuantity.getEditText().setText("");
                             Toast.makeText(getActivity(), "Transaction Added successfully", Toast.LENGTH_LONG).show();
+
+
+                            // Create a Constraints object that defines when the task should run
+                            Constraints networkConstraints = new Constraints.Builder()
+                                    .setRequiredNetworkType(NetworkType.CONNECTED)
+                                    .build();
+
+
+                            OneTimeWorkRequest sendTransactionWorker = new OneTimeWorkRequest.Builder(SendTransactionsWorker.class)
+                                    .setConstraints(networkConstraints)
+                                    .setInputData(
+                                            new Data.Builder()
+                                                    .putString("transactionId", transactionId)
+                                                    .build()
+                                    )
+                                    .build();
+
+                            OneTimeWorkRequest getPostingSchedule = new OneTimeWorkRequest.Builder(GetSchedulesWorker.class)
+                                    .setConstraints(networkConstraints)
+                                    .build();
+
+
+                            WorkManager.getInstance()
+                                    .beginWith(sendTransactionWorker)
+                                    // Note: WorkManager.beginWith() returns a
+                                    // WorkContinuation object; the following calls are
+                                    // to WorkContinuation methods
+                                    .then(getPostingSchedule)
+                                    .enqueue();
+
                             dismiss();
 
                         }
                     }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
 
 
-                } else if(stockAdjustmentQuantity.getEditText().getText().toString().equals("")) {
+                } else if (stockAdjustmentQuantity.getEditText().getText().toString().equals("")) {
                     stockAdjustmentQuantity.getEditText().setError("Please fill the stock on hand quantity");
-                }else if(numberOfClientsOnRegimeInputLayout.getEditText().getText().toString().equals("")) {
+                } else if (numberOfClientsOnRegimeInputLayout.getEditText().getText().toString().equals("")) {
                     numberOfClientsOnRegimeInputLayout.getEditText().setError("Please fill the number of clients on regime");
                 }
 
@@ -265,17 +315,17 @@ public class AddTransactionDialogue extends DialogFragment {
         return dialogueLayout;
     }
 
-    public boolean checkInputs(){
-        if(stockAdjustmentQuantity.getEditText().getText().toString().equals("")){
+    public boolean checkInputs() {
+        if (stockAdjustmentQuantity.getEditText().getText().toString().equals("")) {
             stockAdjustmentQuantity.getEditText().setError("Please fill the stock on hand quantity");
             return false;
-        } else if(reportingScheduleId==0){
+        } else if (reportingScheduleId == 0) {
             reportingPeriod.setError("Please select the reporting period");
             return false;
-        } else if(hasClients==null){
+        } else if (hasClients == null) {
             availabilityOfClientsOnRegimeSpinner.setError("Please select this");
             return false;
-        }else if (numberOfClientsOnRegimeInputLayout.getEditText().getText().toString().equals("") && product.isTrack_number_of_patients() && hasClients) {
+        } else if (numberOfClientsOnRegimeInputLayout.getEditText().getText().toString().equals("") && product.isTrack_number_of_patients() && hasClients) {
             numberOfClientsOnRegimeInputLayout.getEditText().setError("Please fill the number of clients on regime");
             return false;
         } else if (stockOutDaysInputLayout.getEditText().getText().toString().equals("")) {

@@ -2,7 +2,7 @@ package com.softmed.stockapp.fixtures;
 
 
 import com.softmed.stockapp.dom.model.IMessageDTO;
-import com.softmed.stockapp.dom.model.User;
+import com.softmed.stockapp.dom.model.MessageUserDTO;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -60,9 +60,9 @@ public final class MessagesFixtures extends FixturesData {
         return IMessageDTOS;
     }
 
-    private static User getUser() {
+    private static MessageUserDTO getUser() {
         boolean even = rnd.nextBoolean();
-        return new User(
+        return new MessageUserDTO(
                 even ? "0" : "1",
                 even ? names.get(0) : names.get(1),
                 even ? avatars.get(0) : avatars.get(1),

@@ -1,9 +1,6 @@
 package com.softmed.stockapp.adapters;
 
-import android.annotation.SuppressLint;
-import android.app.Activity;
 import android.content.Context;
-import android.os.AsyncTask;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,12 +9,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 import com.softmed.stockapp.R;
-import com.softmed.stockapp.activities.MessagesActivity;
-import com.softmed.stockapp.database.AppDatabase;
 import com.softmed.stockapp.dom.entities.OtherUsers;
-import com.softmed.stockapp.dom.model.User;
 
-import java.util.ArrayList;
 import java.util.List;
 
 

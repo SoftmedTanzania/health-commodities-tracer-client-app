@@ -3,7 +3,7 @@ package com.softmed.stockapp.dom.responces;
 import com.google.gson.annotations.SerializedName;
 
 
-public class ProductReportingScheduleResponse{
+public class ProductReportingScheduleResponse {
 
     @SerializedName("id")
     private int id;

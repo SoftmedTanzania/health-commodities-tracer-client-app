@@ -15,18 +15,18 @@ public class IMessageDTO implements IMessage,
     private String id;
     private String text;
     private Date createdAt;
-    private User user;
+    private MessageUserDTO messageUserDTO;
     private Image image;
     private Voice voice;
 
-    public IMessageDTO(String id, User user, String text) {
-        this(id, user, text, new Date());
+    public IMessageDTO(String id, MessageUserDTO messageUserDTO, String text) {
+        this(id, messageUserDTO, text, new Date());
     }
 
-    public IMessageDTO(String id, User user, String text, Date createdAt) {
+    public IMessageDTO(String id, MessageUserDTO messageUserDTO, String text, Date createdAt) {
         this.id = id;
         this.text = text;
-        this.user = user;
+        this.messageUserDTO = messageUserDTO;
         this.createdAt = createdAt;
     }
 
@@ -46,8 +46,8 @@ public class IMessageDTO implements IMessage,
     }
 
     @Override
-    public User getUser() {
-        return this.user;
+    public MessageUserDTO getUser() {
+        return this.messageUserDTO;
     }
 
     @Override

@@ -1,19 +1,19 @@
 package com.softmed.stockapp.fragments;
 
-import androidx.lifecycle.Observer;
-import androidx.lifecycle.ViewModelProviders;
-
 import android.content.Intent;
 import android.os.Bundle;
-import androidx.annotation.Nullable;
-import androidx.fragment.app.Fragment;
-import androidx.recyclerview.widget.LinearLayoutManager;
-import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
+
+import androidx.annotation.Nullable;
+import androidx.fragment.app.Fragment;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.softmed.stockapp.R;
 import com.softmed.stockapp.activities.DetailActivity;
@@ -54,7 +54,7 @@ public class ProductsListFragment extends Fragment implements
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        View v =  inflater.inflate(R.layout.fragment_products_list, container, false);
+        View v = inflater.inflate(R.layout.fragment_products_list, container, false);
 
         mRecyclerView = v.findViewById(R.id.recycler_view);
         mEmptyView = v.findViewById(R.id.empty_view);
@@ -76,7 +76,7 @@ public class ProductsListFragment extends Fragment implements
         productsViewModel.getAvailableProducts(session.getFacilityId()).observe(getActivity(), new Observer<List<ProductList>>() {
             @Override
             public void onChanged(@Nullable List<ProductList> productLists) {
-                Log.d(TAG,"products list size = "+productLists.size());
+                Log.d(TAG, "products list size = " + productLists.size());
                 mAdapter.refreshData(productLists);
                 checkEmptyData();
 
@@ -89,18 +89,18 @@ public class ProductsListFragment extends Fragment implements
     /**
      * Interface method of ProductAdapter that gets invoked when the user presses one of the product
      * list item. This will navigate to DetailActivity to let user view the selected product details.
+     *
      * @param product - The selected product.
      */
     @Override
     public void onItemClick(ProductList product) {
 
-        Log.d(TAG,"Clicked Product Id = "+product.getId());
+        Log.d(TAG, "Clicked Product Id = " + product.getId());
 
         Intent intent = new Intent(getActivity(), DetailActivity.class);
         intent.putExtra(INTENT_EXTRA_PRODUCT, product);
         startActivity(intent);
     }
-
 
 
     /**
@@ -121,7 +121,7 @@ public class ProductsListFragment extends Fragment implements
 
         try {
             Dialogue.show(getActivity().getSupportFragmentManager(), "Adding Transaction");
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
     }

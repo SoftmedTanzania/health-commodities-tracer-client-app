@@ -1,8 +1,8 @@
 package com.softmed.stockapp.dom.entities;
 
+import androidx.annotation.NonNull;
 import androidx.room.Entity;
 import androidx.room.PrimaryKey;
-import androidx.annotation.NonNull;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -60,7 +60,6 @@ public class Product implements Serializable {
     public void setCategory_id(int category_id) {
         this.category_id = category_id;
     }
-
 
 
     public int getStatus() {

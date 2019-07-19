@@ -50,6 +50,9 @@ public interface TransactionModelDao {
     @Query("select * from Transactions WHERE product_id = :productId")
     List<Transactions> getTransactionsByProductId(int productId);
 
+    @Query("select * from Transactions WHERE id = :transactionId")
+    Transactions getTransactionById(String transactionId);
+
     @Query("select * from Transactions WHERE syncStatus = 0")
     List<Transactions> getUnPostedTransactions();
 

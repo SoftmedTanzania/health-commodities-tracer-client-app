@@ -28,7 +28,7 @@ import com.softmed.stockapp.dom.entities.MessageRecipients;
 import com.softmed.stockapp.dom.entities.OtherUsers;
 import com.softmed.stockapp.dom.model.IMessageDTO;
 import com.softmed.stockapp.dom.model.MessageDialog;
-import com.softmed.stockapp.dom.model.User;
+import com.softmed.stockapp.dom.model.MessageUserDTO;
 import com.softmed.stockapp.utils.AppUtils;
 import com.softmed.stockapp.utils.SessionManager;
 import com.softmed.stockapp.viewmodels.MessageListViewModel;
@@ -193,9 +193,9 @@ public class MessagesDialogsActivity extends AppCompatActivity
 
         Log.d(TAG, "creator id = " + message.getCreatorId());
 
-        ArrayList<User> users = new ArrayList<>();
+        ArrayList<MessageUserDTO> messageUserDTOS = new ArrayList<>();
         if (message.getCreatorId() != Integer.parseInt(session.getUserUUID())) {
-            users.add(getUser(message.getCreatorId()));
+            messageUserDTOS.add(getUser(message.getCreatorId()));
         }
 
         List<MessageRecipients> messageRecipients = baseDatabase.messageRecipientsModelDao().getAllMessageRecipientsByMessageId(message.getId());
@@ -206,41 +206,41 @@ public class MessagesDialogsActivity extends AppCompatActivity
             Log.d(TAG, "recipient id = " + recipientId);
 
             if (recipientId != Integer.parseInt(session.getUserUUID())) {
-                users.add(getUser(recipientId));
+                messageUserDTOS.add(getUser(recipientId));
             }
         }
 
 
         return new MessageDialog(
                 message.getParentMessageId().equals("0") ? message.getId() : message.getParentMessageId(),
-                users.size() > 1 ? message.getSubject() : users.get(0).getName() + " - " + message.getSubject(),
-                users.size() > 1 ? "group" : getInitials(users.get(0)),
-                users, getLastMessage(message), 0, message.getParentMessageId());
+                messageUserDTOS.size() > 1 ? message.getSubject() : messageUserDTOS.get(0).getName() + " - " + message.getSubject(),
+                messageUserDTOS.size() > 1 ? "group" : getInitials(messageUserDTOS.get(0)),
+                messageUserDTOS, getLastMessage(message), 0, message.getParentMessageId());
 
 
     }
 
-    private String getGroupNames(ArrayList<User> users) {
+    private String getGroupNames(ArrayList<MessageUserDTO> messageUserDTOS) {
         String names = "";
-        for (User user : users) {
-            names.concat(user.getName());
+        for (MessageUserDTO messageUserDTO : messageUserDTOS) {
+            names.concat(messageUserDTO.getName());
             names.concat(" ");
         }
         return names;
 
     }
 
-    private String getInitials(User user) {
-        String[] names = user.getName().split(" ");
+    private String getInitials(MessageUserDTO messageUserDTO) {
+        String[] names = messageUserDTO.getName().split(" ");
         return names[0].charAt(0) + "" + names[1].charAt(0);
 
     }
 
 
-    private String getGroupInitials(ArrayList<User> users) {
+    private String getGroupInitials(ArrayList<MessageUserDTO> messageUserDTOS) {
         String names = "";
-        for (User user : users) {
-            String[] namesArray = user.getName().split(" ");
+        for (MessageUserDTO messageUserDTO : messageUserDTOS) {
+            String[] namesArray = messageUserDTO.getName().split(" ");
             names = namesArray[0].charAt(0) + "" + namesArray[1].charAt(0);
         }
 
@@ -257,9 +257,9 @@ public class MessagesDialogsActivity extends AppCompatActivity
                 new Date(message.getCreateDate()));
     }
 
-    private User getUser(int userId) {
+    private MessageUserDTO getUser(int userId) {
         OtherUsers otherUsers = baseDatabase.usersModelDao().getUser(userId);
-        return new User(
+        return new MessageUserDTO(
                 String.valueOf(otherUsers.getId()),
                 otherUsers.getFirstName() + " " + otherUsers.getSurname(),
                 otherUsers.getFirstName().charAt(0) + "" + otherUsers.getSurname().charAt(0),
@@ -270,8 +270,8 @@ public class MessagesDialogsActivity extends AppCompatActivity
     @Override
     public void onDialogClick(MessageDialog messageDialog) {
         ArrayList<Integer> userIds = new ArrayList<>();
-        for (User user : messageDialog.getUsers()) {
-            userIds.add(Integer.parseInt(user.getId()));
+        for (MessageUserDTO messageUserDTO : messageDialog.getUsers()) {
+            userIds.add(Integer.parseInt(messageUserDTO.getId()));
         }
 
         Log.d(TAG, "Message DIalog = " + new Gson().toJson(messageDialog));
