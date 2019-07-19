@@ -19,7 +19,9 @@ import static androidx.room.OnConflictStrategy.REPLACE;
 @Dao
 public interface MessagesModelDao {
 
-    @Query(" SELECT * from Message WHERE parentMessageId = '0' ")
+    @Query(" SELECT Message.* from Message " +
+            "LEFT JOIN MessageRecipients ON MessageRecipients.messageId = Message.id " +
+            "WHERE parentMessageId = '0' GROUP BY Message.id")
     LiveData<List<Message>> getMessageThreads();
 
 
