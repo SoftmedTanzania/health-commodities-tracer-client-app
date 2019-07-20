@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
@@ -25,9 +26,11 @@ import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 
 import com.amulyakhare.textdrawable.TextDrawable;
+import com.bumptech.glide.Glide;
 import com.google.gson.Gson;
 import com.softmed.stockapp.R;
 import com.softmed.stockapp.adapters.MessagesListAdapter;
+import com.softmed.stockapp.customViews.MessageInput;
 import com.softmed.stockapp.customViews.custom.message.viewholders.CustomIncomingImageMessageViewHolder;
 import com.softmed.stockapp.customViews.custom.message.viewholders.CustomIncomingTextMessageViewHolder;
 import com.softmed.stockapp.customViews.custom.message.viewholders.CustomOutcomingImageMessageViewHolder;
@@ -41,7 +44,6 @@ import com.softmed.stockapp.dom.model.IMessageDTO;
 import com.softmed.stockapp.dom.model.IMessageUser;
 import com.softmed.stockapp.fixtures.MessagesFixtures;
 import com.softmed.stockapp.utils.AppUtils;
-import com.softmed.stockapp.customViews.MessageInput;
 import com.softmed.stockapp.utils.SessionManager;
 import com.softmed.stockapp.viewmodels.MessageListViewModel;
 import com.softmed.stockapp.workers.SendMessageRecipientWorker;
@@ -76,14 +78,17 @@ public class MessagesActivity extends AppCompatActivity
     private MessagesList messagesList;
     private SessionManager sessionManager;
     private ArrayList<Integer> usersIds;
+    private ArrayList<String> userNames;
     private AppDatabase appDatabase;
     private IMessageUser currentIMessageUser;
     private boolean isFIrstLoad = true;
+    private Typeface muliBoldTypeface;
 
-    public static void open(Context context, String parentMessageId, ArrayList<Integer> usersIds) {
+    public static void open(Context context, String parentMessageId, ArrayList<Integer> usersIds, ArrayList<String> userNames) {
         Intent intent = new Intent(context, MessagesActivity.class);
         intent.putExtra("parentMessageId", parentMessageId);
         intent.putIntegerArrayListExtra("userIds", usersIds);
+        intent.putStringArrayListExtra("userNames", userNames);
         context.startActivity(intent);
     }
 
@@ -106,11 +111,11 @@ public class MessagesActivity extends AppCompatActivity
         Toolbar toolbar = findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        muliBoldTypeface = ResourcesCompat.getFont(MessagesActivity.this, R.font.muli_bold);
+
         imageLoader = new ImageLoader() {
             @Override
             public void loadImage(ImageView imageView, String url, Object payload) {
-
-                Typeface muliBoldTypeface = ResourcesCompat.getFont(MessagesActivity.this, R.font.muli_bold);
 
                 Log.d(TAG, "Image Text = " + url);
                 Log.d(TAG, "Payload = " + new Gson().toJson(payload));
@@ -128,7 +133,47 @@ public class MessagesActivity extends AppCompatActivity
         };
 
         parentMessageId = getIntent().getStringExtra("parentMessageId");
-        Log.d(TAG, "parent message Id = " + parentMessageId);
+
+        usersIds = getIntent().getIntegerArrayListExtra("userIds");
+        userNames = getIntent().getStringArrayListExtra("userNames");
+        loadCurrentUser();
+
+        messagesList = findViewById(R.id.messagesList);
+        initAdapter();
+
+        MessageInput input = findViewById(R.id.input);
+        input.setInputListener(this);
+        input.setAttachmentsListener(this);
+
+
+        //Initializing toolbar information
+        ImageView avatar = findViewById(R.id.user_avatar);
+        TextView subjectView = findViewById(R.id.subject);
+        TextView usersView = findViewById(R.id.users);
+
+
+        if (usersIds.size() == 1) {
+            usersView.setText(userNames.get(0));
+            String[] name = userNames.get(0).split(" ");
+            TextDrawable drawable = TextDrawable.builder()
+                    .beginConfig()
+                    .textColor(Color.WHITE)
+                    .useFont(muliBoldTypeface)
+                    .fontSize(32) /* size in px */
+                    .bold()
+                    .toUpperCase()
+                    .endConfig()
+                    .buildRound(name[0].charAt(0) + "" + name[1].charAt(0), getResources().getColor(R.color.color_primary));
+            avatar.setImageDrawable(drawable);
+
+        } else {
+            Glide.with(MessagesActivity.this).load(R.drawable.ic_round_supervised_user_circle_24px).into(avatar);
+
+            for (String username : userNames) {
+                String firstName = username.split(" ")[0];
+                usersView.append(firstName + ", ");
+            }
+        }
 
         new AsyncTask<Void, Void, String>() {
             @Override
@@ -139,19 +184,9 @@ public class MessagesActivity extends AppCompatActivity
             @Override
             protected void onPostExecute(String s) {
                 super.onPostExecute(s);
-                setTitle(s);
+                subjectView.setText(s);
             }
         }.execute();
-
-        usersIds = getIntent().getIntegerArrayListExtra("userIds");
-        loadCurrentUser();
-
-        messagesList = findViewById(R.id.messagesList);
-        initAdapter();
-
-        MessageInput input = findViewById(R.id.input);
-        input.setInputListener(this);
-        input.setAttachmentsListener(this);
     }
 
     @SuppressLint("StaticFieldLeak")
@@ -252,7 +287,7 @@ public class MessagesActivity extends AppCompatActivity
 
     private void initAdapter() {
 
-        Log.d(TAG,"userIds count = "+usersIds.size());
+        Log.d(TAG, "userIds count = " + usersIds.size());
 
         CustomIncomingTextMessageViewHolder.Payload payload = new CustomIncomingTextMessageViewHolder.Payload();
 
@@ -265,14 +300,13 @@ public class MessagesActivity extends AppCompatActivity
         };
 
 
-
         int incomingImageMessageLayout;
         int incomingTextMessageLayout;
 
-        if(usersIds.size()==1){
+        if (usersIds.size() == 1) {
             incomingImageMessageLayout = R.layout.item_incoming_image_message;
             incomingTextMessageLayout = R.layout.item_incoming_text_message;
-        }else{
+        } else {
 
             incomingImageMessageLayout = R.layout.item_incoming_group_image_message;
             incomingTextMessageLayout = R.layout.item_incoming_group_text_message;
@@ -294,7 +328,7 @@ public class MessagesActivity extends AppCompatActivity
                         com.stfalcon.chatkit.R.layout.item_outcoming_image_message);
 
 
-        this.messagesAdapter = new MessagesListAdapter<>(sessionManager.getUserUUID(),holdersConfig, this.imageLoader);
+        this.messagesAdapter = new MessagesListAdapter<>(sessionManager.getUserUUID(), holdersConfig, this.imageLoader);
         this.messagesAdapter.enableSelectionMode(this);
         this.messagesAdapter.setLoadMoreListener(this);
         this.messagesAdapter.setDateHeadersFormatter(this);

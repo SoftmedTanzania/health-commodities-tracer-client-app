@@ -11,11 +11,45 @@
         <androidx.appcompat.widget.Toolbar xmlns:android="http://schemas.android.com/apk/res/android"
             android:id="@+id/toolbar"
             android:layout_width="fill_parent"
-            android:layout_height="48dp"
+            android:layout_height="?attr/actionBarSize"
             android:background="@color/color_primary_variant"
             android:focusableInTouchMode="true"
             app:popupTheme="@style/ThemeOverlay.AppCompat.Light"
-            app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar" />
+            app:theme="@style/ThemeOverlay.AppCompat.Dark.ActionBar">
+            <RelativeLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <ImageView
+                    android:id="@+id/user_avatar"
+                    android:layout_width="48dp"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="16dp"
+                    android:tint="@color/color_primary"
+                    android:layout_height="48dp" />
+
+                <LinearLayout
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_toRightOf="@id/user_avatar"
+                    android:layout_marginLeft="16dp"
+                    android:orientation="vertical">
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:textSize="18sp"
+                        android:textColor="@color/color_on_primary"
+                        android:fontFamily="@font/muli_bold"
+                        android:layout_height="wrap_content"
+                        android:id="@+id/subject"/>
+                    <TextView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/muli"
+                        android:id="@+id/users"/>
+                </LinearLayout>
+
+            </RelativeLayout>
+        </androidx.appcompat.widget.Toolbar>
     </com.google.android.material.appbar.AppBarLayout>
 
     <RelativeLayout

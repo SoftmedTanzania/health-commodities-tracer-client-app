@@ -265,6 +265,12 @@ public class MessagesDialogsActivity extends AppCompatActivity
             userIds.add(Integer.parseInt(IMessageUser.getId()));
         }
 
+
+        ArrayList<String> userNames = new ArrayList<>();
+        for (IMessageUser IMessageUser : messageDialog.getUsers()) {
+            userNames.add(IMessageUser.getName());
+        }
+
         Log.d(TAG, "Message DIalog = " + new Gson().toJson(messageDialog));
 
         String parentMessageId;
@@ -275,7 +281,7 @@ public class MessagesDialogsActivity extends AppCompatActivity
 
 
         Log.d(TAG, "Parent Message Id = " + parentMessageId);
-        MessagesActivity.open(this, parentMessageId, userIds);
+        MessagesActivity.open(this, parentMessageId, userIds,userNames);
     }
 
 

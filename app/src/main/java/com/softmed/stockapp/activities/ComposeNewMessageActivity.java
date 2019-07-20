@@ -47,6 +47,7 @@ public class ComposeNewMessageActivity extends AppCompatActivity implements Cont
     private ExtendedFloatingActionButton composeFab;
     private TextInputLayout subjectInputLayout, messageInputLayout;
     private ArrayList<Integer> userIds;
+    private ArrayList<String> userNames;
 
 
     public static ComposeNewMessageActivity newInstance() {
@@ -153,6 +154,8 @@ public class ComposeNewMessageActivity extends AppCompatActivity implements Cont
 
                         appDatabase.messagesModelDao().addMessage(newMessages[0]);
                         Log.d(TAG, "saving new message = " + new Gson().toJson(newMessages[0]));
+
+                        userNames.clear();
                         for (Integer userId : userIds) {
                             if (userId.equals(String.valueOf(session.getUserUUID())))
                                 continue;
@@ -164,6 +167,9 @@ public class ComposeNewMessageActivity extends AppCompatActivity implements Cont
 
                             appDatabase.messageRecipientsModelDao().addRecipient(messageRecipients);
                             Log.d(TAG, "saving new message recipients = " + new Gson().toJson(messageRecipients));
+
+                            OtherUsers user = appDatabase.usersModelDao().getUser(userId);
+                            userNames.add(user.getFirstName()+" "+user.getSurname());
                         }
 
                         return null;
@@ -174,7 +180,7 @@ public class ComposeNewMessageActivity extends AppCompatActivity implements Cont
                         super.onPostExecute(aVoid);
 
 
-                        MessagesActivity.open(ComposeNewMessageActivity.this, newMessage.getId(), userIds);
+                        MessagesActivity.open(ComposeNewMessageActivity.this, newMessage.getId(), userIds,userNames);
                         finish();
                     }
                 }.execute(newMessage);
