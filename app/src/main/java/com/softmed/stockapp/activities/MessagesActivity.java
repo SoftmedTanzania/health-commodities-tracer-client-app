@@ -11,6 +11,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
+import android.widget.Toast;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
@@ -27,6 +28,10 @@ import com.amulyakhare.textdrawable.TextDrawable;
 import com.google.gson.Gson;
 import com.softmed.stockapp.R;
 import com.softmed.stockapp.adapters.MessagesListAdapter;
+import com.softmed.stockapp.customViews.custom.message.viewholders.CustomIncomingImageMessageViewHolder;
+import com.softmed.stockapp.customViews.custom.message.viewholders.CustomIncomingTextMessageViewHolder;
+import com.softmed.stockapp.customViews.custom.message.viewholders.CustomOutcomingImageMessageViewHolder;
+import com.softmed.stockapp.customViews.custom.message.viewholders.CustomOutcomingTextMessageViewHolder;
 import com.softmed.stockapp.database.AppDatabase;
 import com.softmed.stockapp.dom.dto.MessageUserDTO;
 import com.softmed.stockapp.dom.entities.Message;
@@ -42,6 +47,7 @@ import com.softmed.stockapp.viewmodels.MessageListViewModel;
 import com.softmed.stockapp.workers.SendMessageRecipientWorker;
 import com.softmed.stockapp.workers.SendMessagesWorker;
 import com.stfalcon.chatkit.commons.ImageLoader;
+import com.stfalcon.chatkit.messages.MessageHolders;
 import com.stfalcon.chatkit.messages.MessagesList;
 import com.stfalcon.chatkit.utils.DateFormatter;
 
@@ -245,7 +251,50 @@ public class MessagesActivity extends AppCompatActivity
     }
 
     private void initAdapter() {
-        this.messagesAdapter = new MessagesListAdapter<>(sessionManager.getUserUUID(), this.imageLoader);
+
+        Log.d(TAG,"userIds count = "+usersIds.size());
+
+        CustomIncomingTextMessageViewHolder.Payload payload = new CustomIncomingTextMessageViewHolder.Payload();
+
+        payload.avatarClickListener = new CustomIncomingTextMessageViewHolder.OnAvatarClickListener() {
+            @Override
+            public void onAvatarClick() {
+                Toast.makeText(MessagesActivity.this,
+                        "Text message avatar clicked", Toast.LENGTH_SHORT).show();
+            }
+        };
+
+
+
+        int incomingImageMessageLayout;
+        int incomingTextMessageLayout;
+
+        if(usersIds.size()==1){
+            incomingImageMessageLayout = R.layout.item_incoming_image_message;
+            incomingTextMessageLayout = R.layout.item_incoming_text_message;
+        }else{
+
+            incomingImageMessageLayout = R.layout.item_incoming_group_image_message;
+            incomingTextMessageLayout = R.layout.item_incoming_group_text_message;
+        }
+
+        MessageHolders holdersConfig = new MessageHolders()
+                .setIncomingTextConfig(
+                        CustomIncomingTextMessageViewHolder.class,
+                        incomingTextMessageLayout,
+                        payload)
+                .setOutcomingTextConfig(
+                        CustomOutcomingTextMessageViewHolder.class,
+                        com.stfalcon.chatkit.R.layout.item_outcoming_text_message)
+                .setIncomingImageConfig(
+                        CustomIncomingImageMessageViewHolder.class,
+                        incomingImageMessageLayout)
+                .setOutcomingImageConfig(
+                        CustomOutcomingImageMessageViewHolder.class,
+                        com.stfalcon.chatkit.R.layout.item_outcoming_image_message);
+
+
+        this.messagesAdapter = new MessagesListAdapter<>(sessionManager.getUserUUID(),holdersConfig, this.imageLoader);
         this.messagesAdapter.enableSelectionMode(this);
         this.messagesAdapter.setLoadMoreListener(this);
         this.messagesAdapter.setDateHeadersFormatter(this);
