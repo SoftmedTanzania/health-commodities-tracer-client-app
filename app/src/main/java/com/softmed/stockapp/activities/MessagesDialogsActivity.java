@@ -214,6 +214,7 @@ public class MessagesDialogsActivity extends AppCompatActivity
         }
 
 
+        Log.d(TAG,"ImessageUsers = "+new Gson().toJson(IMessageUsers));
         return new MessageDialog(
                 message.getParentMessageId().equals("0") ? message.getId() : message.getParentMessageId(),
                 IMessageUsers.size() > 1 ? message.getSubject() : IMessageUsers.get(0).getName() + " - " + message.getSubject(),
