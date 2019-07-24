@@ -27,6 +27,9 @@ import android.os.Build;
 import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
+import androidx.work.Constraints;
+import androidx.work.Data;
+import androidx.work.NetworkType;
 import androidx.work.OneTimeWorkRequest;
 import androidx.work.WorkManager;
 
@@ -44,6 +47,8 @@ import com.softmed.stockapp.dom.entities.MessageRecipients;
 import com.softmed.stockapp.utils.ServiceGenerator;
 import com.softmed.stockapp.utils.SessionManager;
 import com.softmed.stockapp.workers.NotificationWorker;
+import com.softmed.stockapp.workers.SendFCMTokenWorker;
+import com.softmed.stockapp.workers.SendMessageRecipientWorker;
 
 import org.json.JSONObject;
 
@@ -251,39 +256,20 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
      */
     private void sendRegistrationToServer(String token) {
 
+        Constraints networkConstraints = new Constraints.Builder()
+                .setRequiredNetworkType(NetworkType.CONNECTED)
+                .build();
 
-        SessionManager session = new SessionManager(getApplicationContext());
+        OneTimeWorkRequest sendMessage = new OneTimeWorkRequest.Builder(SendFCMTokenWorker.class)
+                .setConstraints(networkConstraints)
+                .setInputData(
+                        new Data.Builder()
+                                .putString("token", token)
+                                .build()
+                )
+                .build();
 
-        String datastream = "";
-        JSONObject object = new JSONObject();
-        RequestBody body;
-
-        try {
-            object.put("user", session.getUserUUID());
-            object.put("reg_id", token);
-
-            datastream = object.toString();
-            Log.d("FCMService", "data " + datastream);
-
-            body = RequestBody.create(MediaType.parse("application/json"), datastream);
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            body = RequestBody.create(MediaType.parse("application/json"), datastream);
-        }
-        Endpoints.NotificationServices notificationServices = ServiceGenerator.createService(Endpoints.NotificationServices.class, session.getUserName(), session.getUserPass());
-        Call call = notificationServices.registerDevice(body);
-        call.enqueue(new Callback() {
-            @Override
-            public void onResponse(Call call, Response response) {
-                Log.d(TAG, "Response code = " + response.code());
-            }
-
-            @Override
-            public void onFailure(Call call, Throwable t) {
-                t.printStackTrace();
-            }
-        });
+        WorkManager.getInstance().enqueue(sendMessage);
     }
 
     /**
