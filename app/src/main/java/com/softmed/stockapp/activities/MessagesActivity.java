@@ -398,7 +398,7 @@ public class MessagesActivity extends AppCompatActivity
                 if (messageUserDTOS != null) {
                     ArrayList<IMessageDTO> IMessageDTOS = new ArrayList<>();
                     for (MessageUserDTO messageUserDTO : messageUserDTOS) {
-                        if(messageUserDTO.getUuid().equals(parentMessageId)){
+                        if(messageUserDTO.getUuid().equals(parentMessageId) && !messageUserDTO.getId().equals(parentMessageId)){
                             parentMessageId = messageUserDTO.getId();
                             Log.d(TAG,"Updating parentID");
                             Log.d(TAG,"parentID = "+parentMessageId);
