@@ -27,6 +27,7 @@ import android.os.Build;
 import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
+import androidx.core.app.RemoteInput;
 import androidx.work.Constraints;
 import androidx.work.Data;
 import androidx.work.NetworkType;
@@ -40,6 +41,7 @@ import com.google.gson.reflect.TypeToken;
 import com.softmed.stockapp.R;
 import com.softmed.stockapp.activities.MainActivity;
 import com.softmed.stockapp.api.Endpoints;
+import com.softmed.stockapp.broadcastReceivers.MyBroadcastReceiver;
 import com.softmed.stockapp.database.AppDatabase;
 import com.softmed.stockapp.dom.dto.MessageRecipientsDTO;
 import com.softmed.stockapp.dom.entities.Message;
@@ -54,6 +56,7 @@ import com.softmed.stockapp.workers.SendMessageRecipientWorker;
 import org.json.JSONObject;
 
 import java.lang.reflect.Type;
+import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -63,6 +66,8 @@ import okhttp3.RequestBody;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
+
+import static android.app.Notification.EXTRA_NOTIFICATION_ID;
 
 
 /**
@@ -79,6 +84,11 @@ import retrofit2.Response;
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
     private static final String TAG = MyFirebaseMessagingService.class.getSimpleName();
+    public static final String REPLY_ACTION =
+            "com.softmed.stockapp.messagingservice.ACTION_MESSAGE_REPLY";
+
+    public static final String MESSAGE_ID = "message_id";
+    public static final String KEY_TEXT_REPLY = "key_text_reply";
 
     /**
      * Called when message is received.
@@ -228,7 +238,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
                 OtherUsers sender = appDatabase.usersModelDao().getUser(m.getCreatorId());
 
-                sendNotification(sender.getFirstName()+" "+sender.getSurname(),messageRecipientsDTO.getMessageBody());
+                sendNotification(sender.getFirstName()+" "+sender.getSurname(),messageRecipientsDTO.getMessageBody(),m);
             }
         });
 
@@ -282,11 +292,57 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
      * @param title FCM sender .
      * @param messageBody FCM message body received.
      */
-    private void sendNotification(String title,String messageBody) {
+    private void sendNotification(String title,String messageBody,Message conversation) {
         Intent messageIntent = new Intent(this, MainActivity.class);
         messageIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, messageIntent,
                 PendingIntent.FLAG_ONE_SHOT);
+
+
+
+        String replyLabel = getResources().getString(R.string.reply_label);
+        RemoteInput remoteInput = new RemoteInput.Builder(KEY_TEXT_REPLY)
+                .setLabel(replyLabel)
+                .build();
+
+
+        PendingIntent replyPendingIntent =
+                PendingIntent.getBroadcast(getApplicationContext(),
+                        Integer.parseInt(conversation.getId()),
+                        getMessageReplyIntent(Integer.parseInt(conversation.getId())),
+                        PendingIntent.FLAG_UPDATE_CURRENT);
+
+
+        // Create the reply action and add the remote input.
+        NotificationCompat.Action replyAction =
+                new NotificationCompat.Action.Builder(R.drawable.ic_baseline_send_24px,
+                        getString(R.string.reply_label), replyPendingIntent)
+                        .addRemoteInput(remoteInput)
+                        .build();
+
+
+
+        // Create the UnreadConversation and populate it with the participant name,
+        // read and reply intents.
+//        NotificationCompat.CarExtender.UnreadConversation.Builder unreadConvBuilder =
+//                new UnreadConversation.Builder(conversation.getParticipantName())
+//                        .setLatestTimestamp(conversation.getTimestamp())
+//                        .setReadPendingIntent(readPendingIntent)
+//                        .setReplyAction(replyIntent, remoteInput);
+//
+//        // Note: Add messages from oldest to newest to the UnreadConversation.Builder
+//        StringBuilder messageForNotification = new StringBuilder();
+//        for (Iterator<String> messages = conversation.getMessages().iterator();
+//             messages.hasNext(); ) {
+//            String message = messages.next();
+//            unreadConvBuilder.addMessage(message);
+//            messageForNotification.append(message);
+//            if (messages.hasNext()) {
+//                messageForNotification.append(EOL);
+//            }
+//        }
+
 
         String channelId = getString(R.string.default_notification_channel_id);
         Uri defaultSoundUri = RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION);
@@ -299,7 +355,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                                 .bigText(messageBody))
                         .setAutoCancel(true)
                         .setSound(defaultSoundUri)
-                        .setContentIntent(pendingIntent);
+                        .addAction(replyAction);
 
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
@@ -313,5 +369,13 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         }
 
         notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
+    }
+
+    // Creates an Intent that will be triggered when a text reply is received.
+    private Intent getMessageReplyIntent(int conversationId) {
+        return new Intent(this, MyBroadcastReceiver.class)
+                .addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES)
+                .setAction(REPLY_ACTION)
+                .putExtra(MESSAGE_ID, conversationId);
     }
 }

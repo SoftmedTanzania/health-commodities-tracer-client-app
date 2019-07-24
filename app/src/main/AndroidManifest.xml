@@ -66,6 +66,13 @@
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
+
+        <receiver android:name=".broadcastReceivers.MyBroadcastReceiver"  android:exported="true">
+            <intent-filter>
+                <action android:name="com.softmed.stockapp.messagingservice.ACTION_MESSAGE_REPLY"/>
+            </intent-filter>
+        </receiver>
+
     </application>
 
 </manifest>
