@@ -27,8 +27,8 @@ import com.softmed.stockapp.dom.entities.Message;
 import com.softmed.stockapp.dom.entities.MessageRecipients;
 import com.softmed.stockapp.dom.entities.OtherUsers;
 import com.softmed.stockapp.dom.model.IMessageDTO;
-import com.softmed.stockapp.dom.model.MessageDialog;
 import com.softmed.stockapp.dom.model.IMessageUser;
+import com.softmed.stockapp.dom.model.MessageDialog;
 import com.softmed.stockapp.utils.AppUtils;
 import com.softmed.stockapp.utils.SessionManager;
 import com.softmed.stockapp.viewmodels.MessageListViewModel;
@@ -118,7 +118,7 @@ public class MessagesDialogsActivity extends AppCompatActivity
                         for (Message message : messages) {
 
                             Message m = baseDatabase.messagesModelDao().getLatestMessages(message.getId());
-                            int unreadCount = baseDatabase.messageRecipientsModelDao().getUnreadMessageCountByParentMessageId(message.getId(),false,Integer.parseInt(session.getUserUUID()));
+                            int unreadCount = baseDatabase.messageRecipientsModelDao().getUnreadMessageCountByParentMessageId(message.getId(), false, Integer.parseInt(session.getUserUUID()));
                             //Temporally using this field of unsync status cz its not needed at this point to store unread message count
                             //More elegant solutions can be implemented later on
                             m.setSyncStatus(unreadCount);
@@ -138,7 +138,9 @@ public class MessagesDialogsActivity extends AppCompatActivity
 
                         ArrayList<MessageDialog> chats = new ArrayList<>();
                         for (Message message : latestMessages) {
-                            chats.add(getDialog(message));
+                            MessageDialog messageDialog = getDialog(message);
+                            if (messageDialog != null)
+                                chats.add(getDialog(message));
                         }
 
 
@@ -213,16 +215,21 @@ public class MessagesDialogsActivity extends AppCompatActivity
             }
         }
 
+        try {
 
-        Log.d(TAG,"ImessageUsers = "+new Gson().toJson(IMessageUsers));
-        return new MessageDialog(
-                message.getParentMessageId().equals("0") ? message.getId() : message.getParentMessageId(),
-                IMessageUsers.size() > 1 ? message.getSubject() : IMessageUsers.get(0).getName() + " - " + message.getSubject(),
-                IMessageUsers.size() > 1 ? "group" : getInitials(IMessageUsers.get(0)),
-                IMessageUsers,
-                getLastMessage(message),
-                message.getSyncStatus(),
-                message.getParentMessageId());
+            Log.d(TAG, "ImessageUsers = " + new Gson().toJson(IMessageUsers));
+            return new MessageDialog(
+                    message.getParentMessageId().equals("0") ? message.getId() : message.getParentMessageId(),
+                    IMessageUsers.size() > 1 ? message.getSubject() : IMessageUsers.get(0).getName() + " - " + message.getSubject(),
+                    IMessageUsers.size() > 1 ? "group" : getInitials(IMessageUsers.get(0)),
+                    IMessageUsers,
+                    getLastMessage(message),
+                    message.getSyncStatus(),
+                    message.getParentMessageId());
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
 
 
     }
@@ -237,10 +244,10 @@ public class MessagesDialogsActivity extends AppCompatActivity
 
     private IMessageDTO getLastMessage(Message message) {
 
-        Log.d(TAG,"create date timestamp = "+message.getCreateDate());
+        Log.d(TAG, "create date timestamp = " + message.getCreateDate());
 
         Date d = new Date(message.getCreateDate());
-        Log.d(TAG,"created date = "+d.toString());
+        Log.d(TAG, "created date = " + d.toString());
 
         return new IMessageDTO(
                 message.getId(),
@@ -282,7 +289,7 @@ public class MessagesDialogsActivity extends AppCompatActivity
 
 
         Log.d(TAG, "Parent Message Id = " + parentMessageId);
-        MessagesActivity.open(this, parentMessageId, userIds,userNames);
+        MessagesActivity.open(this, parentMessageId, userIds, userNames);
     }
 
 

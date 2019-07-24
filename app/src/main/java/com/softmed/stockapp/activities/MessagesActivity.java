@@ -216,7 +216,7 @@ public class MessagesActivity extends AppCompatActivity
 
             @Override
             protected Void doInBackground(Message... newMessages) {
-                Message parentMessage = appDatabase.messagesModelDao().getMessageById(newMessages[0].getParentMessageId());
+                Message parentMessage = appDatabase.messagesModelDao().getParentMessageById(newMessages[0].getParentMessageId());
 
                 Message messageToBeSaved = newMessages[0];
                 messageToBeSaved.setSubject(parentMessage.getSubject());
@@ -388,6 +388,8 @@ public class MessagesActivity extends AppCompatActivity
         messageListViewModel.getMessageByThread(parentMessageId).observe(MessagesActivity.this, new Observer<List<com.softmed.stockapp.dom.dto.MessageUserDTO>>() {
             @Override
             public void onChanged(List<MessageUserDTO> messageUserDTOS) {
+                Log.d(TAG,"Something changed");
+                Log.d(TAG,"Messages = "+new Gson().toJson(messageUserDTOS));
                 if (messageUserDTOS != null) {
                     ArrayList<IMessageDTO> IMessageDTOS = new ArrayList<>();
                     for (MessageUserDTO messageUserDTO : messageUserDTOS) {

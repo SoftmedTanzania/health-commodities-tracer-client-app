@@ -14,6 +14,7 @@ import com.softmed.stockapp.database.AppDatabase;
 import com.softmed.stockapp.dom.dto.MessageRecipientsDTO;
 import com.softmed.stockapp.dom.entities.Message;
 import com.softmed.stockapp.dom.entities.MessageRecipients;
+import com.softmed.stockapp.dom.responces.NewMessageResponce;
 import com.softmed.stockapp.utils.ServiceGenerator;
 import com.softmed.stockapp.utils.SessionManager;
 
@@ -67,9 +68,9 @@ public class SendMessagesWorker extends Worker {
         sentMessageRecipientsDTO.setTrashedByCreator(message.isTrashedByCreator());
         sentMessageRecipientsDTO.setMessageRecipients(database.messageRecipientsModelDao().getAllMessageRecipientsByMessageId(message.getId()));
 
-        Call<MessageRecipientsDTO> messageCall = messagesServices.postMessages(getRequestBody(sentMessageRecipientsDTO));
+        Call<NewMessageResponce> messageCall = messagesServices.postMessages(getRequestBody(sentMessageRecipientsDTO));
 
-        Response<MessageRecipientsDTO> response = null;
+        Response<NewMessageResponce> response = null;
         try {
             response = messageCall.execute();
         } catch (IOException e) {
@@ -79,9 +80,13 @@ public class SendMessagesWorker extends Worker {
         if (response != null) {
             if (response.code() == 200 || response.code() == 201) {
 
-                MessageRecipientsDTO receivedMessageRecipientsDTO = response.body();
+                NewMessageResponce newMessageResponce = response.body();
+
+                MessageRecipientsDTO receivedMessageRecipientsDTO = newMessageResponce.getData();
+                Log.d(TAG,"received response = "+new Gson().toJson(receivedMessageRecipientsDTO));
+
                 database.messagesModelDao().updateMessageIds(messageId, receivedMessageRecipientsDTO.getId());
-                database.messageRecipientsModelDao().updateMessageRecipientsIds(message.getId(), response.body().getId());
+                database.messageRecipientsModelDao().updateMessageRecipientsIds(message.getId(), receivedMessageRecipientsDTO.getId());
 
                 for (int i = 0; i < receivedMessageRecipientsDTO.getMessageRecipients().size(); i++) {
                     MessageRecipients messageRecipients = receivedMessageRecipientsDTO.getMessageRecipients().get(i);

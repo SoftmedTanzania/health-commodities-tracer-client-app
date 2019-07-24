@@ -17,6 +17,11 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.work.Constraints;
+import androidx.work.Data;
+import androidx.work.NetworkType;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkManager;
 
 import com.google.android.material.bottomsheet.BottomSheetBehavior;
 import com.google.android.material.chip.Chip;
@@ -33,6 +38,7 @@ import com.softmed.stockapp.dom.entities.MessageRecipients;
 import com.softmed.stockapp.dom.entities.OtherUsers;
 import com.softmed.stockapp.utils.SessionManager;
 import com.softmed.stockapp.viewmodels.ContactChooserViewModel;
+import com.softmed.stockapp.workers.SendMessagesWorker;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -47,7 +53,7 @@ public class ComposeNewMessageActivity extends AppCompatActivity implements Cont
     private ExtendedFloatingActionButton composeFab;
     private TextInputLayout subjectInputLayout, messageInputLayout;
     private ArrayList<Integer> userIds;
-    private ArrayList<String> userNames;
+    private ArrayList<String> userNames = new ArrayList<>();
 
 
     public static ComposeNewMessageActivity newInstance() {
@@ -155,6 +161,7 @@ public class ComposeNewMessageActivity extends AppCompatActivity implements Cont
                         appDatabase.messagesModelDao().addMessage(newMessages[0]);
                         Log.d(TAG, "saving new message = " + new Gson().toJson(newMessages[0]));
 
+
                         userNames.clear();
                         for (Integer userId : userIds) {
                             if (userId.equals(String.valueOf(session.getUserUUID())))
@@ -172,12 +179,28 @@ public class ComposeNewMessageActivity extends AppCompatActivity implements Cont
                             userNames.add(user.getFirstName()+" "+user.getSurname());
                         }
 
+
                         return null;
                     }
 
                     @Override
                     protected void onPostExecute(Void aVoid) {
                         super.onPostExecute(aVoid);
+
+                        Constraints networkConstraints = new Constraints.Builder()
+                                .setRequiredNetworkType(NetworkType.CONNECTED)
+                                .build();
+
+                        OneTimeWorkRequest sendMessage = new OneTimeWorkRequest.Builder(SendMessagesWorker.class)
+                                .setConstraints(networkConstraints)
+                                .setInputData(
+                                        new Data.Builder()
+                                                .putString("messageId", newMessage.getId())
+                                                .build()
+                                )
+                                .build();
+
+                        WorkManager.getInstance().enqueue(sendMessage);
 
 
                         MessagesActivity.open(ComposeNewMessageActivity.this, newMessage.getId(), userIds,userNames);

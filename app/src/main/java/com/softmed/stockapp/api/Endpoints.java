@@ -10,6 +10,7 @@ import com.softmed.stockapp.dom.entities.TransactionType;
 import com.softmed.stockapp.dom.entities.Transactions;
 import com.softmed.stockapp.dom.responces.CategoriesResponse;
 import com.softmed.stockapp.dom.responces.LoginResponse;
+import com.softmed.stockapp.dom.responces.NewMessageResponce;
 import com.softmed.stockapp.dom.responces.ProductReportingScheduleResponse;
 import com.softmed.stockapp.dom.responces.ProductsPostResponse;
 import com.softmed.stockapp.dom.responces.UnitsResponse;
@@ -90,7 +91,7 @@ public class Endpoints {
 
 
         @POST("create_new_message")
-        Call<MessageRecipientsDTO> postMessages(@Body RequestBody e);
+        Call<NewMessageResponce> postMessages(@Body RequestBody e);
 
         @PUT("update_read_message_status")
         Call<String> updateMessageReadStatus(@Body RequestBody e);
