@@ -44,6 +44,7 @@ import com.softmed.stockapp.database.AppDatabase;
 import com.softmed.stockapp.dom.dto.MessageRecipientsDTO;
 import com.softmed.stockapp.dom.entities.Message;
 import com.softmed.stockapp.dom.entities.MessageRecipients;
+import com.softmed.stockapp.dom.entities.OtherUsers;
 import com.softmed.stockapp.utils.ServiceGenerator;
 import com.softmed.stockapp.utils.SessionManager;
 import com.softmed.stockapp.workers.NotificationWorker;
@@ -133,7 +134,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
                         Log.d(TAG,"GENERATED MessageRecipientsDTO = "+new Gson().toJson(messageRecipientsDTO));
                         saveNewMessage(messageRecipientsDTO);
-                        sendNotification("New Message");
                     }
                     break;
 
@@ -225,6 +225,10 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 for (MessageRecipients messageRecipient : messageRecipientsDTO.getMessageRecipients()) {
                     appDatabase.messageRecipientsModelDao().addRecipient(messageRecipient);
                 }
+
+                OtherUsers sender = appDatabase.usersModelDao().getUser(m.getCreatorId());
+
+                sendNotification(sender.getFirstName()+" "+sender.getSurname(),messageRecipientsDTO.getMessageBody());
             }
         });
 
@@ -275,9 +279,10 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     /**
      * Create and show a simple notification containing the received FCM message.
      *
+     * @param title FCM sender .
      * @param messageBody FCM message body received.
      */
-    private void sendNotification(String messageBody) {
+    private void sendNotification(String title,String messageBody) {
         Intent intent = new Intent(this, MainActivity.class);
         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, intent,
@@ -288,7 +293,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
         NotificationCompat.Builder notificationBuilder =
                 new NotificationCompat.Builder(this, channelId)
                         .setSmallIcon(R.mipmap.ic_calendar)
-                        .setContentTitle(getString(R.string.fcm_message))
+                        .setContentTitle(title)
                         .setContentText(messageBody)
                         .setAutoCancel(true)
                         .setSound(defaultSoundUri)
