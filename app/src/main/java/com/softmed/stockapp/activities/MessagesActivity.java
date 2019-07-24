@@ -221,6 +221,8 @@ public class MessagesActivity extends AppCompatActivity
                 Message messageToBeSaved = newMessages[0];
                 messageToBeSaved.setSubject(parentMessage.getSubject());
 
+                messageToBeSaved.setParentMessageId(parentMessage.getId());
+
                 appDatabase.messagesModelDao().addMessage(messageToBeSaved);
                 Log.d(TAG, "saving new message = " + new Gson().toJson(newMessages[0]));
                 for (Integer userId : usersIds) {
@@ -384,18 +386,27 @@ public class MessagesActivity extends AppCompatActivity
 
     @SuppressLint("StaticFieldLeak")
     protected void loadMessages() {
+
+        Log.d(TAG,"Loading more with parentID = "+parentMessageId);
         MessageListViewModel messageListViewModel = ViewModelProviders.of(this).get(MessageListViewModel.class);
         messageListViewModel.getMessageByThread(parentMessageId).observe(MessagesActivity.this, new Observer<List<com.softmed.stockapp.dom.dto.MessageUserDTO>>() {
             @Override
             public void onChanged(List<MessageUserDTO> messageUserDTOS) {
                 Log.d(TAG,"Something changed");
                 Log.d(TAG,"Messages = "+new Gson().toJson(messageUserDTOS));
+
                 if (messageUserDTOS != null) {
                     ArrayList<IMessageDTO> IMessageDTOS = new ArrayList<>();
                     for (MessageUserDTO messageUserDTO : messageUserDTOS) {
+                        if(messageUserDTO.getUuid().equals(parentMessageId)){
+                            parentMessageId = messageUserDTO.getId();
+                            Log.d(TAG,"Updating parentID");
+                            Log.d(TAG,"parentID = "+parentMessageId);
+                        }
+
                         IMessageDTOS.add(toIMessageDTO(messageUserDTO));
                         if (!isFIrstLoad) {
-                            if (messagesAdapter.getMessagePositionById(messageUserDTO.getId()) == -1) {
+                            if (messagesAdapter.getMessagePositionById(messageUserDTO.getUuid()) == -1) {
                                 messagesAdapter.addToStart(toIMessageDTO(messageUserDTO), true);
                             } else {
                                 messagesAdapter.update(toIMessageDTO(messageUserDTO));

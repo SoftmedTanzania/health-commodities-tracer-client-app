@@ -84,6 +84,7 @@ public class SendMessagesWorker extends Worker {
 
                 MessageRecipientsDTO receivedMessageRecipientsDTO = newMessageResponce.getData();
                 Log.d(TAG,"received response = "+new Gson().toJson(receivedMessageRecipientsDTO));
+                Log.d(TAG,"previous message id = "+new Gson().toJson(receivedMessageRecipientsDTO));
 
                 database.messagesModelDao().updateMessageIds(messageId, receivedMessageRecipientsDTO.getId());
                 database.messageRecipientsModelDao().updateMessageRecipientsIds(message.getId(), receivedMessageRecipientsDTO.getId());
@@ -93,6 +94,9 @@ public class SendMessagesWorker extends Worker {
                     database.messageRecipientsModelDao().updateIds(sentMessageRecipientsDTO.getMessageRecipients().get(i).getId(), messageRecipients.getId());
                 }
 
+
+                Log.d(TAG,"updated message = "+new Gson().toJson(database.messagesModelDao().getParentMessageById(sentMessageRecipientsDTO.getId())));
+
                 return Result.success();
 
             } else {
@@ -100,7 +104,7 @@ public class SendMessagesWorker extends Worker {
                 return Result.retry();
             }
         } else {
-            return Result.failure();
+            return Result.retry();
         }
 
     }

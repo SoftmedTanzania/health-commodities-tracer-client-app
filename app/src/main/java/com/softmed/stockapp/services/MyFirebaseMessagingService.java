@@ -212,7 +212,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                     messageRecipientsDTO.setCreateDate(messageRecipientsDTO.getCreateDate()*1000);
                 }
 
-                m.setCreateDate(messageRecipientsDTO.getCreateDate()*1000);
+                m.setCreateDate(messageRecipientsDTO.getCreateDate());
                 m.setParentMessageId(messageRecipientsDTO.getParentMessageId());
                 m.setSyncStatus(1);
                 appDatabase.messagesModelDao().addMessage(m);

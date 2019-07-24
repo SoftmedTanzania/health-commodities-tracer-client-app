@@ -145,6 +145,7 @@ public class ComposeNewMessageActivity extends AppCompatActivity implements Cont
                 newMessage.setMessageBody(messageInputLayout.getEditText().getText().toString());
                 newMessage.setParentMessageId("0");
                 newMessage.setSubject(subjectInputLayout.getEditText().getText().toString());
+                newMessage.setUuid(newMessage.getId());
 
                 userIds = new ArrayList<>();
                 for (int i = 0; i < entryChipGroup.getChildCount(); i++) {
