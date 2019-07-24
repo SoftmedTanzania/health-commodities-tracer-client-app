@@ -64,7 +64,6 @@ public class SendFCMTokenWorker extends Worker {
             e.printStackTrace();
             body = RequestBody.create(MediaType.parse("application/json"), datastream);
         }
-
         Call updateFCMCall = notificationServices.registerDevice(body);
         Response response = null;
         try {
