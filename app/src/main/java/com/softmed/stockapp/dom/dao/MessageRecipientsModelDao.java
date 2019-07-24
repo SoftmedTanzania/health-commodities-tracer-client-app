@@ -35,6 +35,11 @@ public interface MessageRecipientsModelDao {
             "messageId IN (SELECT id from Message WHERE parentMessageId = :parentMessageId OR id = :parentMessageId)")
     int getUnreadMessageCountByParentMessageId(String parentMessageId,boolean isRead,int userId);
 
+    @Query("SELECT COUNT(*) FROM MessageRecipients WHERE " +
+            "isRead = :isRead AND " +
+            "recipientId = :userId")
+    LiveData<Integer> getUnreadMessageCountUserId(boolean isRead,int userId);
+
     @Insert(onConflict = REPLACE)
     void addRecipient(MessageRecipients messageRecipients);
 

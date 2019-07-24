@@ -29,4 +29,10 @@ public class MessageListViewModel extends AndroidViewModel {
     public LiveData<List<MessageUserDTO>> getMessageByThread(String parentMessageId) {
         return appDatabase.messagesModelDao().getMessageByThread(parentMessageId);
     }
+
+
+    public LiveData<Integer> getUnreadMessageCountUserId(int userId) {
+        return appDatabase.messageRecipientsModelDao().getUnreadMessageCountUserId(false,userId);
+    }
+
 }

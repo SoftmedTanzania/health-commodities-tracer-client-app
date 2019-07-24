@@ -21,6 +21,8 @@ import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentPagerAdapter;
+import androidx.lifecycle.Observer;
+import androidx.lifecycle.ViewModelProviders;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
 
@@ -40,6 +42,7 @@ import com.softmed.stockapp.fragments.UpcomingReportingScheduleFragment;
 import com.softmed.stockapp.fragments.UpdateStockFragment;
 import com.softmed.stockapp.utils.SessionManager;
 import com.softmed.stockapp.utils.ZoomOutPageTransformer;
+import com.softmed.stockapp.viewmodels.MessageListViewModel;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
 import java.util.ArrayList;
@@ -215,7 +218,6 @@ public class MainActivity extends AppCompatActivity {
 //      inkPageIndicator.setViewPager(updateStockViewPager);
 
         new AsyncTask<Void, Void, Location>() {
-
             @Override
             protected Location doInBackground(Void... voids) {
                 return baseDatabase.locationModelDao().getLocationById(session.getFacilityId());
@@ -276,6 +278,21 @@ public class MainActivity extends AppCompatActivity {
         } else {
             updateStockViewpager();
         }
+
+
+        MessageListViewModel messageListViewModel = ViewModelProviders.of(this).get(MessageListViewModel.class);
+        try {
+            messageListViewModel.getUnreadMessageCountUserId(Integer.parseInt(session.getUserUUID())).observe(this, new Observer<Integer>() {
+                @Override
+                public void onChanged(Integer integer) {
+                    ((TextView) findViewById(R.id.badge_notification_1)).setText(String.valueOf(integer));
+                }
+            });
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
+
     }
 
     @SuppressLint("StaticFieldLeak")
