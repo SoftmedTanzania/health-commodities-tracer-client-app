@@ -40,34 +40,21 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.softmed.stockapp.R;
 import com.softmed.stockapp.activities.MainActivity;
-import com.softmed.stockapp.api.Endpoints;
 import com.softmed.stockapp.broadcastReceivers.MyBroadcastReceiver;
 import com.softmed.stockapp.database.AppDatabase;
 import com.softmed.stockapp.dom.dto.MessageRecipientsDTO;
 import com.softmed.stockapp.dom.entities.Message;
 import com.softmed.stockapp.dom.entities.MessageRecipients;
 import com.softmed.stockapp.dom.entities.OtherUsers;
-import com.softmed.stockapp.utils.ServiceGenerator;
-import com.softmed.stockapp.utils.SessionManager;
 import com.softmed.stockapp.workers.NotificationWorker;
 import com.softmed.stockapp.workers.SendFCMTokenWorker;
-import com.softmed.stockapp.workers.SendMessageRecipientWorker;
 
 import org.json.JSONObject;
 
 import java.lang.reflect.Type;
-import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
-
-import okhttp3.MediaType;
-import okhttp3.RequestBody;
-import retrofit2.Call;
-import retrofit2.Callback;
-import retrofit2.Response;
-
-import static android.app.Notification.EXTRA_NOTIFICATION_ID;
 
 
 /**
@@ -83,12 +70,14 @@ import static android.app.Notification.EXTRA_NOTIFICATION_ID;
  */
 public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
-    private static final String TAG = MyFirebaseMessagingService.class.getSimpleName();
     public static final String REPLY_ACTION =
             "com.softmed.stockapp.messagingservice.ACTION_MESSAGE_REPLY";
-
     public static final String MESSAGE_ID = "message_id";
+    public static final String MESSAGE_SENDER_ID = "message_sender_id";
+    public static final String PARENT_MESSAGE_ID = "parent_message_id";
+    public static final String MESSAGE_SUBJECT = "parent_message_id";
     public static final String KEY_TEXT_REPLY = "key_text_reply";
+    private static final String TAG = MyFirebaseMessagingService.class.getSimpleName();
 
     /**
      * Called when message is received.
@@ -134,15 +123,15 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
                 JSONObject data = new JSONObject(jsonString);
 
-                Log.d(TAG,"DATA OBJECT = "+data.toString());
-                JSONObject json =new JSONObject(data.getString("msg"));
+                Log.d(TAG, "DATA OBJECT = " + data.toString());
+                JSONObject json = new JSONObject(data.getString("msg"));
 
                 String notificationBody = json.getString("type");
                 switch (notificationBody) {
                     case "NEW_MESSAGE": {
                         MessageRecipientsDTO messageRecipientsDTO = new Gson().fromJson(json.getString("data"), MessageRecipientsDTO.class);
 
-                        Log.d(TAG,"GENERATED MessageRecipientsDTO = "+new Gson().toJson(messageRecipientsDTO));
+                        Log.d(TAG, "GENERATED MessageRecipientsDTO = " + new Gson().toJson(messageRecipientsDTO));
                         saveNewMessage(messageRecipientsDTO);
                     }
                     break;
@@ -223,8 +212,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 //android supports milliseconds timestamps
                 int length = String.valueOf(messageRecipientsDTO.getCreateDate()).length();
 
-                if(length==10){
-                    messageRecipientsDTO.setCreateDate(messageRecipientsDTO.getCreateDate()*1000);
+                if (length == 10) {
+                    messageRecipientsDTO.setCreateDate(messageRecipientsDTO.getCreateDate() * 1000);
                 }
 
                 m.setCreateDate(messageRecipientsDTO.getCreateDate());
@@ -238,7 +227,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
                 OtherUsers sender = appDatabase.usersModelDao().getUser(m.getCreatorId());
 
-                sendNotification(sender.getFirstName()+" "+sender.getSurname(),messageRecipientsDTO.getMessageBody(),m);
+                sendNotification(sender.getFirstName() + " " + sender.getSurname(), messageRecipientsDTO.getMessageBody(), m);
             }
         });
 
@@ -289,16 +278,15 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     /**
      * Create and show a simple notification containing the received FCM message.
      *
-     * @param title FCM sender .
+     * @param title       FCM sender .
      * @param messageBody FCM message body received.
      */
-    private void sendNotification(String title,String messageBody,Message conversation) {
+    private void sendNotification(String title, String messageBody, Message receivedMessage) {
         Intent messageIntent = new Intent(this, MainActivity.class);
         messageIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, messageIntent,
                 PendingIntent.FLAG_ONE_SHOT);
-
 
 
         String replyLabel = getResources().getString(R.string.reply_label);
@@ -309,8 +297,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
 
         PendingIntent replyPendingIntent =
                 PendingIntent.getBroadcast(getApplicationContext(),
-                        Integer.parseInt(conversation.getId()),
-                        getMessageReplyIntent(Integer.parseInt(conversation.getId())),
+                        Integer.parseInt(receivedMessage.getId()),
+                        getMessageReplyIntent(receivedMessage),
                         PendingIntent.FLAG_UPDATE_CURRENT);
 
 
@@ -320,7 +308,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                         getString(R.string.reply_label), replyPendingIntent)
                         .addRemoteInput(remoteInput)
                         .build();
-
 
 
         // Create the UnreadConversation and populate it with the participant name,
@@ -355,7 +342,8 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                                 .bigText(messageBody))
                         .setAutoCancel(true)
                         .setSound(defaultSoundUri)
-                        .addAction(replyAction);
+                        .addAction(replyAction)
+                        .setContentIntent(pendingIntent);
 
         NotificationManager notificationManager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
@@ -368,14 +356,18 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
             notificationManager.createNotificationChannel(channel);
         }
 
-        notificationManager.notify(0 /* ID of notification */, notificationBuilder.build());
+        notificationManager.notify(Integer.parseInt(receivedMessage.getId()), notificationBuilder.build());
     }
 
     // Creates an Intent that will be triggered when a text reply is received.
-    private Intent getMessageReplyIntent(int conversationId) {
+    private Intent getMessageReplyIntent(Message receivedMessage) {
+        int messageId = Integer.parseInt(receivedMessage.getId());
         return new Intent(this, MyBroadcastReceiver.class)
                 .addFlags(Intent.FLAG_INCLUDE_STOPPED_PACKAGES)
                 .setAction(REPLY_ACTION)
-                .putExtra(MESSAGE_ID, conversationId);
+                .putExtra(MESSAGE_ID, messageId)
+                .putExtra(MESSAGE_SUBJECT, receivedMessage.getSubject())
+                .putExtra(PARENT_MESSAGE_ID, receivedMessage.getParentMessageId().equals("0") ? receivedMessage.getId() : receivedMessage.getParentMessageId())
+                .putExtra(MESSAGE_SENDER_ID, receivedMessage.getCreatorId());
     }
 }
