@@ -75,7 +75,6 @@
                                 android:layout_height="24dp"
                                 android:layout_alignRight="@id/relative_layout"
                                 android:background="@drawable/badge_item_count"
-                                android:text="2"
                                 android:textStyle="bold"
                                 android:gravity="center"
                                 android:textColor="#FFF"
