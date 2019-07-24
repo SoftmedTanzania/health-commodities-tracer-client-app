@@ -3,7 +3,6 @@ package com.softmed.stockapp.customViews.custom.message.viewholders;
 import android.view.View;
 import android.widget.TextView;
 
-import com.softmed.stockapp.R;
 import com.softmed.stockapp.dom.model.IMessageDTO;
 import com.stfalcon.chatkit.messages.MessageHolders;
 

@@ -2,14 +2,12 @@ package com.softmed.stockapp.activities;
 
 import android.content.SharedPreferences;
 import android.content.res.Configuration;
-import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.Log;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.softmed.stockapp.api.Endpoints;
 import com.softmed.stockapp.database.AppDatabase;
 import com.softmed.stockapp.dom.entities.ProductReportingSchedule;
 import com.softmed.stockapp.dom.responces.ProductReportingScheduleResponse;
@@ -20,8 +18,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Locale;
 
-import retrofit2.Retrofit;
-
 /**
  * Created by issy on 11/14/17.
  */
@@ -31,16 +27,12 @@ public class BaseActivity extends AppCompatActivity {
     public static final String LOCALE_PREF_KEY = "localePref";
     public static final String ENGLISH_LOCALE = "en";
     public static final String SWAHILI_LOCALE = "sw";
-    final public static SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
     private static final String TAG = BaseActivity.class.getSimpleName();
-    public static Typeface Avenir_Light;
     public static AppDatabase baseDatabase;
     public static SharedPreferences localeSp;
     // Session Manager Class
     public static SessionManager session;
     static String localeString = "";
-    public Retrofit retrofit;
-    public Endpoints apiEndpoints;
     public Locale locale;
 
     public static String getLocaleString() {

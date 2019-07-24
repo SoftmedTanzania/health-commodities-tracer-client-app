@@ -1,8 +1,6 @@
 package com.softmed.stockapp.adapters;
 
 import android.content.Context;
-import androidx.appcompat.widget.PopupMenu;
-import androidx.recyclerview.widget.RecyclerView;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -10,6 +8,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.TextView;
+
+import androidx.appcompat.widget.PopupMenu;
+import androidx.recyclerview.widget.RecyclerView;
 
 import com.softmed.stockapp.R;
 import com.softmed.stockapp.dom.dto.ProductList;
@@ -27,7 +28,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
     public ProductAdapter(Context context, List<ProductList> products) {
         mContext = context;
         mProducts = products;
-        Log.d(TAG,"list data size = "+mProducts.size());
+        Log.d(TAG, "list data size = " + mProducts.size());
     }
 
     public void setOnItemClickListener(OnItemClickListener listener) {
@@ -52,6 +53,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
     /**
      * Method that gets invoked when the user presses the 'Sale' button on the popup menu.
      * This decreases the selected product qty by 1 only if it wouldn't result a negative quantity.
+     *
      * @param position - The ArrayList position of the selected product.
      * @return Product - The Product object if the quantity is decreased, or null if not.
      */
@@ -69,6 +71,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
     /**
      * Method that gets invoked when the user presses the 'Delete' button on the popup menu.
      * This deletes the selected product from the ArrayList and from the UI.
+     *
      * @param position - The ArrayList position of the selected product.
      */
     public void deleteProduct(int position) {
@@ -86,10 +89,10 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
     public void onBindViewHolder(final ViewHolder holder, int position) {
         final ProductList product = mProducts.get(position);
 
-        Log.d(TAG,"Adapter product item id : "+product.getId());
+        Log.d(TAG, "Adapter product item id : " + product.getId());
         holder.mProductNameTextView.setText(product.getName());
 
-        Log.d(TAG,"Product Unit = "+product.getUnit());
+        Log.d(TAG, "Product Unit = " + product.getUnit());
 
         holder.mProductQuantityTextView.setText(String.format("%s %s %s", mContext.getString(R.string.string_format_product_quantity), String.valueOf(product.getBalance()), product.getUnit()));
 //        holder.mpatientsOnRegimeTextView.setText(String.format("%s %s", mContext.getString(R.string.string_format_product_clients_on_regime), String.valueOf(product.getNumberOfClientsOnRegime())));
@@ -129,7 +132,7 @@ public class ProductAdapter extends RecyclerView.Adapter<ProductAdapter.ViewHold
 
     @Override
     public int getItemCount() {
-        Log.d(TAG,"item count = "+mProducts.size());
+        Log.d(TAG, "item count = " + mProducts.size());
         return mProducts.size();
     }
 

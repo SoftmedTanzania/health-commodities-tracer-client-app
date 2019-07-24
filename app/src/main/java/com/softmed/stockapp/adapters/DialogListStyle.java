@@ -69,6 +69,10 @@ class DialogListStyle extends Style {
     private int dialogItemBackground;
     private int dialogUnreadItemBackground;
 
+    private DialogListStyle(Context context, AttributeSet attrs) {
+        super(context, attrs);
+    }
+
     static DialogListStyle parse(Context context, AttributeSet attrs) {
         DialogListStyle style = new DialogListStyle(context, attrs);
 
@@ -152,10 +156,6 @@ class DialogListStyle extends Style {
         typedArray.recycle();
 
         return style;
-    }
-
-    private DialogListStyle(Context context, AttributeSet attrs) {
-        super(context, attrs);
     }
 
     protected int getDialogTitleTextColor() {

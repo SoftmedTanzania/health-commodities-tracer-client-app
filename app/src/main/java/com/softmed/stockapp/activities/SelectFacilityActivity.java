@@ -17,14 +17,14 @@ import androidx.core.content.res.ResourcesCompat;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
+import com.softmed.stockapp.R;
+import com.softmed.stockapp.api.Endpoints;
 import com.softmed.stockapp.database.AppDatabase;
 import com.softmed.stockapp.dom.entities.Balances;
 import com.softmed.stockapp.dom.entities.Location;
 import com.softmed.stockapp.dom.entities.Product;
-import com.softmed.stockapp.R;
 import com.softmed.stockapp.utils.ServiceGenerator;
 import com.softmed.stockapp.utils.SessionManager;
-import com.softmed.stockapp.api.Endpoints;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -128,7 +128,7 @@ public class SelectFacilityActivity extends BaseActivity {
 
 
             List<String> locationNames = new ArrayList<>();
-            for(Location location:locations){
+            for (Location location : locations) {
                 locationNames.add(location.getName());
             }
 
@@ -144,7 +144,7 @@ public class SelectFacilityActivity extends BaseActivity {
                 public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                     try {
                         selectedLocationId = facilityLocations.get(i).getId();
-                    }catch (Exception e){
+                    } catch (Exception e) {
                         e.printStackTrace();
                     }
                 }

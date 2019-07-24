@@ -21,7 +21,7 @@ public class MessagesListAdapter<MESSAGE extends IMessage> extends com.stfalcon.
 
     public int getMessagePositionById(String id) {
         for (int i = 0; i < items.size(); i++) {
-            Wrapper wrapper = (Wrapper)items.get(i);
+            Wrapper wrapper = (Wrapper) items.get(i);
             if (wrapper.item instanceof IMessage) {
                 IMessage message = (IMessage) wrapper.item;
                 if (message.getId().contentEquals(id)) {

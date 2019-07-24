@@ -6,8 +6,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
+
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+
 import com.softmed.stockapp.R;
 import com.softmed.stockapp.dom.entities.OtherUsers;
 
@@ -19,19 +21,15 @@ import java.util.List;
  */
 
 public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.ContactsViewHolder> {
+    private final OnItemClickListener listener;
     private List<OtherUsers> contacts;
     private Context context;
-    private final OnItemClickListener listener;
 
-    public ContactAdapter(Context context, List<OtherUsers> contacts,OnItemClickListener listener) {
+    public ContactAdapter(Context context, List<OtherUsers> contacts, OnItemClickListener listener) {
         this.contacts = contacts;
         this.context = context;
         this.listener = listener;
 
-    }
-
-    public interface OnItemClickListener {
-        void onItemClick(OtherUsers user);
     }
 
     @NonNull
@@ -50,19 +48,23 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.Contacts
         viewHolder.imageViewContactDisplay.setImageResource(R.drawable.facebook_avatar);
 
         viewHolder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override public void onClick(View v) {
+            @Override
+            public void onClick(View v) {
                 listener.onItemClick(user);
             }
         });
 
     }
 
-
     @Override
     public int getItemCount() {
         return contacts.size();
     }
 
+
+    public interface OnItemClickListener {
+        void onItemClick(OtherUsers user);
+    }
 
     public static class ContactsViewHolder extends RecyclerView.ViewHolder {
         TextView textViewContactUsername;

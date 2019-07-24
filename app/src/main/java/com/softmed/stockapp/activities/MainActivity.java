@@ -29,6 +29,7 @@ import com.google.android.material.tabs.TabLayout;
 import com.google.gson.Gson;
 import com.pixelcan.inkpageindicator.InkPageIndicator;
 import com.softmed.stockapp.R;
+import com.softmed.stockapp.customViews.VerticalArrow;
 import com.softmed.stockapp.database.AppDatabase;
 import com.softmed.stockapp.dom.dto.ProducToBeReportedtList;
 import com.softmed.stockapp.dom.entities.Location;
@@ -38,7 +39,6 @@ import com.softmed.stockapp.fragments.ProductsListFragment;
 import com.softmed.stockapp.fragments.UpcomingReportingScheduleFragment;
 import com.softmed.stockapp.fragments.UpdateStockFragment;
 import com.softmed.stockapp.utils.SessionManager;
-import com.softmed.stockapp.customViews.VerticalArrow;
 import com.softmed.stockapp.utils.ZoomOutPageTransformer;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
