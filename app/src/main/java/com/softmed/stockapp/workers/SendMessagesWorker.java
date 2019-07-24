@@ -8,6 +8,7 @@ import androidx.annotation.NonNull;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
+import com.google.gson.Gson;
 import com.softmed.stockapp.api.Endpoints;
 import com.softmed.stockapp.database.AppDatabase;
 import com.softmed.stockapp.dom.dto.MessageRecipientsDTO;
@@ -55,6 +56,7 @@ public class SendMessagesWorker extends Worker {
 
         Message message = database.messagesModelDao().getMessageById(messageId);
 
+
         MessageRecipientsDTO sentMessageRecipientsDTO = new MessageRecipientsDTO();
         sentMessageRecipientsDTO.setId(message.getId());
         sentMessageRecipientsDTO.setCreateDate(message.getCreateDate());
@@ -62,6 +64,7 @@ public class SendMessagesWorker extends Worker {
         sentMessageRecipientsDTO.setMessageBody(message.getMessageBody());
         sentMessageRecipientsDTO.setParentMessageId(message.getParentMessageId());
         sentMessageRecipientsDTO.setSubject(message.getSubject());
+        sentMessageRecipientsDTO.setTrashedByCreator(message.isTrashedByCreator());
         sentMessageRecipientsDTO.setMessageRecipients(database.messageRecipientsModelDao().getAllMessageRecipientsByMessageId(message.getId()));
 
         Call<MessageRecipientsDTO> messageCall = messagesServices.postMessages(getRequestBody(sentMessageRecipientsDTO));

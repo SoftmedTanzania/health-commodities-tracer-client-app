@@ -25,6 +25,9 @@ public class MessageRecipients implements Serializable {
     @SerializedName("is_read")
     private boolean isRead;
 
+    @SerializedName("deleted_from_mail_box")
+    private boolean deletedFromMailBox;
+
     @NonNull
     public String getId() {
         return id;
@@ -56,5 +59,13 @@ public class MessageRecipients implements Serializable {
 
     public void setRead(boolean read) {
         isRead = read;
+    }
+
+    public boolean isDeletedFromMailBox() {
+        return deletedFromMailBox;
+    }
+
+    public void setDeletedFromMailBox(boolean deletedFromMailBox) {
+        this.deletedFromMailBox = deletedFromMailBox;
     }
 }

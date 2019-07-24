@@ -31,6 +31,9 @@ public class Message implements Serializable {
     @SerializedName("parent_message_id")
     private String parentMessageId;
 
+    @SerializedName("trashed_by_creator")
+    private boolean trashedByCreator;
+
     @SerializedName("sync_status")
     private int syncStatus;
 
@@ -102,5 +105,13 @@ public class Message implements Serializable {
 
     public void setUuid(String uuid) {
         this.uuid = uuid;
+    }
+
+    public boolean isTrashedByCreator() {
+        return trashedByCreator;
+    }
+
+    public void setTrashedByCreator(boolean trashedByCreator) {
+        this.trashedByCreator = trashedByCreator;
     }
 }

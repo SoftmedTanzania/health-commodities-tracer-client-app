@@ -29,6 +29,10 @@ public class MessageRecipientsDTO {
     @SerializedName("parent_message_id")
     private String parentMessageId;
 
+
+    @SerializedName("trashed_by_creator")
+    private boolean trashedByCreator;
+
     @SerializedName("sync_status")
     private int syncStatus;
 
@@ -96,5 +100,13 @@ public class MessageRecipientsDTO {
 
     public void setId(String id) {
         this.id = id;
+    }
+
+    public boolean isTrashedByCreator() {
+        return trashedByCreator;
+    }
+
+    public void setTrashedByCreator(boolean trashedByCreator) {
+        this.trashedByCreator = trashedByCreator;
     }
 }
