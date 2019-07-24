@@ -402,6 +402,8 @@ public class MessagesActivity extends AppCompatActivity
                             parentMessageId = messageUserDTO.getId();
                             Log.d(TAG,"Updating parentID");
                             Log.d(TAG,"parentID = "+parentMessageId);
+                            loadMessages();
+                            break;
                         }
 
                         IMessageDTOS.add(toIMessageDTO(messageUserDTO));
