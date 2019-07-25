@@ -75,7 +75,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
     public static final String MESSAGE_ID = "message_id";
     public static final String MESSAGE_SENDER_ID = "message_sender_id";
     public static final String PARENT_MESSAGE_ID = "parent_message_id";
-    public static final String MESSAGE_SUBJECT = "parent_message_id";
+    public static final String MESSAGE_SUBJECT = "message_subject";
     public static final String KEY_TEXT_REPLY = "key_text_reply";
     private static final String TAG = MyFirebaseMessagingService.class.getSimpleName();
 
