@@ -54,6 +54,7 @@ public class MessagesDialogsActivity extends AppCompatActivity
     private AppDatabase baseDatabase;
     private SessionManager session;
     private ExtendedFloatingActionButton floatingActionButton;
+    private View emptyState;
 
     public static void open(Context context) {
         context.startActivity(new Intent(context, MessagesDialogsActivity.class));
@@ -104,6 +105,7 @@ public class MessagesDialogsActivity extends AppCompatActivity
             }
         };
 
+        emptyState = findViewById(R.id.empty_state);
         dialogsList = findViewById(R.id.dialogsList);
         MessageListViewModel messageListViewModel = ViewModelProviders.of(this).get(MessageListViewModel.class);
         messageListViewModel.getParentMessages().observe(MessagesDialogsActivity.this, new Observer<List<Message>>() {
@@ -112,6 +114,12 @@ public class MessagesDialogsActivity extends AppCompatActivity
             public void onChanged(List<Message> messages) {
 
                 Log.d(TAG, "Message Schedules = " + new Gson().toJson(messages));
+
+                if(messages.size()==0){
+                    emptyState.setVisibility(View.VISIBLE);
+                }else{
+                    emptyState.setVisibility(View.GONE);
+                }
 
                 new AsyncTask<Void, Void, List<MessageDialog>>() {
 
