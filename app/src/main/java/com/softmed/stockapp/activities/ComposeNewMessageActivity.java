@@ -282,8 +282,6 @@ public class ComposeNewMessageActivity extends AppCompatActivity implements Cont
     public boolean onOptionsItemSelected(MenuItem item) {
         if (item.getItemId() == R.id.cancel_action) {
             finish();
-
-            overridePendingTransition(R.anim.none, R.anim.slide_down);
         }
 
         return super.onOptionsItemSelected(item);
@@ -301,5 +299,11 @@ public class ComposeNewMessageActivity extends AppCompatActivity implements Cont
         }
 
         return true;
+    }
+
+    @Override
+    public void finish() {
+        super.finish();
+        overridePendingTransition(R.anim.none, R.anim.slide_down);
     }
 }
