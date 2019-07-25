@@ -209,7 +209,6 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 m.setMessageBody(messageRecipientsDTO.getMessageBody());
                 m.setCreatorId(messageRecipientsDTO.getCreatorId());
 
-
                 //checking if the timestamp is in seconds or milliseconds.
                 //android supports milliseconds timestamps
                 int length = String.valueOf(messageRecipientsDTO.getCreateDate()).length();

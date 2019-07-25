@@ -127,8 +127,10 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
         messageRecipients.setMessageId(newMessage.getId());
         messageRecipients.setRead(false);
         messageRecipients.setRecipientId(senderId);
-        appDatabase.messageRecipientsModelDao().addRecipient(messageRecipients);
 
+        if (messageRecipients.getRecipientId() == Integer.parseInt(sessionManager.getUserUUID())) {
+            appDatabase.messageRecipientsModelDao().addRecipient(messageRecipients);
+        }
 
         //Creating a worker to handle sending of message once there is internet connectivity
         Constraints networkConstraints = new Constraints.Builder()
