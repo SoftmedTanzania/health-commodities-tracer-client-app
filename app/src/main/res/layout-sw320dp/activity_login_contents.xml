@@ -146,6 +146,7 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="16dp"
+                        android:inputType="text"
                         android:fontFamily="@font/roboto_regular"
                         android:hint="@string/username"
                         android:textColor="@color/secondary_text"

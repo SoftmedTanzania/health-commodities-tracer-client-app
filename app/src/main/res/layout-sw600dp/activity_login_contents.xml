@@ -148,6 +148,7 @@
                             android:layout_marginTop="32dp"
                             android:fontFamily="@font/muli"
                             android:hint="@string/username"
+                            android:inputType="text"
                             android:textColor="@color/secondary_text"
                             android:textColorHint="@color/secondary_text"
                             android:textSize="24sp" />
