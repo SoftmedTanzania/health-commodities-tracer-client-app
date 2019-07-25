@@ -40,6 +40,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.softmed.stockapp.R;
 import com.softmed.stockapp.activities.MainActivity;
+import com.softmed.stockapp.activities.MessagesActivity;
 import com.softmed.stockapp.broadcastReceivers.MyBroadcastReceiver;
 import com.softmed.stockapp.database.AppDatabase;
 import com.softmed.stockapp.dom.dto.MessageRecipientsDTO;
@@ -52,6 +53,7 @@ import com.softmed.stockapp.workers.SendFCMTokenWorker;
 import org.json.JSONObject;
 
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Executor;
 import java.util.concurrent.Executors;
@@ -221,13 +223,20 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 m.setSyncStatus(1);
                 appDatabase.messagesModelDao().addMessage(m);
 
+                ArrayList<Integer> userIds = new ArrayList<>();
+                ArrayList<String> userNames = new ArrayList<>();
+
                 for (MessageRecipients messageRecipient : messageRecipientsDTO.getMessageRecipients()) {
+                    userIds.add(messageRecipient.getRecipientId());
+
+                    OtherUsers user = appDatabase.usersModelDao().getUser(messageRecipient.getRecipientId());
+                    userNames.add(user.getFirstName()+" "+user.getSurname());
                     appDatabase.messageRecipientsModelDao().addRecipient(messageRecipient);
                 }
 
                 OtherUsers sender = appDatabase.usersModelDao().getUser(m.getCreatorId());
 
-                sendNotification(sender.getFirstName() + " " + sender.getSurname(), messageRecipientsDTO.getMessageBody(), m);
+                sendNotification(sender.getFirstName() + " " + sender.getSurname(), messageRecipientsDTO.getMessageBody(), m,userIds,userNames);
             }
         });
 
@@ -281,8 +290,16 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
      * @param title       FCM sender .
      * @param messageBody FCM message body received.
      */
-    private void sendNotification(String title, String messageBody, Message receivedMessage) {
-        Intent messageIntent = new Intent(this, MainActivity.class);
+    private void sendNotification(String title, String messageBody, Message receivedMessage, ArrayList<Integer> userIds, ArrayList<String> userNames ) {
+
+        Intent messageIntent = new Intent(this, MessagesActivity.class);
+
+        messageIntent.putExtra("parentMessageId", receivedMessage.getParentMessageId());
+        messageIntent.putIntegerArrayListExtra("userIds", userIds);
+        messageIntent.putStringArrayListExtra("userNames", userNames);
+
+
+
         messageIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* Request code */, messageIntent,
