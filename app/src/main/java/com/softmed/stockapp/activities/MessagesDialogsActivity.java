@@ -19,9 +19,12 @@ import androidx.lifecycle.ViewModelProviders;
 
 import com.amulyakhare.textdrawable.TextDrawable;
 import com.bumptech.glide.Glide;
+import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.gson.Gson;
 import com.softmed.stockapp.R;
 import com.softmed.stockapp.adapters.DialogsListAdapter;
+import com.softmed.stockapp.customViews.CustomDialogsList;
+import com.softmed.stockapp.customViews.CustomScrollView;
 import com.softmed.stockapp.database.AppDatabase;
 import com.softmed.stockapp.dom.entities.Message;
 import com.softmed.stockapp.dom.entities.MessageRecipients;
@@ -33,7 +36,6 @@ import com.softmed.stockapp.utils.AppUtils;
 import com.softmed.stockapp.utils.SessionManager;
 import com.softmed.stockapp.viewmodels.MessageListViewModel;
 import com.stfalcon.chatkit.commons.ImageLoader;
-import com.stfalcon.chatkit.dialogs.DialogsList;
 import com.stfalcon.chatkit.utils.DateFormatter;
 
 import java.util.ArrayList;
@@ -48,9 +50,10 @@ public class MessagesDialogsActivity extends AppCompatActivity
     private static final String TAG = MessagesDialogsActivity.class.getSimpleName();
     protected ImageLoader imageLoader;
     protected DialogsListAdapter dialogsAdapter;
-    private DialogsList dialogsList;
+    private CustomDialogsList dialogsList;
     private AppDatabase baseDatabase;
     private SessionManager session;
+    private ExtendedFloatingActionButton floatingActionButton;
 
     public static void open(Context context) {
         context.startActivity(new Intent(context, MessagesDialogsActivity.class));
@@ -164,11 +167,33 @@ public class MessagesDialogsActivity extends AppCompatActivity
             }
         });
 
-        findViewById(R.id.message_icon).setOnClickListener(new View.OnClickListener() {
+        floatingActionButton = findViewById(R.id.message_icon);
+        floatingActionButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 startActivity(new Intent(MessagesDialogsActivity.this, ComposeNewMessageActivity.class));
                 overridePendingTransition(R.anim.slide_up, R.anim.slide_up);
+            }
+        });
+
+
+
+        dialogsList.setMyScrollChangeListener(new CustomScrollView.OnMyScrollChangeListener() {
+            @Override
+            public void onScrollUp() {
+                //Toast.makeText(getActivity(), "Scrolling up", Toast.LENGTH_SHORT).show();
+                Log.d("scroll", "up");
+                floatingActionButton.extend(true);
+
+            }
+
+            @Override
+            public void onScrollDown() {
+                // Toast.makeText(getActivity(), "Scrolling down", Toast.LENGTH_SHORT).show();
+                Log.d("scroll", "down");
+
+                floatingActionButton.shrink(true);
+
             }
         });
     }
