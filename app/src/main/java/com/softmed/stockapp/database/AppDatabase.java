@@ -46,7 +46,7 @@ import com.softmed.stockapp.dom.entities.UsersInfo;
                 Message.class,
                 MessageRecipients.class
         },
-        version = 4, exportSchema = false)
+        version = 5, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
 
     private static AppDatabase INSTANCE;
