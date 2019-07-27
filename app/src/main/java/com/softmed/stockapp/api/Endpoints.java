@@ -1,5 +1,6 @@
 package com.softmed.stockapp.api;
 
+import com.softmed.stockapp.dom.dto.MessageRecipientsDTO;
 import com.softmed.stockapp.dom.entities.Balances;
 import com.softmed.stockapp.dom.entities.Location;
 import com.softmed.stockapp.dom.entities.Message;
@@ -83,7 +84,7 @@ public class Endpoints {
 
     public interface MessagesServices {
         @GET("api_messages")
-        Call<List<Message>> getMessages();
+        Call<List<MessageRecipientsDTO>> getMessages();
 
         @GET("api_message_recipients")
         Call<List<MessageRecipients>> getMessageRecipients();

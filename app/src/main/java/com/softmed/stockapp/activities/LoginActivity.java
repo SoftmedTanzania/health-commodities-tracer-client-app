@@ -33,6 +33,7 @@ import com.softmed.stockapp.R;
 import com.softmed.stockapp.api.Endpoints;
 import com.softmed.stockapp.database.AppDatabase;
 import com.softmed.stockapp.dom.DomConverter;
+import com.softmed.stockapp.dom.dto.MessageRecipientsDTO;
 import com.softmed.stockapp.dom.entities.Balances;
 import com.softmed.stockapp.dom.entities.Location;
 import com.softmed.stockapp.dom.entities.Message;
@@ -683,10 +684,10 @@ public class LoginActivity extends BaseActivity {
 
     private void callMessages() {
         if (session.isLoggedIn()) {
-            Call<List<Message>> call = messagesServices.getMessages();
-            call.enqueue(new Callback<List<Message>>() {
+            Call<List<MessageRecipientsDTO>> call = messagesServices.getMessages();
+            call.enqueue(new Callback<List<MessageRecipientsDTO>>() {
                 @Override
-                public void onResponse(Call<List<Message>> call, Response<List<Message>> response) {
+                public void onResponse(Call<List<MessageRecipientsDTO>> call, Response<List<MessageRecipientsDTO>> response) {
                     //Here will handle the responce from the server
                     Log.d(TAG, "Message Check = " + new Gson().toJson(response.body()) + "");
 
@@ -695,36 +696,11 @@ public class LoginActivity extends BaseActivity {
                 }
 
                 @Override
-                public void onFailure(Call<List<Message>> call, Throwable t) {
+                public void onFailure(Call<List<MessageRecipientsDTO>> call, Throwable t) {
                     //Error!
                     Log.e("", "An error encountered!");
                     Log.d("TransactionCheck", "failed with " + t.getMessage() + " " + t.toString());
                     loginMessages.setText("Error loading messages");
-                    loginMessages.setTextColor(getResources().getColor(R.color.color_error));
-                }
-            });
-        }
-    }
-
-    private void callMessageRecipients() {
-        if (session.isLoggedIn()) {
-            Call<List<MessageRecipients>> call = messagesServices.getMessageRecipients();
-            call.enqueue(new Callback<List<MessageRecipients>>() {
-                @Override
-                public void onResponse(Call<List<MessageRecipients>> call, Response<List<MessageRecipients>> response) {
-                    //Here will handle the responce from the server
-                    Log.d(TAG, "Message Recipients Check = " + new Gson().toJson(response.body()) + "");
-
-                    addMessageRecipientsAsyncTask task = new addMessageRecipientsAsyncTask(response.body());
-                    task.execute();
-                }
-
-                @Override
-                public void onFailure(Call<List<MessageRecipients>> call, Throwable t) {
-                    //Error!
-                    Log.e("", "An error encountered!");
-                    Log.d("TransactionCheck", "failed with " + t.getMessage() + " " + t.toString());
-                    loginMessages.setText("Error loading message recipients");
                     loginMessages.setTextColor(getResources().getColor(R.color.color_error));
                 }
             });
@@ -1076,9 +1052,9 @@ public class LoginActivity extends BaseActivity {
     }
 
     class addMessagesAsyncTask extends AsyncTask<Void, Void, Void> {
-        List<Message> results;
+        List<MessageRecipientsDTO> results;
 
-        addMessagesAsyncTask(List<Message> responces) {
+        addMessagesAsyncTask(List<MessageRecipientsDTO> responces) {
             this.results = responces;
         }
 
@@ -1092,58 +1068,34 @@ public class LoginActivity extends BaseActivity {
         protected Void doInBackground(Void... voids) {
             try {
 
-                for (Message message : results) {
-                    message.setUuid(message.getId());
+                for (MessageRecipientsDTO recipientsDTO : results) {
 
+                    Log.d(TAG,"Message DTO = "+new Gson().toJson(recipientsDTO));
+
+                    Message m = new Message();
+                    m.setId(recipientsDTO.getId());
+                    m.setUuid(recipientsDTO.getId());
+                    m.setSubject(recipientsDTO.getSubject());
+                    m.setMessageBody(recipientsDTO.getMessageBody());
+                    m.setCreatorId(recipientsDTO.getCreatorId());
 
                     //checking if the timestamp is in seconds or milliseconds.
                     //android supports milliseconds timestamps
-                    int length = String.valueOf(message.getCreateDate()).length();
-
-                    if(length==10){
-                        message.setCreateDate(message.getCreateDate()*1000);
+                    int length = String.valueOf(recipientsDTO.getCreateDate()).length();
+                    if (length == 10) {
+                        recipientsDTO.setCreateDate(recipientsDTO.getCreateDate() * 1000);
                     }
 
-                    baseDatabase.messagesModelDao().addMessage(message);
-                    Log.d(TAG, "Message Subject : " + message.getSubject());
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+                    m.setCreateDate(recipientsDTO.getCreateDate());
+                    m.setParentMessageId(recipientsDTO.getParentMessageId());
+                    m.setSyncStatus(1);
 
-            return null;
-        }
+                    baseDatabase.messagesModelDao().addMessage(m);
+                    Log.d(TAG, "Message Subject : " + m.getSubject());
 
-        @Override
-        protected void onPostExecute(Void aVoid) {
-            super.onPostExecute(aVoid);
-            callMessageRecipients();
-
-
-        }
-    }
-
-    class addMessageRecipientsAsyncTask extends AsyncTask<Void, Void, Void> {
-        List<MessageRecipients> results;
-
-        addMessageRecipientsAsyncTask(List<MessageRecipients> responces) {
-            this.results = responces;
-        }
-
-        @Override
-        protected void onPreExecute() {
-            super.onPreExecute();
-            loginMessages.setText("Loading Message Recipients..");
-        }
-
-        @Override
-        protected Void doInBackground(Void... voids) {
-            try {
-
-                for (MessageRecipients recipient : results) {
-
-                    Log.d(TAG, "Message Recipient : " + recipient.getRecipientId());
-                    baseDatabase.messageRecipientsModelDao().addRecipient(recipient);
+                    for (MessageRecipients messageRecipient : recipientsDTO.getMessageRecipients()) {
+                        baseDatabase.messageRecipientsModelDao().addRecipient(messageRecipient);
+                    }
                 }
             } catch (Exception e) {
                 e.printStackTrace();

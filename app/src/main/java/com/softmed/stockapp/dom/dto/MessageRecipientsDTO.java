@@ -36,6 +36,8 @@ public class MessageRecipientsDTO {
     @SerializedName("sync_status")
     private int syncStatus;
 
+
+    @SerializedName("message_recipients")
     private List<MessageRecipients> messageRecipients;
 
     public int getCreatorId() {
