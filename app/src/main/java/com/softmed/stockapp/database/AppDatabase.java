@@ -11,6 +11,7 @@ import com.softmed.stockapp.dom.dao.CategorieModelDao;
 import com.softmed.stockapp.dom.dao.LocationModelDao;
 import com.softmed.stockapp.dom.dao.MessageRecipientsModelDao;
 import com.softmed.stockapp.dom.dao.MessagesModelDao;
+import com.softmed.stockapp.dom.dao.PostingFrequencyModelDao;
 import com.softmed.stockapp.dom.dao.ProductReportingScheduleModelDao;
 import com.softmed.stockapp.dom.dao.ProductsModelDao;
 import com.softmed.stockapp.dom.dao.TransactionModelDao;
@@ -23,6 +24,7 @@ import com.softmed.stockapp.dom.entities.Location;
 import com.softmed.stockapp.dom.entities.Message;
 import com.softmed.stockapp.dom.entities.MessageRecipients;
 import com.softmed.stockapp.dom.entities.OtherUsers;
+import com.softmed.stockapp.dom.entities.PostingFrequencies;
 import com.softmed.stockapp.dom.entities.Product;
 import com.softmed.stockapp.dom.entities.ProductReportingSchedule;
 import com.softmed.stockapp.dom.entities.TransactionType;
@@ -44,9 +46,10 @@ import com.softmed.stockapp.dom.entities.UsersInfo;
                 Balances.class,
                 ProductReportingSchedule.class,
                 Message.class,
+                PostingFrequencies.class,
                 MessageRecipients.class
         },
-        version = 5, exportSchema = false)
+        version = 6, exportSchema = false)
 public abstract class AppDatabase extends RoomDatabase {
 
     private static AppDatabase INSTANCE;
@@ -73,6 +76,8 @@ public abstract class AppDatabase extends RoomDatabase {
     public abstract UserInfoModelDao userInfoDao();
 
     public abstract ProductReportingScheduleModelDao productReportingScheduleModelDao();
+
+    public abstract PostingFrequencyModelDao postingFrequencyModelDao();
 
     public abstract UsersModelDao usersModelDao();
 

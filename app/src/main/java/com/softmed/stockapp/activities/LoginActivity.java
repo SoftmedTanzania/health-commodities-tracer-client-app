@@ -123,7 +123,7 @@ public class LoginActivity extends BaseActivity {
         super.onCreate(savedInstanceState);
 
         String localeString = localeSp.getString(LOCALE_KEY, SWAHILI_LOCALE);
-        Log.d("language", "From SP : " + localeString);
+        Log.d(TAG, "language : From SP : " + localeString);
         Configuration config = getBaseContext().getResources().getConfiguration();
         if (localeString.equals(ENGLISH_LOCALE)) {
 
@@ -886,11 +886,10 @@ public class LoginActivity extends BaseActivity {
         @Override
         protected Void doInBackground(Void... voids) {
 
-            Log.d("InitialSync", "Products Response size : " + results.size());
+            Log.d(TAG, "InitialSync : Posting Frequency Response size : " + results.size());
 
             for (PostingFrequencies frequency : results) {
-//                baseDatabase.productsModelDao().addProduct(product);
-
+                baseDatabase.postingFrequencyModelDao().addPostingFrequency(frequency);
                 Log.d(TAG, "Saved frequency = " + new Gson().toJson(frequency));
             }
 
@@ -920,7 +919,7 @@ public class LoginActivity extends BaseActivity {
 
         @Override
         protected Void doInBackground(Void... voids) {
-            Log.d("InitialSync", "Products UNITS size : " + results.size());
+            Log.d(TAG, "InitialSync : Products UNITS size : " + results.size());
 
             for (UnitsResponse mList : results) {
                 baseDatabase.unitsDao().addUnit(DomConverter.getUnit(mList));
@@ -998,7 +997,7 @@ public class LoginActivity extends BaseActivity {
                 for (Transactions mList : results) {
                     mList.setSyncStatus(1);
                     baseDatabase.transactionsDao().addTransactions(mList);
-                    Log.d("InitialSync", "Transactions type : " + mList.getTransactiontype_id());
+                    Log.d(TAG, "InitialSync : Transactions type : " + mList.getTransactiontype_id());
                 }
             } catch (Exception e) {
                 e.printStackTrace();
