@@ -126,12 +126,12 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                 JSONObject data = new JSONObject(jsonString);
 
                 Log.d(TAG, "DATA OBJECT = " + data.toString());
-                JSONObject json = new JSONObject(data.getString("msg"));
+                JSONObject jsonData = new JSONObject(data.getString("data"));
 
-                String notificationBody = json.getString("type");
+                String notificationBody = data.getString("type");
                 switch (notificationBody) {
                     case "NEW_MESSAGE": {
-                        MessageRecipientsDTO messageRecipientsDTO = new Gson().fromJson(json.getString("data"), MessageRecipientsDTO.class);
+                        MessageRecipientsDTO messageRecipientsDTO = new Gson().fromJson(jsonData.toString(), MessageRecipientsDTO.class);
 
                         Log.d(TAG, "GENERATED MessageRecipientsDTO = " + new Gson().toJson(messageRecipientsDTO));
                         saveNewMessage(messageRecipientsDTO);
@@ -141,7 +141,7 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                     case "UPDATE_READ_STATUS": {
                         Type listType = new TypeToken<List<MessageRecipients>>() {
                         }.getType();
-                        List<MessageRecipients> messageRecipients = new Gson().fromJson(json.getString("data"), listType);
+                        List<MessageRecipients> messageRecipients = new Gson().fromJson(jsonData.toString(), listType);
                         saveMessageRecipients(messageRecipients);
                     }
                     break;

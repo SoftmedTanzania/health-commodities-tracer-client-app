@@ -23,6 +23,9 @@ public class Product implements Serializable {
     @SerializedName("unit")
     private int unit_id;
 
+    @SerializedName("posting_frequency")
+    private int posting_frequency;
+
     @SerializedName("health_commodity_name")
     private String name;
 
@@ -37,6 +40,9 @@ public class Product implements Serializable {
 
     @SerializedName("track_quantity_expired")
     private boolean track_quantity_expired;
+
+    @SerializedName("is_active")
+    private boolean is_active;
 
     @SerializedName("local_image_path")
     private String local_image_path;
@@ -124,5 +130,21 @@ public class Product implements Serializable {
 
     public void setLocal_image_path(String local_image_path) {
         this.local_image_path = local_image_path;
+    }
+
+    public int getPosting_frequency() {
+        return posting_frequency;
+    }
+
+    public void setPosting_frequency(int posting_frequency) {
+        this.posting_frequency = posting_frequency;
+    }
+
+    public boolean isIs_active() {
+        return is_active;
+    }
+
+    public void setIs_active(boolean is_active) {
+        this.is_active = is_active;
     }
 }
