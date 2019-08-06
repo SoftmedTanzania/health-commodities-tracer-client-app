@@ -66,9 +66,6 @@ public interface ProductsModelDao {
     @Query("select * from Product where id = :id")
     Product getProductById(int id);
 
-    @Query("select * from Product where id = :id")
-    Product getProductByName(int id);
-
     @Insert(onConflict = REPLACE)
     void addProduct(Product product);
 

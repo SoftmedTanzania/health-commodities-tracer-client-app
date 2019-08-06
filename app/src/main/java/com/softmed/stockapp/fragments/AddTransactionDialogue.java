@@ -115,7 +115,7 @@ public class AddTransactionDialogue extends DialogFragment {
 
             @Override
             protected Void doInBackground(Void... voids) {
-                product = baseDatabase.productsModelDao().getProductByName(productId);
+                product = baseDatabase.productsModelDao().getProductById(productId);
                 unit = baseDatabase.unitsDao().getUnit(product.getUnit_id());
                 productReportingSchedules = baseDatabase.productReportingScheduleModelDao().getMissedProductReportings(productId, Calendar.getInstance().getTimeInMillis());
                 return null;

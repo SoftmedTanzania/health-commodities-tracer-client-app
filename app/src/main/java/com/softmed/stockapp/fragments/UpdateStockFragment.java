@@ -125,7 +125,7 @@ public class UpdateStockFragment extends Fragment {
         new AsyncTask<Void, Void, Void>() {
             @Override
             protected Void doInBackground(Void... voids) {
-                product = baseDatabase.productsModelDao().getProductByName(productId);
+                product = baseDatabase.productsModelDao().getProductById(productId);
 
                 Log.d(TAG, "Product = " + new Gson().toJson(product));
                 unit = baseDatabase.unitsDao().getUnit(product.getUnit_id());
