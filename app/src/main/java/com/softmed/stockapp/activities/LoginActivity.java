@@ -39,6 +39,7 @@ import com.softmed.stockapp.dom.entities.Location;
 import com.softmed.stockapp.dom.entities.Message;
 import com.softmed.stockapp.dom.entities.MessageRecipients;
 import com.softmed.stockapp.dom.entities.OtherUsers;
+import com.softmed.stockapp.dom.entities.PostingFrequencies;
 import com.softmed.stockapp.dom.entities.Product;
 import com.softmed.stockapp.dom.entities.Transactions;
 import com.softmed.stockapp.dom.entities.UsersInfo;
@@ -520,6 +521,34 @@ public class LoginActivity extends BaseActivity {
             });
         }
     }
+    private void callPostingFrequencies() {
+        loginMessages.setText(getResources().getString(R.string.loading_products));
+        loginMessages.setTextColor(getResources().getColor(R.color.color_primary));
+        if (session.isLoggedIn()) {
+            Call<List<PostingFrequencies>> call = productsServices.getPostingFrequencies();
+            call.enqueue(new Callback<List<PostingFrequencies>>() {
+
+                @Override
+                public void onResponse(Call<List<PostingFrequencies>> call, Response<List<PostingFrequencies>> response) {
+                    Log.d("ProductsCheck", response.body() + "");
+
+                    addPostingFrequenciesAsyncTask task = new addPostingFrequenciesAsyncTask(response.body());
+                    task.execute();
+                }
+
+                @Override
+                public void onFailure(Call<List<PostingFrequencies>> call, Throwable t) {
+                    //Error!
+                    Log.e("", "An error encountered!");
+                    Log.d("Posting Frequency Check", "failed with " + t.getMessage() + " " + t.toString());
+
+
+                    loginMessages.setText(getResources().getString(R.string.error_loading_posting_frequencies));
+                    loginMessages.setTextColor(getResources().getColor(R.color.color_error));
+                }
+            });
+        }
+    }
 
     private void callUnits() {
         loginMessages.setText(getResources().getString(R.string.loading_units));
@@ -828,6 +857,41 @@ public class LoginActivity extends BaseActivity {
                 baseDatabase.productsModelDao().addProduct(product);
 
                 Log.d(TAG, "Saved products = " + new Gson().toJson(product));
+            }
+
+            return null;
+        }
+
+        @Override
+        protected void onPostExecute(Void aVoid) {
+            super.onPostExecute(aVoid);
+            callPostingFrequencies();
+        }
+    }
+
+    class addPostingFrequenciesAsyncTask extends AsyncTask<Void, Void, Void> {
+
+        List<PostingFrequencies> results;
+
+        addPostingFrequenciesAsyncTask(List<PostingFrequencies> responces) {
+            this.results = responces;
+        }
+
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            loginMessages.setText("Finalizing Posting Frequencies..");
+        }
+
+        @Override
+        protected Void doInBackground(Void... voids) {
+
+            Log.d("InitialSync", "Products Response size : " + results.size());
+
+            for (PostingFrequencies frequency : results) {
+//                baseDatabase.productsModelDao().addProduct(product);
+
+                Log.d(TAG, "Saved frequency = " + new Gson().toJson(frequency));
             }
 
             return null;

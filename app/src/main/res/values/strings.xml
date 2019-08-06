@@ -61,6 +61,7 @@
     <string name="loading_sub_categories">Loading Sub categories…</string>
     <string name="loading_products">Loading Products…</string>
     <string name="error_loading_products">Error: Loading Products…</string>
+    <string name="error_loading_posting_frequencies">Error: Loading Posting Frequencies…</string>
     <string name="loading_units">Loading Units…</string>
     <string name="loading_transactions">Loading Transactions…</string>
     <string name="loading_users">Loading Users…</string>
