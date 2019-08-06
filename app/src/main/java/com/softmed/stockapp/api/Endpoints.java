@@ -5,6 +5,7 @@ import com.softmed.stockapp.dom.entities.Balances;
 import com.softmed.stockapp.dom.entities.Location;
 import com.softmed.stockapp.dom.entities.Message;
 import com.softmed.stockapp.dom.entities.MessageRecipients;
+import com.softmed.stockapp.dom.entities.PostingFrequencies;
 import com.softmed.stockapp.dom.entities.Product;
 import com.softmed.stockapp.dom.entities.TransactionType;
 import com.softmed.stockapp.dom.entities.Transactions;
@@ -53,6 +54,9 @@ public class Endpoints {
     public interface ProductsService {
         @GET("api_health_commodity")
         Call<List<Product>> getProducts();
+
+        @GET("api_posting_frequency")
+        Call<List<PostingFrequencies>> getPostingFrequencies();
 
         @GET("api_unit")
         Call<List<UnitsResponse>> getUnits();
