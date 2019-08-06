@@ -167,7 +167,7 @@ public class DetailActivity extends AppCompatActivity {
 
                                     @Override
                                     protected Void doInBackground(Void... voids) {
-                                        product = database.productsModelDao().getProductByName(mProduct.getProductId());
+                                        product = database.productsModelDao().getProductById(mProduct.getProductId());
                                         return null;
                                     }
 
