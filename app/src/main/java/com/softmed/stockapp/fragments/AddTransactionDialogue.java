@@ -25,6 +25,7 @@ import com.google.android.material.textfield.TextInputLayout;
 import com.softmed.stockapp.R;
 import com.softmed.stockapp.database.AppDatabase;
 import com.softmed.stockapp.dom.entities.Balances;
+import com.softmed.stockapp.dom.entities.PostingFrequencies;
 import com.softmed.stockapp.dom.entities.Product;
 import com.softmed.stockapp.dom.entities.ProductReportingSchedule;
 import com.softmed.stockapp.dom.entities.Transactions;
@@ -55,6 +56,7 @@ public class AddTransactionDialogue extends DialogFragment {
     private int productId, numberOfClientsOnRegime;
     private Boolean hasClients = null;
     private Product product;
+    private PostingFrequencies postingFrequency;
     private TextView productName;
     private Unit unit;
     private int reportingScheduleId = 0;
@@ -116,6 +118,7 @@ public class AddTransactionDialogue extends DialogFragment {
             @Override
             protected Void doInBackground(Void... voids) {
                 product = baseDatabase.productsModelDao().getProductById(productId);
+                postingFrequency = baseDatabase.postingFrequencyModelDao().getPostingFrequencyById(product.getPosting_frequency());
                 unit = baseDatabase.unitsDao().getUnit(product.getUnit_id());
                 productReportingSchedules = baseDatabase.productReportingScheduleModelDao().getMissedProductReportings(productId, Calendar.getInstance().getTimeInMillis());
                 return null;
@@ -330,6 +333,9 @@ public class AddTransactionDialogue extends DialogFragment {
             return false;
         } else if (stockOutDaysInputLayout.getEditText().getText().toString().equals("")) {
             stockOutDaysInputLayout.getEditText().setError("Please fill the stockout days quantity");
+            return false;
+        }  else if (Integer.parseInt(stockOutDaysInputLayout.getEditText().getText().toString())>postingFrequency.getNumber_of_days()) {
+            stockOutDaysInputLayout.getEditText().setError("Stock out days cannot be greater than "+postingFrequency.getNumber_of_days());
             return false;
         } else if (wastageInputLayout.getEditText().getText().toString().equals("") && product.isTrack_wastage()) {
             wastageInputLayout.getEditText().setError("Please fill wastage quantity");

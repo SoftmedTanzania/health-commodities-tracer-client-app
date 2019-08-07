@@ -27,6 +27,7 @@ import com.softmed.stockapp.activities.MainActivity;
 import com.softmed.stockapp.database.AppDatabase;
 import com.softmed.stockapp.dom.dto.ProducToBeReportedtList;
 import com.softmed.stockapp.dom.entities.Balances;
+import com.softmed.stockapp.dom.entities.PostingFrequencies;
 import com.softmed.stockapp.dom.entities.Product;
 import com.softmed.stockapp.dom.entities.ProductReportingSchedule;
 import com.softmed.stockapp.dom.entities.Transactions;
@@ -58,6 +59,7 @@ public class UpdateStockFragment extends Fragment {
     private boolean hasClients = false;
     private int stockQuantity;
     private Product product;
+    private PostingFrequencies postingFrequency;
     private Unit unit;
     // Session Manager Class
     private SessionManager session;
@@ -126,6 +128,7 @@ public class UpdateStockFragment extends Fragment {
             @Override
             protected Void doInBackground(Void... voids) {
                 product = baseDatabase.productsModelDao().getProductById(productId);
+                postingFrequency = baseDatabase.postingFrequencyModelDao().getPostingFrequencyById(product.getPosting_frequency());
 
                 Log.d(TAG, "Product = " + new Gson().toJson(product));
                 unit = baseDatabase.unitsDao().getUnit(product.getUnit_id());
@@ -320,6 +323,9 @@ public class UpdateStockFragment extends Fragment {
             return false;
         } else if (stockOutDaysInputLayout.getEditText().getText().toString().equals("")) {
             stockOutDaysInputLayout.getEditText().setError("Please fill the stockout days quantity");
+            return false;
+        } else if (Integer.parseInt(stockOutDaysInputLayout.getEditText().getText().toString())>postingFrequency.getNumber_of_days()) {
+            stockOutDaysInputLayout.getEditText().setError("Stock out days cannot be greater than "+postingFrequency.getNumber_of_days());
             return false;
         } else if (wastageInputLayout.getEditText().getText().toString().equals("") && product.isTrack_wastage()) {
             wastageInputLayout.getEditText().setError("Please fill wastage quantity");

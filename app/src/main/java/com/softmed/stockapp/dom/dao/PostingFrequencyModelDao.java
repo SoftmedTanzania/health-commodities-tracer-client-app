@@ -18,6 +18,10 @@ import static androidx.room.OnConflictStrategy.REPLACE;
 
 @Dao
 public interface PostingFrequencyModelDao {
+    @Query("select * from PostingFrequencies WHERE id=:id")
+    PostingFrequencies getPostingFrequencyById(int id);
+
+
     @Insert(onConflict = REPLACE)
     void addPostingFrequency(PostingFrequencies frequency);
 
