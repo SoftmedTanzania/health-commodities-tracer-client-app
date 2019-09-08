@@ -84,7 +84,7 @@
             app:textAutoLink="all" />
 
 
-        <com.softmed.stockapp.customViews.MessageInput
+        <com.softmed.stockapp_staging.customViews.MessageInput
             android:id="@+id/input"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"

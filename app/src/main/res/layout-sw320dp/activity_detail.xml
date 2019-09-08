@@ -7,7 +7,7 @@
     android:orientation="vertical"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:app_ms="http://schemas.android.com/apk/res-auto"
-    tools:context="com.softmed.stockapp.activities.DetailActivity">
+    tools:context="com.softmed.stockapp_staging.activities.DetailActivity">
 
     <FrameLayout
         android:id="@+id/product_photo_container"
@@ -21,7 +21,7 @@
 
     </FrameLayout>
 
-    <com.softmed.stockapp.customViews.CustomScrollView
+    <com.softmed.stockapp_staging.customViews.CustomScrollView
         android:id="@+id/scrollable"
         android:layout_below="@id/product_photo_container"
         android:layout_width="match_parent"
@@ -278,7 +278,7 @@
 
         </LinearLayout>
 
-    </com.softmed.stockapp.customViews.CustomScrollView>
+    </com.softmed.stockapp_staging.customViews.CustomScrollView>
 
     <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
         android:layout_alignParentBottom="true"

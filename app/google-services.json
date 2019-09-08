@@ -10,7 +10,7 @@
       "client_info": {
         "mobilesdk_app_id": "1:858300606575:android:919b1bcdcac92203",
         "android_client_info": {
-          "package_name": "com.softmed.stockapp"
+          "package_name": "com.softmed.stockapp_staging"
         }
       },
       "oauth_client": [

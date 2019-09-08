@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    package="com.softmed.stockapp">
+    package="com.softmed.stockapp_staging">
 
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -21,22 +21,22 @@
         android:theme="@style/AppTheme"
         android:usesCleartextTraffic="true"
         tools:ignore="GoogleAppIndexingWarning">
-        <activity android:name=".activities.ComposeNewMessageActivity"></activity>
-        <activity android:name=".activities.MainActivity">
+        <activity android:name="com.softmed.stockapp_staging.activities.ComposeNewMessageActivity"></activity>
+        <activity android:name="com.softmed.stockapp_staging.activities.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activities.SelectFacilityActivity" />
+        <activity android:name="com.softmed.stockapp_staging.activities.SelectFacilityActivity" />
         <activity
-            android:name=".activities.DetailActivity"
+            android:name="com.softmed.stockapp_staging.activities.DetailActivity"
             android:label="@string/title_activity_detail"
-            android:parentActivityName=".activities.MainActivity">
+            android:parentActivityName="com.softmed.stockapp_staging.activities.MainActivity">
             <meta-data
                 android:name="android.support.PARENT_ACTIVITY"
-                android:value="com.softmed.stockapp.activities.MainActivity" />
+                android:value="com.softmed.stockapp_staging.activities.MainActivity" />
         </activity>
 
         <provider
@@ -50,26 +50,26 @@
         </provider>
 
         <activity
-            android:name=".activities.LoginActivity"
+            android:name="com.softmed.stockapp_staging.activities.LoginActivity"
             android:configChanges="locale"
             android:windowSoftInputMode="stateHidden" />
-        <activity android:name=".activities.OrdersList" />
+        <activity android:name="com.softmed.stockapp_staging.activities.OrdersList" />
         <activity
-            android:name=".activities.ManagedProductsActivity"
+            android:name="com.softmed.stockapp_staging.activities.ManagedProductsActivity"
             android:label="@string/title_activity_managed_products"
             android:theme="@style/AppTheme" />
-        <activity android:name=".activities.MessagesActivity" />
-        <activity android:name=".activities.MessagesDialogsActivity" />
+        <activity android:name="com.softmed.stockapp_staging.activities.MessagesActivity" />
+        <activity android:name="com.softmed.stockapp_staging.activities.MessagesDialogsActivity" />
 
-        <service android:name=".services.MyFirebaseMessagingService">
+        <service android:name="com.softmed.stockapp_staging.services.MyFirebaseMessagingService">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT" />
             </intent-filter>
         </service>
 
-        <receiver android:name=".broadcastReceivers.MyBroadcastReceiver"  android:exported="true">
+        <receiver android:name="com.softmed.stockapp_staging.broadcastReceivers.MyBroadcastReceiver"  android:exported="true">
             <intent-filter>
-                <action android:name="com.softmed.stockapp.messagingservice.ACTION_MESSAGE_REPLY"/>
+                <action android:name="com.softmed.stockapp_staging.messagingservice.ACTION_MESSAGE_REPLY"/>
             </intent-filter>
         </receiver>
 

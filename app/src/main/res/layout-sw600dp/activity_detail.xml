@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:orientation="vertical"
-    tools:context="com.softmed.stockapp.activities.DetailActivity">
+    tools:context="com.softmed.stockapp_staging.activities.DetailActivity">
 
     <FrameLayout
         android:id="@+id/product_photo_container"
@@ -124,7 +124,7 @@
 
         </LinearLayout>
 
-        <com.softmed.stockapp.customViews.CustomScrollView
+        <com.softmed.stockapp_staging.customViews.CustomScrollView
             android:id="@+id/scrollable"
             android:layout_width="0dp"
             android:layout_height="match_parent"
@@ -287,7 +287,7 @@
 
             </LinearLayout>
 
-        </com.softmed.stockapp.customViews.CustomScrollView>
+        </com.softmed.stockapp_staging.customViews.CustomScrollView>
 
 
     </LinearLayout>
