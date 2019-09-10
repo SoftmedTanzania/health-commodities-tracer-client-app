@@ -111,7 +111,7 @@ public class ManagedProductsActivity extends BaseActivity {
                     @Override
                     protected Void doInBackground(Void... voids) {
                         for (Balances balance : newMappings) {
-                            balance.setSyncStatus(1);
+                            balance.setSyncStatus(0);
                             baseDatabase.balanceModelDao().addBalance(balance);
                         }
                         return null;
