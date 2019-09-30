@@ -71,7 +71,7 @@ public class SendBalancesWorker extends Worker {
                 }
 
                 return Result.success();
-            } else if (response.code() == 500) {
+            } else if (response.code() != 500) {
                 Log.d(TAG, "Balance  Call URL " + postBalancesCall.request().url());
                 Log.d(TAG, "Balance  Code " + response.code());
 

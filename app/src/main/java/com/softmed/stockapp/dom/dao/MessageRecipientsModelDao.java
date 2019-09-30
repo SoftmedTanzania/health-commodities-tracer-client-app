@@ -52,6 +52,9 @@ public interface MessageRecipientsModelDao {
     @Query("UPDATE MessageRecipients SET id = :newId WHERE messageId = :oldId")
     int updateIds(String oldId, String newId);
 
+    @Query("UPDATE MessageRecipients SET deletedFromMailBox = :delete WHERE messageId = :messageId AND recipientId=:userId")
+    int deleteMessageFromMailBox(boolean delete, String messageId,String userId);
+
     @Query("UPDATE MessageRecipients SET isRead = :isRead WHERE messageId = :messageId AND recipientId =:userId AND isRead=0 ")
     int updateIsReadStatus(boolean isRead, String messageId,int userId);
 

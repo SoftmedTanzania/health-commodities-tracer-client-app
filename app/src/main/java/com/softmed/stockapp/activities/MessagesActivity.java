@@ -350,6 +350,54 @@ public class MessagesActivity extends AppCompatActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_delete:
+
+                final List<IMessageDTO> selectedMessages = messagesAdapter.getSelectedMessages();
+
+                String[] selectedMessagesArray = selectedMessages.toArray(new String[selectedMessages.size()]);
+
+                new AsyncTask<Void, Void, Void>() {
+
+                    @Override
+                    protected Void doInBackground(Void... aVoid) {
+                        for (IMessageDTO message : selectedMessages) {
+
+                            if(message.getUser().getId().equals(sessionManager.getUserUUID())){
+                                //TODO fix the deletion of  messages from the mailbox
+//                                appDatabase.messagesModelDao().deleteMessage(true,message.getId());
+                            }else{
+                                appDatabase.messageRecipientsModelDao().deleteMessageFromMailBox(true,message.getId(),message.getUser().getId());
+                            }
+
+
+                        }
+
+                        return null;
+                    }
+
+                    @Override
+                    protected void onPostExecute(Void aVoid) {
+                        super.onPostExecute(aVoid);
+
+                        Constraints networkConstraints = new Constraints.Builder()
+                                .setRequiredNetworkType(NetworkType.CONNECTED)
+                                .build();
+
+                        OneTimeWorkRequest deleteMessage = new OneTimeWorkRequest.Builder(SendMessagesWorker.class)
+                                .setConstraints(networkConstraints)
+                                .setInputData(
+                                        new Data.Builder()
+                                                .putStringArray("messageId", selectedMessagesArray)
+                                                .build()
+                                )
+                                .build();
+
+//                        WorkManager.getInstance().enqueue(deleteMessage);
+
+                    }
+                }.execute();
+
+
+
                 messagesAdapter.deleteSelectedMessages();
                 break;
             case R.id.action_copy:
@@ -389,7 +437,7 @@ public class MessagesActivity extends AppCompatActivity
 
         Log.d(TAG, "Loading more with parentID = " + parentMessageId);
         MessageListViewModel messageListViewModel = ViewModelProviders.of(this).get(MessageListViewModel.class);
-        messageListViewModel.getMessageByThread(parentMessageId).observe(MessagesActivity.this, new Observer<List<com.softmed.stockapp.dom.dto.MessageUserDTO>>() {
+        messageListViewModel.getMessageByThread(parentMessageId,sessionManager.getUserUUID()).observe(MessagesActivity.this, new Observer<List<com.softmed.stockapp.dom.dto.MessageUserDTO>>() {
             @Override
             public void onChanged(List<MessageUserDTO> messageUserDTOS) {
                 Log.d(TAG, "Something changed");

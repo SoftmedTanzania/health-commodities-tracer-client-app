@@ -35,9 +35,9 @@ public interface MessagesModelDao {
 
     @Query(" SELECT Message.*,OtherUsers.id as userId,OtherUsers.firstName,OtherUsers.health_facility,OtherUsers.middleName,OtherUsers.surname,OtherUsers.username from Message " +
             "INNER JOIN OtherUsers ON OtherUsers.id = Message.creatorId " +
-            "LEFT JOIN MessageRecipients ON MessageRecipients.messageId = Message.id " +
+            "LEFT JOIN (Select * FROM MessageRecipients WHERE recipientId = :userId AND deletedFromMailBox = 0) AS T1 ON T1.messageId = Message.id " +
             "WHERE parentMessageId =:parentMessageId OR Message.id = :parentMessageId OR Message.uuid = :parentMessageId GROUP BY Message.id ORDER BY createDate DESC")
-    LiveData<List<MessageUserDTO>> getMessageByThread(String parentMessageId);
+    LiveData<List<MessageUserDTO>> getMessageByThread(String parentMessageId,String userId);
 
 
     @Query(" SELECT * from Message WHERE parentMessageId = :parentMessageId OR id = :parentMessageId ORDER BY createDate DESC LIMIT 1 ")
@@ -56,7 +56,6 @@ public interface MessagesModelDao {
 
     @Query("UPDATE Message SET id = :newId WHERE id = :oldId")
     int updateMessageIds(String oldId, String newId);
-
 
 
     @Insert(onConflict = REPLACE)
