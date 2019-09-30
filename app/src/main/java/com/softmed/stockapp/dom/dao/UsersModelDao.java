@@ -7,6 +7,7 @@ import androidx.room.Insert;
 import androidx.room.Query;
 import androidx.room.Update;
 
+import com.softmed.stockapp.dom.dto.ContactUsersDTO;
 import com.softmed.stockapp.dom.entities.OtherUsers;
 
 import java.util.List;
@@ -17,8 +18,9 @@ import static androidx.room.OnConflictStrategy.REPLACE;
 @Dao
 public interface UsersModelDao {
 
-    @Query("select * from OtherUsers WHERE id!=:excludingId ")
-    LiveData<List<OtherUsers>> getUsers(int excludingId);
+    @Query("select OtherUsers.*,Location.name as health_facility_name from OtherUsers" +
+            " INNER JOIN Location ON Location.id = OtherUsers.health_facility WHERE OtherUsers.id!=:excludingId ")
+    LiveData<List<ContactUsersDTO>> getUsers(int excludingId);
 
     @Query("select * from OtherUsers WHERE id = :id ")
     OtherUsers getUser(int id);
