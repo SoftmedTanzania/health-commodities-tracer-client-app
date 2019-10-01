@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
@@ -92,7 +94,7 @@ public class ManagedProductsActivity extends BaseActivity {
                 for (MappedProductConsuption mappedProductConsuption : managedProductIds) {
                     boolean productAlreadyMapped = false;
                     for (Balances b : currentBalances) {
-                        if (b.getProductId() == mappedProductConsuption.getProductId()) {
+                        if (b.getProductId() == mappedProductConsuption.getProductId() && b.getConsumptionQuantity()==mappedProductConsuption.getConsumption()) {
                             productAlreadyMapped = true;
                         }
                     }
@@ -277,13 +279,6 @@ public class ManagedProductsActivity extends BaseActivity {
                         @Override
                         public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                             if (b) {
-                                String consumption = consumptionEditText.getText().toString();
-                                if(consumption.equals("")){
-                                    mappedProductConsuption.setConsumption(0);
-                                }else{
-                                    mappedProductConsuption.setConsumption(Integer.parseInt(consumption));
-                                }
-
                                 managedProductIds.add(mappedProductConsuption);
                                 v.findViewById(R.id.elmis_consumption).setVisibility(View.VISIBLE);
                             } else {
@@ -293,10 +288,39 @@ public class ManagedProductsActivity extends BaseActivity {
                         }
                     });
 
+                    consumptionEditText.addTextChangedListener(new TextWatcher() {
+                        @Override
+                        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                        }
+
+                        @Override
+                        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                            String consumption = consumptionEditText.getText().toString();
+                            if(consumption.equals("")){
+                                mappedProductConsuption.setConsumption(0);
+                            }else{
+                                mappedProductConsuption.setConsumption(Integer.parseInt(consumption));
+                            }
+
+                        }
+
+                        @Override
+                        public void afterTextChanged(Editable editable) {
+
+                        }
+                    });
+
                     for (Balances b : currentBalances) {
                         if (b.getProductId() == product.getId()) {
                             managedProduct.setChecked(true);
-                            consumptionEditText.setText(b.getConsumptionQuantity());
+                            String consumptionQuantity = "";
+                            try{
+                                consumptionQuantity = b.getConsumptionQuantity()+"";
+                            }catch (Exception e){
+                                e.printStackTrace();
+                            }
+                            consumptionEditText.setText(consumptionQuantity);
                             break;
                         }
                     }

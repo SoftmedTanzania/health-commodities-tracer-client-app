@@ -16,6 +16,7 @@ import androidx.fragment.app.Fragment;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
+import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.CombinedChart;
 import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.AxisBase;
@@ -52,7 +53,7 @@ import static com.github.mikephil.charting.animation.Easing.EaseInOutQuad;
 
 public class DashboardFragment extends Fragment {
     private static final String TAG = DashboardFragment.class.getSimpleName();
-    private PieChart mChart1;
+    private BarChart mChart1;
     private CombinedChart mChart2;
     private List<String> categoryNames = new ArrayList<>();
     private List<Integer> sizes = new ArrayList<>();
@@ -81,47 +82,49 @@ public class DashboardFragment extends Fragment {
 
         Typeface muliTypeface = ResourcesCompat.getFont(getActivity(), R.font.muli);
 
-        //Pie chart configurations
+        //Bar chart configurations
         mChart1 = rowview.findViewById(R.id.chart1);
-        mChart1.setUsePercentValues(true);
         mChart1.getDescription().setEnabled(false);
-        mChart1.setExtraOffsets(5, 10, 5, 5);
+        mChart1.setBackgroundColor(Color.WHITE);
+        mChart1.setDrawGridBackground(false);
+        mChart1.setDrawBarShadow(false);
+        mChart1.setHighlightFullBarEnabled(false);
+        mChart1.setDrawValueAboveBar(false);
 
-        mChart1.setDragDecelerationFrictionCoef(0.95f);
-        mChart1.setCenterText("Inventory Summary");
 
-        mChart1.setDrawHoleEnabled(true);
-        mChart1.setHoleColor(Color.WHITE);
+        ValueFormatter xAxisStockMonthValueFormatter = new XAxisValueFormatter();
+        XAxis chart1XAxis = mChart1.getXAxis();
+        chart1XAxis.setDrawGridLines(false);
+        chart1XAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        chart1XAxis.setGranularityEnabled(true);
+        chart1XAxis.setValueFormatter(xAxisStockMonthValueFormatter);
+        chart1XAxis.setAxisMinimum(0f);
+        chart1XAxis.setLabelRotationAngle(-90f);
 
-        mChart1.setTransparentCircleColor(Color.WHITE);
-        mChart1.setTransparentCircleAlpha(110);
+        ValueFormatter customValueFormatter = new MyAxisValueFormatter();
+        final YAxis chart1LeftAxis = mChart1.getAxisLeft();
+        chart1LeftAxis.setLabelCount(8, false);
+        chart1LeftAxis.setValueFormatter(customValueFormatter);
+        chart1LeftAxis.setPosition(YAxis.YAxisLabelPosition.OUTSIDE_CHART);
+        chart1LeftAxis.setSpaceTop(15f);
+        chart1LeftAxis.setAxisMinimum(0f); // this replaces setStartAtZero(true)
 
-        mChart1.setHoleRadius(58f);
-        mChart1.setTransparentCircleRadius(61f);
-
-        mChart1.setDrawCenterText(true);
-
-        mChart1.setRotationAngle(0);
-        mChart1.setRotationEnabled(true);
-        mChart1.setHighlightPerTapEnabled(true);
-
-        mChart1.animateY(1400, EaseInOutQuad);
-
+        YAxis chart1RightAxis = mChart1.getAxisRight();
+        chart1RightAxis.setDrawGridLines(false);
+        chart1RightAxis.setAxisMinimum(0f); // this replaces setStartAtZero(true)
 
         Legend l = mChart1.getLegend();
         l.setVerticalAlignment(Legend.LegendVerticalAlignment.BOTTOM);
         l.setHorizontalAlignment(Legend.LegendHorizontalAlignment.CENTER);
         l.setOrientation(Legend.LegendOrientation.HORIZONTAL);
         l.setDrawInside(false);
-        l.setXEntrySpace(7f);
-        l.setYEntrySpace(0f);
-        l.setYOffset(7f);
-
+        l.setForm(Legend.LegendForm.SQUARE);
+        l.setFormSize(9f);
+        l.setTextSize(11f);
+        l.setXEntrySpace(4f);
         l.setTypeface(muliTypeface);
+        l.setWordWrapEnabled(true);
 
-        // entry label styling
-        mChart1.setEntryLabelColor(Color.BLACK);
-        mChart1.setEntryLabelTextSize(12f);
 
 
         //Bar chart configurations
@@ -181,7 +184,7 @@ public class DashboardFragment extends Fragment {
             public void onChanged(@Nullable List<CategoryBalance> categoryBalances) {
                 DashboardFragment.this.categoryBalances = categoryBalances;
                 try {
-                    setData();
+//                    setData();
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -199,6 +202,9 @@ public class DashboardFragment extends Fragment {
                     if (mProductBalances != null && mProductBalances.size() > 0) {
                         productBalancesList.removeAllViews();
                         ArrayList<BarEntry> yVals1 = new ArrayList<BarEntry>();
+                        ArrayList<BarEntry> yVals2 = new ArrayList<BarEntry>();
+
+
                         int i = 1;
 
 
@@ -233,11 +239,20 @@ public class DashboardFragment extends Fragment {
                             lineEntries.add(new Entry(i, productBalance.getConsumptionQuantity()));
 
                             yVals1.add(new BarEntry(i, productBalance.getBalance()));
+
+                            Log.d(TAG,"balance = "+(productBalance.getBalance()));
+                            Log.d(TAG,"consumption of stock = "+(productBalance.getConsumptionQuantity()));
+
+                            float monthsOfStock = (productBalance.getBalance()*1f/productBalance.getConsumptionQuantity());
+                            Log.d(TAG,"months of stock = "+monthsOfStock);
+                            yVals2.add(new BarEntry(i, monthsOfStock));
+
                             i++;
                             productBalancesList.addView(v);
                         }
 
-                        yVals1.add(new BarEntry(i, 0));
+//                        yVals1.add(new BarEntry(i, 0));
+//                        yVals2.add(new BarEntry(i, 0));
 
                         LineDataSet set = new LineDataSet(lineEntries, "Product Consumption");
                         set.setColor(Color.rgb(136, 180, 187));
@@ -259,18 +274,34 @@ public class DashboardFragment extends Fragment {
                         set1.setDrawIcons(false);
                         set1.setColors(chart2Colors);
 
-                        ArrayList<IBarDataSet> dataSets = new ArrayList<IBarDataSet>();
-                        dataSets.add(set1);
+                        BarDataSet set2 = new BarDataSet(yVals2, "Months of Stock");
+                        set2.setDrawIcons(false);
+                        set2.setColors(chart2Colors);
 
-                        BarData barData = new BarData(dataSets);
-                        barData.setValueTextSize(10f);
-                        barData.setBarWidth(0.9f);
+                        ArrayList<IBarDataSet> dataSets1 = new ArrayList<IBarDataSet>();
+                        dataSets1.add(set1);
+
+                        ArrayList<IBarDataSet> dataSets2 = new ArrayList<IBarDataSet>();
+                        dataSets2.add(set2);
+
+                        BarData barData1 = new BarData(dataSets1);
+                        barData1.setValueTextSize(10f);
+                        barData1.setBarWidth(0.9f);
+
+                        BarData barData2 = new BarData(dataSets2);
+                        barData2.setValueTextSize(10f);
+                        barData2.setBarWidth(0.9f);
+
 
 
                         CombinedData data = new CombinedData();
-                        data.setData(barData);
+                        data.setData(barData1);
                         data.setData(lineData);
 
+
+                        mChart1.setData(barData2);
+                        mChart1.highlightValues(null);
+                        mChart1.invalidate();
 
                         mChart2.setData(data);
                         mChart2.highlightValues(null);
@@ -285,50 +316,6 @@ public class DashboardFragment extends Fragment {
         });
 
         return rowview;
-    }
-
-    private void setData() {
-        ArrayList<PieEntry> entries = new ArrayList<PieEntry>();
-        for (CategoryBalance categoryBalance : categoryBalances) {
-            entries.add(new PieEntry((float) (categoryBalance.getBalance()),
-                    categoryBalance.getName(),
-                    getResources().getDrawable(R.drawable.ic_content_paste_white_24dp)));
-        }
-
-        PieDataSet dataSet = new PieDataSet(entries, "Category");
-        dataSet.setDrawIcons(false);
-
-        dataSet.setSliceSpace(3f);
-        dataSet.setIconsOffset(new MPPointF(0, 40));
-        dataSet.setSelectionShift(5f);
-
-        // add a lot of colors
-        ArrayList<Integer> colors = new ArrayList<Integer>();
-
-        for (int c : ColorTemplate.JOYFUL_COLORS)
-            colors.add(c);
-
-        for (int c : ColorTemplate.COLORFUL_COLORS)
-            colors.add(c);
-
-        for (int c : ColorTemplate.LIBERTY_COLORS)
-            colors.add(c);
-
-        for (int c : ColorTemplate.PASTEL_COLORS)
-            colors.add(c);
-
-        colors.add(ColorTemplate.getHoloBlue());
-
-        dataSet.setColors(colors);
-        //dataSet.setSelectionShift(0f);
-
-        PieData data = new PieData(dataSet);
-        data.setValueFormatter(new PercentFormatter());
-        data.setValueTextSize(11f);
-        data.setValueTextColor(Color.BLACK);
-
-        mChart1.setData(data);
-        mChart1.invalidate();
     }
 
     class MyAxisValueFormatter extends ValueFormatter {
