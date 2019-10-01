@@ -37,6 +37,9 @@ public class Endpoints {
         Call<LoginResponse> basicLogin(@Body RequestBody e);
 
 
+        @POST("update_password")
+        Call<String> updatePassword(@Body RequestBody e);
+
         @GET("api_locations/")
         Call<List<Location>> getLocations();
 
@@ -101,7 +104,7 @@ public class Endpoints {
         Call deleteMessageByRecipient(@Body RequestBody e);
 
         @POST("update_parent_message_status")
-        Call deleteMessageByCreator(@Body RequestBody e);
+        Call<String> deleteMessageByCreator(@Body RequestBody e);
 
         @PUT("update_read_message_status")
         Call<String> updateMessageReadStatus(@Body RequestBody e);

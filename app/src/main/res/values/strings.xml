@@ -104,6 +104,7 @@
     <string name="language">Language</string>
     <string name="logout">Logout</string>
     <string name="change_facility">Change Facility</string>
+    <string name="change_password">Change Password</string>
     <string name="clients_label"> Clients</string>
     <string name="title_activity_managed_products">ManagedProductsActivity</string>
     <string name="large_text">
