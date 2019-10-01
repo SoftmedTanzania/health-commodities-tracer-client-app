@@ -1,10 +1,12 @@
 package com.softmed.stockapp.viewmodels;
 
 import android.app.Application;
+import android.util.Log;
 
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
 
+import com.google.gson.Gson;
 import com.softmed.stockapp.database.AppDatabase;
 import com.softmed.stockapp.dom.dto.MessageUserDTO;
 import com.softmed.stockapp.dom.entities.Message;
@@ -13,6 +15,7 @@ import java.util.List;
 
 
 public class MessageListViewModel extends AndroidViewModel {
+    private static final String TAG = MessageListViewModel.class.getSimpleName();
 
     private AppDatabase appDatabase;
 

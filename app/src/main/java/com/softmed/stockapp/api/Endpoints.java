@@ -97,6 +97,12 @@ public class Endpoints {
         @POST("create_new_message")
         Call<NewMessageResponce> postMessages(@Body RequestBody e);
 
+        @POST("update_is_trashed_status")
+        Call deleteMessageByRecipient(@Body RequestBody e);
+
+        @POST("update_parent_message_status")
+        Call deleteMessageByCreator(@Body RequestBody e);
+
         @PUT("update_read_message_status")
         Call<String> updateMessageReadStatus(@Body RequestBody e);
     }

@@ -140,6 +140,16 @@
                             android:gravity="center_horizontal"
                             android:textStyle="bold"
                             android:text="Balance"/>
+
+                        <TextView
+                            android:layout_width="0dp"
+                            android:layout_height="wrap_content"
+                            android:layout_weight="0.07"
+                            android:fontFamily="@font/muli_semi_bold"
+                            android:textColor="@color/color_primary_variant"
+                            android:gravity="center_horizontal"
+                            android:textStyle="bold"
+                            android:text="Months of Stock"/>
                     </LinearLayout>
                 </LinearLayout>
 

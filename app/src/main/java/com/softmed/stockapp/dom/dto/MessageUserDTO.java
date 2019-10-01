@@ -50,6 +50,10 @@ public class MessageUserDTO implements Serializable {
     @SerializedName("username")
     private String username;
 
+    //TODO delete this
+    @SerializedName("deletedFromMailBox")
+    private boolean deletedFromMailBox;
+
     public String getId() {
         return id;
     }
@@ -152,5 +156,13 @@ public class MessageUserDTO implements Serializable {
 
     public void setUuid(String uuid) {
         this.uuid = uuid;
+    }
+
+    public boolean isDeletedFromMailBox() {
+        return deletedFromMailBox;
+    }
+
+    public void setDeletedFromMailBox(boolean deletedFromMailBox) {
+        this.deletedFromMailBox = deletedFromMailBox;
     }
 }

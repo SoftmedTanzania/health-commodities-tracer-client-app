@@ -247,6 +247,8 @@ public class DashboardFragment extends Fragment {
                             Log.d(TAG,"months of stock = "+monthsOfStock);
                             yVals2.add(new BarEntry(i, monthsOfStock));
 
+                            ((TextView) v.findViewById(R.id.months_of_stock)).setText(String.valueOf(monthsOfStock));
+
                             i++;
                             productBalancesList.addView(v);
                         }

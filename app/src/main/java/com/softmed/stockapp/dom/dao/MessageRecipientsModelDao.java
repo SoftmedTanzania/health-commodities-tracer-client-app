@@ -31,9 +31,16 @@ public interface MessageRecipientsModelDao {
 
     @Query("SELECT COUNT(*) FROM MessageRecipients WHERE " +
             "isRead = :isRead AND " +
+            "deletedFromMailBox = 0 AND " +
             "recipientId = :userId AND " +
             "messageId IN (SELECT id from Message WHERE parentMessageId = :parentMessageId OR id = :parentMessageId)")
     int getUnreadMessageCountByParentMessageId(String parentMessageId,boolean isRead,int userId);
+
+    @Query("SELECT COUNT(*) FROM MessageRecipients WHERE " +
+            "deletedFromMailBox = :deletedFromMailBox AND " +
+            "recipientId = :userId AND " +
+            "messageId IN (SELECT id from Message WHERE  id = :parentMessageId)")
+    int isMessageDeletedFromMailbox(String parentMessageId,boolean deletedFromMailBox,int userId);
 
     @Query("SELECT COUNT(*) FROM MessageRecipients WHERE " +
             "isRead = :isRead AND " +

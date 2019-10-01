@@ -2,6 +2,7 @@ package com.softmed.stockapp.activities;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -11,14 +12,21 @@ import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
+import androidx.work.Constraints;
+import androidx.work.Data;
+import androidx.work.NetworkType;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkManager;
 
 import com.amulyakhare.textdrawable.TextDrawable;
 import com.bumptech.glide.Glide;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.gson.Gson;
 import com.softmed.stockapp.R;
@@ -35,6 +43,8 @@ import com.softmed.stockapp.dom.model.MessageDialog;
 import com.softmed.stockapp.utils.AppUtils;
 import com.softmed.stockapp.utils.SessionManager;
 import com.softmed.stockapp.viewmodels.MessageListViewModel;
+import com.softmed.stockapp.workers.DeleteMessagesWorker;
+import com.softmed.stockapp.workers.SendMessagesWorker;
 import com.stfalcon.chatkit.commons.ImageLoader;
 import com.stfalcon.chatkit.utils.DateFormatter;
 
@@ -115,18 +125,18 @@ public class MessagesDialogsActivity extends AppCompatActivity
 
                 Log.d(TAG, "Message Schedules = " + new Gson().toJson(messages));
 
-                if(messages.size()==0){
-                    emptyState.setVisibility(View.VISIBLE);
-                }else{
-                    emptyState.setVisibility(View.GONE);
-                }
-
                 new AsyncTask<Void, Void, List<MessageDialog>>() {
 
                     @Override
                     protected List<MessageDialog> doInBackground(Void... voids) {
                         List<Message> latestMessages = new ArrayList<>();
                         for (Message message : messages) {
+
+                            if (message.getCreatorId() == Integer.parseInt(session.getUserUUID()) && message.isTrashedByCreator()) {
+                                continue;
+                            } else if (baseDatabase.messageRecipientsModelDao().isMessageDeletedFromMailbox(message.getId(), true, Integer.parseInt(session.getUserUUID())) > 0) {
+                                continue;
+                            }
 
                             Message m = baseDatabase.messagesModelDao().getLatestMessages(message.getId());
                             int unreadCount = baseDatabase.messageRecipientsModelDao().getUnreadMessageCountByParentMessageId(message.getId(), false, Integer.parseInt(session.getUserUUID()));
@@ -161,6 +171,13 @@ public class MessagesDialogsActivity extends AppCompatActivity
                     @Override
                     protected void onPostExecute(List<MessageDialog> messageDialogs) {
                         super.onPostExecute(messageDialogs);
+
+                        if (messageDialogs.size() == 0) {
+                            emptyState.setVisibility(View.VISIBLE);
+                        } else {
+                            emptyState.setVisibility(View.GONE);
+                        }
+
                         dialogsAdapter = new DialogsListAdapter(R.layout.item_message_dialog, DialogsListAdapter.DialogViewHolder.class, imageLoader);
                         dialogsAdapter.setItems(messageDialogs);
                         dialogsAdapter.setOnDialogClickListener(MessagesDialogsActivity.this);
@@ -185,7 +202,6 @@ public class MessagesDialogsActivity extends AppCompatActivity
         });
 
 
-
         dialogsList.setMyScrollChangeListener(new CustomScrollView.OnMyScrollChangeListener() {
             @Override
             public void onScrollUp() {
@@ -208,10 +224,15 @@ public class MessagesDialogsActivity extends AppCompatActivity
 
     @Override
     public void onDialogLongClick(MessageDialog messageDialog) {
-        AppUtils.showToast(
-                this,
-                messageDialog.getDialogName(),
-                false);
+//        AppUtils.showToast(
+//                this,
+//                messageDialog.getDialogName(),
+//                false);
+
+        AlertDialog diaBox = AskOption( messageDialog);
+        diaBox.show();
+
+
     }
 
     @Override
@@ -258,7 +279,7 @@ public class MessagesDialogsActivity extends AppCompatActivity
                     IMessageUsers,
                     getLastMessage(message),
                     message.getSyncStatus(),
-                    message.getParentMessageId());
+                    message.getParentMessageId().equals("0") ? message.getId() : message.getParentMessageId());
         } catch (Exception e) {
             e.printStackTrace();
             return null;
@@ -325,5 +346,80 @@ public class MessagesDialogsActivity extends AppCompatActivity
         MessagesActivity.open(this, parentMessageId, userIds, userNames);
     }
 
+
+    private AlertDialog AskOption(MessageDialog messageDialog)
+    {
+        AlertDialog myQuittingDialogBox =new MaterialAlertDialogBuilder(this)
+                .setTitle("Delete Message Thread")
+                .setMessage("Do you want to Delete this Thread?")
+                .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface dialog, int whichButton) {
+                        //your deleting code
+
+                        new AsyncTask<Void, Void, Boolean>() {
+
+                            @Override
+                            protected Boolean doInBackground(Void... aVoid) {
+
+                                Log.d(TAG, "Message Dialog = " + new Gson().toJson(messageDialog));
+
+                                Message parentMessage = baseDatabase.messagesModelDao().getParentMessageById(messageDialog.getParentMessageId());
+
+                                boolean isTrashedByCreator ;
+                                //if the message thread was not created by the user then delete the message from parent message recipient and set this value to false
+
+                                if (parentMessage.getCreatorId() == Integer.parseInt(session.getUserUUID())) {
+                                    baseDatabase.messagesModelDao().deleteMessageFromMailBox(true, parentMessage.getId(), session.getUserUUID());
+                                    isTrashedByCreator = true;
+                                } else {
+                                    baseDatabase.messageRecipientsModelDao().deleteMessageFromMailBox(true, parentMessage.getId(), session.getUserUUID());
+
+                                    //delete the message from parent message recipient and set this value to false
+
+                                    isTrashedByCreator = false;
+                                }
+
+                                return isTrashedByCreator;
+                            }
+
+                            @Override
+                            protected void onPostExecute(Boolean isTrashedByCreator) {
+                                super.onPostExecute(isTrashedByCreator);
+
+                                Constraints networkConstraints = new Constraints.Builder()
+                                        .setRequiredNetworkType(NetworkType.CONNECTED)
+                                        .build();
+
+                                OneTimeWorkRequest deleteMessage = new OneTimeWorkRequest.Builder(DeleteMessagesWorker.class)
+                                        .setConstraints(networkConstraints)
+                                        .setInputData(
+                                                new Data.Builder()
+                                                        .putString("messageId", messageDialog.getParentMessageId())
+                                                        .putBoolean("isTrashedByCreator",isTrashedByCreator)
+                                                        .build()
+                                        )
+                                        .build();
+
+
+                        WorkManager.getInstance().enqueue(deleteMessage);
+
+                            }
+                        }.execute();
+                        dialog.dismiss();
+                    }
+
+                })
+                .setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        dialog.dismiss();
+
+                    }
+                })
+                .create();
+        return myQuittingDialogBox;
+
+    }
 
 }

@@ -18,6 +18,9 @@ import com.softmed.stockapp.dom.responces.NewMessageResponce;
 import com.softmed.stockapp.utils.ServiceGenerator;
 import com.softmed.stockapp.utils.SessionManager;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.io.IOException;
 
 import retrofit2.Call;
@@ -41,66 +44,60 @@ public class DeleteMessagesWorker extends Worker {
     @NonNull
     @Override
     public Result doWork() {
-        return sendMessage(getInputData().getString("messageId"));
+        return deleteMessage(getInputData().getString("messageId"),(getInputData().getBoolean("isTrashedByCreator",false)));
     }
 
 
-    private Result sendMessage(String messageId) {
-        Log.d(TAG, "Send Message Worker working");
+    private Result deleteMessage(String messageId, boolean isTrashedByCreator) {
+        Log.d(TAG, "Delete Message Worker working");
         SessionManager sess = new SessionManager(this.getApplicationContext());
         Endpoints.MessagesServices messagesServices = ServiceGenerator.createService(Endpoints.MessagesServices.class,
                 sess.getUserName(),
                 sess.getUserPass());
 
-        AppDatabase database = AppDatabase.getDatabase(this.getApplicationContext());
+        Call deleteMessage;
 
-
-        Message message = database.messagesModelDao().getMessageById(messageId);
-
-
-        MessageRecipientsDTO sentMessageRecipientsDTO = new MessageRecipientsDTO();
-        sentMessageRecipientsDTO.setId(message.getId());
-        sentMessageRecipientsDTO.setCreateDate(message.getCreateDate());
-        sentMessageRecipientsDTO.setCreatorId(message.getCreatorId());
-        sentMessageRecipientsDTO.setMessageBody(message.getMessageBody());
-        sentMessageRecipientsDTO.setParentMessageId(message.getParentMessageId());
-        sentMessageRecipientsDTO.setSubject(message.getSubject());
-        sentMessageRecipientsDTO.setTrashedByCreator(message.isTrashedByCreator());
-        sentMessageRecipientsDTO.setMessageRecipients(database.messageRecipientsModelDao().getAllMessageRecipientsByMessageId(message.getId()));
-
-        Call<NewMessageResponce> messageCall =null;//= messagesServices.postMessages(getRequestBody(sentMessageRecipientsDTO));
-
-        Response<NewMessageResponce> response = null;
+        JSONObject obj = new JSONObject();
         try {
-            response = messageCall.execute();
+            obj.put("id",messageId);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        if(isTrashedByCreator){
+            try {
+                obj.put("trashed_by_creator",true);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+            deleteMessage = messagesServices.deleteMessageByCreator(getRequestBody(obj));
+        }else{
+            try {
+                obj.put("is_trashed",true);
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            deleteMessage = messagesServices.deleteMessageByRecipient(getRequestBody(obj));
+        }
+
+
+
+
+        Response response = null;
+        try {
+            response = deleteMessage.execute();
         } catch (IOException e) {
             e.printStackTrace();
         }
 
         if (response != null) {
             if (response.code() == 200 || response.code() == 201) {
-
-                NewMessageResponce newMessageResponce = response.body();
-
-                MessageRecipientsDTO receivedMessageRecipientsDTO = newMessageResponce.getData();
-                Log.d(TAG,"received response = "+new Gson().toJson(receivedMessageRecipientsDTO));
-                Log.d(TAG,"previous message id = "+new Gson().toJson(receivedMessageRecipientsDTO));
-
-                database.messagesModelDao().updateMessageIds(messageId, receivedMessageRecipientsDTO.getId());
-                database.messageRecipientsModelDao().updateMessageRecipientsIds(message.getId(), receivedMessageRecipientsDTO.getId());
-
-                for (int i = 0; i < receivedMessageRecipientsDTO.getMessageRecipients().size(); i++) {
-                    MessageRecipients messageRecipients = receivedMessageRecipientsDTO.getMessageRecipients().get(i);
-                    database.messageRecipientsModelDao().updateIds(sentMessageRecipientsDTO.getMessageRecipients().get(i).getId(), messageRecipients.getId());
-                }
-
-
-                Log.d(TAG,"updated message = "+new Gson().toJson(database.messagesModelDao().getParentMessageById(sentMessageRecipientsDTO.getId())));
-
+                Log.d(TAG,"deleting message successful Code= "+response.code());
                 return Result.success();
 
             } else {
-                Log.d(TAG, "Sending Message Failed with code " + response.code());
+                Log.d(TAG, "Deleting Message Failed with code " + response.code());
                 return Result.retry();
             }
         } else {
