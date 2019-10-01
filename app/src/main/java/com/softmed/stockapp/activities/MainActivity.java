@@ -46,7 +46,6 @@ import com.softmed.stockapp.customViews.VerticalArrow;
 import com.softmed.stockapp.database.AppDatabase;
 import com.softmed.stockapp.dom.dto.ProducToBeReportedtList;
 import com.softmed.stockapp.dom.entities.Location;
-import com.softmed.stockapp.dom.entities.Message;
 import com.softmed.stockapp.dom.entities.UsersInfo;
 import com.softmed.stockapp.fragments.DashboardFragment;
 import com.softmed.stockapp.fragments.ProductsListFragment;
@@ -56,7 +55,6 @@ import com.softmed.stockapp.utils.AppUtils;
 import com.softmed.stockapp.utils.SessionManager;
 import com.softmed.stockapp.utils.ZoomOutPageTransformer;
 import com.softmed.stockapp.viewmodels.MessageListViewModel;
-import com.softmed.stockapp.workers.DeleteMessagesWorker;
 import com.softmed.stockapp.workers.UpdatePasswordWorker;
 import com.sothree.slidinguppanel.SlidingUpPanelLayout;
 
@@ -300,10 +298,15 @@ public class MainActivity extends AppCompatActivity {
             messageListViewModel.getUnreadMessageCountUserId(Integer.parseInt(session.getUserUUID())).observe(this, new Observer<Integer>() {
                 @Override
                 public void onChanged(Integer integer) {
-                    ((TextView) findViewById(R.id.badge_notification_1)).setText(String.valueOf(integer));
+                    if(integer==0){
+                        findViewById(R.id.badge_notification_1).setVisibility(View.GONE);
+                    }else {
+                        findViewById(R.id.badge_notification_1).setVisibility(View.VISIBLE);
+                        ((TextView) findViewById(R.id.badge_notification_1)).setText(String.valueOf(integer));
+                    }
                 }
             });
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -383,7 +386,12 @@ public class MainActivity extends AppCompatActivity {
             i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
             MainActivity.this.startActivity(i);
             finish();
-        }else if (item.getItemId() == R.id.action_change_password) {
+        } else if (item.getItemId() == R.id.action_map_products) {
+            Intent i = new Intent(MainActivity.this, ManagedProductsActivity.class);
+            i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+            MainActivity.this.startActivity(i);
+            finish();
+        } else if (item.getItemId() == R.id.action_change_password) {
             AlertDialog.Builder alertDialog = new AlertDialog.Builder(MainActivity.this);
             alertDialog.setTitle("Change Password");
             final EditText oldPass = new EditText(MainActivity.this);
@@ -398,10 +406,10 @@ public class MainActivity extends AppCompatActivity {
             oldPass.setHint("Old Password");
             newPass.setHint("New Password");
             confirmPass.setHint("Confirm Password");
-            LinearLayout ll=new LinearLayout(MainActivity.this);
+            LinearLayout ll = new LinearLayout(MainActivity.this);
 
-            int marging = AppUtils.dpToPx(16,MainActivity.this);
-            ll.setPadding(marging,marging,marging,marging);
+            int marging = AppUtils.dpToPx(16, MainActivity.this);
+            ll.setPadding(marging, marging, marging, marging);
             ll.setOrientation(LinearLayout.VERTICAL);
 
             ll.addView(oldPass);
@@ -409,59 +417,13 @@ public class MainActivity extends AppCompatActivity {
             ll.addView(newPass);
             ll.addView(confirmPass);
             alertDialog.setView(ll);
+
+            boolean wantToCloseDialog = false;
             alertDialog.setPositiveButton("Yes",
                     new DialogInterface.OnClickListener() {
+                        @SuppressLint("StaticFieldLeak")
                         public void onClick(DialogInterface dialog, int id) {
 
-                            new AsyncTask<Void, Void, UsersInfo>() {
-
-                                @Override
-                                protected UsersInfo doInBackground(Void... aVoid) {
-
-                                    UsersInfo usersInfo = baseDatabase.userInfoDao().loggeInUser(session.getUserName()).get(0);
-
-
-                                    return usersInfo;
-                                }
-
-                                @Override
-                                protected void onPostExecute(UsersInfo usersInfo) {
-                                    super.onPostExecute(usersInfo);
-
-                                    if(!oldPass.getText().toString().equals(usersInfo.getPassword())){
-                                        Toast.makeText(MainActivity.this,"Incorrect Password",Toast.LENGTH_LONG).show();
-                                    }else if(!newPass.getText().toString().equals(confirmPass.getText().toString())){
-                                        Toast.makeText(MainActivity.this,"Passwords do not match",Toast.LENGTH_LONG).show();
-                                    }else{
-                                        usersInfo.setPassword(newPass.getText().toString());
-                                        new AsyncTask<Void,Void,Void>(){
-
-                                            @Override
-                                            protected Void doInBackground(Void... voids) {
-                                                baseDatabase.userInfoDao().UpdateUserInfo(usersInfo);
-                                                return null;
-                                            }
-                                        }.execute();
-                                        Constraints networkConstraints = new Constraints.Builder()
-                                                .setRequiredNetworkType(NetworkType.CONNECTED)
-                                                .build();
-
-                                        OneTimeWorkRequest deleteMessage = new OneTimeWorkRequest.Builder(UpdatePasswordWorker.class)
-                                                .setConstraints(networkConstraints)
-                                                .setInputData(
-                                                        new Data.Builder()
-                                                                .putString("oldPassword", oldPass.getText().toString())
-                                                                .putString("newPassword",newPass.getText().toString())
-                                                                .build()
-                                                )
-                                                .build();
-                                        WorkManager.getInstance().enqueue(deleteMessage);
-                                    }
-
-
-
-                                }
-                            }.execute();
                         }
                     });
             alertDialog.setNegativeButton("No",
@@ -473,6 +435,62 @@ public class MainActivity extends AppCompatActivity {
 
             AlertDialog alert11 = alertDialog.create();
             alert11.show();
+
+            alert11.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    new AsyncTask<Void, Void, UsersInfo>() {
+                        @Override
+                        protected UsersInfo doInBackground(Void... aVoid) {
+                            UsersInfo usersInfo = baseDatabase.userInfoDao().loggeInUser(session.getUserName()).get(0);
+                            return usersInfo;
+                        }
+
+                        @Override
+                        protected void onPostExecute(UsersInfo usersInfo) {
+                            super.onPostExecute(usersInfo);
+
+                            if (!oldPass.getText().toString().equals(session.getUserPass())) {
+                                oldPass.setError("Incorrect Password");
+                            } else if (!newPass.getText().toString().equals(confirmPass.getText().toString())) {
+                                confirmPass.setError("Passwords do not match");
+                            } else {
+                                usersInfo.setPassword(newPass.getText().toString());
+                                new AsyncTask<Void, Void, Void>() {
+
+                                    @Override
+                                    protected Void doInBackground(Void... voids) {
+                                        baseDatabase.userInfoDao().UpdateUserInfo(usersInfo);
+                                        return null;
+                                    }
+                                }.execute();
+                                Constraints networkConstraints = new Constraints.Builder()
+                                        .setRequiredNetworkType(NetworkType.CONNECTED)
+                                        .build();
+
+                                OneTimeWorkRequest deleteMessage = new OneTimeWorkRequest.Builder(UpdatePasswordWorker.class)
+                                        .setConstraints(networkConstraints)
+                                        .setInputData(
+                                                new Data.Builder()
+                                                        .putString("oldPassword", oldPass.getText().toString())
+                                                        .putString("newPassword", newPass.getText().toString())
+                                                        .build()
+                                        )
+                                        .build();
+                                WorkManager.getInstance().enqueue(deleteMessage);
+                                alert11.dismiss();
+
+
+                                Toast.makeText(MainActivity.this,"Password Changed Successful" , Toast.LENGTH_LONG).show();
+                            }
+
+
+                        }
+                    }.execute();
+
+                    //else dialog stays open. Make sure you have an obvious way to close the dialog especially if you set cancellable to false.
+                }
+            });
         }
 
         return super.onOptionsItemSelected(item);

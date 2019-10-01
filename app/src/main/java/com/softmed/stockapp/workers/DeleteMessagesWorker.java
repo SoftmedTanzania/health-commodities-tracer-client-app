@@ -11,6 +11,7 @@ import androidx.work.WorkerParameters;
 import com.google.gson.Gson;
 import com.softmed.stockapp.api.Endpoints;
 import com.softmed.stockapp.database.AppDatabase;
+import com.softmed.stockapp.dom.dto.DeleteMessegeDTO;
 import com.softmed.stockapp.dom.dto.MessageRecipientsDTO;
 import com.softmed.stockapp.dom.entities.Message;
 import com.softmed.stockapp.dom.entities.MessageRecipients;
@@ -57,28 +58,17 @@ public class DeleteMessagesWorker extends Worker {
 
         Call deleteMessage;
 
-        JSONObject obj = new JSONObject();
-        try {
-            obj.put("id",messageId);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        DeleteMessegeDTO deleteMessegeDTO = new DeleteMessegeDTO();
+
+        deleteMessegeDTO.setId(messageId);
+
 
         if(isTrashedByCreator){
-            try {
-                obj.put("trashed_by_creator",true);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-            deleteMessage = messagesServices.deleteMessageByCreator(getRequestBody(obj));
+            deleteMessegeDTO.setTrashed_by_creator(true);
+            deleteMessage = messagesServices.deleteMessageByCreator(getRequestBody(deleteMessegeDTO));
         }else{
-            try {
-                obj.put("is_trashed",true);
-            } catch (JSONException e) {
-                e.printStackTrace();
-            }
-
-            deleteMessage = messagesServices.deleteMessageByRecipient(getRequestBody(obj));
+            deleteMessegeDTO.setIs_trashed(true);
+            deleteMessage = messagesServices.deleteMessageByRecipient(getRequestBody(deleteMessegeDTO));
         }
 
 

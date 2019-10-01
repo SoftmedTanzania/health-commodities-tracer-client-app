@@ -20,6 +20,7 @@ import com.softmed.stockapp.dom.responces.UserResponse;
 import java.util.List;
 
 import okhttp3.RequestBody;
+import okhttp3.ResponseBody;
 import retrofit2.Call;
 import retrofit2.http.Body;
 import retrofit2.http.GET;
@@ -37,8 +38,8 @@ public class Endpoints {
         Call<LoginResponse> basicLogin(@Body RequestBody e);
 
 
-        @POST("update_password")
-        Call<String> updatePassword(@Body RequestBody e);
+        @PUT("update_password")
+        Call<ResponseBody> updatePassword(@Body RequestBody e);
 
         @GET("api_locations/")
         Call<List<Location>> getLocations();
@@ -100,11 +101,11 @@ public class Endpoints {
         @POST("create_new_message")
         Call<NewMessageResponce> postMessages(@Body RequestBody e);
 
-        @POST("update_is_trashed_status")
-        Call deleteMessageByRecipient(@Body RequestBody e);
+        @PUT("update_is_trashed_status")
+        Call<ResponseBody> deleteMessageByRecipient(@Body RequestBody e);
 
-        @POST("update_parent_message_status")
-        Call<String> deleteMessageByCreator(@Body RequestBody e);
+        @PUT("update_parent_message_status")
+        Call<ResponseBody> deleteMessageByCreator(@Body RequestBody e);
 
         @PUT("update_read_message_status")
         Call<String> updateMessageReadStatus(@Body RequestBody e);

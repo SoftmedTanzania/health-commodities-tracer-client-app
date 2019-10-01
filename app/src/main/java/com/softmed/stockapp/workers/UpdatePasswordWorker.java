@@ -12,6 +12,7 @@ import com.google.gson.Gson;
 import com.softmed.stockapp.api.Endpoints;
 import com.softmed.stockapp.database.AppDatabase;
 import com.softmed.stockapp.dom.dto.MessageRecipientsDTO;
+import com.softmed.stockapp.dom.dto.UpdatePasswordDTO;
 import com.softmed.stockapp.dom.entities.Message;
 import com.softmed.stockapp.dom.entities.MessageRecipients;
 import com.softmed.stockapp.dom.responces.NewMessageResponce;
@@ -54,18 +55,13 @@ public class UpdatePasswordWorker extends Worker {
                 sess.getUserName(),
                 sess.getUserPass());
 
-        AppDatabase database = AppDatabase.getDatabase(this.getApplicationContext());
-
-        JSONObject obj = new JSONObject();
-        try {
-            obj.put("old_password", oldPassword);
-            obj.put("new_password", newPassword);
-        }catch (Exception e){
-            e.printStackTrace();
-        }
+        UpdatePasswordDTO updatePasswordDTO = new UpdatePasswordDTO();
+        updatePasswordDTO.setNew_password(newPassword);
+        updatePasswordDTO.setOld_password(oldPassword);
 
 
-        Call<String> updatePasswordCall = loginService.updatePassword(getRequestBody(obj));
+
+        Call updatePasswordCall = loginService.updatePassword(getRequestBody(updatePasswordDTO));
 
         Response<String> response = null;
         try {
