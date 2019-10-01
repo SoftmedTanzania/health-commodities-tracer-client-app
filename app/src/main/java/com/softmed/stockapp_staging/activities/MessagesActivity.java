@@ -350,6 +350,63 @@ public class MessagesActivity extends AppCompatActivity
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.action_delete:
+
+                final List<IMessageDTO> selectedMessages = messagesAdapter.getSelectedMessages();
+
+                List<String> selectedMessagesIds = new ArrayList<>();
+                for(IMessageDTO messageDTO:selectedMessages){
+                    selectedMessagesIds.add(messageDTO.getId());
+                }
+
+                String[] selectedMessagesArray = selectedMessagesIds.toArray(new String[selectedMessagesIds.size()]);
+
+                Log.d(TAG,"messages to be deleted = "+new Gson().toJson(selectedMessagesArray));
+
+                new AsyncTask<Void, Void, Void>() {
+
+                    @Override
+                    protected Void doInBackground(Void... aVoid) {
+                        for (IMessageDTO message : selectedMessages) {
+
+                            if(message.getUser().getId().equals(sessionManager.getUserUUID())){
+                                //TODO fix the deletion of  messages from the mailbox
+//                                appDatabase.messagesModelDao().deleteMessage(true,message.getId());
+                            }else{
+
+                                Log.d(TAG,"Deleting message with id = "+new Gson().toJson(selectedMessagesArray));
+                                appDatabase.messageRecipientsModelDao().deleteMessageFromMailBox(true,message.getId(),sessionManager.getUserUUID());
+                            }
+
+
+                        }
+
+                        return null;
+                    }
+
+                    @Override
+                    protected void onPostExecute(Void aVoid) {
+                        super.onPostExecute(aVoid);
+
+                        Constraints networkConstraints = new Constraints.Builder()
+                                .setRequiredNetworkType(NetworkType.CONNECTED)
+                                .build();
+
+                        OneTimeWorkRequest deleteMessage = new OneTimeWorkRequest.Builder(SendMessagesWorker.class)
+                                .setConstraints(networkConstraints)
+                                .setInputData(
+                                        new Data.Builder()
+                                                .putStringArray("messageId", selectedMessagesArray)
+                                                .build()
+                                )
+                                .build();
+
+//                        WorkManager.getInstance().enqueue(deleteMessage);
+
+                    }
+                }.execute();
+
+
+
                 messagesAdapter.deleteSelectedMessages();
                 break;
             case R.id.action_copy:
@@ -380,16 +437,17 @@ public class MessagesActivity extends AppCompatActivity
     @Override
     public void onSelectionChanged(int count) {
         this.selectionCount = count;
-        menu.findItem(R.id.action_delete).setVisible(count > 0);
+//        menu.findItem(R.id.action_delete).setVisible(count > 0);
         menu.findItem(R.id.action_copy).setVisible(count > 0);
     }
 
     @SuppressLint("StaticFieldLeak")
     protected void loadMessages() {
 
+        Log.d(TAG, "user UUID = " + sessionManager.getUserUUID());
         Log.d(TAG, "Loading more with parentID = " + parentMessageId);
         MessageListViewModel messageListViewModel = ViewModelProviders.of(this).get(MessageListViewModel.class);
-        messageListViewModel.getMessageByThread(parentMessageId).observe(MessagesActivity.this, new Observer<List<com.softmed.stockapp_staging.dom.dto.MessageUserDTO>>() {
+        messageListViewModel.getMessageByThread(parentMessageId,sessionManager.getUserUUID()).observe(MessagesActivity.this, new Observer<List<com.softmed.stockapp_staging.dom.dto.MessageUserDTO>>() {
             @Override
             public void onChanged(List<MessageUserDTO> messageUserDTOS) {
                 Log.d(TAG, "Something changed");
@@ -427,6 +485,8 @@ public class MessagesActivity extends AppCompatActivity
                     new AsyncTask<Void, Void, List<String>>() {
                         @Override
                         protected List<String> doInBackground(Void... voids) {
+
+                            Log.d(TAG,"message recipients = "+new Gson().toJson(appDatabase.messageRecipientsModelDao().getAllMessageRecipients()));
 
                             List<String> updatedMessageId = new ArrayList<>();
                             for (MessageUserDTO messageUserDTO : messageUserDTOS) {

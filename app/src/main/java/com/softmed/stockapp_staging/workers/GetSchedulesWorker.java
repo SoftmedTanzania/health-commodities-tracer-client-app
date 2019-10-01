@@ -65,8 +65,12 @@ public class GetSchedulesWorker extends Worker {
                 Log.d(TAG, "Successful Posting schedule received " + new Gson().toJson(response.body()));
                 for (ProductReportingScheduleResponse reportingSchedule : response.body()) {
                     try {
-                        if (database.productReportingScheduleModelDao().getProductReportingScheduleById(reportingSchedule.getId()).getStatus().equalsIgnoreCase("posted")) {
-                            reportingSchedule.setStatus("posted");
+                        try {
+                            if (database.productReportingScheduleModelDao().getProductReportingScheduleById(reportingSchedule.getId()).getStatus().equalsIgnoreCase("posted")) {
+                                reportingSchedule.setStatus("posted");
+                            }
+                        }catch (Exception e){
+                            e.printStackTrace();
                         }
 
                         database.productReportingScheduleModelDao().addProductSchedule(LoginActivity.getProductReportingSchedule(reportingSchedule));

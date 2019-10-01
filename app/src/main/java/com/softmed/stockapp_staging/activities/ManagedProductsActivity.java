@@ -5,10 +5,13 @@ import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.CompoundButton;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -22,11 +25,13 @@ import androidx.work.WorkManager;
 import com.google.android.material.appbar.CollapsingToolbarLayout;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
+import com.google.android.material.textfield.TextInputLayout;
 import com.google.gson.Gson;
 import com.softmed.stockapp_staging.R;
 import com.softmed.stockapp_staging.api.Endpoints;
 import com.softmed.stockapp_staging.database.AppDatabase;
 import com.softmed.stockapp_staging.dom.dto.CategoryProducts;
+import com.softmed.stockapp_staging.dom.dto.MappedProductConsuption;
 import com.softmed.stockapp_staging.dom.entities.Balances;
 import com.softmed.stockapp_staging.dom.entities.Category;
 import com.softmed.stockapp_staging.dom.entities.Product;
@@ -50,7 +55,7 @@ public class ManagedProductsActivity extends BaseActivity {
     private static final String TAG = ManagedProductsActivity.class.getSimpleName();
     private AppDatabase baseDatabase;
     private LinearLayout productsLayout;
-    private List<Product> managedProductIds = new ArrayList<>();
+    private List<com.softmed.stockapp_staging.dom.dto.MappedProductConsuption> managedProductIds = new ArrayList<>();
     private List<Balances> currentBalances = new ArrayList<>();
     private SessionManager session;
     private Endpoints.TransactionServices transactionServices;
@@ -86,21 +91,22 @@ public class ManagedProductsActivity extends BaseActivity {
                 Snackbar.make(view, "Saving the managed products", Snackbar.LENGTH_LONG)
                         .setAction("Action", null).show();
                 final List<Balances> newMappings = new ArrayList<>();
-                for (Product product : managedProductIds) {
+                for (MappedProductConsuption mappedProductConsuption : managedProductIds) {
                     boolean productAlreadyMapped = false;
                     for (Balances b : currentBalances) {
-                        if (b.getProductId() == product.getId()) {
+                        if (b.getProductId() == mappedProductConsuption.getProductId() && b.getConsumptionQuantity()==mappedProductConsuption.getConsumption()) {
                             productAlreadyMapped = true;
                         }
                     }
                     if (!productAlreadyMapped) {
                         Balances balance = new Balances();
 
-                        balance.setProductId(product.getId());
+                        balance.setProductId(mappedProductConsuption.getProductId());
                         balance.setBalance(0);
                         balance.setUserId(Integer.parseInt(session.getUserUUID()));
                         balance.setHealthFacilityId(session.getFacilityId());
                         balance.setSyncStatus(0);
+                        balance.setConsumptionQuantity(mappedProductConsuption.getConsumption());
 
                         newMappings.add(balance);
 
@@ -261,23 +267,60 @@ public class ManagedProductsActivity extends BaseActivity {
 
 
                 for (final Product product : categoryProducts.getProducts()) {
+                    MappedProductConsuption mappedProductConsuption = new MappedProductConsuption();
+                    mappedProductConsuption.setProductId(product.getId());
+
                     View v = getLayoutInflater().inflate(R.layout.view_checkbox, null);
+                    final EditText consumptionEditText = ((TextInputLayout)v.findViewById(R.id.elmis_consumption)).getEditText();
+
                     final CheckBox managedProduct = v.findViewById(R.id.checkbox);
                     managedProduct.setText(product.getName());
                     managedProduct.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
                         @Override
                         public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
                             if (b) {
-                                managedProductIds.add(product);
+                                managedProductIds.add(mappedProductConsuption);
+                                v.findViewById(R.id.elmis_consumption).setVisibility(View.VISIBLE);
                             } else {
-                                managedProductIds.remove(product);
+                                managedProductIds.remove(mappedProductConsuption);
+                                v.findViewById(R.id.elmis_consumption).setVisibility(View.GONE);
                             }
+                        }
+                    });
+
+                    consumptionEditText.addTextChangedListener(new TextWatcher() {
+                        @Override
+                        public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+
+                        }
+
+                        @Override
+                        public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                            String consumption = consumptionEditText.getText().toString();
+                            if(consumption.equals("")){
+                                mappedProductConsuption.setConsumption(0);
+                            }else{
+                                mappedProductConsuption.setConsumption(Integer.parseInt(consumption));
+                            }
+
+                        }
+
+                        @Override
+                        public void afterTextChanged(Editable editable) {
+
                         }
                     });
 
                     for (Balances b : currentBalances) {
                         if (b.getProductId() == product.getId()) {
                             managedProduct.setChecked(true);
+                            String consumptionQuantity = "";
+                            try{
+                                consumptionQuantity = b.getConsumptionQuantity()+"";
+                            }catch (Exception e){
+                                e.printStackTrace();
+                            }
+                            consumptionEditText.setText(consumptionQuantity);
                             break;
                         }
                     }

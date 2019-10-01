@@ -20,7 +20,7 @@ public class ContactChooserViewModel extends ViewModel {
         this.appDatabase = appDatabase;
     }
 
-    public LiveData<List<OtherUsers>> getContacts(int excludingId) {
+    public LiveData<List<com.softmed.stockapp_staging.dom.dto.ContactUsersDTO>> getContacts(int excludingId) {
         return appDatabase.usersModelDao().getUsers(excludingId);
     }
 }

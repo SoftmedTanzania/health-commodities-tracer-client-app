@@ -29,9 +29,16 @@ public interface MessageRecipientsModelDao {
 
     @Query("SELECT COUNT(*) FROM MessageRecipients WHERE " +
             "isRead = :isRead AND " +
+            "deletedFromMailBox = 0 AND " +
             "recipientId = :userId AND " +
             "messageId IN (SELECT id from Message WHERE parentMessageId = :parentMessageId OR id = :parentMessageId)")
     int getUnreadMessageCountByParentMessageId(String parentMessageId,boolean isRead,int userId);
+
+    @Query("SELECT COUNT(*) FROM MessageRecipients WHERE " +
+            "deletedFromMailBox = :deletedFromMailBox AND " +
+            "recipientId = :userId AND " +
+            "messageId IN (SELECT id from Message WHERE  id = :parentMessageId)")
+    int isMessageDeletedFromMailbox(String parentMessageId,boolean deletedFromMailBox,int userId);
 
     @Query("SELECT COUNT(*) FROM MessageRecipients WHERE " +
             "isRead = :isRead AND " +
@@ -49,6 +56,9 @@ public interface MessageRecipientsModelDao {
 
     @Query("UPDATE MessageRecipients SET id = :newId WHERE messageId = :oldId")
     int updateIds(String oldId, String newId);
+
+    @Query("UPDATE MessageRecipients SET deletedFromMailBox = :delete WHERE messageId = :messageId AND recipientId=:userId")
+    int deleteMessageFromMailBox(boolean delete, String messageId,String userId);
 
     @Query("UPDATE MessageRecipients SET isRead = :isRead WHERE messageId = :messageId AND recipientId =:userId AND isRead=0 ")
     int updateIsReadStatus(boolean isRead, String messageId,int userId);

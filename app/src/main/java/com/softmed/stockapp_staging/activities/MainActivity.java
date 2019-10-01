@@ -3,19 +3,25 @@ package com.softmed.stockapp_staging.activities;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.text.method.PasswordTransformationMethod;
 import android.util.Log;
 import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
 import androidx.fragment.app.Fragment;
@@ -25,6 +31,11 @@ import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 import androidx.viewpager.widget.PagerAdapter;
 import androidx.viewpager.widget.ViewPager;
+import androidx.work.Constraints;
+import androidx.work.Data;
+import androidx.work.NetworkType;
+import androidx.work.OneTimeWorkRequest;
+import androidx.work.WorkManager;
 
 import com.bumptech.glide.Glide;
 import com.google.android.material.tabs.TabLayout;
@@ -40,6 +51,7 @@ import com.softmed.stockapp_staging.fragments.DashboardFragment;
 import com.softmed.stockapp_staging.fragments.ProductsListFragment;
 import com.softmed.stockapp_staging.fragments.UpcomingReportingScheduleFragment;
 import com.softmed.stockapp_staging.fragments.UpdateStockFragment;
+import com.softmed.stockapp_staging.utils.AppUtils;
 import com.softmed.stockapp_staging.utils.SessionManager;
 import com.softmed.stockapp_staging.utils.ZoomOutPageTransformer;
 import com.softmed.stockapp_staging.viewmodels.MessageListViewModel;
@@ -285,10 +297,15 @@ public class MainActivity extends AppCompatActivity {
             messageListViewModel.getUnreadMessageCountUserId(Integer.parseInt(session.getUserUUID())).observe(this, new Observer<Integer>() {
                 @Override
                 public void onChanged(Integer integer) {
-                    ((TextView) findViewById(R.id.badge_notification_1)).setText(String.valueOf(integer));
+                    if(integer==0){
+                        findViewById(R.id.badge_notification_1).setVisibility(View.GONE);
+                    }else {
+                        findViewById(R.id.badge_notification_1).setVisibility(View.VISIBLE);
+                        ((TextView) findViewById(R.id.badge_notification_1)).setText(String.valueOf(integer));
+                    }
                 }
             });
-        }catch (Exception e){
+        } catch (Exception e) {
             e.printStackTrace();
         }
 
@@ -368,6 +385,111 @@ public class MainActivity extends AppCompatActivity {
             i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
             MainActivity.this.startActivity(i);
             finish();
+        } else if (item.getItemId() == R.id.action_map_products) {
+            Intent i = new Intent(MainActivity.this, ManagedProductsActivity.class);
+            i.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_NEW_TASK);
+            MainActivity.this.startActivity(i);
+            finish();
+        } else if (item.getItemId() == R.id.action_change_password) {
+            AlertDialog.Builder alertDialog = new AlertDialog.Builder(MainActivity.this);
+            alertDialog.setTitle("Change Password");
+            final EditText oldPass = new EditText(MainActivity.this);
+            final EditText newPass = new EditText(MainActivity.this);
+            final EditText confirmPass = new EditText(MainActivity.this);
+
+
+            oldPass.setTransformationMethod(PasswordTransformationMethod.getInstance());
+            newPass.setTransformationMethod(PasswordTransformationMethod.getInstance());
+            confirmPass.setTransformationMethod(PasswordTransformationMethod.getInstance());
+
+            oldPass.setHint("Old Password");
+            newPass.setHint("New Password");
+            confirmPass.setHint("Confirm Password");
+            LinearLayout ll = new LinearLayout(MainActivity.this);
+
+            int marging = AppUtils.dpToPx(16, MainActivity.this);
+            ll.setPadding(marging, marging, marging, marging);
+            ll.setOrientation(LinearLayout.VERTICAL);
+
+            ll.addView(oldPass);
+
+            ll.addView(newPass);
+            ll.addView(confirmPass);
+            alertDialog.setView(ll);
+
+            boolean wantToCloseDialog = false;
+            alertDialog.setPositiveButton("Yes",
+                    new DialogInterface.OnClickListener() {
+                        @SuppressLint("StaticFieldLeak")
+                        public void onClick(DialogInterface dialog, int id) {
+
+                        }
+                    });
+            alertDialog.setNegativeButton("No",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int id) {
+                            dialog.cancel();
+                        }
+                    });
+
+            AlertDialog alert11 = alertDialog.create();
+            alert11.show();
+
+            alert11.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    new AsyncTask<Void, Void, UsersInfo>() {
+                        @Override
+                        protected UsersInfo doInBackground(Void... aVoid) {
+                            UsersInfo usersInfo = baseDatabase.userInfoDao().loggeInUser(session.getUserName()).get(0);
+                            return usersInfo;
+                        }
+
+                        @Override
+                        protected void onPostExecute(UsersInfo usersInfo) {
+                            super.onPostExecute(usersInfo);
+
+                            if (!oldPass.getText().toString().equals(session.getUserPass())) {
+                                oldPass.setError("Incorrect Password");
+                            } else if (!newPass.getText().toString().equals(confirmPass.getText().toString())) {
+                                confirmPass.setError("Passwords do not match");
+                            } else {
+                                usersInfo.setPassword(newPass.getText().toString());
+                                new AsyncTask<Void, Void, Void>() {
+
+                                    @Override
+                                    protected Void doInBackground(Void... voids) {
+                                        baseDatabase.userInfoDao().UpdateUserInfo(usersInfo);
+                                        return null;
+                                    }
+                                }.execute();
+                                Constraints networkConstraints = new Constraints.Builder()
+                                        .setRequiredNetworkType(NetworkType.CONNECTED)
+                                        .build();
+
+                                OneTimeWorkRequest deleteMessage = new OneTimeWorkRequest.Builder(com.softmed.stockapp_staging.workers.UpdatePasswordWorker.class)
+                                        .setConstraints(networkConstraints)
+                                        .setInputData(
+                                                new Data.Builder()
+                                                        .putString("oldPassword", oldPass.getText().toString())
+                                                        .putString("newPassword", newPass.getText().toString())
+                                                        .build()
+                                        )
+                                        .build();
+                                WorkManager.getInstance().enqueue(deleteMessage);
+                                alert11.dismiss();
+
+
+                                Toast.makeText(MainActivity.this,"Password Changed Successful" , Toast.LENGTH_LONG).show();
+                            }
+
+
+                        }
+                    }.execute();
+
+                    //else dialog stays open. Make sure you have an obvious way to close the dialog especially if you set cancellable to false.
+                }
+            });
         }
 
         return super.onOptionsItemSelected(item);

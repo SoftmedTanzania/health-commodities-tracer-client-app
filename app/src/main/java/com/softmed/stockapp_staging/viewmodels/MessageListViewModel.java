@@ -1,6 +1,7 @@
 package com.softmed.stockapp_staging.viewmodels;
 
 import android.app.Application;
+import android.util.Log;
 
 import androidx.lifecycle.AndroidViewModel;
 import androidx.lifecycle.LiveData;
@@ -13,6 +14,7 @@ import java.util.List;
 
 
 public class MessageListViewModel extends AndroidViewModel {
+    private static final String TAG = MessageListViewModel.class.getSimpleName();
 
     private AppDatabase appDatabase;
 
@@ -26,8 +28,8 @@ public class MessageListViewModel extends AndroidViewModel {
         return appDatabase.messagesModelDao().getMessageThreads();
     }
 
-    public LiveData<List<MessageUserDTO>> getMessageByThread(String parentMessageId) {
-        return appDatabase.messagesModelDao().getMessageByThread(parentMessageId);
+    public LiveData<List<MessageUserDTO>> getMessageByThread(String parentMessageId,String userId) {
+        return appDatabase.messagesModelDao().getMessageByThread(parentMessageId,userId);
     }
 
 

@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
-<FrameLayout
+<LinearLayout
+    android:orientation="vertical"
     xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
     android:layout_height="wrap_content">
     <CheckBox
@@ -9,4 +10,21 @@
         android:fontFamily="@font/muli_italic"
         android:text="Text status"/>
 
-</FrameLayout>
+    <com.google.android.material.textfield.TextInputLayout
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:id="@+id/elmis_consumption"
+        android:visibility="gone"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom">
+
+        <com.google.android.material.textfield.TextInputEditText
+            style="@style/ProductDetailsTextInputEditText"
+            android:hint="ELMIS monthly consumption"
+            android:inputType="numberDecimal"
+            android:fontFamily="@font/muli_bold_italic"
+            android:textSize="14sp" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+</LinearLayout>
