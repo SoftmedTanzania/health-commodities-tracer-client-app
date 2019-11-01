@@ -2,7 +2,6 @@ package com.softmed.stockapp.activities;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.AsyncTask;
@@ -27,13 +26,13 @@ import androidx.lifecycle.ViewModelProviders;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.softmed.stockapp.R;
+import com.softmed.stockapp.customViews.CustomScrollView;
 import com.softmed.stockapp.database.AppDatabase;
 import com.softmed.stockapp.dom.dto.ProductList;
 import com.softmed.stockapp.dom.entities.Product;
 import com.softmed.stockapp.dom.entities.ProductBalance;
 import com.softmed.stockapp.dom.entities.Transactions;
 import com.softmed.stockapp.fragments.AddTransactionDialogue;
-import com.softmed.stockapp.customViews.CustomScrollView;
 import com.softmed.stockapp.utils.LoadProductPhotoAsync;
 import com.softmed.stockapp.utils.PhotoHelper;
 import com.softmed.stockapp.utils.SessionManager;
@@ -44,6 +43,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import pl.aprilapps.easyphotopicker.ChooserType;
 import pl.aprilapps.easyphotopicker.DefaultCallback;
@@ -81,19 +81,7 @@ public class DetailActivity extends AppCompatActivity {
     private EasyImage easyImage;
     // Session Manager Class
     private SessionManager session;
-    private DialogInterface.OnClickListener mOnPositiveClickListener = new DialogInterface.OnClickListener() {
-        @Override
-        public void onClick(DialogInterface dialogInterface, int i) {
 
-            //TODO IMPLEMENT DELETION OF PRODUCT
-            // Delete the current product from the database and return to MainActivity.
-//            mDbHelper.deleteProduct(mProduct.getmId());
-            PhotoHelper.deleteCapturedPhotoFile(mProductPhotoImageView.getTag());
-            finish();
-        }
-    };
-
-    @SuppressLint("StaticFieldLeak")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -106,6 +94,13 @@ public class DetailActivity extends AppCompatActivity {
                 .allowMultiple(false)
                 .build();
 
+        database = AppDatabase.getDatabase(this);
+        session = new SessionManager(this);
+        setupViews();
+    }
+
+    @SuppressLint("StaticFieldLeak")
+    private void setupViews() {
         mProductPhotoImageView = findViewById(R.id.product_photo_image_view);
         mProductPhotoImageView.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -129,21 +124,13 @@ public class DetailActivity extends AppCompatActivity {
         mProductQuantityTextView = findViewById(R.id.product_quantity_text_view);
         transactionsTable = findViewById(R.id.transactions_table);
 
-        database = AppDatabase.getDatabase(this);
-        session = new SessionManager(this);
-
-
         final ProductList product = (ProductList) getIntent().getSerializableExtra(INTENT_EXTRA_PRODUCT);
-
         productsViewModel = ViewModelProviders.of(DetailActivity.this).get(ProductsViewModel.class);
-
         productsViewModel.getProdictById(product.getId(), session.getFacilityId()).observe(DetailActivity.this, new Observer<ProductBalance>() {
             @Override
             public void onChanged(@Nullable final ProductBalance mProd) {
                 mProduct = mProd;
-
                 new AsyncTask<Void, Void, Void>() {
-
                     @Override
                     protected Void doInBackground(Void... voids) {
                         myProduct = database.productsModelDao().getProductById(mProd.getProductId());
@@ -158,93 +145,12 @@ public class DetailActivity extends AppCompatActivity {
 
                         transactionsListViewModel = ViewModelProviders.of(DetailActivity.this).get(TransactionsListViewModel.class);
 
-                        transactionsListViewModel.getLastTransactionByProductId(mProduct.getProductId(), session.getFacilityId()).observe(DetailActivity.this, new Observer<Transactions>() {
-                            @Override
-                            public void onChanged(@Nullable final Transactions transactions) {
-
-                                new AsyncTask<Void, Void, Void>() {
-                                    private Product product;
-
-                                    @Override
-                                    protected Void doInBackground(Void... voids) {
-                                        product = database.productsModelDao().getProductById(mProduct.getProductId());
-                                        return null;
-                                    }
-
-                                    @Override
-                                    protected void onPostExecute(Void name) {
-                                        super.onPostExecute(name);
-
-                                        if (product.isTrack_number_of_patients()) {
-                                            View numberOfClientsLayout = findViewById(R.id.number_of_clients_layout);
-                                            numberOfClientsLayout.setVisibility(View.VISIBLE);
-
-                                            TextView numberOfClientsOnRegime = findViewById(R.id.number_of_clients_on_regime);
-
-                                            Log.d(TAG, "number of clients on regime = " + transactions.getClientsOnRegime());
-
-                                            numberOfClientsOnRegime.setText(String.format("%s %s", getResources().getString(R.string.string_format_product_clients_on_regime), String.valueOf(transactions.getClientsOnRegime())));
-
-                                        }
-                                    }
-                                }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-                            }
-                        });
+                        transactionsListViewModel.getLastTransactionByProductId(mProduct.getProductId(), session.getFacilityId()).observe(DetailActivity.this, transactions -> setLastTransaction(transactions));
 
                         transactionsListViewModel.getTransactionsListByProductId(mProduct.getProductId(), session.getFacilityId()).observe(DetailActivity.this, new Observer<List<Transactions>>() {
                             @Override
                             public void onChanged(@Nullable List<Transactions> transactions) {
-                                transactionsTable.removeAllViews();
-
-                                if (myProduct.isTrack_number_of_patients()) {
-                                    findViewById(R.id.clients_on_regime_title).setVisibility(View.VISIBLE);
-                                }
-                                if (myProduct.isTrack_number_of_patients()) {
-                                    findViewById(R.id.wastage_title).setVisibility(View.VISIBLE);
-                                }
-                                if (myProduct.isTrack_number_of_patients()) {
-                                    findViewById(R.id.expired_stock_title).setVisibility(View.VISIBLE);
-                                }
-
-                                int i = 0;
-                                for (final Transactions transactions1 : transactions) {
-                                    i++;
-                                    final View v = LayoutInflater.from(DetailActivity.this).inflate(R.layout.view_transaction_item, null);
-                                    ((TextView) v.findViewById(R.id.sn)).setText(String.valueOf(i));
-
-
-                                    Log.d(TAG, "timestamp Date = " + transactions1.getCreated_at());
-
-
-                                    Date date = new Date(transactions1.getCreated_at());
-                                    DateFormat formatter = new SimpleDateFormat("YYYY-MM-dd");
-                                    String dateFormatted = formatter.format(date);
-
-
-                                    Log.d(TAG, "formated Date = " + dateFormatted);
-
-                                    ((TextView) v.findViewById(R.id.date)).setText(dateFormatted);
-
-
-                                    if (myProduct.isTrack_number_of_patients()) {
-                                        v.findViewById(R.id.number_of_clients_on_regime).setVisibility(View.VISIBLE);
-                                        ((TextView) v.findViewById(R.id.number_of_clients_on_regime)).setText(String.valueOf(transactions1.getClientsOnRegime()));
-                                    }
-                                    ((TextView) v.findViewById(R.id.quantity)).setText(String.valueOf(transactions1.getAmount()));
-                                    ((TextView) v.findViewById(R.id.stock_out_days)).setText(String.valueOf(transactions1.getStockOutDays()));
-
-                                    if (myProduct.isTrack_number_of_patients()) {
-                                        v.findViewById(R.id.wastage).setVisibility(View.VISIBLE);
-                                        ((TextView) v.findViewById(R.id.wastage)).setText(String.valueOf(transactions1.getWastage()));
-                                    }
-
-                                    if (myProduct.isTrack_number_of_patients()) {
-                                        v.findViewById(R.id.expired_stock).setVisibility(View.VISIBLE);
-                                        ((TextView) v.findViewById(R.id.expired_stock)).setText(String.valueOf(transactions1.getQuantityExpired()));
-                                    }
-
-                                    transactionsTable.addView(v);
-                                }
+                                setTransactionList(transactions);
                             }
                         });
                     }
@@ -265,22 +171,97 @@ public class DetailActivity extends AppCompatActivity {
         ((CustomScrollView) findViewById(R.id.scrollable)).setMyScrollChangeListener(new CustomScrollView.OnMyScrollChangeListener() {
             @Override
             public void onScrollUp() {
-                //Toast.makeText(getActivity(), "Scrolling up", Toast.LENGTH_SHORT).show();
-                Log.d("scroll", "up");
                 floatingActionButton.extend(true);
-
             }
 
             @Override
             public void onScrollDown() {
-                // Toast.makeText(getActivity(), "Scrolling down", Toast.LENGTH_SHORT).show();
-                Log.d("scroll", "down");
-
                 floatingActionButton.shrink(true);
-
             }
         });
+    }
 
+    @SuppressLint("StaticFieldLeak")
+    private void setLastTransaction(Transactions transactions) {
+        new AsyncTask<Void, Void, Void>() {
+            private Product product;
+
+            @Override
+            protected Void doInBackground(Void... voids) {
+                product = database.productsModelDao().getProductById(mProduct.getProductId());
+                return null;
+            }
+
+            @Override
+            protected void onPostExecute(Void name) {
+                super.onPostExecute(name);
+
+                if (product.isTrack_number_of_patients()) {
+                    View numberOfClientsLayout = findViewById(R.id.number_of_clients_layout);
+                    numberOfClientsLayout.setVisibility(View.VISIBLE);
+
+                    TextView numberOfClientsOnRegime = findViewById(R.id.number_of_clients_on_regime);
+
+                    Log.d(TAG, "number of clients on regime = " + transactions.getClientsOnRegime());
+
+                    numberOfClientsOnRegime.setText(String.format("%s %s", getResources().getString(R.string.string_format_product_clients_on_regime), String.valueOf(transactions.getClientsOnRegime())));
+
+                }
+            }
+        }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
+    }
+
+    private void setTransactionList(List<Transactions> transactions) {
+        transactionsTable.removeAllViews();
+        if (myProduct.isTrack_number_of_patients()) {
+            findViewById(R.id.clients_on_regime_title).setVisibility(View.VISIBLE);
+        }
+        if (myProduct.isTrack_number_of_patients()) {
+            findViewById(R.id.wastage_title).setVisibility(View.VISIBLE);
+        }
+        if (myProduct.isTrack_number_of_patients()) {
+            findViewById(R.id.expired_stock_title).setVisibility(View.VISIBLE);
+        }
+
+        int i = 0;
+        for (final Transactions transactions1 : transactions) {
+            i++;
+            final View v = LayoutInflater.from(DetailActivity.this).inflate(R.layout.view_transaction_item, null);
+            ((TextView) v.findViewById(R.id.sn)).setText(String.valueOf(i));
+
+
+            Log.d(TAG, "timestamp Date = " + transactions1.getCreated_at());
+
+
+            Date date = new Date(transactions1.getCreated_at());
+            DateFormat formatter = new SimpleDateFormat("YYYY-MM-dd", Locale.getDefault());
+            String dateFormatted = formatter.format(date);
+
+
+            Log.d(TAG, "formated Date = " + dateFormatted);
+
+            ((TextView) v.findViewById(R.id.date)).setText(dateFormatted);
+
+
+            if (myProduct.isTrack_number_of_patients()) {
+                v.findViewById(R.id.number_of_clients_on_regime).setVisibility(View.VISIBLE);
+                ((TextView) v.findViewById(R.id.number_of_clients_on_regime)).setText(String.valueOf(transactions1.getClientsOnRegime()));
+            }
+            ((TextView) v.findViewById(R.id.quantity)).setText(String.valueOf(transactions1.getAmount()));
+            ((TextView) v.findViewById(R.id.stock_out_days)).setText(String.valueOf(transactions1.getStockOutDays()));
+
+            if (myProduct.isTrack_number_of_patients()) {
+                v.findViewById(R.id.wastage).setVisibility(View.VISIBLE);
+                ((TextView) v.findViewById(R.id.wastage)).setText(String.valueOf(transactions1.getWastage()));
+            }
+
+            if (myProduct.isTrack_number_of_patients()) {
+                v.findViewById(R.id.expired_stock).setVisibility(View.VISIBLE);
+                ((TextView) v.findViewById(R.id.expired_stock)).setText(String.valueOf(transactions1.getQuantityExpired()));
+            }
+
+            transactionsTable.addView(v);
+        }
     }
 
     @Override

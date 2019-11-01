@@ -44,7 +44,6 @@ import com.softmed.stockapp.utils.AppUtils;
 import com.softmed.stockapp.utils.SessionManager;
 import com.softmed.stockapp.viewmodels.MessageListViewModel;
 import com.softmed.stockapp.workers.DeleteMessagesWorker;
-import com.softmed.stockapp.workers.SendMessagesWorker;
 import com.stfalcon.chatkit.commons.ImageLoader;
 import com.stfalcon.chatkit.utils.DateFormatter;
 
@@ -87,7 +86,7 @@ public class MessagesDialogsActivity extends AppCompatActivity
             @Override
             public void loadImage(ImageView imageView, String url, Object payload) {
 
-                if (url.equals("group")) {
+                if ("group".equals(url)) {
                     Glide.with(MessagesDialogsActivity.this).load(R.drawable.ic_round_supervised_user_circle_24px).into(imageView);
                 } else {
                     Typeface muliBoldTypeface = ResourcesCompat.getFont(MessagesDialogsActivity.this, R.font.muli_bold);
@@ -229,7 +228,7 @@ public class MessagesDialogsActivity extends AppCompatActivity
 //                messageDialog.getDialogName(),
 //                false);
 
-        AlertDialog diaBox = AskOption( messageDialog);
+        AlertDialog diaBox = AskOption(messageDialog);
         diaBox.show();
 
 
@@ -347,9 +346,8 @@ public class MessagesDialogsActivity extends AppCompatActivity
     }
 
 
-    private AlertDialog AskOption(MessageDialog messageDialog)
-    {
-        AlertDialog myQuittingDialogBox =new MaterialAlertDialogBuilder(this)
+    private AlertDialog AskOption(MessageDialog messageDialog) {
+        AlertDialog myQuittingDialogBox = new MaterialAlertDialogBuilder(this)
                 .setTitle("Delete Message Thread")
                 .setMessage("Do you want to Delete this Thread?")
                 .setPositiveButton("Delete", new DialogInterface.OnClickListener() {
@@ -366,7 +364,7 @@ public class MessagesDialogsActivity extends AppCompatActivity
 
                                 Message parentMessage = baseDatabase.messagesModelDao().getParentMessageById(messageDialog.getParentMessageId());
 
-                                boolean isTrashedByCreator ;
+                                boolean isTrashedByCreator;
                                 //if the message thread was not created by the user then delete the message from parent message recipient and set this value to false
 
                                 if (parentMessage.getCreatorId() == Integer.parseInt(session.getUserUUID())) {
@@ -396,13 +394,13 @@ public class MessagesDialogsActivity extends AppCompatActivity
                                         .setInputData(
                                                 new Data.Builder()
                                                         .putString("messageId", messageDialog.getParentMessageId())
-                                                        .putBoolean("isTrashedByCreator",isTrashedByCreator)
+                                                        .putBoolean("isTrashedByCreator", isTrashedByCreator)
                                                         .build()
                                         )
                                         .build();
 
 
-                        WorkManager.getInstance().enqueue(deleteMessage);
+                                WorkManager.getInstance().enqueue(deleteMessage);
 
                             }
                         }.execute();

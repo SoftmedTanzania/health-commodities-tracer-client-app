@@ -39,7 +39,6 @@ import com.google.firebase.messaging.RemoteMessage;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.softmed.stockapp.R;
-import com.softmed.stockapp.activities.MainActivity;
 import com.softmed.stockapp.activities.MessagesActivity;
 import com.softmed.stockapp.broadcastReceivers.MyBroadcastReceiver;
 import com.softmed.stockapp.database.AppDatabase;
@@ -229,13 +228,13 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
                     userIds.add(messageRecipient.getRecipientId());
 
                     OtherUsers user = appDatabase.usersModelDao().getUser(messageRecipient.getRecipientId());
-                    userNames.add(user.getFirstName()+" "+user.getSurname());
+                    userNames.add(user.getFirstName() + " " + user.getSurname());
                     appDatabase.messageRecipientsModelDao().addRecipient(messageRecipient);
                 }
 
                 OtherUsers sender = appDatabase.usersModelDao().getUser(m.getCreatorId());
 
-                sendNotification(sender.getFirstName() + " " + sender.getSurname(), messageRecipientsDTO.getMessageBody(), m,userIds,userNames);
+                sendNotification(sender.getFirstName() + " " + sender.getSurname(), messageRecipientsDTO.getMessageBody(), m, userIds, userNames);
             }
         });
 
@@ -289,14 +288,13 @@ public class MyFirebaseMessagingService extends FirebaseMessagingService {
      * @param title       FCM sender .
      * @param messageBody FCM message body received.
      */
-    private void sendNotification(String title, String messageBody, Message receivedMessage, ArrayList<Integer> userIds, ArrayList<String> userNames ) {
+    private void sendNotification(String title, String messageBody, Message receivedMessage, ArrayList<Integer> userIds, ArrayList<String> userNames) {
 
         Intent messageIntent = new Intent(this, MessagesActivity.class);
 
         messageIntent.putExtra("parentMessageId", receivedMessage.getParentMessageId());
         messageIntent.putIntegerArrayListExtra("userIds", userIds);
         messageIntent.putStringArrayListExtra("userNames", userNames);
-
 
 
         messageIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);

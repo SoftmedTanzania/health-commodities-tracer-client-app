@@ -3,7 +3,6 @@ package com.softmed.stockapp.activities;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.drawable.ColorDrawable;
 import android.os.AsyncTask;
@@ -87,7 +86,6 @@ public class MainActivity extends AppCompatActivity {
     private DotIndicatorPagerAdapter adapter;
     private List<UsersInfo> usersInfos;
     private SessionManager sessionManager;
-    private String districtFacility = "";
 
     public static int convertDip2Pixels(Context context, int dip) {
         return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, dip, context.getResources().getDisplayMetrics());
@@ -220,7 +218,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         final boolean initializeStock = getIntent().getBooleanExtra("reportInitialStock", false);
-        districtFacility = getIntent().getStringExtra("districtFacility");
+        String districtFacility = getIntent().getStringExtra("districtFacility");
 
         if (districtFacility == null) {
             districtFacility = "";
@@ -298,9 +296,9 @@ public class MainActivity extends AppCompatActivity {
             messageListViewModel.getUnreadMessageCountUserId(Integer.parseInt(session.getUserUUID())).observe(this, new Observer<Integer>() {
                 @Override
                 public void onChanged(Integer integer) {
-                    if(integer==0){
+                    if (integer == 0) {
                         findViewById(R.id.badge_notification_1).setVisibility(View.GONE);
-                    }else {
+                    } else {
                         findViewById(R.id.badge_notification_1).setVisibility(View.VISIBLE);
                         ((TextView) findViewById(R.id.badge_notification_1)).setText(String.valueOf(integer));
                     }
@@ -398,7 +396,6 @@ public class MainActivity extends AppCompatActivity {
             final EditText newPass = new EditText(MainActivity.this);
             final EditText confirmPass = new EditText(MainActivity.this);
 
-
             oldPass.setTransformationMethod(PasswordTransformationMethod.getInstance());
             newPass.setTransformationMethod(PasswordTransformationMethod.getInstance());
             confirmPass.setTransformationMethod(PasswordTransformationMethod.getInstance());
@@ -417,77 +414,21 @@ public class MainActivity extends AppCompatActivity {
             ll.addView(newPass);
             ll.addView(confirmPass);
             alertDialog.setView(ll);
-
-            boolean wantToCloseDialog = false;
             alertDialog.setPositiveButton("Yes",
-                    new DialogInterface.OnClickListener() {
-                        @SuppressLint("StaticFieldLeak")
-                        public void onClick(DialogInterface dialog, int id) {
+                    (dialog, id) -> {
 
-                        }
                     });
             alertDialog.setNegativeButton("No",
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int id) {
-                            dialog.cancel();
-                        }
-                    });
+                    (dialog, id) -> dialog.cancel());
 
             AlertDialog alert11 = alertDialog.create();
             alert11.show();
 
             alert11.getButton(AlertDialog.BUTTON_POSITIVE).setOnClickListener(new View.OnClickListener() {
+                @SuppressLint("StaticFieldLeak")
                 @Override
                 public void onClick(View v) {
-                    new AsyncTask<Void, Void, UsersInfo>() {
-                        @Override
-                        protected UsersInfo doInBackground(Void... aVoid) {
-                            UsersInfo usersInfo = baseDatabase.userInfoDao().loggeInUser(session.getUserName()).get(0);
-                            return usersInfo;
-                        }
-
-                        @Override
-                        protected void onPostExecute(UsersInfo usersInfo) {
-                            super.onPostExecute(usersInfo);
-
-                            if (!oldPass.getText().toString().equals(session.getUserPass())) {
-                                oldPass.setError("Incorrect Password");
-                            } else if (!newPass.getText().toString().equals(confirmPass.getText().toString())) {
-                                confirmPass.setError("Passwords do not match");
-                            } else {
-                                usersInfo.setPassword(newPass.getText().toString());
-                                new AsyncTask<Void, Void, Void>() {
-
-                                    @Override
-                                    protected Void doInBackground(Void... voids) {
-                                        baseDatabase.userInfoDao().UpdateUserInfo(usersInfo);
-                                        return null;
-                                    }
-                                }.execute();
-                                Constraints networkConstraints = new Constraints.Builder()
-                                        .setRequiredNetworkType(NetworkType.CONNECTED)
-                                        .build();
-
-                                OneTimeWorkRequest deleteMessage = new OneTimeWorkRequest.Builder(UpdatePasswordWorker.class)
-                                        .setConstraints(networkConstraints)
-                                        .setInputData(
-                                                new Data.Builder()
-                                                        .putString("oldPassword", oldPass.getText().toString())
-                                                        .putString("newPassword", newPass.getText().toString())
-                                                        .build()
-                                        )
-                                        .build();
-                                WorkManager.getInstance().enqueue(deleteMessage);
-                                alert11.dismiss();
-
-
-                                Toast.makeText(MainActivity.this,"Password Changed Successful" , Toast.LENGTH_LONG).show();
-                            }
-
-
-                        }
-                    }.execute();
-
+                    updatePassword(oldPass, newPass, confirmPass, alert11);
                     //else dialog stays open. Make sure you have an obvious way to close the dialog especially if you set cancellable to false.
                 }
             });
@@ -515,6 +456,55 @@ public class MainActivity extends AppCompatActivity {
         Glide.with(this).load(R.drawable.ic_content_paste_white_24dp).into(inventoryIcon);
         tabLayout.getTabAt(1).setCustomView(myInventory);
 
+    }
+
+    @SuppressLint("StaticFieldLeak")
+    private void updatePassword(EditText oldPass, EditText newPass, EditText confirmPass, AlertDialog alert11) {
+        new AsyncTask<Void, Void, UsersInfo>() {
+            @Override
+            protected UsersInfo doInBackground(Void... aVoid) {
+                UsersInfo usersInfo = baseDatabase.userInfoDao().loggeInUser(session.getUserName()).get(0);
+                return usersInfo;
+            }
+
+            @Override
+            protected void onPostExecute(UsersInfo usersInfo) {
+                super.onPostExecute(usersInfo);
+
+                if (!oldPass.getText().toString().equals(session.getUserPass())) {
+                    oldPass.setError("Incorrect Password");
+                } else if (!newPass.getText().toString().equals(confirmPass.getText().toString())) {
+                    confirmPass.setError("Passwords do not match");
+                } else {
+                    usersInfo.setPassword(newPass.getText().toString());
+                    new AsyncTask<Void, Void, Void>() {
+
+                        @Override
+                        protected Void doInBackground(Void... voids) {
+                            baseDatabase.userInfoDao().UpdateUserInfo(usersInfo);
+                            return null;
+                        }
+                    }.execute();
+                    Constraints networkConstraints = new Constraints.Builder()
+                            .setRequiredNetworkType(NetworkType.CONNECTED)
+                            .build();
+
+                    OneTimeWorkRequest deleteMessage = new OneTimeWorkRequest.Builder(UpdatePasswordWorker.class)
+                            .setConstraints(networkConstraints)
+                            .setInputData(
+                                    new Data.Builder()
+                                            .putString("oldPassword", oldPass.getText().toString())
+                                            .putString("newPassword", newPass.getText().toString())
+                                            .build()
+                            )
+                            .build();
+                    WorkManager.getInstance().enqueue(deleteMessage);
+                    alert11.dismiss();
+
+                    Toast.makeText(MainActivity.this, "Password Changed Successful", Toast.LENGTH_LONG).show();
+                }
+            }
+        }.execute();
     }
 
 

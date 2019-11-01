@@ -1,7 +1,5 @@
 package com.softmed.stockapp.dom.dto;
 
-import com.google.gson.annotations.SerializedName;
-
 import java.io.Serializable;
 
 

@@ -51,7 +51,6 @@ import java.util.UUID;
 
 public class ComposeNewMessageActivity extends AppCompatActivity implements ContactAdapter.OnItemClickListener {
     private static final String TAG = ComposeNewMessageActivity.class.getSimpleName();
-    private RecyclerView contactsRecyclerView;
     private ChipGroup entryChipGroup, recipientsChipGroup;
     private BottomSheetBehavior sheetBehavior;
     private ExtendedFloatingActionButton composeFab;
@@ -59,8 +58,6 @@ public class ComposeNewMessageActivity extends AppCompatActivity implements Cont
     private ArrayList<Integer> userIds;
     private ArrayList<String> userNames = new ArrayList<>();
     private ContactAdapter mContactAdapter;
-
-    private SearchView searchView;
 
 
     public static ComposeNewMessageActivity newInstance() {
@@ -223,7 +220,7 @@ public class ComposeNewMessageActivity extends AppCompatActivity implements Cont
     }
 
     private void init(List<ContactUsersDTO> contacts) {
-        contactsRecyclerView = findViewById(R.id.whatsapp_recycler);
+        RecyclerView contactsRecyclerView = findViewById(R.id.whatsapp_recycler);
         contactsRecyclerView.setLayoutManager(new LinearLayoutManager(this));
         contactsRecyclerView.setHasFixedSize(true);
 
@@ -285,7 +282,7 @@ public class ComposeNewMessageActivity extends AppCompatActivity implements Cont
 
         // Associate searchable configuration with the SearchView
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        searchView = (SearchView) menu.findItem(R.id.action_search)
+        SearchView searchView = (SearchView) menu.findItem(R.id.action_search)
                 .getActionView();
         searchView.setSearchableInfo(searchManager
                 .getSearchableInfo(getComponentName()));

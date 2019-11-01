@@ -3,7 +3,6 @@ package com.softmed.stockapp.api;
 import com.softmed.stockapp.dom.dto.MessageRecipientsDTO;
 import com.softmed.stockapp.dom.entities.Balances;
 import com.softmed.stockapp.dom.entities.Location;
-import com.softmed.stockapp.dom.entities.Message;
 import com.softmed.stockapp.dom.entities.MessageRecipients;
 import com.softmed.stockapp.dom.entities.PostingFrequencies;
 import com.softmed.stockapp.dom.entities.Product;
@@ -30,9 +29,6 @@ import retrofit2.http.Url;
 
 
 public class Endpoints {
-
-    private String HFUUID = "";
-
     public interface LoginService {
         @POST("rest-auth/login/")
         Call<LoginResponse> basicLogin(@Body RequestBody e);

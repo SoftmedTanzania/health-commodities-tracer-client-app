@@ -8,19 +8,10 @@ import androidx.annotation.NonNull;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
-import com.google.gson.Gson;
 import com.softmed.stockapp.api.Endpoints;
-import com.softmed.stockapp.database.AppDatabase;
 import com.softmed.stockapp.dom.dto.DeleteMessegeDTO;
-import com.softmed.stockapp.dom.dto.MessageRecipientsDTO;
-import com.softmed.stockapp.dom.entities.Message;
-import com.softmed.stockapp.dom.entities.MessageRecipients;
-import com.softmed.stockapp.dom.responces.NewMessageResponce;
 import com.softmed.stockapp.utils.ServiceGenerator;
 import com.softmed.stockapp.utils.SessionManager;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import java.io.IOException;
 
@@ -45,7 +36,7 @@ public class DeleteMessagesWorker extends Worker {
     @NonNull
     @Override
     public Result doWork() {
-        return deleteMessage(getInputData().getString("messageId"),(getInputData().getBoolean("isTrashedByCreator",false)));
+        return deleteMessage(getInputData().getString("messageId"), (getInputData().getBoolean("isTrashedByCreator", false)));
     }
 
 
@@ -63,15 +54,13 @@ public class DeleteMessagesWorker extends Worker {
         deleteMessegeDTO.setId(messageId);
 
 
-        if(isTrashedByCreator){
+        if (isTrashedByCreator) {
             deleteMessegeDTO.setTrashed_by_creator(true);
             deleteMessage = messagesServices.deleteMessageByCreator(getRequestBody(deleteMessegeDTO));
-        }else{
+        } else {
             deleteMessegeDTO.setIs_trashed(true);
             deleteMessage = messagesServices.deleteMessageByRecipient(getRequestBody(deleteMessegeDTO));
         }
-
-
 
 
         Response response = null;
@@ -83,7 +72,7 @@ public class DeleteMessagesWorker extends Worker {
 
         if (response != null) {
             if (response.code() == 200 || response.code() == 201) {
-                Log.d(TAG,"deleting message successful Code= "+response.code());
+                Log.d(TAG, "deleting message successful Code= " + response.code());
                 return Result.success();
 
             } else {
