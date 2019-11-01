@@ -18,7 +18,6 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.softmed.stockapp.R;
 import com.softmed.stockapp.activities.DetailActivity;
 import com.softmed.stockapp.adapters.ProductAdapter;
-import com.softmed.stockapp.database.AppDatabase;
 import com.softmed.stockapp.dom.dto.ProductList;
 import com.softmed.stockapp.utils.DividerItemDecoration;
 import com.softmed.stockapp.utils.SessionManager;
@@ -31,10 +30,8 @@ public class ProductsListFragment extends Fragment implements
         ProductAdapter.OnItemClickListener, ProductAdapter.OnProductReportStockListener {
     private static final String TAG = ProductsListFragment.class.getSimpleName();
     private static final String INTENT_EXTRA_PRODUCT = "INTENT_EXTRA_PRODUCT";
-    private static final String CONFIRMATION_DIALOG_TAG = "CONFIRMATION_DIALOG_TAG";
     private RecyclerView mRecyclerView;
     private LinearLayout mEmptyView;
-    private AppDatabase database;
     private ProductAdapter mAdapter;
     private ProductsViewModel productsViewModel;
     // Session Manager Class
@@ -58,8 +55,6 @@ public class ProductsListFragment extends Fragment implements
 
         mRecyclerView = v.findViewById(R.id.recycler_view);
         mEmptyView = v.findViewById(R.id.empty_view);
-
-        database = AppDatabase.getDatabase(getActivity().getApplicationContext());
 
         mAdapter = new ProductAdapter(getActivity(), new ArrayList<ProductList>());
 

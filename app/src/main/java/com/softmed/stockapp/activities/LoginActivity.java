@@ -959,7 +959,7 @@ public class LoginActivity extends BaseActivity {
                     otherUsers.setFirstName(user.getFirstName());
                     otherUsers.setMiddleName(user.getMiddleName());
                     otherUsers.setSurname(user.getSurname());
-                    otherUsers.setHealth_facility(user.getProfile().getHealthFacility());
+                    otherUsers.setHealthFacility(user.getProfile().getHealthFacility());
 
                     baseDatabase.usersModelDao().addUser(otherUsers);
                 }
@@ -997,7 +997,7 @@ public class LoginActivity extends BaseActivity {
                 for (Transactions mList : results) {
                     mList.setSyncStatus(1);
                     baseDatabase.transactionsDao().addTransactions(mList);
-                    Log.d(TAG, "InitialSync : Transactions type : " + mList.getTransactiontype_id());
+                    Log.d(TAG, "InitialSync : Transactions type : " + mList.getTransactionTypeId());
                 }
             } catch (Exception e) {
                 e.printStackTrace();

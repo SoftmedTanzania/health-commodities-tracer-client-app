@@ -1,4 +1,4 @@
-package com.softmed.stockapp.broadcastReceivers;
+package com.softmed.stockapp.broadcastreceivers;
 
 import android.app.Notification;
 import android.content.BroadcastReceiver;

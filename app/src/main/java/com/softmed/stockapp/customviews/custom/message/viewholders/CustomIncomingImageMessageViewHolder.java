@@ -1,7 +1,6 @@
-package com.softmed.stockapp.customViews.custom.message.viewholders;
+package com.softmed.stockapp.customviews.custom.message.viewholders;
 
 import android.view.View;
-import android.widget.TextView;
 
 import com.softmed.stockapp.dom.model.IMessageDTO;
 import com.stfalcon.chatkit.messages.MessageHolders;
@@ -12,22 +11,12 @@ import com.stfalcon.chatkit.messages.MessageHolders;
 public class CustomIncomingImageMessageViewHolder
         extends MessageHolders.IncomingImageMessageViewHolder<IMessageDTO> {
 
-    private TextView userName;
-
     public CustomIncomingImageMessageViewHolder(View itemView, Object payload) {
         super(itemView, payload);
-//        userName = itemView.findViewById(R.id.onlineIndicator);
     }
 
     @Override
     public void onBind(IMessageDTO message) {
         super.onBind(message);
-
-        boolean isOnline = message.getUser().isOnline();
-//        if (isOnline) {
-//            userName.setText("");
-//        } else {
-//            userName.setText("");
-//        }
     }
 }

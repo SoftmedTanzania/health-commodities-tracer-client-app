@@ -92,23 +92,23 @@ public class Product implements Serializable {
         this.description = description;
     }
 
-    public int getUnit_id() {
+    public int getUnitId() {
         return unit_id;
     }
 
-    public void setUnit_id(int unit_id) {
+    public void setUnitId(int unit_id) {
         this.unit_id = unit_id;
     }
 
-    public boolean isTrack_number_of_patients() {
+    public boolean isTrackNumberOfPatients() {
         return track_number_of_patients;
     }
 
-    public void setTrack_number_of_patients(boolean track_number_of_patients) {
+    public void setTrackNumberOfPatients(boolean track_number_of_patients) {
         this.track_number_of_patients = track_number_of_patients;
     }
 
-    public boolean isTrack_wastage() {
+    public boolean isTrackWastage() {
         return track_wastage;
     }
 
@@ -116,7 +116,7 @@ public class Product implements Serializable {
         this.track_wastage = track_wastage;
     }
 
-    public boolean isTrack_quantity_expired() {
+    public boolean isTrackQuantityExpired() {
         return track_quantity_expired;
     }
 
@@ -124,27 +124,27 @@ public class Product implements Serializable {
         this.track_quantity_expired = track_quantity_expired;
     }
 
-    public String getLocal_image_path() {
+    public String getLocalImagePath() {
         return local_image_path;
     }
 
-    public void setLocal_image_path(String local_image_path) {
+    public void setLocalImagePath(String local_image_path) {
         this.local_image_path = local_image_path;
     }
 
-    public int getPosting_frequency() {
+    public int getPostingFrequency() {
         return posting_frequency;
     }
 
-    public void setPosting_frequency(int posting_frequency) {
+    public void setPostingFrequency(int posting_frequency) {
         this.posting_frequency = posting_frequency;
     }
 
-    public boolean isIs_active() {
+    public boolean isIsActive() {
         return is_active;
     }
 
-    public void setIs_active(boolean is_active) {
+    public void setIsActive(boolean is_active) {
         this.is_active = is_active;
     }
 }

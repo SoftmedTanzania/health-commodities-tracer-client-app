@@ -47,13 +47,12 @@ import fr.ganfra.materialspinner.MaterialSpinner;
  * Dialog allowing users to select a date.
  */
 public class AddTransactionDialogue extends DialogFragment {
-    private static final String TAG = AddTransactionDialogue.class.getSimpleName();
     public static AppDatabase baseDatabase;
     private View dialogueLayout;
     private TextInputLayout stockAdjustmentQuantity, numberOfClientsOnRegimeInputLayout, wastageInputLayout, quantityExpiredInputLayout, stockOutDaysInputLayout;
     private MaterialSpinner availabilityOfClientsOnRegimeSpinner, reportingPeriod;
     private List<ProductReportingSchedule> productReportingSchedules;
-    private int productId, numberOfClientsOnRegime;
+    private int productId;
     private Boolean hasClients = null;
     private Product product;
     private PostingFrequencies postingFrequency;
@@ -64,10 +63,6 @@ public class AddTransactionDialogue extends DialogFragment {
 
     // Session Manager Class
     private SessionManager session;
-
-    public AddTransactionDialogue() {
-    }
-
 
     public static AddTransactionDialogue newInstance(int productId) {
         AddTransactionDialogue f = new AddTransactionDialogue();
@@ -118,8 +113,8 @@ public class AddTransactionDialogue extends DialogFragment {
             @Override
             protected Void doInBackground(Void... voids) {
                 product = baseDatabase.productsModelDao().getProductById(productId);
-                postingFrequency = baseDatabase.postingFrequencyModelDao().getPostingFrequencyById(product.getPosting_frequency());
-                unit = baseDatabase.unitsDao().getUnit(product.getUnit_id());
+                postingFrequency = baseDatabase.postingFrequencyModelDao().getPostingFrequencyById(product.getPostingFrequency());
+                unit = baseDatabase.unitsDao().getUnit(product.getUnitId());
                 productReportingSchedules = baseDatabase.productReportingScheduleModelDao().getMissedProductReportings(productId, Calendar.getInstance().getTimeInMillis());
                 return null;
             }
@@ -130,15 +125,15 @@ public class AddTransactionDialogue extends DialogFragment {
 
                 productName.setText(product.getName());
                 stockAdjustmentQuantity.setHint("Stock On Hand in (" + unit.getName() + ")");
-                if (product.isTrack_wastage()) {
+                if (product.isTrackWastage()) {
                     wastageInputLayout.setVisibility(View.VISIBLE);
                 }
 
-                if (product.isTrack_quantity_expired()) {
+                if (product.isTrackQuantityExpired()) {
                     quantityExpiredInputLayout.setVisibility(View.VISIBLE);
                 }
 
-                if (product.isTrack_number_of_patients()) {
+                if (product.isTrackNumberOfPatients()) {
                     numberOfClientsOnRegimeInputLayout.setVisibility(View.VISIBLE);
                 }
 
@@ -183,7 +178,7 @@ public class AddTransactionDialogue extends DialogFragment {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 try {
-                    if (availabilityOfClientsOnRegime[i].equalsIgnoreCase("yes") && product.isTrack_number_of_patients()) {
+                    if (availabilityOfClientsOnRegime[i].equalsIgnoreCase("yes") && product.isTrackNumberOfPatients()) {
                         hasClients = true;
                         numberOfClientsOnRegimeInputLayout.setVisibility(View.VISIBLE);
                     } else {
@@ -226,28 +221,28 @@ public class AddTransactionDialogue extends DialogFragment {
                             Transactions transactions = new Transactions();
 
                             transactions.setId(UUID.randomUUID().toString());
-                            transactions.setProduct_id(productId);
-                            transactions.setUser_id(Integer.valueOf(session.getUserUUID()));
-                            transactions.setTransactiontype_id(1);
+                            transactions.setProductId(productId);
+                            transactions.setUserId(Integer.valueOf(session.getUserUUID()));
+                            transactions.setTransactionTypeId(1);
                             transactions.setScheduleId(reportingScheduleId);
                             transactions.setAmount(Integer.valueOf(stockQuantity));
 
                             transactions.setStockOutDays(Integer.parseInt(stockOutDays));
 
-                            if (hasClients && product.isTrack_number_of_patients()) {
+                            if (hasClients && product.isTrackNumberOfPatients()) {
                                 transactions.setClientsOnRegime(numberOfClientsOnRegime);
                             }
 
-                            if (product.isTrack_quantity_expired()) {
+                            if (product.isTrackQuantityExpired()) {
                                 transactions.setClientsOnRegime(quantityExpired);
                             }
 
-                            if (product.isTrack_wastage()) {
+                            if (product.isTrackWastage()) {
                                 transactions.setWastage(wastage);
                             }
 
-                            transactions.setStatus_id(1);
-                            transactions.setStatus_id(1);
+                            transactions.setStatusId(1);
+                            transactions.setStatusId(1);
                             Calendar c = Calendar.getInstance();
                             transactions.setCreated_at(c.getTimeInMillis());
 
@@ -328,19 +323,19 @@ public class AddTransactionDialogue extends DialogFragment {
         } else if (hasClients == null) {
             availabilityOfClientsOnRegimeSpinner.setError("Please select this");
             return false;
-        } else if (numberOfClientsOnRegimeInputLayout.getEditText().getText().toString().equals("") && product.isTrack_number_of_patients() && hasClients) {
+        } else if (numberOfClientsOnRegimeInputLayout.getEditText().getText().toString().equals("") && product.isTrackNumberOfPatients() && hasClients) {
             numberOfClientsOnRegimeInputLayout.getEditText().setError("Please fill the number of clients on regime");
             return false;
         } else if (stockOutDaysInputLayout.getEditText().getText().toString().equals("")) {
             stockOutDaysInputLayout.getEditText().setError("Please fill the stockout days quantity");
             return false;
-        }  else if (Integer.parseInt(stockOutDaysInputLayout.getEditText().getText().toString())>postingFrequency.getNumber_of_days()) {
-            stockOutDaysInputLayout.getEditText().setError("Stock out days cannot be greater than "+postingFrequency.getNumber_of_days());
+        } else if (Integer.parseInt(stockOutDaysInputLayout.getEditText().getText().toString()) > postingFrequency.getNumberOfDays()) {
+            stockOutDaysInputLayout.getEditText().setError("Stock out days cannot be greater than " + postingFrequency.getNumberOfDays());
             return false;
-        } else if (wastageInputLayout.getEditText().getText().toString().equals("") && product.isTrack_wastage()) {
+        } else if (wastageInputLayout.getEditText().getText().toString().equals("") && product.isTrackWastage()) {
             wastageInputLayout.getEditText().setError("Please fill wastage quantity");
             return false;
-        } else if (quantityExpiredInputLayout.getEditText().getText().toString().equals("") && product.isTrack_quantity_expired()) {
+        } else if (quantityExpiredInputLayout.getEditText().getText().toString().equals("") && product.isTrackQuantityExpired()) {
             quantityExpiredInputLayout.getEditText().setError("Please fill the quantity expired");
             return false;
         }

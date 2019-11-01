@@ -31,8 +31,8 @@ import com.google.android.material.floatingactionbutton.ExtendedFloatingActionBu
 import com.google.gson.Gson;
 import com.softmed.stockapp.R;
 import com.softmed.stockapp.adapters.DialogsListAdapter;
-import com.softmed.stockapp.customViews.CustomDialogsList;
-import com.softmed.stockapp.customViews.CustomScrollView;
+import com.softmed.stockapp.customviews.CustomDialogsList;
+import com.softmed.stockapp.customviews.CustomScrollView;
 import com.softmed.stockapp.database.AppDatabase;
 import com.softmed.stockapp.dom.entities.Message;
 import com.softmed.stockapp.dom.entities.MessageRecipients;

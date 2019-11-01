@@ -8,8 +8,8 @@ import com.softmed.stockapp.dom.dto.MessageRecipientsDTO;
  * @cozej4 https://github.com/cozej4
  */
 public class NewMessageResponce {
-    String type;
-    MessageRecipientsDTO data;
+    private String type;
+    private MessageRecipientsDTO data;
 
     public String getType() {
         return type;

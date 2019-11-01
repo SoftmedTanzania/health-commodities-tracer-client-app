@@ -40,7 +40,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.softmed.stockapp.R;
 import com.softmed.stockapp.activities.MessagesActivity;
-import com.softmed.stockapp.broadcastReceivers.MyBroadcastReceiver;
+import com.softmed.stockapp.broadcastreceivers.MyBroadcastReceiver;
 import com.softmed.stockapp.database.AppDatabase;
 import com.softmed.stockapp.dom.dto.MessageRecipientsDTO;
 import com.softmed.stockapp.dom.entities.Message;
