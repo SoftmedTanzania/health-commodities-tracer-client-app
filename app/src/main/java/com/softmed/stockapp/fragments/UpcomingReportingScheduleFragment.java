@@ -29,7 +29,6 @@ import java.util.List;
 
 public class UpcomingReportingScheduleFragment extends Fragment {
     private static final String TAG = UpcomingReportingScheduleFragment.class.getSimpleName();
-    private ProductReportingScheduleViewModel productReportingScheduleViewModel;
     private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("dd/MM/yyyy");
     private LinearLayout scheduleLayout;
     private AppDatabase appDatabase;
@@ -59,7 +58,7 @@ public class UpcomingReportingScheduleFragment extends Fragment {
         });
 
         scheduleLayout = itemView.findViewById(R.id.schedule_layouts);
-        productReportingScheduleViewModel = ViewModelProviders.of(getActivity()).get(ProductReportingScheduleViewModel.class);
+        ProductReportingScheduleViewModel productReportingScheduleViewModel = ViewModelProviders.of(getActivity()).get(ProductReportingScheduleViewModel.class);
         productReportingScheduleViewModel.getUpcomingReportingsDates(Calendar.getInstance().getTimeInMillis()).observe(getActivity(), new Observer<List<Long>>() {
             @SuppressLint("StaticFieldLeak")
             @Override

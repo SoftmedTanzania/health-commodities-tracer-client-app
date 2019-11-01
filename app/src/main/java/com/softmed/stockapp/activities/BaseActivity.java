@@ -32,7 +32,7 @@ public class BaseActivity extends AppCompatActivity {
     public static SharedPreferences localeSp;
     // Session Manager Class
     public static SessionManager session;
-    static String localeString = "";
+    private static String localeString = "";
     public Locale locale;
 
     public static String getLocaleString() {

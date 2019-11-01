@@ -6,8 +6,8 @@ package com.softmed.stockapp.dom.dto;
  * @cozej4 https://github.com/cozej4
  */
 public class DeleteMessegeDTO {
-    boolean is_trashed,trashed_by_creator;
-    String id;
+    private boolean is_trashed, trashed_by_creator;
+    private String id;
 
     public boolean isIs_trashed() {
         return is_trashed;

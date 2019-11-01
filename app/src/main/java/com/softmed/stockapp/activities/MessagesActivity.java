@@ -42,7 +42,6 @@ import com.softmed.stockapp.dom.entities.MessageRecipients;
 import com.softmed.stockapp.dom.entities.OtherUsers;
 import com.softmed.stockapp.dom.model.IMessageDTO;
 import com.softmed.stockapp.dom.model.IMessageUser;
-import com.softmed.stockapp.fixtures.MessagesFixtures;
 import com.softmed.stockapp.utils.AppUtils;
 import com.softmed.stockapp.utils.SessionManager;
 import com.softmed.stockapp.viewmodels.MessageListViewModel;
@@ -273,7 +272,7 @@ public class MessagesActivity extends AppCompatActivity
 
     @Override
     public void onAddAttachments() {
-        messagesAdapter.addToStart(MessagesFixtures.getImageMessage(), true);
+       //Implement
     }
 
     @Override
@@ -346,6 +345,7 @@ public class MessagesActivity extends AppCompatActivity
         return true;
     }
 
+    @SuppressLint("StaticFieldLeak")
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
@@ -354,13 +354,13 @@ public class MessagesActivity extends AppCompatActivity
                 final List<IMessageDTO> selectedMessages = messagesAdapter.getSelectedMessages();
 
                 List<String> selectedMessagesIds = new ArrayList<>();
-                for(IMessageDTO messageDTO:selectedMessages){
+                for (IMessageDTO messageDTO : selectedMessages) {
                     selectedMessagesIds.add(messageDTO.getId());
                 }
 
                 String[] selectedMessagesArray = selectedMessagesIds.toArray(new String[selectedMessagesIds.size()]);
 
-                Log.d(TAG,"messages to be deleted = "+new Gson().toJson(selectedMessagesArray));
+                Log.d(TAG, "messages to be deleted = " + new Gson().toJson(selectedMessagesArray));
 
                 new AsyncTask<Void, Void, Void>() {
 
@@ -368,13 +368,13 @@ public class MessagesActivity extends AppCompatActivity
                     protected Void doInBackground(Void... aVoid) {
                         for (IMessageDTO message : selectedMessages) {
 
-                            if(message.getUser().getId().equals(sessionManager.getUserUUID())){
+                            if (message.getUser().getId().equals(sessionManager.getUserUUID())) {
                                 //TODO fix the deletion of  messages from the mailbox
 //                                appDatabase.messagesModelDao().deleteMessage(true,message.getId());
-                            }else{
+                            } else {
 
-                                Log.d(TAG,"Deleting message with id = "+new Gson().toJson(selectedMessagesArray));
-                                appDatabase.messageRecipientsModelDao().deleteMessageFromMailBox(true,message.getId(),sessionManager.getUserUUID());
+                                Log.d(TAG, "Deleting message with id = " + new Gson().toJson(selectedMessagesArray));
+                                appDatabase.messageRecipientsModelDao().deleteMessageFromMailBox(true, message.getId(), sessionManager.getUserUUID());
                             }
 
 
@@ -386,25 +386,23 @@ public class MessagesActivity extends AppCompatActivity
                     @Override
                     protected void onPostExecute(Void aVoid) {
                         super.onPostExecute(aVoid);
+//TODO implement deletion of message
 
-                        Constraints networkConstraints = new Constraints.Builder()
-                                .setRequiredNetworkType(NetworkType.CONNECTED)
-                                .build();
-
-                        OneTimeWorkRequest deleteMessage = new OneTimeWorkRequest.Builder(SendMessagesWorker.class)
-                                .setConstraints(networkConstraints)
-                                .setInputData(
-                                        new Data.Builder()
-                                                .putStringArray("messageId", selectedMessagesArray)
-                                                .build()
-                                )
-                                .build();
-
+//                        Constraints networkConstraints = new Constraints.Builder()
+//                                .setRequiredNetworkType(NetworkType.CONNECTED)
+//                                .build();
+//                        OneTimeWorkRequest deleteMessage = new OneTimeWorkRequest.Builder(SendMessagesWorker.class)
+//                                .setConstraints(networkConstraints)
+//                                .setInputData(
+//                                        new Data.Builder()
+//                                                .putStringArray("messageId", selectedMessagesArray)
+//                                                .build()
+//                                )
+//                                .build();
+//
 //                        WorkManager.getInstance().enqueue(deleteMessage);
-
                     }
                 }.execute();
-
 
 
                 messagesAdapter.deleteSelectedMessages();
@@ -429,9 +427,6 @@ public class MessagesActivity extends AppCompatActivity
     @Override
     public void onLoadMore(int page, int totalItemsCount) {
         Log.i(TAG, "onLoadMore: " + page + " " + totalItemsCount);
-        if (totalItemsCount == 0) {
-//            loadMessages();
-        }
     }
 
     @Override
@@ -447,7 +442,7 @@ public class MessagesActivity extends AppCompatActivity
         Log.d(TAG, "user UUID = " + sessionManager.getUserUUID());
         Log.d(TAG, "Loading more with parentID = " + parentMessageId);
         MessageListViewModel messageListViewModel = ViewModelProviders.of(this).get(MessageListViewModel.class);
-        messageListViewModel.getMessageByThread(parentMessageId,sessionManager.getUserUUID()).observe(MessagesActivity.this, new Observer<List<com.softmed.stockapp.dom.dto.MessageUserDTO>>() {
+        messageListViewModel.getMessageByThread(parentMessageId, sessionManager.getUserUUID()).observe(MessagesActivity.this, new Observer<List<com.softmed.stockapp.dom.dto.MessageUserDTO>>() {
             @Override
             public void onChanged(List<MessageUserDTO> messageUserDTOS) {
                 Log.d(TAG, "Something changed");
@@ -458,8 +453,6 @@ public class MessagesActivity extends AppCompatActivity
                     for (MessageUserDTO messageUserDTO : messageUserDTOS) {
                         if (messageUserDTO.getUuid().equals(parentMessageId) && !messageUserDTO.getId().equals(parentMessageId)) {
                             parentMessageId = messageUserDTO.getId();
-                            Log.d(TAG, "Updating parentID");
-                            Log.d(TAG, "parentID = " + parentMessageId);
                             loadMessages();
                             break;
                         }
@@ -480,54 +473,56 @@ public class MessagesActivity extends AppCompatActivity
                     if (isFIrstLoad)
                         messagesAdapter.addToEnd(IMessageDTOS, false);
                     isFIrstLoad = false;
+                    updateIsReadStatus(messageUserDTOS);
 
-
-                    new AsyncTask<Void, Void, List<String>>() {
-                        @Override
-                        protected List<String> doInBackground(Void... voids) {
-
-                            Log.d(TAG,"message recipients = "+new Gson().toJson(appDatabase.messageRecipientsModelDao().getAllMessageRecipients()));
-
-                            List<String> updatedMessageId = new ArrayList<>();
-                            for (MessageUserDTO messageUserDTO : messageUserDTOS) {
-                                int updateCount = appDatabase.messageRecipientsModelDao().updateIsReadStatus(true, messageUserDTO.getId(), Integer.parseInt(sessionManager.getUserUUID()));
-                                Log.d(TAG, "Updated is read count = " + updateCount);
-
-                                if (updateCount > 0) {
-                                    updatedMessageId.add(messageUserDTO.getId());
-                                }
-                            }
-                            return updatedMessageId;
-                        }
-
-                        @Override
-                        protected void onPostExecute(List<String> messageIds) {
-                            super.onPostExecute(messageIds);
-
-                            Log.d(TAG, "message Ids to be update = " + new Gson().toJson(messageIds));
-                            for (String messageId : messageIds) {
-
-                                Constraints networkConstraints = new Constraints.Builder()
-                                        .setRequiredNetworkType(NetworkType.CONNECTED)
-                                        .build();
-
-                                OneTimeWorkRequest sendMessage = new OneTimeWorkRequest.Builder(SendMessageRecipientWorker.class)
-                                        .setConstraints(networkConstraints)
-                                        .setInputData(
-                                                new Data.Builder()
-                                                        .putString("messageId", messageId)
-                                                        .build()
-                                        )
-                                        .build();
-
-                                WorkManager.getInstance().enqueue(sendMessage);
-                            }
-
-                        }
-                    }.execute();
                 }
             }
         });
+    }
+
+    @SuppressLint("StaticFieldLeak")
+    private void updateIsReadStatus(List<MessageUserDTO> messageUserDTOS) {
+        new AsyncTask<Void, Void, List<String>>() {
+            @Override
+            protected List<String> doInBackground(Void... voids) {
+                Log.d(TAG, "message recipients = " + new Gson().toJson(appDatabase.messageRecipientsModelDao().getAllMessageRecipients()));
+
+                List<String> updatedMessageId = new ArrayList<>();
+                for (MessageUserDTO messageUserDTO : messageUserDTOS) {
+                    int updateCount = appDatabase.messageRecipientsModelDao().updateIsReadStatus(true, messageUserDTO.getId(), Integer.parseInt(sessionManager.getUserUUID()));
+                    Log.d(TAG, "Updated is read count = " + updateCount);
+
+                    if (updateCount > 0) {
+                        updatedMessageId.add(messageUserDTO.getId());
+                    }
+                }
+                return updatedMessageId;
+            }
+
+            @Override
+            protected void onPostExecute(List<String> messageIds) {
+                super.onPostExecute(messageIds);
+
+                Log.d(TAG, "message Ids to be update = " + new Gson().toJson(messageIds));
+                for (String messageId : messageIds) {
+                    Constraints networkConstraints = new Constraints.Builder()
+                            .setRequiredNetworkType(NetworkType.CONNECTED)
+                            .build();
+
+                    OneTimeWorkRequest sendMessage = new OneTimeWorkRequest.Builder(SendMessageRecipientWorker.class)
+                            .setConstraints(networkConstraints)
+                            .setInputData(
+                                    new Data.Builder()
+                                            .putString("messageId", messageId)
+                                            .build()
+                            )
+                            .build();
+
+                    WorkManager.getInstance().enqueue(sendMessage);
+                }
+
+            }
+        }.execute();
     }
 
     private MessagesListAdapter.Formatter<IMessageDTO> getMessageStringFormatter() {

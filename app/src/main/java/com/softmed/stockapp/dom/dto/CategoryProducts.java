@@ -11,8 +11,8 @@ import java.util.List;
  * @cozej4 https://github.com/cozej4
  */
 public class CategoryProducts {
-    Category category;
-    List<Product> products;
+    private Category category;
+    private List<Product> products;
 
     public Category getCategory() {
         return category;

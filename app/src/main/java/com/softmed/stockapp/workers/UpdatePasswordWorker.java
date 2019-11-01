@@ -8,18 +8,10 @@ import androidx.annotation.NonNull;
 import androidx.work.Worker;
 import androidx.work.WorkerParameters;
 
-import com.google.gson.Gson;
 import com.softmed.stockapp.api.Endpoints;
-import com.softmed.stockapp.database.AppDatabase;
-import com.softmed.stockapp.dom.dto.MessageRecipientsDTO;
 import com.softmed.stockapp.dom.dto.UpdatePasswordDTO;
-import com.softmed.stockapp.dom.entities.Message;
-import com.softmed.stockapp.dom.entities.MessageRecipients;
-import com.softmed.stockapp.dom.responces.NewMessageResponce;
 import com.softmed.stockapp.utils.ServiceGenerator;
 import com.softmed.stockapp.utils.SessionManager;
-
-import org.json.JSONObject;
 
 import java.io.IOException;
 
@@ -44,7 +36,7 @@ public class UpdatePasswordWorker extends Worker {
     @NonNull
     @Override
     public Result doWork() {
-        return updatePassword(getInputData().getString("oldPassword"),getInputData().getString("newPassword"));
+        return updatePassword(getInputData().getString("oldPassword"), getInputData().getString("newPassword"));
     }
 
 
@@ -58,7 +50,6 @@ public class UpdatePasswordWorker extends Worker {
         UpdatePasswordDTO updatePasswordDTO = new UpdatePasswordDTO();
         updatePasswordDTO.setNew_password(newPassword);
         updatePasswordDTO.setOld_password(oldPassword);
-
 
 
         Call updatePasswordCall = loginService.updatePassword(getRequestBody(updatePasswordDTO));

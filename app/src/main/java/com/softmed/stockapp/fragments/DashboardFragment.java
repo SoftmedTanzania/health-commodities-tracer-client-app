@@ -10,15 +10,12 @@ import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
-import androidx.annotation.Nullable;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.fragment.app.Fragment;
-import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProviders;
 
 import com.github.mikephil.charting.charts.BarChart;
 import com.github.mikephil.charting.charts.CombinedChart;
-import com.github.mikephil.charting.charts.PieChart;
 import com.github.mikephil.charting.components.AxisBase;
 import com.github.mikephil.charting.components.Legend;
 import com.github.mikephil.charting.components.XAxis;
@@ -30,14 +27,8 @@ import com.github.mikephil.charting.data.CombinedData;
 import com.github.mikephil.charting.data.Entry;
 import com.github.mikephil.charting.data.LineData;
 import com.github.mikephil.charting.data.LineDataSet;
-import com.github.mikephil.charting.data.PieData;
-import com.github.mikephil.charting.data.PieDataSet;
-import com.github.mikephil.charting.data.PieEntry;
-import com.github.mikephil.charting.formatter.PercentFormatter;
 import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
-import com.github.mikephil.charting.utils.ColorTemplate;
-import com.github.mikephil.charting.utils.MPPointF;
 import com.softmed.stockapp.R;
 import com.softmed.stockapp.database.AppDatabase;
 import com.softmed.stockapp.dom.entities.CategoryBalance;
@@ -49,8 +40,6 @@ import com.softmed.stockapp.viewmodels.ProductsViewModel;
 import java.util.ArrayList;
 import java.util.List;
 
-import static com.github.mikephil.charting.animation.Easing.EaseInOutQuad;
-
 public class DashboardFragment extends Fragment {
     private static final String TAG = DashboardFragment.class.getSimpleName();
     private BarChart mChart1;
@@ -60,7 +49,6 @@ public class DashboardFragment extends Fragment {
     private AppDatabase appDatabase;
     private List<ProductBalance> mProductBalances;
     private LinearLayout productBalancesList;
-    private CategoryBalanceViewModel categoryBalanceViewModel;
     private ProductsViewModel productsViewModel;
     private List<CategoryBalance> categoryBalances;
 
@@ -126,7 +114,6 @@ public class DashboardFragment extends Fragment {
         l.setWordWrapEnabled(true);
 
 
-
         //Bar chart configurations
         mChart2 = rowview.findViewById(R.id.chart2);
         mChart2.getDescription().setEnabled(false);
@@ -178,142 +165,125 @@ public class DashboardFragment extends Fragment {
         l2.setWordWrapEnabled(true);
 
 
-        categoryBalanceViewModel = ViewModelProviders.of(this).get(CategoryBalanceViewModel.class);
-        categoryBalanceViewModel.getCategoryBalances().observe(getActivity(), new Observer<List<CategoryBalance>>() {
-            @Override
-            public void onChanged(@Nullable List<CategoryBalance> categoryBalances) {
-                DashboardFragment.this.categoryBalances = categoryBalances;
-                try {
-//                    setData();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        });
+        CategoryBalanceViewModel categoryBalanceViewModel = ViewModelProviders.of(this).get(CategoryBalanceViewModel.class);
+        categoryBalanceViewModel.getCategoryBalances().observe(getActivity(), categoryBalances -> DashboardFragment.this.categoryBalances = categoryBalances);
 
         productsViewModel = ViewModelProviders.of(this).get(ProductsViewModel.class);
-        productsViewModel.getProductBalances(new SessionManager(getActivity()).getFacilityId()).observe(getActivity(), new Observer<List<ProductBalance>>() {
-            @Override
-            public void onChanged(@Nullable List<ProductBalance> productBalances) {
+        productsViewModel.getProductBalances(new SessionManager(getActivity()).getFacilityId()).observe(getActivity(), productBalances -> {
 
 
-                mProductBalances = productBalances;
-                try {
-                    if (mProductBalances != null && mProductBalances.size() > 0) {
-                        productBalancesList.removeAllViews();
-                        ArrayList<BarEntry> yVals1 = new ArrayList<BarEntry>();
-                        ArrayList<BarEntry> yVals2 = new ArrayList<BarEntry>();
+            mProductBalances = productBalances;
+            try {
+                if (mProductBalances != null && mProductBalances.size() > 0) {
+                    productBalancesList.removeAllViews();
+                    ArrayList<BarEntry> yVals1 = new ArrayList<>();
+                    ArrayList<BarEntry> yVals2 = new ArrayList<>();
 
 
-                        int i = 1;
+                    int i = 1;
 
 
-                        final List<Integer> chart2Colors = new ArrayList<>();
-                        ArrayList<Entry> lineEntries = new ArrayList<>();
+                    final List<Integer> chart2Colors = new ArrayList<>();
+                    ArrayList<Entry> lineEntries = new ArrayList<>();
 
-                        for (ProductBalance productBalance : productBalances) {
-                            Log.d(TAG, "coze = " + productBalance.getProductName() + "  -- " + productBalance.getConsumptionQuantity());
+                    for (ProductBalance productBalance : productBalances) {
+                        Log.d(TAG, "coze = " + productBalance.getProductName() + "  -- " + productBalance.getConsumptionQuantity());
 
-                            View v = getLayoutInflater().inflate(R.layout.view_inventory_balance_item, null);
-                            ((TextView) v.findViewById(R.id.sn)).setText(String.valueOf(i));
-                            ((TextView) v.findViewById(R.id.product_name)).setText(productBalance.getProductCategory() + " - " + productBalance.getProductName());
+                        View v = getLayoutInflater().inflate(R.layout.view_inventory_balance_item, null);
+                        ((TextView) v.findViewById(R.id.sn)).setText(String.valueOf(i));
+                        ((TextView) v.findViewById(R.id.product_name)).setText(productBalance.getProductCategory() + " - " + productBalance.getProductName());
 
-                            String balance = String.valueOf(productBalance.getBalance());
-                            balance += " " + productBalance.getUnit();
-                            ((TextView) v.findViewById(R.id.balance)).setText(balance);
+                        String balance = String.valueOf(productBalance.getBalance());
+                        balance += " " + productBalance.getUnit();
+                        ((TextView) v.findViewById(R.id.balance)).setText(balance);
 
-                            float stockSeverity = (productBalance.getBalance() * 1f) / productBalance.getConsumptionQuantity();
+                        float stockSeverity = (productBalance.getBalance() * 1f) / productBalance.getConsumptionQuantity();
 
-                            Log.d(TAG, "severity value = " + stockSeverity);
+                        Log.d(TAG, "severity value = " + stockSeverity);
 
-                            if (stockSeverity >= 6) {
-                                chart2Colors.add(Color.rgb(31, 36, 93));
-                            } else if (stockSeverity < 6 && stockSeverity >= 3) {
-                                chart2Colors.add(Color.rgb(30, 185, 128));
-                            } else if (stockSeverity < 3 && stockSeverity >= 0.5) {
-                                chart2Colors.add(Color.rgb(220, 220, 70));
-                            } else {
-                                chart2Colors.add(Color.rgb(176, 0, 32));
-                            }
-
-                            lineEntries.add(new Entry(i, productBalance.getConsumptionQuantity()));
-
-                            yVals1.add(new BarEntry(i, productBalance.getBalance()));
-
-                            Log.d(TAG,"balance = "+(productBalance.getBalance()));
-                            Log.d(TAG,"consumption of stock = "+(productBalance.getConsumptionQuantity()));
-
-                            float monthsOfStock = (productBalance.getBalance()*1f/productBalance.getConsumptionQuantity());
-                            Log.d(TAG,"months of stock = "+monthsOfStock);
-                            yVals2.add(new BarEntry(i, monthsOfStock));
-
-                            ((TextView) v.findViewById(R.id.months_of_stock)).setText(String.valueOf(monthsOfStock));
-
-                            i++;
-                            productBalancesList.addView(v);
+                        if (stockSeverity >= 6) {
+                            chart2Colors.add(Color.rgb(31, 36, 93));
+                        } else if (stockSeverity < 6 && stockSeverity >= 3) {
+                            chart2Colors.add(Color.rgb(30, 185, 128));
+                        } else if (stockSeverity < 3 && stockSeverity >= 0.5) {
+                            chart2Colors.add(Color.rgb(220, 220, 70));
+                        } else {
+                            chart2Colors.add(Color.rgb(176, 0, 32));
                         }
 
-//                        yVals1.add(new BarEntry(i, 0));
-//                        yVals2.add(new BarEntry(i, 0));
+                        lineEntries.add(new Entry(i, productBalance.getConsumptionQuantity()));
 
-                        LineDataSet set = new LineDataSet(lineEntries, "Product Consumption");
-                        set.setColor(Color.rgb(136, 180, 187));
-                        set.setLineWidth(2.5f);
-                        set.setCircleColor(Color.rgb(136, 180, 187));
-                        set.setCircleRadius(5f);
-                        set.setFillColor(Color.rgb(136, 180, 187));
-                        set.setMode(LineDataSet.Mode.CUBIC_BEZIER);
-                        set.setDrawValues(true);
-                        set.setValueTextSize(10f);
-                        set.setValueTextColor(Color.rgb(136, 180, 187));
+                        yVals1.add(new BarEntry(i, productBalance.getBalance()));
 
-                        set.setAxisDependency(YAxis.AxisDependency.LEFT);
-                        LineData lineData = new LineData();
-                        lineData.addDataSet(set);
+                        Log.d(TAG, "balance = " + (productBalance.getBalance()));
+                        Log.d(TAG, "consumption of stock = " + (productBalance.getConsumptionQuantity()));
 
+                        float monthsOfStock = (productBalance.getBalance() * 1f / productBalance.getConsumptionQuantity());
+                        Log.d(TAG, "months of stock = " + monthsOfStock);
+                        yVals2.add(new BarEntry(i, monthsOfStock));
 
-                        BarDataSet set1 = new BarDataSet(yVals1, "Inventory Balances");
-                        set1.setDrawIcons(false);
-                        set1.setColors(chart2Colors);
+                        ((TextView) v.findViewById(R.id.months_of_stock)).setText(String.valueOf(monthsOfStock));
 
-                        BarDataSet set2 = new BarDataSet(yVals2, "Months of Stock");
-                        set2.setDrawIcons(false);
-                        set2.setColors(chart2Colors);
-
-                        ArrayList<IBarDataSet> dataSets1 = new ArrayList<IBarDataSet>();
-                        dataSets1.add(set1);
-
-                        ArrayList<IBarDataSet> dataSets2 = new ArrayList<IBarDataSet>();
-                        dataSets2.add(set2);
-
-                        BarData barData1 = new BarData(dataSets1);
-                        barData1.setValueTextSize(10f);
-                        barData1.setBarWidth(0.9f);
-
-                        BarData barData2 = new BarData(dataSets2);
-                        barData2.setValueTextSize(10f);
-                        barData2.setBarWidth(0.9f);
-
-
-
-                        CombinedData data = new CombinedData();
-                        data.setData(barData1);
-                        data.setData(lineData);
-
-
-                        mChart1.setData(barData2);
-                        mChart1.highlightValues(null);
-                        mChart1.invalidate();
-
-                        mChart2.setData(data);
-                        mChart2.highlightValues(null);
-                        mChart2.invalidate();
-
-                        Log.d(TAG, "Invalidated the graph");
+                        i++;
+                        productBalancesList.addView(v);
                     }
-                } catch (Exception e) {
-                    e.printStackTrace();
+
+                    LineDataSet set = new LineDataSet(lineEntries, "Product Consumption");
+                    set.setColor(Color.rgb(136, 180, 187));
+                    set.setLineWidth(2.5f);
+                    set.setCircleColor(Color.rgb(136, 180, 187));
+                    set.setCircleRadius(5f);
+                    set.setFillColor(Color.rgb(136, 180, 187));
+                    set.setMode(LineDataSet.Mode.CUBIC_BEZIER);
+                    set.setDrawValues(true);
+                    set.setValueTextSize(10f);
+                    set.setValueTextColor(Color.rgb(136, 180, 187));
+
+                    set.setAxisDependency(YAxis.AxisDependency.LEFT);
+                    LineData lineData = new LineData();
+                    lineData.addDataSet(set);
+
+
+                    BarDataSet set1 = new BarDataSet(yVals1, "Inventory Balances");
+                    set1.setDrawIcons(false);
+                    set1.setColors(chart2Colors);
+
+                    BarDataSet set2 = new BarDataSet(yVals2, "Months of Stock");
+                    set2.setDrawIcons(false);
+                    set2.setColors(chart2Colors);
+
+                    ArrayList<IBarDataSet> dataSets1 = new ArrayList<IBarDataSet>();
+                    dataSets1.add(set1);
+
+                    ArrayList<IBarDataSet> dataSets2 = new ArrayList<IBarDataSet>();
+                    dataSets2.add(set2);
+
+                    BarData barData1 = new BarData(dataSets1);
+                    barData1.setValueTextSize(10f);
+                    barData1.setBarWidth(0.9f);
+
+                    BarData barData2 = new BarData(dataSets2);
+                    barData2.setValueTextSize(10f);
+                    barData2.setBarWidth(0.9f);
+
+
+                    CombinedData data = new CombinedData();
+                    data.setData(barData1);
+                    data.setData(lineData);
+
+
+                    mChart1.setData(barData2);
+                    mChart1.highlightValues(null);
+                    mChart1.invalidate();
+
+                    mChart2.setData(data);
+                    mChart2.highlightValues(null);
+                    mChart2.invalidate();
+
+                    Log.d(TAG, "Invalidated the graph");
                 }
+            } catch (Exception e) {
+                e.printStackTrace();
             }
         });
 

@@ -15,7 +15,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.softmed.stockapp.R;
 import com.softmed.stockapp.dom.dto.ContactUsersDTO;
-import com.softmed.stockapp.dom.entities.OtherUsers;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -69,6 +68,44 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.Contacts
         return contactListFiltered.size();
     }
 
+    @Override
+    public Filter getFilter() {
+        return new Filter() {
+            @Override
+            protected FilterResults performFiltering(CharSequence charSequence) {
+                String charString = charSequence.toString();
+                if (charString.isEmpty()) {
+                    contactListFiltered = contacts;
+                } else {
+                    List<ContactUsersDTO> filteredList = new ArrayList<>();
+                    for (ContactUsersDTO row : contacts) {
+
+                        Log.d("test", "facility name " + row.getHealth_facility_name());
+
+                        // name match condition. this might differ depending on your requirement
+                        // here we are looking for name or phone number match
+                        if (row.getFirstName().toLowerCase().contains(charString.toLowerCase()) ||
+                                row.getSurname().toLowerCase().contains(charString.toLowerCase()) ||
+                                row.getHealth_facility_name().toLowerCase().contains(charSequence)) {
+                            filteredList.add(row);
+                        }
+                    }
+
+                    contactListFiltered = filteredList;
+                }
+
+                FilterResults filterResults = new FilterResults();
+                filterResults.values = contactListFiltered;
+                return filterResults;
+            }
+
+            @Override
+            protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
+                contactListFiltered = (ArrayList<ContactUsersDTO>) filterResults.values;
+                notifyDataSetChanged();
+            }
+        };
+    }
 
     public interface OnItemClickListener {
         void onItemClick(ContactUsersDTO user);
@@ -95,48 +132,9 @@ public class ContactAdapter extends RecyclerView.Adapter<ContactAdapter.Contacts
             textViewContactUsername.setText(username);
         }
 
-        public void setFacilityName(String facilityName){
-                facilityNameTextView.setText(facilityName);
+        public void setFacilityName(String facilityName) {
+            facilityNameTextView.setText(facilityName);
         }
-    }
-
-    @Override
-    public Filter getFilter() {
-        return new Filter() {
-            @Override
-            protected FilterResults performFiltering(CharSequence charSequence) {
-                String charString = charSequence.toString();
-                if (charString.isEmpty()) {
-                    contactListFiltered = contacts;
-                } else {
-                    List<ContactUsersDTO> filteredList = new ArrayList<>();
-                    for (ContactUsersDTO row : contacts) {
-
-                        Log.d("test","facility name "+row.getHealth_facility_name());
-
-                        // name match condition. this might differ depending on your requirement
-                        // here we are looking for name or phone number match
-                        if (row.getFirstName().toLowerCase().contains(charString.toLowerCase()) ||
-                                row.getSurname().toLowerCase().contains(charString.toLowerCase()) ||
-                                row.getHealth_facility_name().toLowerCase().contains(charSequence)) {
-                            filteredList.add(row);
-                        }
-                    }
-
-                    contactListFiltered = filteredList;
-                }
-
-                FilterResults filterResults = new FilterResults();
-                filterResults.values = contactListFiltered;
-                return filterResults;
-            }
-
-            @Override
-            protected void publishResults(CharSequence charSequence, FilterResults filterResults) {
-                contactListFiltered = (ArrayList<ContactUsersDTO>) filterResults.values;
-                notifyDataSetChanged();
-            }
-        };
     }
 
 }

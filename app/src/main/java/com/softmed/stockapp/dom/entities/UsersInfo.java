@@ -60,11 +60,11 @@ public class UsersInfo implements Serializable {
         this.password = password;
     }
 
-    public int getPhone_no() {
+    public int getPhoneNo() {
         return phone_no;
     }
 
-    public void setPhone_no(int phone_no) {
+    public void setPhoneNo(int phone_no) {
         this.phone_no = phone_no;
     }
 

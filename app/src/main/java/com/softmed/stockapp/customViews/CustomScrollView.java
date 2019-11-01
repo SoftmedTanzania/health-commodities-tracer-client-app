@@ -13,7 +13,7 @@ import android.widget.ScrollView;
 
 public class CustomScrollView extends ScrollView {
 
-    OnMyScrollChangeListener myScrollChangeListener;
+    private OnMyScrollChangeListener myScrollChangeListener;
     private float mTouchPosition;
 
     public CustomScrollView(Context context) {
