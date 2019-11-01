@@ -227,7 +227,7 @@ public class LoginActivity extends BaseActivity {
 
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
-
+                //Implement
             }
         });
 
@@ -802,7 +802,7 @@ public class LoginActivity extends BaseActivity {
 
     class addSchedule extends AsyncTask<Void, Void, Void> {
 
-        List<ProductReportingScheduleResponse> results;
+        private List<ProductReportingScheduleResponse> results;
 
         addSchedule(List<ProductReportingScheduleResponse> responces) {
             this.results = responces;
