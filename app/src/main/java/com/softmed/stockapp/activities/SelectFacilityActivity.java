@@ -151,7 +151,7 @@ public class SelectFacilityActivity extends BaseActivity {
 
                 @Override
                 public void onNothingSelected(AdapterView<?> adapterView) {
-
+                    //Implement
                 }
             });
 

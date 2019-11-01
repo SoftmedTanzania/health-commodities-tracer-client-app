@@ -14,7 +14,7 @@
  * limitations under the License.
  *******************************************************************************/
 
-package com.softmed.stockapp.customViews;
+package com.softmed.stockapp.customviews;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;

@@ -14,7 +14,7 @@ public class LargeDiagonalCutPathDrawable extends Drawable {
 
     private int diagonalSize;
 
-    public LargeDiagonalCutPathDrawable(int slantSize){
+    public LargeDiagonalCutPathDrawable(int slantSize) {
         mPaint.setColor(Color.WHITE);
         mPaint.setStyle(Paint.Style.FILL_AND_STROKE);
         mPaint.setStrokeWidth(5);
@@ -23,11 +23,11 @@ public class LargeDiagonalCutPathDrawable extends Drawable {
 
     @Override
     public void draw(Canvas canvas) {
-        mPath.moveTo(10,10);
-        mPath.lineTo(canvas.getWidth()-diagonalSize, 10);
-        mPath.lineTo(canvas.getWidth()-10, diagonalSize);
-        mPath.lineTo(canvas.getWidth()-10, canvas.getHeight()-10);
-        mPath.lineTo(10, canvas.getHeight()-10);
+        mPath.moveTo(10, 10);
+        mPath.lineTo(canvas.getWidth() - diagonalSize, 10);
+        mPath.lineTo(canvas.getWidth() - 10, diagonalSize);
+        mPath.lineTo(canvas.getWidth() - 10, canvas.getHeight() - 10);
+        mPath.lineTo(10, canvas.getHeight() - 10);
 
         mPath.close();
         canvas.drawPath(mPath, mPaint);
@@ -35,10 +35,14 @@ public class LargeDiagonalCutPathDrawable extends Drawable {
     }
 
     @Override
-    public void setAlpha(int i) {}
+    public void setAlpha(int i) {
+        //Implement
+    }
 
     @Override
-    public void setColorFilter(ColorFilter colorFilter) {}
+    public void setColorFilter(ColorFilter colorFilter) {
+        //Implement
+    }
 
     @Override
     public int getOpacity() {

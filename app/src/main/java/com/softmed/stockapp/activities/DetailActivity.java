@@ -26,7 +26,7 @@ import androidx.lifecycle.ViewModelProviders;
 import com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton;
 import com.google.android.material.snackbar.Snackbar;
 import com.softmed.stockapp.R;
-import com.softmed.stockapp.customViews.CustomScrollView;
+import com.softmed.stockapp.customviews.CustomScrollView;
 import com.softmed.stockapp.database.AppDatabase;
 import com.softmed.stockapp.dom.dto.ProductList;
 import com.softmed.stockapp.dom.entities.Product;
@@ -196,7 +196,7 @@ public class DetailActivity extends AppCompatActivity {
             protected void onPostExecute(Void name) {
                 super.onPostExecute(name);
 
-                if (product.isTrack_number_of_patients()) {
+                if (product.isTrackNumberOfPatients()) {
                     View numberOfClientsLayout = findViewById(R.id.number_of_clients_layout);
                     numberOfClientsLayout.setVisibility(View.VISIBLE);
 
@@ -213,13 +213,13 @@ public class DetailActivity extends AppCompatActivity {
 
     private void setTransactionList(List<Transactions> transactions) {
         transactionsTable.removeAllViews();
-        if (myProduct.isTrack_number_of_patients()) {
+        if (myProduct.isTrackNumberOfPatients()) {
             findViewById(R.id.clients_on_regime_title).setVisibility(View.VISIBLE);
         }
-        if (myProduct.isTrack_number_of_patients()) {
+        if (myProduct.isTrackNumberOfPatients()) {
             findViewById(R.id.wastage_title).setVisibility(View.VISIBLE);
         }
-        if (myProduct.isTrack_number_of_patients()) {
+        if (myProduct.isTrackNumberOfPatients()) {
             findViewById(R.id.expired_stock_title).setVisibility(View.VISIBLE);
         }
 
@@ -243,19 +243,19 @@ public class DetailActivity extends AppCompatActivity {
             ((TextView) v.findViewById(R.id.date)).setText(dateFormatted);
 
 
-            if (myProduct.isTrack_number_of_patients()) {
+            if (myProduct.isTrackNumberOfPatients()) {
                 v.findViewById(R.id.number_of_clients_on_regime).setVisibility(View.VISIBLE);
                 ((TextView) v.findViewById(R.id.number_of_clients_on_regime)).setText(String.valueOf(transactions1.getClientsOnRegime()));
             }
             ((TextView) v.findViewById(R.id.quantity)).setText(String.valueOf(transactions1.getAmount()));
             ((TextView) v.findViewById(R.id.stock_out_days)).setText(String.valueOf(transactions1.getStockOutDays()));
 
-            if (myProduct.isTrack_number_of_patients()) {
+            if (myProduct.isTrackNumberOfPatients()) {
                 v.findViewById(R.id.wastage).setVisibility(View.VISIBLE);
                 ((TextView) v.findViewById(R.id.wastage)).setText(String.valueOf(transactions1.getWastage()));
             }
 
-            if (myProduct.isTrack_number_of_patients()) {
+            if (myProduct.isTrackNumberOfPatients()) {
                 v.findViewById(R.id.expired_stock).setVisibility(View.VISIBLE);
                 ((TextView) v.findViewById(R.id.expired_stock)).setText(String.valueOf(transactions1.getQuantityExpired()));
             }
@@ -291,8 +291,8 @@ public class DetailActivity extends AppCompatActivity {
      */
     private void populateViewsWithProductData() {
         String photoPath = "";
-        if (myProduct.getLocal_image_path() != null) {
-            photoPath = myProduct.getLocal_image_path();
+        if (myProduct.getLocalImagePath() != null) {
+            photoPath = myProduct.getLocalImagePath();
         }
 
         Log.d(TAG, "product path = " + photoPath);
@@ -390,7 +390,7 @@ public class DetailActivity extends AppCompatActivity {
 
                     @Override
                     protected Void doInBackground(Void... voids) {
-                        myProduct.setLocal_image_path(photoPath);
+                        myProduct.setLocalImagePath(photoPath);
                         database.productsModelDao().addProduct(myProduct);
                         return null;
                     }

@@ -297,7 +297,7 @@ public class ManagedProductsActivity extends BaseActivity {
                         @Override
                         public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
                             String consumption = consumptionEditText.getText().toString();
-                            if(consumption.equals("")){
+                            if("".equals(consumption)){
                                 mappedProductConsuption.setConsumption(0);
                             }else{
                                 mappedProductConsuption.setConsumption(Integer.parseInt(consumption));

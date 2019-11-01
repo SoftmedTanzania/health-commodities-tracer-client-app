@@ -40,7 +40,7 @@
         android:background="@color/white"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <com.softmed.stockapp.customViews.CustomDialogsList
+        <com.softmed.stockapp.customviews.CustomDialogsList
             android:id="@+id/dialogsList"
             android:layout_width="match_parent"
             android:layout_height="match_parent"

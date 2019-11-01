@@ -1,4 +1,4 @@
-package com.softmed.stockapp.customViews.custom.message.viewholders;
+package com.softmed.stockapp.customviews.custom.message.viewholders;
 
 import android.view.View;
 

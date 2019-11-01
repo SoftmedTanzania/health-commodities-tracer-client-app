@@ -73,7 +73,7 @@ class DialogListStyle extends Style {
         super(context, attrs);
     }
 
-    static DialogListStyle parse(Context context, AttributeSet attrs) {
+    public static DialogListStyle parse(Context context, AttributeSet attrs) {
         DialogListStyle style = new DialogListStyle(context, attrs);
 
         TypedArray typedArray = context.obtainStyledAttributes(attrs, R.styleable.DialogsList);

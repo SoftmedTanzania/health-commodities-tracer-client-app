@@ -31,19 +31,19 @@ public class PostingFrequencies implements Serializable {
         this.id = id;
     }
 
-    public String getFrequency_description() {
+    public String getFrequencyDescription() {
         return frequency_description;
     }
 
-    public void setFrequency_description(String frequency_description) {
+    public void setFrequencyDescription(String frequency_description) {
         this.frequency_description = frequency_description;
     }
 
-    public int getNumber_of_days() {
+    public int getNumberOfDays() {
         return number_of_days;
     }
 
-    public void setNumber_of_days(int number_of_days) {
+    public void setNumberOfDays(int number_of_days) {
         this.number_of_days = number_of_days;
     }
 }

@@ -6,7 +6,7 @@ import androidx.room.PrimaryKey;
 import androidx.room.TypeConverters;
 
 import com.google.gson.annotations.SerializedName;
-import com.softmed.stockapp.utils.DateConverter;
+import com.softmed.stockapp.utils.DateConverterUtil;
 
 import java.io.Serializable;
 import java.util.Date;
@@ -27,7 +27,7 @@ public class ProductReportingSchedule implements Serializable {
     private int facilityId;
 
     @SerializedName("scheduledDate")
-    @TypeConverters(DateConverter.class)
+    @TypeConverters(DateConverterUtil.class)
     private Date scheduledDate;
 
     @SerializedName("status")

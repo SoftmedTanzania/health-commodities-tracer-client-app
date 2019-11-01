@@ -128,10 +128,10 @@ public class UpdateStockFragment extends Fragment {
             @Override
             protected Void doInBackground(Void... voids) {
                 product = baseDatabase.productsModelDao().getProductById(productId);
-                postingFrequency = baseDatabase.postingFrequencyModelDao().getPostingFrequencyById(product.getPosting_frequency());
+                postingFrequency = baseDatabase.postingFrequencyModelDao().getPostingFrequencyById(product.getPostingFrequency());
 
                 Log.d(TAG, "Product = " + new Gson().toJson(product));
-                unit = baseDatabase.unitsDao().getUnit(product.getUnit_id());
+                unit = baseDatabase.unitsDao().getUnit(product.getUnitId());
                 return null;
             }
 
@@ -141,15 +141,15 @@ public class UpdateStockFragment extends Fragment {
 
                 stockAdjustmentQuantity.setHint("Stock On Hand in (" + unit.getName() + ")");
 
-                if (product.isTrack_wastage()) {
+                if (product.isTrackWastage()) {
                     wastageInputLayout.setVisibility(View.VISIBLE);
                 }
 
-                if (product.isTrack_quantity_expired()) {
+                if (product.isTrackQuantityExpired()) {
                     quantityExpiredInputLayout.setVisibility(View.VISIBLE);
                 }
 
-                if (product.isTrack_number_of_patients()) {
+                if (product.isTrackNumberOfPatients()) {
                     numberOfClientsOnRegimeInputLayout.setVisibility(View.VISIBLE);
                 }
 
@@ -172,12 +172,12 @@ public class UpdateStockFragment extends Fragment {
                     if (availabilityOfClientsOnRegime[i].equalsIgnoreCase("yes")) {
                         hasClients = true;
 
-                        if (product.isTrack_number_of_patients()) {
+                        if (product.isTrackNumberOfPatients()) {
                             numberOfClientsOnRegimeInputLayout.setVisibility(View.VISIBLE);
                         }
                     } else {
                         hasClients = false;
-                        if (product.isTrack_number_of_patients()) {
+                        if (product.isTrackNumberOfPatients()) {
                             numberOfClientsOnRegimeInputLayout.setVisibility(View.GONE);
                         }
                     }
@@ -188,7 +188,7 @@ public class UpdateStockFragment extends Fragment {
 
             @Override
             public void onNothingSelected(AdapterView<?> adapterView) {
-
+                //Implement
             }
         });
 
@@ -224,9 +224,9 @@ public class UpdateStockFragment extends Fragment {
                             Transactions transactions = new Transactions();
 
                             transactions.setId(UUID.randomUUID().toString());
-                            transactions.setProduct_id(productId);
-                            transactions.setUser_id(Integer.valueOf(session.getUserUUID()));
-                            transactions.setTransactiontype_id(1);
+                            transactions.setProductId(productId);
+                            transactions.setUserId(Integer.valueOf(session.getUserUUID()));
+                            transactions.setTransactionTypeId(1);
                             transactions.setScheduleId(scheduledId);
                             transactions.setAmount(stockQuantity);
                             transactions.setHasClients(hasClients);
@@ -234,19 +234,19 @@ public class UpdateStockFragment extends Fragment {
                             transactions.setCreated_at(Calendar.getInstance().getTimeInMillis());
                             transactions.setStockOutDays(stockOutDays);
 
-                            if (hasClients && product.isTrack_number_of_patients()) {
+                            if (hasClients && product.isTrackNumberOfPatients()) {
                                 transactions.setClientsOnRegime(noOfClients);
                             }
 
-                            if (product.isTrack_quantity_expired()) {
+                            if (product.isTrackQuantityExpired()) {
                                 transactions.setQuantityExpired(QuantityExpired);
                             }
 
-                            if (product.isTrack_wastage()) {
+                            if (product.isTrackWastage()) {
                                 transactions.setWastage(wastage);
                             }
 
-                            transactions.setStatus_id(1);
+                            transactions.setStatusId(1);
 
                             Balances balances = baseDatabase.balanceModelDao().getBalance(productId, session.getFacilityId());
                             transactions.setConsumptionQuantity(balances.getConsumptionQuantity());
@@ -318,19 +318,19 @@ public class UpdateStockFragment extends Fragment {
         if (stockAdjustmentQuantity.getEditText().getText().toString().equals("")) {
             stockAdjustmentQuantity.getEditText().setError("Please fill the stock on hand quantity");
             return false;
-        } else if (numberOfClientsOnRegimeInputLayout.getEditText().getText().toString().equals("") && product.isTrack_number_of_patients() && hasClients) {
+        } else if (numberOfClientsOnRegimeInputLayout.getEditText().getText().toString().equals("") && product.isTrackNumberOfPatients() && hasClients) {
             numberOfClientsOnRegimeInputLayout.getEditText().setError("Please fill the number of clients on regime");
             return false;
         } else if (stockOutDaysInputLayout.getEditText().getText().toString().equals("")) {
             stockOutDaysInputLayout.getEditText().setError("Please fill the stockout days quantity");
             return false;
-        } else if (Integer.parseInt(stockOutDaysInputLayout.getEditText().getText().toString())>postingFrequency.getNumber_of_days()) {
-            stockOutDaysInputLayout.getEditText().setError("Stock out days cannot be greater than "+postingFrequency.getNumber_of_days());
+        } else if (Integer.parseInt(stockOutDaysInputLayout.getEditText().getText().toString()) > postingFrequency.getNumberOfDays()) {
+            stockOutDaysInputLayout.getEditText().setError("Stock out days cannot be greater than " + postingFrequency.getNumberOfDays());
             return false;
-        } else if (wastageInputLayout.getEditText().getText().toString().equals("") && product.isTrack_wastage()) {
+        } else if (wastageInputLayout.getEditText().getText().toString().equals("") && product.isTrackWastage()) {
             wastageInputLayout.getEditText().setError("Please fill wastage quantity");
             return false;
-        } else if (quantityExpiredInputLayout.getEditText().getText().toString().equals("") && product.isTrack_quantity_expired()) {
+        } else if (quantityExpiredInputLayout.getEditText().getText().toString().equals("") && product.isTrackQuantityExpired()) {
             quantityExpiredInputLayout.getEditText().setError("Please fill the quantity expired");
             return false;
         }

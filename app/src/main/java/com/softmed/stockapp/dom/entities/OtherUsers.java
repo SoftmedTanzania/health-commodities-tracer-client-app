@@ -51,11 +51,11 @@ public class OtherUsers implements Serializable {
         this.password = password;
     }
 
-    public int getHealth_facility() {
+    public int getHealthFacility() {
         return health_facility;
     }
 
-    public void setHealth_facility(int health_facility) {
+    public void setHealthFacility(int health_facility) {
         this.health_facility = health_facility;
     }
 

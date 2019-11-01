@@ -73,7 +73,7 @@
             </intent-filter>
         </service>
 
-        <receiver android:name=".broadcastReceivers.MyBroadcastReceiver"  android:exported="true">
+        <receiver android:name=".broadcastreceivers.MyBroadcastReceiver"  android:exported="true">
             <intent-filter>
                 <action android:name="com.softmed.stockapp.messagingservice.ACTION_MESSAGE_REPLY"/>
             </intent-filter>

@@ -69,35 +69,35 @@ public class Transactions implements Serializable {
         this.id = id;
     }
 
-    public int getUser_id() {
+    public int getUserId() {
         return user_id;
     }
 
-    public void setUser_id(int user_id) {
+    public void setUserId(int user_id) {
         this.user_id = user_id;
     }
 
-    public int getTransactiontype_id() {
+    public int getTransactionTypeId() {
         return transactiontype_id;
     }
 
-    public void setTransactiontype_id(int transactiontype_id) {
+    public void setTransactionTypeId(int transactiontype_id) {
         this.transactiontype_id = transactiontype_id;
     }
 
-    public int getProduct_id() {
+    public int getProductId() {
         return product_id;
     }
 
-    public void setProduct_id(int product_id) {
+    public void setProductId(int product_id) {
         this.product_id = product_id;
     }
 
-    public int getStatus_id() {
+    public int getStatusId() {
         return status_id;
     }
 
-    public void setStatus_id(int status_id) {
+    public void setStatusId(int status_id) {
         this.status_id = status_id;
     }
 
