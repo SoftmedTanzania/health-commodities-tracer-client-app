@@ -27,24 +27,23 @@ public interface TransactionModelDao {
             "INNER JOIN Product ON Transactions.product_id=Product.id " +
             "INNER JOIN TransactionType ON Transactions.transactiontype_id=TransactionType.id " +
             "INNER JOIN Unit ON Product.unit_id=Unit.id " +
-            "INNER JOIN Category ON Product.category_id = category.id "+
-            " WHERE TransactionType.name<>'stock' "+
+            "INNER JOIN Category ON Product.category_id = category.id " +
+            " WHERE TransactionType.name<>'stock' " +
             " GROUP BY Category.name,Product.name, Transactions.clientsOnRegime ,TransactionType.name, Transactions.created_at ")
     LiveData<List<TransactionSummary>> getTransactionSummary();
-
 
 
     @Query("select * from Transactions" +
             " INNER JOIN ProductReportingSchedule ON ProductReportingSchedule.id = Transactions.scheduleId" +
             " WHERE product_id = :productId AND ProductReportingSchedule.facilityId = :facilityId")
-    LiveData<List<Transactions>> getLiveTransactionsByProductId(int productId,int facilityId);
+    LiveData<List<Transactions>> getLiveTransactionsByProductId(int productId, int facilityId);
 
 
     @Query("select * from Transactions " +
             " INNER JOIN ProductReportingSchedule ON ProductReportingSchedule.id = Transactions.scheduleId" +
             " WHERE product_id = :productId AND ProductReportingSchedule.facilityId = :facilityId " +
             "ORDER BY created_at DESC Limit 1")
-    LiveData<Transactions> getLastTransactionByProductId(int productId,int facilityId);
+    LiveData<Transactions> getLastTransactionByProductId(int productId, int facilityId);
 
 
     @Query("select * from Transactions WHERE product_id = :productId")

@@ -181,7 +181,7 @@ public class ComposeNewMessageActivity extends AppCompatActivity implements Cont
                             Log.d(TAG, "saving new message recipients = " + new Gson().toJson(messageRecipients));
 
                             OtherUsers user = appDatabase.usersModelDao().getUser(userId);
-                            userNames.add(user.getFirstName()+" "+user.getSurname());
+                            userNames.add(user.getFirstName() + " " + user.getSurname());
                         }
 
 
@@ -208,7 +208,7 @@ public class ComposeNewMessageActivity extends AppCompatActivity implements Cont
                         WorkManager.getInstance().enqueue(sendMessage);
 
 
-                        MessagesActivity.open(ComposeNewMessageActivity.this, newMessage.getId(), userIds,userNames);
+                        MessagesActivity.open(ComposeNewMessageActivity.this, newMessage.getId(), userIds, userNames);
                         finish();
                     }
                 }.execute(newMessage);
@@ -306,7 +306,6 @@ public class ComposeNewMessageActivity extends AppCompatActivity implements Cont
         });
         return true;
     }
-
 
 
     @Override

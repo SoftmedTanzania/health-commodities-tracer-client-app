@@ -14,7 +14,7 @@ import com.stfalcon.chatkit.dialogs.DialogsList;
  * @cozej4 https://github.com/cozej4
  */
 public class CustomDialogsList extends DialogsList {
-    private  CustomScrollView.OnMyScrollChangeListener myScrollChangeListener;
+    private com.softmed.stockapp.customviews.CustomScrollView.OnMyScrollChangeListener myScrollChangeListener;
     private float mTouchPosition;
 
     public CustomDialogsList(Context context) {
@@ -49,11 +49,11 @@ public class CustomDialogsList extends DialogsList {
         return super.onTouchEvent(event);
     }
 
-    public CustomScrollView.OnMyScrollChangeListener getMyScrollChangeListener() {
+    public com.softmed.stockapp.customviews.CustomScrollView.OnMyScrollChangeListener getMyScrollChangeListener() {
         return myScrollChangeListener;
     }
 
-    public void setMyScrollChangeListener(CustomScrollView.OnMyScrollChangeListener myScrollChangeListener) {
+    public void setMyScrollChangeListener(com.softmed.stockapp.customviews.CustomScrollView.OnMyScrollChangeListener myScrollChangeListener) {
         this.myScrollChangeListener = myScrollChangeListener;
     }
 

@@ -16,7 +16,7 @@ import okhttp3.RequestBody;
  * Created by troy379 on 04.04.17.
  */
 public class AppUtils {
-    private static final String TAG=AppUtils.class.getSimpleName();
+    private static final String TAG = AppUtils.class.getSimpleName();
 
     public static void showToast(Context context, @StringRes int text, boolean isLong) {
         showToast(context, context.getString(text), isLong);

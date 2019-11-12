@@ -19,7 +19,7 @@ public interface ProductReportingScheduleModelDao {
             "FROM ProductReportingSchedule " +
             "INNER JOIN Product ON ProductReportingSchedule.productId = Product.id " +
             "WHERE Product.id = :productId AND ProductReportingSchedule.scheduledDate<=:date")
-    List<ProductReportingSchedule> getMissedProductReportings(int productId,long date);
+    List<ProductReportingSchedule> getMissedProductReportings(int productId, long date);
 
 
     @Query("select DISTINCT  ProductReportingSchedule.scheduledDate " +

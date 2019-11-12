@@ -147,4 +147,52 @@ public class Product implements Serializable {
     public void setIsActive(boolean is_active) {
         this.is_active = is_active;
     }
+
+    public int getUnit_id() {
+        return unit_id;
+    }
+
+    public void setUnit_id(int unit_id) {
+        this.unit_id = unit_id;
+    }
+
+    public int getPosting_frequency() {
+        return posting_frequency;
+    }
+
+    public void setPosting_frequency(int posting_frequency) {
+        this.posting_frequency = posting_frequency;
+    }
+
+    public boolean isTrack_number_of_patients() {
+        return track_number_of_patients;
+    }
+
+    public void setTrack_number_of_patients(boolean track_number_of_patients) {
+        this.track_number_of_patients = track_number_of_patients;
+    }
+
+    public boolean isTrack_wastage() {
+        return track_wastage;
+    }
+
+    public boolean isTrack_quantity_expired() {
+        return track_quantity_expired;
+    }
+
+    public boolean isIs_active() {
+        return is_active;
+    }
+
+    public void setIs_active(boolean is_active) {
+        this.is_active = is_active;
+    }
+
+    public String getLocal_image_path() {
+        return local_image_path;
+    }
+
+    public void setLocal_image_path(String local_image_path) {
+        this.local_image_path = local_image_path;
+    }
 }

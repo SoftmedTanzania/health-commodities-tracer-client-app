@@ -324,8 +324,8 @@ public class UpdateStockFragment extends Fragment {
         } else if (stockOutDaysInputLayout.getEditText().getText().toString().equals("")) {
             stockOutDaysInputLayout.getEditText().setError("Please fill the stockout days quantity");
             return false;
-        } else if (Integer.parseInt(stockOutDaysInputLayout.getEditText().getText().toString()) > postingFrequency.getNumberOfDays()) {
-            stockOutDaysInputLayout.getEditText().setError("Stock out days cannot be greater than " + postingFrequency.getNumberOfDays());
+        } else if (Integer.parseInt(stockOutDaysInputLayout.getEditText().getText().toString()) > postingFrequency.getNumber_of_days()) {
+            stockOutDaysInputLayout.getEditText().setError("Stock out days cannot be greater than " + postingFrequency.getNumber_of_days());
             return false;
         } else if (wastageInputLayout.getEditText().getText().toString().equals("") && product.isTrackWastage()) {
             wastageInputLayout.getEditText().setError("Please fill wastage quantity");

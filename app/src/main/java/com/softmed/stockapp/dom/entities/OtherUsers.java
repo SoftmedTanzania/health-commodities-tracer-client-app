@@ -90,4 +90,12 @@ public class OtherUsers implements Serializable {
     public void setUsername(String username) {
         this.username = username;
     }
+
+    public int getHealth_facility() {
+        return health_facility;
+    }
+
+    public void setHealth_facility(int health_facility) {
+        this.health_facility = health_facility;
+    }
 }

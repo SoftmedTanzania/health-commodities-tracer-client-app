@@ -34,8 +34,6 @@ public interface BalanceModelDao {
     LiveData<List<ProductBalance>> getBalances(int locationId);
 
 
-
-
     @Query("select Product.id as productId, " +
             "Product.category_id as subcategoryId, " +
             "Product.description as productDescription, " +
@@ -55,10 +53,8 @@ public interface BalanceModelDao {
     LiveData<ProductBalance> getProductBalanceById(long productId, int locationId);
 
 
-
-
     @Query("select * from Balances WHERE Balances.healthFacilityId = :locationId AND Balances.productId=:product_id")
-    Balances getBalance(int product_id,int locationId);
+    Balances getBalance(int product_id, int locationId);
 
     @Query("select * from Balances WHERE healthFacilityId=:facilityId")
     List<Balances> getAllBalancesByFacility(int facilityId);

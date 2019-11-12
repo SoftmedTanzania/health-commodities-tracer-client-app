@@ -70,7 +70,7 @@ public class MyBroadcastReceiver extends BroadcastReceiver {
                     .build();
 
 
-            Log.d(TAG,"notificationId = "+notificationId);
+            Log.d(TAG, "notificationId = " + notificationId);
 
             // Issue the new notification.
             NotificationManagerCompat notificationManager = NotificationManagerCompat.from(context);

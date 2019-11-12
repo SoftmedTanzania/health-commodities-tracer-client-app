@@ -7,8 +7,8 @@ import androidx.room.Insert;
 import androidx.room.Query;
 
 import com.softmed.stockapp.dom.dto.ProducToBeReportedtList;
-import com.softmed.stockapp.dom.entities.Product;
 import com.softmed.stockapp.dom.dto.ProductList;
+import com.softmed.stockapp.dom.entities.Product;
 
 import java.util.List;
 

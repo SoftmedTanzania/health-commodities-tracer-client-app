@@ -37,10 +37,10 @@ public class ServiceGenerator {
     public static <S> S createService(
             Class<S> serviceClass, String username, String password) {
 
-        Log.d(TAG,"creating service : "+serviceClass.getSimpleName());
+        Log.d(TAG, "creating service : " + serviceClass.getSimpleName());
         if (!TextUtils.isEmpty(username) && !TextUtils.isEmpty(password)) {
             String authToken = Credentials.basic(username, password);
-            Log.d(TAG,"AuthToken : "+authToken);
+            Log.d(TAG, "AuthToken : " + authToken);
             return createService(serviceClass, authToken);
         }
 

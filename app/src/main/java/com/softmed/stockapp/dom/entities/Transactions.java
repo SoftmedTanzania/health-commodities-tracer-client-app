@@ -180,4 +180,36 @@ public class Transactions implements Serializable {
     public void setConsumptionQuantity(int consumptionQuantity) {
         this.consumptionQuantity = consumptionQuantity;
     }
+
+    public int getUser_id() {
+        return user_id;
+    }
+
+    public void setUser_id(int user_id) {
+        this.user_id = user_id;
+    }
+
+    public int getTransactiontype_id() {
+        return transactiontype_id;
+    }
+
+    public void setTransactiontype_id(int transactiontype_id) {
+        this.transactiontype_id = transactiontype_id;
+    }
+
+    public int getProduct_id() {
+        return product_id;
+    }
+
+    public void setProduct_id(int product_id) {
+        this.product_id = product_id;
+    }
+
+    public int getStatus_id() {
+        return status_id;
+    }
+
+    public void setStatus_id(int status_id) {
+        this.status_id = status_id;
+    }
 }

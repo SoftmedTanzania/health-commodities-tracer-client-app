@@ -123,4 +123,12 @@ public class UsersInfo implements Serializable {
     public void setDistrictId(int districtId) {
         this.districtId = districtId;
     }
+
+    public int getPhone_no() {
+        return phone_no;
+    }
+
+    public void setPhone_no(int phone_no) {
+        this.phone_no = phone_no;
+    }
 }
