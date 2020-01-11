@@ -285,10 +285,12 @@ public class DashboardFragment extends Fragment {
 
                 BarDataSet set1 = new BarDataSet(yVals1, "Inventory Balances");
                 set1.setDrawIcons(false);
+                set1.setDrawValues(false);
                 set1.setColors(chart2Colors);
 
                 BarDataSet set2 = new BarDataSet(yVals2, "Months of Stock");
                 set2.setDrawIcons(false);
+                set2.setDrawValues(false);
                 set2.setColors(chart2Colors);
 
                 ArrayList<IBarDataSet> dataSets1 = new ArrayList<IBarDataSet>();
