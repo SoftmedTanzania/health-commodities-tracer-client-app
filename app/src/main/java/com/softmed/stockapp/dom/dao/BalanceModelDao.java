@@ -17,7 +17,7 @@ import static androidx.room.OnConflictStrategy.REPLACE;
 public interface BalanceModelDao {
 
     @Query("select " +
-            "Product.category_id as subcategoryId, " +
+            "Product.category_id as categoryId, " +
             "Product.description as productDescription, " +
             "Category.name as productCategory," +
             "Product.name as productName ," +
@@ -35,7 +35,7 @@ public interface BalanceModelDao {
 
 
     @Query("select Product.id as productId, " +
-            "Product.category_id as subcategoryId, " +
+            "Product.category_id as categoryId, " +
             "Product.description as productDescription, " +
             "Category.name as productCategory, " +
             "Product.name AS productName, " +

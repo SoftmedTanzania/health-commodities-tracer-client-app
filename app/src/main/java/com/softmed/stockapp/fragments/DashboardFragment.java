@@ -7,7 +7,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.LinearLayout;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import androidx.core.content.res.ResourcesCompat;
@@ -30,7 +33,6 @@ import com.github.mikephil.charting.data.LineDataSet;
 import com.github.mikephil.charting.formatter.ValueFormatter;
 import com.github.mikephil.charting.interfaces.datasets.IBarDataSet;
 import com.softmed.stockapp.R;
-import com.softmed.stockapp.database.AppDatabase;
 import com.softmed.stockapp.dom.entities.CategoryBalance;
 import com.softmed.stockapp.dom.entities.ProductBalance;
 import com.softmed.stockapp.utils.SessionManager;
@@ -46,11 +48,12 @@ public class DashboardFragment extends Fragment {
     private CombinedChart mChart2;
     private List<String> categoryNames = new ArrayList<>();
     private List<Integer> sizes = new ArrayList<>();
-    private AppDatabase appDatabase;
     private List<ProductBalance> mProductBalances;
+    private List<ProductBalance> monthOfStockCategoryProductBalances;
     private LinearLayout productBalancesList;
+    private Spinner categoriesSpinner;
     private ProductsViewModel productsViewModel;
-    private List<CategoryBalance> categoryBalances;
+    private CategoryBalance selectedMonthOfStockCategory;
 
 
     public DashboardFragment() {
@@ -64,9 +67,10 @@ public class DashboardFragment extends Fragment {
 
         View rowview = inflater.inflate(R.layout.fragment_dashboard, container, false);
 
-        appDatabase = AppDatabase.getDatabase(getActivity().getApplicationContext());
 
         productBalancesList = rowview.findViewById(R.id.product_balances_list);
+
+        categoriesSpinner = rowview.findViewById(R.id.category_spinner);
 
         Typeface muliTypeface = ResourcesCompat.getFont(getActivity(), R.font.muli);
 
@@ -124,7 +128,7 @@ public class DashboardFragment extends Fragment {
         mChart2.setDrawValueAboveBar(false);
 
 
-        ValueFormatter xAxisFormatter = new XAxisValueFormatter();
+        ValueFormatter xAxisFormatter = new MonthOfStockXAxisValueFormatter();
         XAxis xAxis = mChart2.getXAxis();
         xAxis.setDrawGridLines(false);
         xAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
@@ -166,128 +170,164 @@ public class DashboardFragment extends Fragment {
 
 
         CategoryBalanceViewModel categoryBalanceViewModel = ViewModelProviders.of(this).get(CategoryBalanceViewModel.class);
-        categoryBalanceViewModel.getCategoryBalances().observe(getActivity(), categoryBalances -> DashboardFragment.this.categoryBalances = categoryBalances);
+        categoryBalanceViewModel.getCategoryBalances().observe(getActivity(), categoryBalances -> {
+            List<String> categoryNames = new ArrayList<>();
+            for (CategoryBalance categoryBalance : categoryBalances) {
+                categoryNames.add(categoryBalance.getName());
+            }
+
+            ArrayAdapter<String> spinnerArrayAdapter = new ArrayAdapter<String>
+                    (getActivity(), android.R.layout.simple_spinner_item,
+                            categoryNames); //selected item will look like a spinner set from XML
+            spinnerArrayAdapter.setDropDownViewResource(android.R.layout
+                    .simple_spinner_dropdown_item);
+            categoriesSpinner.setAdapter(spinnerArrayAdapter);
+            categoriesSpinner.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                @Override
+                public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+                    selectedMonthOfStockCategory = categoryBalances.get(i);
+                    setChartData();
+                }
+
+                @Override
+                public void onNothingSelected(AdapterView<?> adapterView) {
+
+                }
+            });
+
+        });
 
         productsViewModel = ViewModelProviders.of(this).get(ProductsViewModel.class);
         productsViewModel.getProductBalances(new SessionManager(getActivity()).getFacilityId()).observe(getActivity(), productBalances -> {
-
-
             mProductBalances = productBalances;
-            try {
-                if (mProductBalances != null && mProductBalances.size() > 0) {
-                    productBalancesList.removeAllViews();
-                    ArrayList<BarEntry> yVals1 = new ArrayList<>();
-                    ArrayList<BarEntry> yVals2 = new ArrayList<>();
-
-
-                    int i = 1;
-
-
-                    final List<Integer> chart2Colors = new ArrayList<>();
-                    ArrayList<Entry> lineEntries = new ArrayList<>();
-
-                    for (ProductBalance productBalance : productBalances) {
-                        Log.d(TAG, "coze = " + productBalance.getProductName() + "  -- " + productBalance.getConsumptionQuantity());
-
-                        View v = getLayoutInflater().inflate(R.layout.view_inventory_balance_item, null);
-                        ((TextView) v.findViewById(R.id.sn)).setText(String.valueOf(i));
-                        ((TextView) v.findViewById(R.id.product_name)).setText(productBalance.getProductCategory() + " - " + productBalance.getProductName());
-
-                        String balance = String.valueOf(productBalance.getBalance());
-                        balance += " " + productBalance.getUnit();
-                        ((TextView) v.findViewById(R.id.balance)).setText(balance);
-
-                        float stockSeverity = (productBalance.getBalance() * 1f) / productBalance.getConsumptionQuantity();
-
-                        Log.d(TAG, "severity value = " + stockSeverity);
-
-                        if (stockSeverity >= 6) {
-                            chart2Colors.add(Color.rgb(31, 36, 93));
-                        } else if (stockSeverity < 6 && stockSeverity >= 3) {
-                            chart2Colors.add(Color.rgb(30, 185, 128));
-                        } else if (stockSeverity < 3 && stockSeverity >= 0.5) {
-                            chart2Colors.add(Color.rgb(220, 220, 70));
-                        } else {
-                            chart2Colors.add(Color.rgb(176, 0, 32));
-                        }
-
-                        lineEntries.add(new Entry(i, productBalance.getConsumptionQuantity()));
-
-                        yVals1.add(new BarEntry(i, productBalance.getBalance()));
-
-                        Log.d(TAG, "balance = " + (productBalance.getBalance()));
-                        Log.d(TAG, "consumption of stock = " + (productBalance.getConsumptionQuantity()));
-
-                        float monthsOfStock = (productBalance.getBalance() * 1f / productBalance.getConsumptionQuantity());
-                        Log.d(TAG, "months of stock = " + monthsOfStock);
-                        yVals2.add(new BarEntry(i, monthsOfStock));
-
-                        ((TextView) v.findViewById(R.id.months_of_stock)).setText(String.valueOf(monthsOfStock));
-
-                        i++;
-                        productBalancesList.addView(v);
-                    }
-
-                    LineDataSet set = new LineDataSet(lineEntries, "Product Consumption");
-                    set.setColor(Color.rgb(136, 180, 187));
-                    set.setLineWidth(2.5f);
-                    set.setCircleColor(Color.rgb(136, 180, 187));
-                    set.setCircleRadius(5f);
-                    set.setFillColor(Color.rgb(136, 180, 187));
-                    set.setMode(LineDataSet.Mode.CUBIC_BEZIER);
-                    set.setDrawValues(true);
-                    set.setValueTextSize(10f);
-                    set.setValueTextColor(Color.rgb(136, 180, 187));
-
-                    set.setAxisDependency(YAxis.AxisDependency.LEFT);
-                    LineData lineData = new LineData();
-                    lineData.addDataSet(set);
-
-
-                    BarDataSet set1 = new BarDataSet(yVals1, "Inventory Balances");
-                    set1.setDrawIcons(false);
-                    set1.setColors(chart2Colors);
-
-                    BarDataSet set2 = new BarDataSet(yVals2, "Months of Stock");
-                    set2.setDrawIcons(false);
-                    set2.setColors(chart2Colors);
-
-                    ArrayList<IBarDataSet> dataSets1 = new ArrayList<IBarDataSet>();
-                    dataSets1.add(set1);
-
-                    ArrayList<IBarDataSet> dataSets2 = new ArrayList<IBarDataSet>();
-                    dataSets2.add(set2);
-
-                    BarData barData1 = new BarData(dataSets1);
-                    barData1.setValueTextSize(10f);
-                    barData1.setBarWidth(0.9f);
-
-                    BarData barData2 = new BarData(dataSets2);
-                    barData2.setValueTextSize(10f);
-                    barData2.setBarWidth(0.9f);
-
-
-                    CombinedData data = new CombinedData();
-                    data.setData(barData1);
-                    data.setData(lineData);
-
-
-                    mChart1.setData(barData2);
-                    mChart1.highlightValues(null);
-                    mChart1.invalidate();
-
-                    mChart2.setData(data);
-                    mChart2.highlightValues(null);
-                    mChart2.invalidate();
-
-                    Log.d(TAG, "Invalidated the graph");
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            setChartData();
         });
 
         return rowview;
+    }
+
+    private void setChartData(){
+        try {
+            if (mProductBalances != null && mProductBalances.size() > 0) {
+                monthOfStockCategoryProductBalances = new ArrayList<>();
+                productBalancesList.removeAllViews();
+                ArrayList<BarEntry> yVals1 = new ArrayList<>();
+                ArrayList<BarEntry> yVals2 = new ArrayList<>();
+
+                int productBalanceChartIndex = 1;
+                int categoryProductBalanceChartIndex = 1;
+
+                final List<Integer> chart2Colors = new ArrayList<>();
+                ArrayList<Entry> lineEntries = new ArrayList<>();
+
+                for (ProductBalance productBalance : mProductBalances) {
+                    Log.d(TAG, "coze = " + productBalance.getProductName() + "  -- " + productBalance.getConsumptionQuantity());
+
+                    View v = getLayoutInflater().inflate(R.layout.view_inventory_balance_item, null);
+                    ((TextView) v.findViewById(R.id.sn)).setText(String.valueOf(productBalanceChartIndex));
+                    ((TextView) v.findViewById(R.id.product_name)).setText(productBalance.getProductCategory() + " - " + productBalance.getProductName());
+
+                    String balance = String.valueOf(productBalance.getBalance());
+                    balance += " " + productBalance.getUnit();
+                    ((TextView) v.findViewById(R.id.balance)).setText(balance);
+
+                    float stockSeverity = (productBalance.getBalance() * 1f) / productBalance.getConsumptionQuantity();
+
+                    Log.d(TAG, "severity value = " + stockSeverity);
+
+                    if (stockSeverity >= 6) {
+                        chart2Colors.add(Color.rgb(31, 36, 93));
+                    } else if (stockSeverity < 6 && stockSeverity >= 3) {
+                        chart2Colors.add(Color.rgb(30, 185, 128));
+                    } else if (stockSeverity < 3 && stockSeverity >= 0.5) {
+                        chart2Colors.add(Color.rgb(220, 220, 70));
+                    } else {
+                        chart2Colors.add(Color.rgb(176, 0, 32));
+                    }
+
+                    lineEntries.add(new Entry(productBalanceChartIndex, productBalance.getConsumptionQuantity()));
+
+                    yVals1.add(new BarEntry(productBalanceChartIndex, productBalance.getBalance()));
+
+                    Log.d(TAG, "balance = " + (productBalance.getBalance()));
+                    Log.d(TAG, "consumption of stock = " + (productBalance.getConsumptionQuantity()));
+
+                    float monthsOfStock = (productBalance.getBalance() * 1f / productBalance.getConsumptionQuantity());
+                    Log.d(TAG, "months of stock = " + monthsOfStock);
+
+                    if(selectedMonthOfStockCategory.getCategoryId()==productBalance.getCategoryId()) {
+                        monthOfStockCategoryProductBalances.add(productBalance);
+                        yVals2.add(new BarEntry(categoryProductBalanceChartIndex, monthsOfStock));
+                        categoryProductBalanceChartIndex++;
+                    }
+
+                    ((TextView) v.findViewById(R.id.months_of_stock)).setText(String.valueOf(monthsOfStock));
+
+                    productBalanceChartIndex++;
+                    productBalancesList.addView(v);
+                }
+
+                LineDataSet set = new LineDataSet(lineEntries, "Product Consumption");
+                set.setColor(Color.rgb(136, 180, 187));
+                set.setLineWidth(2.5f);
+                set.setCircleColor(Color.rgb(136, 180, 187));
+                set.setCircleRadius(5f);
+                set.setFillColor(Color.rgb(136, 180, 187));
+                set.setMode(LineDataSet.Mode.CUBIC_BEZIER);
+                set.setDrawValues(true);
+                set.setValueTextSize(10f);
+                set.setValueTextColor(Color.rgb(136, 180, 187));
+
+                set.setAxisDependency(YAxis.AxisDependency.LEFT);
+                LineData lineData = new LineData();
+                lineData.addDataSet(set);
+
+
+                BarDataSet set1 = new BarDataSet(yVals1, "Inventory Balances");
+                set1.setDrawIcons(false);
+                set1.setColors(chart2Colors);
+
+                BarDataSet set2 = new BarDataSet(yVals2, "Months of Stock");
+                set2.setDrawIcons(false);
+                set2.setColors(chart2Colors);
+
+                ArrayList<IBarDataSet> dataSets1 = new ArrayList<IBarDataSet>();
+                dataSets1.add(set1);
+
+                ArrayList<IBarDataSet> dataSets2 = new ArrayList<IBarDataSet>();
+                dataSets2.add(set2);
+
+                BarData barData1 = new BarData(dataSets1);
+                barData1.setValueTextSize(10f);
+                barData1.setBarWidth(0.9f);
+
+                BarData barData2 = new BarData(dataSets2);
+                barData2.setValueTextSize(10f);
+                barData2.setBarWidth(0.9f);
+
+
+                CombinedData data = new CombinedData();
+                data.setData(barData1);
+                data.setData(lineData);
+
+                try {
+                    mChart1.clearValues();
+                }catch (Exception e){
+                    e.printStackTrace();
+                }
+                mChart1.setData(barData2);
+                mChart1.highlightValues(null);
+                mChart1.invalidate();
+
+                mChart2.setData(data);
+                mChart2.highlightValues(null);
+                mChart2.invalidate();
+
+                Log.d(TAG, "Invalidated the graph");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     class MyAxisValueFormatter extends ValueFormatter {
@@ -304,6 +344,28 @@ public class DashboardFragment extends Fragment {
 
     class XAxisValueFormatter extends ValueFormatter {
         public XAxisValueFormatter() {
+        }
+
+        @Override
+        public String getFormattedValue(float value) {
+            if (value == mProductBalances.size() + 1 || value == 0) {
+                return "";
+            } else {
+                if (mProductBalances.get((int) value - 1).getProductName().length() < 25) {
+                    return mProductBalances.get((int) value - 1).getProductName();
+                } else {
+                    try {
+                        return mProductBalances.get((int) value - 1).getProductName().split(" ")[0] + " " + mProductBalances.get((int) value - 1).getProductName().split(" ")[1];
+                    } catch (Exception e) {
+                        return mProductBalances.get((int) value - 1).getProductName();
+                    }
+                }
+            }
+        }
+    }
+
+    class MonthOfStockXAxisValueFormatter extends ValueFormatter {
+        public MonthOfStockXAxisValueFormatter() {
         }
 
         @Override

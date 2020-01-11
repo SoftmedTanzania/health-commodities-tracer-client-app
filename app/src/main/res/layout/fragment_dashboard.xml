@@ -66,9 +66,34 @@
                     android:layout_marginRight="16dp"
                     android:textColor="@color/color_secondary"
                     android:text="Months of Stock Chart"/>
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/title"
+                    android:textSize="15sp"
+                    android:layout_marginTop="16dp"
+                    android:layout_marginBottom="8dp"
+                    android:id="@+id/filter_label"
+                    android:fontFamily="@font/muli"
+                    android:layout_marginLeft="16dp"
+                    android:layout_marginRight="16dp"
+                    android:textColor="@color/color_secondary"
+                    android:text="Product Category"/>
+
+                <Spinner
+                    android:id="@+id/category_spinner"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/filter_label"
+                    android:fontFamily="@font/muli_bold"
+                    android:layout_marginLeft="8dp"
+                    android:layout_marginRight="16dp"/>
+
                 <com.github.mikephil.charting.charts.BarChart
                     android:id="@+id/chart1"
-                    android:layout_below="@id/title"
+                    android:layout_marginTop="16dp"
+                    android:layout_below="@id/category_spinner"
                     android:layout_marginLeft="16dp"
                     android:layout_marginRight="16dp"
                     android:layout_width="match_parent"

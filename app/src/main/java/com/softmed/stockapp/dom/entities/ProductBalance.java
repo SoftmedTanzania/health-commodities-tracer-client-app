@@ -31,6 +31,9 @@ public class ProductBalance implements Serializable {
     @SerializedName("productId")
     private int productId;
 
+    @SerializedName("categoryId")
+    private int categoryId;
+
     public String getProductCategory() {
         return productCategory;
     }
@@ -86,5 +89,13 @@ public class ProductBalance implements Serializable {
 
     public void setConsumptionQuantity(int consumptionQuantity) {
         this.consumptionQuantity = consumptionQuantity;
+    }
+
+    public int getCategoryId() {
+        return categoryId;
+    }
+
+    public void setCategoryId(int categoryId) {
+        this.categoryId = categoryId;
     }
 }
