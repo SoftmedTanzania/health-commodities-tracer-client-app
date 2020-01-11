@@ -149,6 +149,10 @@ public class UpdateStockFragment extends Fragment {
                     quantityExpiredInputLayout.setVisibility(View.VISIBLE);
                 }
 
+                if (product.isTrack_has_patients()) {
+                    availabilityOfClientsOnRegimeSpinner.setVisibility(View.VISIBLE);
+                }
+
                 if (product.isTrackNumberOfPatients()) {
                     numberOfClientsOnRegimeInputLayout.setVisibility(View.VISIBLE);
                 }

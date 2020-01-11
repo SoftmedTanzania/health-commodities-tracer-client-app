@@ -182,14 +182,17 @@ public class AddTransactionDialogue extends DialogFragment {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 try {
-                    if (availabilityOfClientsOnRegime[i].equalsIgnoreCase("yes") && product.isTrackNumberOfPatients()) {
+                    if (availabilityOfClientsOnRegime[i].equalsIgnoreCase("yes")) {
                         hasClients = true;
-                        numberOfClientsOnRegimeInputLayout.setVisibility(View.VISIBLE);
-                    } else if(availabilityOfClientsOnRegime[i].equalsIgnoreCase("yes")){
-                        hasClients = true;
+
+                        if (product.isTrackNumberOfPatients()) {
+                            numberOfClientsOnRegimeInputLayout.setVisibility(View.VISIBLE);
+                        }
                     }else {
                         hasClients = false;
-                        numberOfClientsOnRegimeInputLayout.setVisibility(View.GONE);
+                        if (product.isTrackNumberOfPatients()) {
+                            numberOfClientsOnRegimeInputLayout.setVisibility(View.GONE);
+                        }
                     }
                 } catch (Exception e) {
                     e.printStackTrace();
