@@ -87,7 +87,7 @@ public class DashboardFragment extends Fragment {
         ValueFormatter xAxisStockMonthValueFormatter = new XAxisValueFormatter();
         XAxis chart1XAxis = mChart1.getXAxis();
         chart1XAxis.setDrawGridLines(false);
-        chart1XAxis.setPosition(XAxis.XAxisPosition.BOTTOM);
+        chart1XAxis.setPosition(XAxis.XAxisPosition.BOTTOM_INSIDE);
         chart1XAxis.setGranularityEnabled(true);
         chart1XAxis.setValueFormatter(xAxisStockMonthValueFormatter);
         chart1XAxis.setAxisMinimum(0f);
@@ -353,15 +353,7 @@ public class DashboardFragment extends Fragment {
             if (value == mProductBalances.size() + 1 || value == 0) {
                 return "";
             } else {
-                if (mProductBalances.get((int) value - 1).getProductName().length() < 25) {
-                    return mProductBalances.get((int) value - 1).getProductName();
-                } else {
-                    try {
-                        return mProductBalances.get((int) value - 1).getProductName().split(" ")[0] + " " + mProductBalances.get((int) value - 1).getProductName().split(" ")[1];
-                    } catch (Exception e) {
-                        return mProductBalances.get((int) value - 1).getProductName();
-                    }
-                }
+                return mProductBalances.get((int) value - 1).getProductName();
             }
         }
     }
@@ -375,15 +367,7 @@ public class DashboardFragment extends Fragment {
             if (value == mProductBalances.size() + 1 || value == 0) {
                 return "";
             } else {
-                if (mProductBalances.get((int) value - 1).getProductName().length() < 25) {
-                    return mProductBalances.get((int) value - 1).getProductName();
-                } else {
-                    try {
-                        return mProductBalances.get((int) value - 1).getProductName().split(" ")[0] + " " + mProductBalances.get((int) value - 1).getProductName().split(" ")[1];
-                    } catch (Exception e) {
-                        return mProductBalances.get((int) value - 1).getProductName();
-                    }
-                }
+                return mProductBalances.get((int) value - 1).getProductName();
             }
         }
     }

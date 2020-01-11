@@ -39,7 +39,7 @@
                     android:id="@+id/chart2"
                     android:layout_below="@id/title2"
                     android:layout_width="match_parent"
-                    android:layout_height="450dp" />
+                    android:layout_height="550dp" />
             </RelativeLayout>
 
             <View
@@ -97,7 +97,7 @@
                     android:layout_marginLeft="16dp"
                     android:layout_marginRight="16dp"
                     android:layout_width="match_parent"
-                    android:layout_height="350dp" />
+                    android:layout_height="400dp" />
             </RelativeLayout>
             <LinearLayout
                 android:layout_width="match_parent"
