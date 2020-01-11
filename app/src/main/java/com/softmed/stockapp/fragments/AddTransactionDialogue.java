@@ -137,6 +137,10 @@ public class AddTransactionDialogue extends DialogFragment {
                     numberOfClientsOnRegimeInputLayout.setVisibility(View.VISIBLE);
                 }
 
+                if (product.isTrack_has_patients()) {
+                    availabilityOfClientsOnRegimeSpinner.setVisibility(View.VISIBLE);
+                }
+
                 List<String> reportingDate = new ArrayList<>();
                 for (ProductReportingSchedule productReportingSchedules : productReportingSchedules) {
                     reportingDate.add(simpleDateFormat.format(productReportingSchedules.getScheduledDate()));
@@ -181,7 +185,9 @@ public class AddTransactionDialogue extends DialogFragment {
                     if (availabilityOfClientsOnRegime[i].equalsIgnoreCase("yes") && product.isTrackNumberOfPatients()) {
                         hasClients = true;
                         numberOfClientsOnRegimeInputLayout.setVisibility(View.VISIBLE);
-                    } else {
+                    } else if(availabilityOfClientsOnRegime[i].equalsIgnoreCase("yes")){
+                        hasClients = true;
+                    }else {
                         hasClients = false;
                         numberOfClientsOnRegimeInputLayout.setVisibility(View.GONE);
                     }
@@ -320,7 +326,7 @@ public class AddTransactionDialogue extends DialogFragment {
         } else if (reportingScheduleId == 0) {
             reportingPeriod.setError("Please select the reporting period");
             return false;
-        } else if (hasClients == null) {
+        } else if (hasClients == null &&  product.isTrack_has_patients()) {
             availabilityOfClientsOnRegimeSpinner.setError("Please select this");
             return false;
         } else if (numberOfClientsOnRegimeInputLayout.getEditText().getText().toString().equals("") && product.isTrackNumberOfPatients() && hasClients) {

@@ -34,7 +34,7 @@
                     android:layout_marginLeft="16dp"
                     android:fontFamily="@font/muli_bold"
                     android:textColor="@color/color_secondary"
-                    android:text="Inventory Balances"/>
+                    android:text="Inventory SOH"/>
                 <com.github.mikephil.charting.charts.CombinedChart
                     android:id="@+id/chart2"
                     android:layout_below="@id/title2"
@@ -97,7 +97,7 @@
                         android:fontFamily="@font/muli_bold"
                         android:layout_gravity="center_horizontal"
                         android:textColor="@color/color_secondary"
-                        android:text="Inventory Balances"/>
+                        android:text="Inventory SOH"/>
                     <LinearLayout
                         android:layout_marginTop="8dp"
                         android:layout_width="match_parent"
@@ -139,7 +139,7 @@
                             android:textColor="@color/color_primary_variant"
                             android:gravity="center_horizontal"
                             android:textStyle="bold"
-                            android:text="Balance"/>
+                            android:text="SOH"/>
 
                         <TextView
                             android:layout_width="0dp"

@@ -41,6 +41,9 @@ public class Product implements Serializable {
     @SerializedName("track_quantity_expired")
     private boolean track_quantity_expired;
 
+    @SerializedName("has_patients")
+    private boolean track_has_patients;
+
     @SerializedName("is_active")
     private boolean is_active;
 
@@ -194,5 +197,13 @@ public class Product implements Serializable {
 
     public void setLocal_image_path(String local_image_path) {
         this.local_image_path = local_image_path;
+    }
+
+    public boolean isTrack_has_patients() {
+        return track_has_patients;
+    }
+
+    public void setTrack_has_patients(boolean track_has_patients) {
+        this.track_has_patients = track_has_patients;
     }
 }
