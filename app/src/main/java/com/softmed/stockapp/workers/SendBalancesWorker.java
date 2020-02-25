@@ -52,6 +52,9 @@ public class SendBalancesWorker extends Worker {
 
         AppDatabase database = AppDatabase.getDatabase(this.getApplicationContext());
         List<Balances> balances = database.balanceModelDao().getUnPostedBalances();
+
+        Log.d(TAG, "Sending Balance  " + new Gson().toJson(balances));
+
         Call postBalancesCall = transactionServices.postBalances(getRequestBody(balances));
 
 

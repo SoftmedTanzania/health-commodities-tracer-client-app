@@ -1,0 +1,25 @@
+<<<<<<< HEAD:app/src/main/java/com/softmed/stockapp_staging/customviews/custom/message/viewholders/CustomOutcomingTextMessageViewHolder.java
+package com.softmed.stockapp.customviews.custom.message.viewholders;
+=======
+package com.softmed.stockapp_staging.customViews.custom.message.viewholders;
+>>>>>>> staging-app:app/src/main/java/com/softmed/stockapp_staging/customViews/custom/message/viewholders/CustomOutcomingTextMessageViewHolder.java
+
+import android.view.View;
+
+import com.softmed.stockapp_staging.dom.model.IMessageDTO;
+import com.stfalcon.chatkit.messages.MessageHolders;
+
+public class CustomOutcomingTextMessageViewHolder
+        extends MessageHolders.OutcomingTextMessageViewHolder<IMessageDTO> {
+
+    public CustomOutcomingTextMessageViewHolder(View itemView, Object payload) {
+        super(itemView, payload);
+    }
+
+    @Override
+    public void onBind(IMessageDTO message) {
+        super.onBind(message);
+
+        time.setText(message.getStatus() + " " + time.getText());
+    }
+}

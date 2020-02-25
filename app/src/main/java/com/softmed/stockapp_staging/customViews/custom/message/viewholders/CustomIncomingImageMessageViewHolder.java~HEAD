@@ -1,0 +1,26 @@
+<<<<<<< HEAD:app/src/main/java/com/softmed/stockapp_staging/customviews/custom/message/viewholders/CustomIncomingImageMessageViewHolder.java
+package com.softmed.stockapp.customviews.custom.message.viewholders;
+=======
+package com.softmed.stockapp_staging.customViews.custom.message.viewholders;
+>>>>>>> staging-app:app/src/main/java/com/softmed/stockapp_staging/customViews/custom/message/viewholders/CustomIncomingImageMessageViewHolder.java
+
+import android.view.View;
+
+import com.softmed.stockapp_staging.dom.model.IMessageDTO;
+import com.stfalcon.chatkit.messages.MessageHolders;
+
+/*
+ * Created by troy379 on 05.04.17.
+ */
+public class CustomIncomingImageMessageViewHolder
+        extends MessageHolders.IncomingImageMessageViewHolder<IMessageDTO> {
+
+    public CustomIncomingImageMessageViewHolder(View itemView, Object payload) {
+        super(itemView, payload);
+    }
+
+    @Override
+    public void onBind(IMessageDTO message) {
+        super.onBind(message);
+    }
+}
