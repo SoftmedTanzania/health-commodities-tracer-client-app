@@ -1,5 +1,7 @@
 # Health Commodity Tracer App
 
+[![Codacy Badge](https://api.codacy.com/project/badge/Grade/a5d0952d29ba492b9075cd9f3bf98665)](https://app.codacy.com/manual/Softmed/health-commodities-tracer-client-app?utm_source=github.com&utm_medium=referral&utm_content=SoftmedTanzania/health-commodities-tracer-client-app&utm_campaign=Badge_Grade_Dashboard)
+
 **Platform: Android (Min SDK: 15, Target SDK: 28)**
 
 Health Commodity tracer application is an Android Mobile application used to track stock of various medical commodities in the health facilities for FHI360's Boresha Afya Southern Project in Tanzania.
