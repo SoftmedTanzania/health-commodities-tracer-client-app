@@ -11,8 +11,7 @@ The application tracks stocks on hand of health commodities, stock out days of h
 The application also provides reminders for health care workers to report the above information timely, and the information is aggregated and shared to project managers in Boresha Afya for timely decision making and transparent visibility of stock on health facilities.
 
 **Features:**
-- Track health facility stock balances
-- Add product image by capturing a photo using the camera or choose from gallery.
-- Simple navigation to allow faster create, read, update, or delete operations.
+- Track health facility commodities stock balances
+- Manage stock inventories.
 - View various dashboard charts showing facility consuption rates
 - Send and receive in-app messages to higher management and other health facilities
