@@ -12,6 +12,7 @@ The application also provides reminders for health care workers to report the ab
 
 **Features:**
 - Track health facility commodities stock balances
-- Manage stock inventories.
+- Issues in-app reminders for timely filling of stock balances, stock out days of health commodities and the number of patients on a specified regimes for commodieties being reported.
 - View various dashboard charts showing facility consuption rates
 - Send and receive in-app messages to higher management and other health facilities
+
